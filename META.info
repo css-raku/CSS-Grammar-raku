@@ -1,0 +1,7 @@
+{
+    "name"        : "CSS::Grammar",
+    "version"     : "*",
+    "description" : "Perl 6 CSS grammar toolkit",
+    "depends"     : [  ],
+    "source-url"  : "git://github.com/dwarring/CSS-Grammar.git"
+}
