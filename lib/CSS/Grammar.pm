@@ -16,7 +16,6 @@ grammar CSS::Grammar {
 	<!ww>
 	<ws_char>*}
 
-
     # "lexer"
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
@@ -36,7 +35,11 @@ grammar CSS::Grammar {
     rule class          {'.'<name>}
 
     rule percentage     {<num>'%'}
-    rule length         {<num>(pt|mm|cm|pc|in|px|em|ex)}
+    rule length         {<num>(:i pt|mm|cm|pc|in|px|em|ex)}
+    rule time           {<num>(:i m?s)}  # css2
+    rule freq           {<num>(:i k?Hz)} # css2
+    # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
+    rule dimension {<num><[\w]>+}
 
     # unquoted strings - as permitted in urls
     rule quotable_char         {<ws_char> | <[\, \' \" \( \) \\ ]>}

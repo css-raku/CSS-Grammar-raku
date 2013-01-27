@@ -13,7 +13,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule stylesheet {<import>* <ruleset>*}
  
-    rule import { \@import [<string>|<url>] ';' }
+    rule import { \@[:i import] [<string>|<url>] ';' }
 
     rule unary_operator {'-'|'+'}
 
@@ -33,14 +33,16 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule expr { <term> [ <operator>? <term> ]* }
 
     rule term { <unary_operator>?
-		    [ <length> | <string> | <percentage>
-		      | <num> | $<ems>='em' | $<exs>='ex' | <ident> | <hexcolor> | <url> | <rgb> ]}
+		    [ <length> | $<misc>=<dimension> | <string> | <percentage>
+		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> ]}
 
+    rule ems {:i em}
+    rule exs {:i ex}
     rule hexcolor {<id>}
 
-    rule rgb{ 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
+    rule rgb{:i 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
 
-    rule prio {\!important}
+    rule prio {:i \!important}
 
     regex selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 
@@ -51,8 +53,8 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule element_name {<ident>}
 
-    rule  pseudo_class      {':'(link|visited|active)}
-    rule  pseudo_element    {':'(first\-[line|letter])}
+    rule  pseudo_class      {':'(:i link|visited|active)}
+    rule  pseudo_element    {':'(:i first\-[line|letter])}
 
     rule url  { 'url(' <text> ')' }
 
