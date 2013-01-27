@@ -56,4 +56,8 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule url  { 'url(' <text> ')' }
 
+    # 'lexer' css1 exceptions
+    
+    # -- unicode escape sequences only extend to 4 chars
+    rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
 }

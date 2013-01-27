@@ -2,6 +2,8 @@ use v6;
 
 grammar CSS::Grammar {
 
+    # Comments and whitespace
+
     token eol {"\r\n"  # ms/dos
                | "\n"  #'nix
                | "\r"} # mac-osx
@@ -17,7 +19,7 @@ grammar CSS::Grammar {
 
     # "lexer"
 
-    rule unicode	{'\\'<[0..9 a..f A..F]>**1..4}
+    rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
     rule latin1		{<[\o241..\o377]>}
     rule escape		{<unicode>|'\\'<[' '..~¡..ÿ]>}
     rule stringchar	{<escape>|<latin1>|<[\o40 \! \# \$ \% \& \( .. \~]>}
