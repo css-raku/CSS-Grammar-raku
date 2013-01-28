@@ -27,21 +27,22 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule ruleset {
 	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? '}'
+	    '{' <declaration> [';' <declaration> ]* ';'? ('}' | $)
     }
 
     rule property {<ident>}
 
     rule declaration {
-	 <property> ':' <expr> <prio>?
+	<property> ':' [<expr> <prio>?]?
     }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
     rule term { <unary_operator>?
 		    [ <length> | $<misc>=<dimension> | <string> | <percentage>
-		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> ]}
+		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> | <guff> ]}
 
+    token guff {<- [;}]>+}
     rule ems {:i em}
     rule exs {:i ex}
     rule hexcolor {<id>}

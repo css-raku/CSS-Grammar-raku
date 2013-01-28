@@ -11,7 +11,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     # rinse; to reduce a css3 ruleset to a css2 subset, or
     # for general cleaning of real-world input use
-    # my $css1 = $css3.comb(/<CSS::Grammar::CSS2::rinse>/)
+    # my $css2 = $css3.comb(/<CSS::Grammar::CSS2::rinse>/)
 
     rule rinse { <charset> | <import> | <!after \@><ruleset> | <media> | <page> }
 
@@ -39,21 +39,22 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule ruleset {
 	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? '}'
+	    '{' <declaration> [';' <declaration> ]* ';'? ('}' | $)
     }
 
     rule property {<ident>}
 
     rule declaration {
-	 <property> ':' <expr> <prio>?
+	 <property> ':' [<expr> <prio>?]?
     }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
     rule term { <unary_operator>?
-		    [ <length> | <angle> | <time> | <freq> | <string> | <percentage>
-		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> | <function> ]}
+		    [ <length> | <angle> | <time> | <freq> | <string> | <percentage> | <dimension>
+		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> | <function> | <guff> ]}
 
+    token guff {<- [;}]>+}
     rule ems {:i em}
     rule exs {:i ex}
     rule hexcolor {<id>}

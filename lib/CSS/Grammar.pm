@@ -44,6 +44,6 @@ grammar CSS::Grammar {
     rule quotable_char         {<ws_char> | <[\, \' \" \( \) \\ ]>}
     rule unquoted_escape_seq   {'\\'<quotable_char>?}
     rule unquoted_string       {[<-quotable_char>|<unquoted_escape_seq>]+}
-    rule text {<string>|<unquoted_string>}
 
+    rule text                  {<string>|<unquoted_string>}
 }
