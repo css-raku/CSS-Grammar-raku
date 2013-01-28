@@ -60,7 +60,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule  pseudo_class      {':'(:i link|visited|active)}
     rule  pseudo_element    {':'(:i first\-[line|letter])}
 
-    rule url  { 'url(' <text> ')' }
+    rule url  {:i 'url(' <text> ')' }
 
     # 'lexer' css1 exceptions
     
