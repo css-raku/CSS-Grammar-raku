@@ -9,9 +9,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # combing rule; to reduce a css3 or css1 ruleset to a css1 subset, use
-    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::strands>/)
-    rule strands {<import>|<!after \@><ruleset>}
+    # combover; to reduce a css3 or css1 ruleset to a css1 subset, use
+    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::combover>/)
+    rule combover { ^ <import> | <!after \@><ruleset> }
 
     # productions
 

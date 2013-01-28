@@ -5,6 +5,7 @@ use CSS::Grammar::CSS1;
 
 # from: http://www.w3.org/Style/CSS/Test/CSS1/current/sec71.htm
 my $css3_sample = q:to/END_CSS3/;
+@Import 'foo.bar';
 P.one {color: green; rotation: 70deg;}
 P.oneb {color: green;}
 P.oneb {color: invalidValue;}
@@ -68,7 +69,7 @@ END_CSS3
 for (
     sample => $css3_sample,
     ) {
-    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::strands>/);
+    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::combover>/);
     say "css1 combed: " ~ $css1;
     my $p = CSS::Grammar::CSS1.parse( $css1 );
     ok( $p, 'css3 sample ' ~ $_.key)
