@@ -2,6 +2,7 @@ use v6;
 
 use Test;
 use CSS::Grammar::CSS1;
+use CSS::Grammar::CSS2;
 
 # from: http://www.w3.org/Style/CSS/Test/CSS1/current/sec71.htm
 my $css3_sample = q:to/END_CSS3/;
@@ -66,10 +67,12 @@ P.twentythree {text-indent: 0.5in;}
 P.twentyfour {color: red;}
 END_CSS3
 
-for (
+my @tests = (
     sample => $css3_sample,
-    ) {
-    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::combover>/);
+    );
+
+for @tests {
+    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::rinse>/);
     say "css1 combed: " ~ $css1;
     my $p = CSS::Grammar::CSS1.parse( $css1 );
     ok( $p, 'css3 sample ' ~ $_.key)
@@ -77,5 +80,13 @@ for (
 	    
 }
 
+for @tests {
+    my $css2 = $_.value.comb(/<CSS::Grammar::CSS2::rinse>/);
+    say "css2 combed: " ~ $css2;
+    my $p = CSS::Grammar::CSS2.parse( $css2 );
+    ok( $p, 'css3 sample ' ~ $_.key)
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS2::stylesheet>)/; $0.Str || $_.value},
+	    
+}
 
 done;

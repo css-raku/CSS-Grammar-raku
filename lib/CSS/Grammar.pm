@@ -4,13 +4,11 @@ grammar CSS::Grammar {
 
     # Comments and whitespace
 
-    token eol {"\r\n"  # ms/dos
-               | "\n"  #'nix
-               | "\r"} # mac-osx
+    token nl {["\n"|"r\n"|"\r"|"\f"]+}
 
-    token ws_char {'<!--' .*? '-->'
-                   |'/*' .*? '*/'
-		   | "\n" | "\t" | "\o12" | "\f" | "\r" | " "}
+    token ws_char {'<!--' .*? ('-->'|$)
+                   |'/*' .*? ('*/'|$)
+		   | "\n" | "\t" | "\f" | "\r" | " "}
 
     token ws {
 	<!ww>
@@ -35,9 +33,10 @@ grammar CSS::Grammar {
     rule class          {'.'<name>}
 
     rule percentage     {<num>'%'}
-    rule length         {<num>(:i pt|mm|cm|pc|in|px|em|ex)}
-    rule time           {<num>(:i m?s)}  # css2
-    rule freq           {<num>(:i k?Hz)} # css2
+    rule length         {:i <num>(pt|mm|cm|pc|in|px|em|ex)}
+    rule angle          {:i <num>(deg|rad|grad)}  # css2
+    rule time           {:i <num>(m?s)}  # css2
+    rule freq           {:i <num>(k?Hz)} # css2
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
     rule dimension {<num><[\w]>+}
 

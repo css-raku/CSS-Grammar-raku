@@ -2,6 +2,7 @@
 
 use Test;
 use CSS::Grammar::CSS1;
+use CSS::Grammar::CSS2;
 
 # whitespace
 for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
@@ -38,12 +39,17 @@ for (q{"Hello}, q{world'}, q{'''}, q{"}, q{'grocer's'},) {
     ok($_ !~~ /^<CSS::Grammar::CSS1::string>$/, "not string: $_");
 }
 
-for (percentage => '50%',
+for (
+     ws => ' ',
+     ws => "/* comments\n1 */",
+     ws => "<!-- comments\n2 -->",
+     ws => "<!-- unterminated comment",
+     percentage => '50%',
      id => '#zzz',
      class => '.zippy',
      num => '2.52',
      length => '2.52cm',
-     pseudo_class => ':visited',
+#css1     pseudo_class => ':visited',
      url => 'url("http://www.bg.com/pinkish.gif")',
      url => 'URL(http://www.bg.com/pinkish.gif)',
      import => "@import 'file:///etc/passwd';",
@@ -54,7 +60,7 @@ for (percentage => '50%',
      unquoted_escape_seq => '\\',
      unquoted_string => 'perl\(6\)\ rocks',
      class => '.class',
-     selector => 'BODY',
+     simple_selector => 'BODY',
      selector => 'A:visited',
      selector => ':visited',
      selector => '.some_class',
@@ -62,7 +68,7 @@ for (percentage => '50%',
      name => 'some_class',
      element_name => 'BODY', class => '.some_class',
      simple_selector => 'BODY.some_class',
-     pseudo_element => ':first-line',
+     pseudo => ':first-line',
      selector => 'BODY.some_class:active',
      selector => '#my-id :first-line',
      selector => 'A:first-letter',
@@ -85,12 +91,16 @@ for (percentage => '50%',
      declaration => 'border: 2px solid blue',
      ruleset => 'H1 { color: blue; }',
      ruleset => 'A:link H1 { color: blue; }',
-     dimension => '70deg',  # css3 qty; uknown to css1
-     ruleset => 'H2 { color: green; rotation: 70deg; }';
+     dimension => '70deg',
+     ruleset => 'H2 { color: green; rotation: 70deg; }',
+     TOP => 'H1 { color: blue; }',
     ) {
 
-    my $p = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key));
-    ok($p, $_.key ~ " parse: " ~ $_.value);
+    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key));
+    ok($p1, "css1: " ~ $_.key ~ " parse: " ~ $_.value);
+
+    my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule($_.key));
+    ok($p2, "css2: " ~ $_.key ~ " parse: " ~ $_.value);
 }
 
 done;

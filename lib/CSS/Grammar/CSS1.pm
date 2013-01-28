@@ -9,13 +9,15 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # combover; to reduce a css3 or css1 ruleset to a css1 subset, use
-    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::combover>/)
-    rule combover { ^ <import> | <!after \@><ruleset> }
+    # rinse; to reduce a css3 or css2 ruleset to a css1 subset, or
+    # for general cleaning of real-world input use
+    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::rinse>/)
+
+    rule rinse { <import> | <!after \@><ruleset> }
 
     # productions
 
-    rule stylesheet {<import>* <ruleset>*}
+    rule stylesheet { <import>* <ruleset>* }
 
     rule import { \@[:i import] [<string>|<url>] ';' }
 
@@ -57,6 +59,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule element_name {<ident>}
 
+    rule  pseudo {<pseudo_class>|<pseudo_element>}
     rule  pseudo_class      {':'(:i link|visited|active)}
     rule  pseudo_element    {':'(:i first\-[line|letter])}
 
@@ -66,5 +69,4 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     
     # -- unicode escape sequences only extend to 4 chars
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
-
 }

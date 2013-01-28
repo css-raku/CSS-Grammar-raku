@@ -2,6 +2,7 @@
 
 use Test;
 use CSS::Grammar::CSS1;
+use CSS::Grammar::CSS2;
 
 # sample taken from http://www.w3.org/TR/REC-CSS1/#appendix-b
 
@@ -68,17 +69,24 @@ A:visited IMG { border: 2px solid red }
 A:active IMG { border: 2px solid lime }
 END_SAMPLE
 
-for (
+my @tests = (
     tiny => $tiny,
     small => $small,
     body => $body,
     sample => $sample,
-    ) {
-    my $p = CSS::Grammar::CSS1.parse( $_.value );
-    ok( $p, 'css1 sample ' ~ $_.key)
+    );
+
+for @tests {
+    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule('stylesheet') );
+    ok( $p1, 'css1 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value},
-	    
 }
 
+for @tests {
+    my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule('stylesheet') );
+    ok( $p2, 'css2 parse ' ~ $_.key)
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS2::stylesheet>)/; $0.Str || $_.value},
+	    
+}
 
 done;
