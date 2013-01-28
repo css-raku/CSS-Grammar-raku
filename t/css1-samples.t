@@ -56,7 +56,6 @@ DD { margin-top: 0; margin-left: 3em }
 
 HR { border-top: solid }        /* 'border-bottom' could also have been used */
 
-
 A:link { color: blue }          /* unvisited link */
 A:visited { color: red }        /* visited links */
 A:active { color: lime }        /* active links */
@@ -73,10 +72,12 @@ for (
     tiny => $tiny,
     small => $small,
     body => $body,
-    sample => $sample) {
+    sample => $sample,
+    ) {
     my $p = CSS::Grammar::CSS1.parse( $_.value );
     ok( $p, 'css1 sample ' ~ $_.key)
-        or diag $_.value;
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value},
+	    
 }
 
 

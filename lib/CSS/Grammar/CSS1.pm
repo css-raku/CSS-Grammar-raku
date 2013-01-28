@@ -9,10 +9,14 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
+    # combing rule; to reduce a css3 or css1 ruleset to a css1 subset, use
+    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::strands>/)
+    rule strands {<import>|<!after \@><ruleset>}
+
     # productions
 
     rule stylesheet {<import>* <ruleset>*}
- 
+
     rule import { \@[:i import] [<string>|<url>] ';' }
 
     rule unary_operator {'-'|'+'}
@@ -62,4 +66,5 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     
     # -- unicode escape sequences only extend to 4 chars
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
+
 }
