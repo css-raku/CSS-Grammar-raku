@@ -72,7 +72,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule  pseudo      {':' <ident> | <function> <ident>? }
 
-    rule url  {:i 'url(' <text> ')' }
+    rule url  {:i 'url(' <url_spec> ')' }
 
     rule function { '(' <expr> ')' }
 

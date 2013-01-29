@@ -3,6 +3,7 @@
 use Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS2;
+use CSS::Grammar::Actions;
 
 # whitespace
 for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
@@ -13,15 +14,30 @@ for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
 for ("\\f", "\\012f", "\\012A") {
     ok($_ ~~ /^<CSS::Grammar::CSS1::unicode>$/, "unicode: $_");
 }
+for ("\\012AF", "\\012AFc") {
+    # css2 unicode is up to 6 digits
+    ok($_ !~~ /^<CSS::Grammar::CSS1::unicode>$/, "not css1 unicode: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS2::unicode>$/, "css2 unicode: $_");
+}
 
-# latin1
+# nonascii
 for ('¡', "\o250", 'ÿ') {
-    ok($_ ~~ /^<CSS::Grammar::CSS1::latin1>$/, "latin1: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "nonascii: $_");
 }
 
 for (chr(0), ' ', '~') {
-    ok($_ !~~ /^<CSS::Grammar::CSS1::latin1>$/, "not latin1: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS1::nonascii>$/, "not nonascii: $_");
 } 
+
+for ('http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif') {
+    ok($_ ~~ /^<CSS::Grammar::CSS1::url_spec>$/, "css1 url_spec: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS2::url_spec>$/, "css2 url_spec: $_");
+}
+
+for ('http://www.bg.com/pink(ish).gif') {
+    ok($_ !~~ /^<CSS::Grammar::CSS1::url_spec>$/, "not css1 url_spec: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS2::url_spec>$/, "not css2 url_spec: $_");
+}
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t') {
     ok($_ ~~ /^<CSS::Grammar::CSS1::ident>$/, "ident: $_");
@@ -37,7 +53,10 @@ for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
 
 for (q{"Hello}, q{world'}, q{'''}, q{"}, q{'grocer's'},) {
     ok($_ !~~ /^<CSS::Grammar::CSS1::string>$/, "not string: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS1::guff>$/, "guff: $_");
 }
+
+my $actions = CSS::Grammar::Actions.new;
 
 for (
     ws => ' ',
@@ -50,15 +69,13 @@ for (
     num => '2.52',
     length => '2.52cm',
     pseudo => ':visited',
+    url_spec => '"http://www.bg.com/pinkish.gif"',
+    url_spec => 'http://www.bg.com/pinkish.gif',
+    url_spec => 'http://www.bg.com/pinkish.gif',
     url => 'url("http://www.bg.com/pinkish.gif")',
     url => 'URL(http://www.bg.com/pinkish.gif)',
     import => "@import 'file:///etc/passwd';",
     import => "@IMPORT 'file:///etc/group';",
-    quotable_char => '(',
-    quotable_char => ' ',
-    unquoted_escape_seq => '\(',
-    unquoted_escape_seq => '\\',
-    unquoted_string => 'perl\(6\)\ rocks',
     class => '.class',
     simple_selector => 'BODY',
     selector => 'A:visited',
@@ -100,7 +117,7 @@ for (
     TOP => 'H1 { color: blue; }',
     ) {
 
-    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key));
+    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key), :actions($actions));
     ok($p1, "css1: " ~ $_.key ~ " parse: " ~ $_.value);
 
     my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule($_.key));

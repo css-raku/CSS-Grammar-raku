@@ -64,10 +64,17 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule  pseudo_class      {':'(:i link|visited|active)}
     rule  pseudo_element    {':'(:i first\-[line|letter])}
 
-    rule url  {:i 'url(' <text> ')' }
+    rule url  {:i 'url(' <url_spec> ')' }
 
     # 'lexer' css1 exceptions
     
     # -- unicode escape sequences only extend to 4 chars
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
+
+    # unquoted strings - as permitted in urls
+    rule url_quotable     {<ws_char> | <[\, \' \" \( \) \\ ]>}
+    rule url_escape_seq   {'\\'<url_quotable>?}
+    rule url_char         {[<- url_quotable>|<url_escape_seq>]}
+
+    rule url_spec         {<string>|<url_char>+} 
 }

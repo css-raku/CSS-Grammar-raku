@@ -1,6 +1,11 @@
 use v6;
 
-grammar CSS::Grammar {
+grammar CSS::Grammar:ver<0.0.1> {
+
+    # abstract base grammar for CSS instance grammars:
+    #  CSS::Grammar::CSS1 - CSS level 1
+    #  CSS::Grammar::CSS2 - CSS level 2.1
+    #  CSS::Grammar::CSS3 - CSS level 3 (tba)
 
     # Comments and whitespace
 
@@ -17,15 +22,15 @@ grammar CSS::Grammar {
     # "lexer"
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
-    rule latin1		{<[\o241..\o377]>}
+    rule nonascii	{<[\o241..\o377]>}
     rule escape		{<unicode>|'\\'<[' '..~¡..ÿ]>}
-    rule stringchar	{<escape>|<latin1>|<[\o40 \! \# \$ \% \& \( .. \~]>}
-    rule nmstrt		{<[a..z A..Z]>|<latin1>|<escape>}
-    rule nmchar		{<[\- a..z A..Z 0..9]>|<latin1>|<escape>}
+    rule stringchar	{<escape>|<nonascii>|<[\o40 \! \# \$ \% \& \( .. \~]>}
+    rule nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
+    rule nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
     rule ident		{<nmstrt><nmchar>*}
     rule name		{<nmchar>+}
     rule d		{<[0..9]>}
-    rule notnm		{<-[\- a..z A..Z 0..9\\]>|<latin1>}
+    rule notnm		{<-[\- a..z A..Z 0..9\\]>|<nonascii>}
     rule num		{[<d>*\.]?<d>+}
     rule string		{\"(<stringchar>|\')*\" | \'(<stringchar>|\")*\'}
 
@@ -38,12 +43,26 @@ grammar CSS::Grammar {
     rule time           {:i <num>(m?s)}  # css2
     rule freq           {:i <num>(k?Hz)} # css2
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    rule dimension {<num><[\w]>+}
+    rule dimension      {<num><[\w]>+}
 
-    # unquoted strings - as permitted in urls
-    rule quotable_char         {<ws_char> | <[\, \' \" \( \) \\ ]>}
-    rule unquoted_escape_seq   {'\\'<quotable_char>?}
-    rule unquoted_string       {[<-quotable_char>|<unquoted_escape_seq>]+}
+# I was having trouble grokking the CSS2 url parsing rules, so have
+# re-expressed the URI CSS2 parsing rules as perl6 symbol toekns.
+# This rule is constructed from  http://www.w3.org/TR/CSS21/syndata.html#uri,
+# which mentions that uri escapes are permitted (%20 etc),
+# The grammar also seems to allow backslash escape sequences ( \' etc )
+# Url character sets are taken from http://tools.ietf.org/html/rfc3986
+# (URI generic Syntax).
 
-    rule text                  {<string>|<unquoted_string>}
+    # so that css term url(...) is parseable
+    rule url_escape_needed {\( | \) | ' ' | "'"| '"' }
+
+    proto rule url_char { <...> }
+    rule url_char:sym<escape>      {'%'<xdigit><xdigit>|<escape>}
+    rule url_char:sym<path>        {'/'}
+    rule url_char:sym<gen_delim>   {':' | '|' | '?' | '#' | '[' | ']' | '@'}
+    rule url_char:sym<sub_delim>   {'!' | '$' | '&' | "'" | '(' | ')'
+                                   | '*' | '+' | ',' | ';' | '='}
+    rule url_char:sym<unreserved>  {\w|'-'|'.'|'~'}
+    rule url_chars                 {[<!url_escape_needed><url_char>]+}
+    rule url_spec                  {<string>|<url_chars>}
 }
