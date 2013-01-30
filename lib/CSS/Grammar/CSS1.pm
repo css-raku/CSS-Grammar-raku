@@ -36,18 +36,19 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 	<property> ':' [<expr> <prio>?]?
     }
 
-    rule expr { <term> [ <operator>? <term> ]* }
+    rule expr {  <unary_operator>? <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>?
-		    [ <length> | $<misc>=<dimension> | <string> | <percentage>
-		      | <num> | <ems> | <exs> | <ident> | <hexcolor> | <url> | <rgb> | <guff> ]}
+    proto rule term { <...> }
 
-    token guff {<- [;}]>+}
-    rule ems {:i em}
-    rule exs {:i ex}
-    rule hexcolor {<id>}
-
-    rule rgb{:i 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
+    rule term:sym<length> {<length>}
+    rule term:sym<dropped> {<dimension>}
+    rule term:sym<ems> {:i em}
+    rule term:sym<exs> {:i ex}
+    rule term:sym<ident> {<ident>}
+    rule term:sym<hexcolor> {<id>}
+    rule term:sym<url> {<url>}
+    rule term:sym<rgb> {:i 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
+    token term:sym<guff> {<- [;}]>+}
 
     rule prio {:i \!important}
 

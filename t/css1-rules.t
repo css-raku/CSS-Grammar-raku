@@ -53,7 +53,6 @@ for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
 
 for (q{"Hello}, q{world'}, q{'''}, q{"}, q{'grocer's'},) {
     ok($_ !~~ /^<CSS::Grammar::CSS1::string>$/, "not string: $_");
-    ok($_ ~~ /^<CSS::Grammar::CSS1::guff>$/, "guff: $_");
 }
 
 my $actions = CSS::Grammar::Actions.new;
@@ -90,8 +89,8 @@ for (
     selector => '#my-id :first-line',
     selector => 'A:first-letter',
     selector => 'A:Link IMG',
-    hexcolor => '#eeeeee',
-    rgb => 'rgb(17%, 33%, 70%)',
+    term => '#eeeeee',
+    term => 'rgb(17%, 33%, 70%)',
     num => '1',
     num => '.1',
     num => '1.9',

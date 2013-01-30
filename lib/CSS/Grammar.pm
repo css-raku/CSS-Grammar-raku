@@ -46,7 +46,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule dimension      {<num><[\w]>+}
 
 # I was having trouble grokking the CSS2 url parsing rules, so have
-# re-expressed the URI CSS2 parsing rules as perl6 symbol toekns.
+# re-expressed the URI CSS2 parsing rules as perl6 symbol tokens.
 # This rule is constructed from  http://www.w3.org/TR/CSS21/syndata.html#uri,
 # which mentions that uri escapes are permitted (%20 etc),
 # The grammar also seems to allow backslash escape sequences ( \' etc )
@@ -56,7 +56,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # so that css term url(...) is parseable
     rule url_escape_needed {\( | \) | ' ' | "'"| '"' }
 
-    proto rule url_char { <...> }
+    proto rule url_char {<...>}
     rule url_char:sym<escape>      {'%'<xdigit><xdigit>|<escape>}
     rule url_char:sym<path>        {'/'}
     rule url_char:sym<gen_delim>   {':' | '|' | '?' | '#' | '[' | ']' | '@'}
