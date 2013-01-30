@@ -23,14 +23,12 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule at_rule:sym<charset> { \@[:i charset] <string> ';' }
     rule at_rule:sym<import>  { \@[:i import] [<string>|<url>] ';' }
     rule at_rule:sym<media>   { \@[:i media] <media_list> '{' <ruleset> '}' ';'? }
-    rule at_rule:sym<page>    { \@[:i page] <page> <puesdo_page>?
+    rule at_rule:sym<page>    { \@[:i page] $<puesdo_page>=<indent>?
 		                '{' <declaration> [';' <declaration> ]* ';'? '}'
     }
     rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>|<ruleset>] ';'? }
 
-
-    rule media_list {<medium> [',' <medium>]*}
-    rule medium {<ident>}
+    rule media_list {<medium> [',' $<medium>=<ident>]*}
 
     rule unary_operator {'-'}
 
