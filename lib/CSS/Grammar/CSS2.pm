@@ -52,20 +52,24 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     proto rule term { <...> }
 
-    rule term:sym<length> {<length>}
-    rule term:sym<angle> {<angle>}
-    rule term:sym<time> {<time>}
-    rule term:sym<freq> {<freq>}
-    rule term:sym<string> {<string>}
+    rule term:sym<length>     {<length>}
+    rule term:sym<angle>      {<angle>}
+    rule term:sym<time>       {<time>}
+    rule term:sym<freq>       {<freq>}
+    rule term:sym<string>     {<string>}
     rule term:sym<percentage> {<percentage>}
-    rule term:sym<dropped> {<dimension>}
-    rule term:sym<num> {<num>}
-    rule term:sym<ems> {:i em}
-    rule term:sym<exs> {:i ex}
-    rule term:sym<ident> {<ident>}
-    rule term:sym<hexcolor> {<id>}
-    rule term:sym<url> {<url>}
-    rule term:sym<rgb> {:i 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
+    rule term:sym<dropped>    {<dimension>}
+    rule term:sym<num>        {<num>}
+    rule term:sym<ems>        {:i em}
+    rule term:sym<exs>        {:i ex}
+    rule term:sym<ident>      {<ident>}
+    rule term:sym<hexcolor>   {<id>}
+    rule term:sym<url>        {<url>}
+    rule term:sym<rgb>        {:i 'rgb' '(' <num>('%'?)
+                                        ',' <num>('%'?)
+                                        ',' <num>('%'?)
+                                        ')' }
+
     rule term:sym<function> {<function>}
     token term:sym<guff> {<- [;}]>+}
 
@@ -77,12 +81,9 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 				| [<id> | <class> | <pseudo>]+ }
 
     rule element_name {<ident>}
-
-    rule  pseudo      {':' <ident> | <function> <ident>? }
-
-    rule url  {:i 'url(' <url_spec> ')' }
-
-    rule function { '(' <expr> ')' }
+    rule pseudo       {':' <ident> | <function> <ident>? }
+    rule url          {:i 'url(' <url_spec> ')' }
+    rule function     { '(' <expr> ')' }
 
     # 'lexer' css2 exceptions
 }

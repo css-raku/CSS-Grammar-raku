@@ -40,14 +40,17 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     proto rule term { <...> }
 
-    rule term:sym<length> {<length>}
-    rule term:sym<dropped> {<dimension>}
-    rule term:sym<ems> {:i em}
-    rule term:sym<exs> {:i ex}
-    rule term:sym<ident> {<ident>}
+    rule term:sym<length>   {<length>}
+    rule term:sym<dropped>  {<dimension>}
+    rule term:sym<ems>      {:i em}
+    rule term:sym<exs>      {:i ex}
+    rule term:sym<ident>    {<ident>}
     rule term:sym<hexcolor> {<id>}
-    rule term:sym<url> {<url>}
-    rule term:sym<rgb> {:i 'rgb' '(' <num>('%'?) ','  <num>('%'?) ','  <num>('%'?) ')' }
+    rule term:sym<url>      {<url>}
+    rule term:sym<rgb>      {:i 'rgb' '(' <num>('%'?)
+                                      ',' <num>('%'?)
+                                      ',' <num>('%'?)
+                                      ')' }
     token term:sym<guff> {<- [;}]>+}
 
     rule prio {:i \!important}
@@ -73,9 +76,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
 
     # unquoted strings - as permitted in urls
-    rule url_quotable     {<ws_char> | <[\, \' \" \( \) \\ ]>}
-    rule url_escape_seq   {'\\'<url_quotable>?}
-    rule url_char         {[<- url_quotable>|<url_escape_seq>]}
+    rule url_quotable    {<ws_char> | <[\, \' \" \( \) \\ ]>}
+    rule url_escape_seq  {'\\'<url_quotable>?}
 
-    rule url_spec         {<string>|<url_char>+} 
+    rule url_char        {[<- url_quotable>|<url_escape_seq>]}
+    rule url_spec        {<string>|<url_char>+} 
 }
