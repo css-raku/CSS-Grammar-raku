@@ -4,32 +4,33 @@ use CSS::Grammar;
 
 grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
-# as defined in w3c Appendix B: CSS1 Grammar
-# http://www.w3.org/TR/REC-CSS1/#appendix-b
+# as defined in w3c Appendix G: Grammar of CSS 2.1
+# http://www.w3.org/TR/CSS21/grammar.html
 
     rule TOP {^ <stylesheet> $}
 
-    # rinse; to reduce a css3 ruleset to a css2 subset, or
-    # for general cleaning of real-world input use
-    # my $css2 = $css3.comb(/<CSS::Grammar::CSS2::rinse>/)
+    # rinse; rule to reduce a css3, or generally noisy stylesheet, to a
+    # cleaner, parsable css2 subset:
+    # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::rinse>/)
 
-    rule rinse { <charset> | <import> | <!after \@><ruleset> | <media> | <page> }
+    rule rinse { <at_rule> | <!after \@><ruleset> }
 
     # productions
 
-    rule stylesheet { [ <charset>* <import>* <ruleset> | <media> | <page> ]* }
+    rule stylesheet { [ <at_rule> | <ruleset> ]* }
 
-    rule charset { \@[:i charset] <string> ';' }
+    proto rule at_rule { <...> }
+    rule at_rule:sym<charset> { \@[:i charset] <string> ';' }
+    rule at_rule:sym<import>  { \@[:i import] [<string>|<url>] ';' }
+    rule at_rule:sym<media>   { \@[:i media] <media_list> '{' <ruleset> '}' ';'? }
+    rule at_rule:sym<page>    { \@[:i page] <page> <puesdo_page>?
+		                '{' <declaration> [';' <declaration> ]* ';'? '}'
+    }
+    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>|<ruleset>] ';'? }
 
-    rule import { \@[:i import] [<string>|<url>] ';' }
 
-    rule media { \@[:i media] <media_list> '{' <ruleset> '}' ';' }
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
-
-    rule page { \@[:i page] <page> <puesdo_page>?
-		    '{' <declaration> [';' <declaration> ]* ';'? '}'
-    }
 
     rule unary_operator {'-'}
 

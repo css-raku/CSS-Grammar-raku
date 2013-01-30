@@ -9,17 +9,19 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # rinse; to reduce a css3 or css2 ruleset to a css1 subset, or
-    # for general cleaning of real-world input use
-    # my $css1 = $css3.comb(/<CSS::Grammar::CSS1::rinse>/)
+    # rinse; rule to reduce a css3, css2 or generally noisy stylesheet,
+    # to a cleaner, parseable, css1 subset:
+    # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::rinse>/)
 
-    rule rinse { <import> | <!after \@><ruleset> }
+    rule rinse { <at_rule> | <!after \@><ruleset> }
 
     # productions
 
-    rule stylesheet { <import>* <ruleset>* }
+    rule stylesheet { <at_rule>* <ruleset>* }
 
-    rule import { \@[:i import] [<string>|<url>] ';' }
+    proto rule at_rule { <...> }
+    rule at_rule:sym<import> { \@[:i import] [<string>|<url>] ';' }
+    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>|<ruleset>] ';'? }
 
     rule unary_operator {'-'|'+'}
 
@@ -72,7 +74,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # 'lexer' css1 exceptions
     
-    # -- unicode escape sequences only extend to 4 chars
+    # -- css1 unicode escape sequences only extend to 4 chars
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
 
     # unquoted strings - as permitted in urls
