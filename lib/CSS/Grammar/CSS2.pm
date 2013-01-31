@@ -36,9 +36,11 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule combinator {'-'|'+'}
 
+    rule unclosed_rule {$}
+
     rule ruleset {
 	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | $<unclose_rule>=$]
+	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_rule>]
     }
 
     rule property {<ident>}
@@ -49,20 +51,24 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule expr { <unary_operator>? <term> [ <operator>? <term> ]* }
 
-    proto rule term { <...> }
+    proto rule term {<...>}
 
-    rule term:sym<length angle freq percentage dimension num>
-                              {<sym>}
+    rule term:sym<length>     {<length>}
+    rule term:sym<angle>      {<angle>}
+    rule term:sym<freq>       {<freq>}
+    rule term:sym<percentage> {<percentage>}
+    rule term:sym<dimension>  {<dimension>}
+    rule term:sym<num>        {<num>}
     rule term:sym<ems>        {:i em}
     rule term:sym<exs>        {:i ex}
-    rule term:sym<ident>      {<sym>}
     rule term:sym<hexcolor>   {<id>}
-    rule term:sym<url>        {<sym>}
-    rule term:sym<rgb>        {:i 'rgb' '(' <num>('%'?)
-                                        ',' <num>('%'?)
-                                        ',' <num>('%'?)
-                                        ')' }
-    rule term:sym<function> {<function>}
+    token term:sym<rgb>       {:i'rgb' <ws_char>* '('
+				   <ws_char>* <num>('%'?) <ws_char>* ','
+				   <ws_char>* <num>('%'?) <ws_char>* ','
+				   <ws_char>* <num>('%'?) <ws_char>* ')'}
+    rule term:sym<url>        {<url>}
+    rule term:sym<ident>      {<ident>}
+    rule term:sym<function>   {<function>}
     token term:sym<guff> {<- [;}]>+}
 
     rule prio {:i \!important}

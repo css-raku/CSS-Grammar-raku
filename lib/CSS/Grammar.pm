@@ -11,14 +11,15 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token nl {["\n"|"r\n"|"\r"|"\f"]+}
 
-    token comment {'<!--' .*? ['-->'|$<unclosed_angle_comment>=$]
-		   |'/*'  .*? ['*/' |$<unclosed_star_comment>=$]}
+    token unclosed_comment {$}
+    token comment {('<!--') .*? ['-->'|<unclosed_comment>]
+		   |('/*')  .*? ['*/' | <unclosed_comment>]}
 
     token ws_char {"\n" | "\t" | "\f" | "\r" | " " }
 
     token ws {<!ww>[<ws_char>|<comment>]*}
 
-    # "lexer"
+    # "lexer"y
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
     rule nonascii	{<[\o241..\o377]>}
@@ -37,12 +38,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule class          {'.'<name>}
 
     rule percentage     {<num>'%'}
-    rule length         {:i <num>(pt|mm|cm|pc|in|px|em|ex)}
-    rule angle          {:i <num>(deg|rad|grad)}  # css2+
-    rule time           {:i <num>(m?s)}  # css2+
-    rule freq           {:i <num>(k?Hz)} # css2+
+    rule length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
+    rule angle          {<num>(:i[deg|rad|grad])}  # css2+
+    rule time           {<num>(:i[m?s])}  # css2+
+    rule freq           {<num>(:i[k?Hz])} # css2+
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    rule dimension      {<num>(<[\w]>+)}
+    rule dimension      {<num>(<[a..zA..Z]>\w*)}
 
 # I was having trouble grokking the CSS2 url parsing rules, so have
 # re-expressed the URI CSS2 parsing rules as perl6 symbol tokens.

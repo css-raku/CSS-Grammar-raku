@@ -8,19 +8,16 @@ class CSS::Grammar::Actions {
     method nl($/) {$line_counter++}
 
     # warnings;
-    has Bool $.warn is rw;
-    method unclosed_angle_comment($/) {
-	warn "unclosed '<!--' comment" if $.warn
+    has Bool $.warn is rw = True;
+    method unclosed_comment($/) {
+	warn "unclosed comment" if $.warn
     }
-    method unclosed_start_comment($/) {
-	warn "unclosed '/*' comment" if $.warn
-    }
+
     method unclosed_rule($/) {
-	warn "unclosed '/*' rule" if $.warn
+	warn "unclosed rule" if $.warn
     }
     method term:sym<dimension>($/) {
-	warn 'Quantity ' ~ $<num>.Str ~ ' has unknown dimension '
-            ~ $<0>.Str ~ " at line " ~ $line_counter
+	warn 'unknown dimension ' ~ $/.Str ~ " at line " ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
     }
