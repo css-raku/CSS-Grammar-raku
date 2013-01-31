@@ -9,11 +9,11 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # rinse; rule to reduce a css3, or generally noisy stylesheet, to a
+    # comb; rule to reduce a css3, or generally noisy stylesheet, to a
     # cleaner, parsable css2 subset:
-    # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::rinse>/)
+    # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::comb>/)
 
-    rule rinse { <at_rule> | <!after \@><ruleset> }
+    rule comb { <at_rule> | <!after \@><ruleset> }
 
     # productions
 
@@ -26,7 +26,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule at_rule:sym<page>    { \@[:i page] $<puesdo_page>=<ident>?
 		                '{' <declaration> [';' <declaration> ]* ';'? '}'
     }
-    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>|<ruleset>] ';'? }
+    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>] ';'| <ruleset> }
 
     rule media_list {<medium> [',' $<medium>=<ident>]*}
 
@@ -51,19 +51,15 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     proto rule term { <...> }
 
-    rule term:sym<length>     {<length>}
-    rule term:sym<angle>      {<angle>}
-    rule term:sym<time>       {<time>}
-    rule term:sym<freq>       {<freq>}
-    rule term:sym<string>     {<string>}
-    rule term:sym<percentage> {<percentage>}
+    rule term:sym<length angle freq percentage>
+                              {<sym>}
     rule term:sym<dropped>    {<dimension>}
-    rule term:sym<num>        {<num>}
+    rule term:sym<num>        {<sym>}
     rule term:sym<ems>        {:i em}
     rule term:sym<exs>        {:i ex}
-    rule term:sym<ident>      {<ident>}
+    rule term:sym<ident>      {<sym>}
     rule term:sym<hexcolor>   {<id>}
-    rule term:sym<url>        {<url>}
+    rule term:sym<url>        {<sym>}
     rule term:sym<rgb>        {:i 'rgb' '(' <num>('%'?)
                                         ',' <num>('%'?)
                                         ',' <num>('%'?)

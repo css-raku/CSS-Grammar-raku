@@ -72,7 +72,7 @@ my @tests = (
     );
 
 for @tests {
-    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::rinse>/);
+    my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::comb>/);
     say "css1 combed: " ~ $css1;
     my $p = CSS::Grammar::CSS1.parse( $css1 );
     ok( $p, 'css3 sample ' ~ $_.key)
@@ -81,7 +81,7 @@ for @tests {
 }
 
 for @tests {
-    my $css2 = $_.value.comb(/<CSS::Grammar::CSS2::rinse>/);
+    my $css2 = $_.value.comb(/<CSS::Grammar::CSS2::comb>/);
     say "css2 combed: " ~ $css2;
     my $p = CSS::Grammar::CSS2.parse( $css2 );
     ok( $p, 'css3 sample ' ~ $_.key)

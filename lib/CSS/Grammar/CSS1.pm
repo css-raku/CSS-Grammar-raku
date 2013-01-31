@@ -9,11 +9,11 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # rinse; rule to reduce a css3, css2 or generally noisy stylesheet,
+    # comb; rule to reduce a css3, css2 or generally noisy stylesheet,
     # to a cleaner, parseable, css1 subset:
-    # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::rinse>/)
+    # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::comb>/)
 
-    rule rinse { <at_rule> | <!after \@><ruleset> }
+    rule comb { <at_rule> | <!after \@><ruleset> }
 
     # productions
 
@@ -21,7 +21,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     proto rule at_rule { <...> }
     rule at_rule:sym<import> { \@[:i import] [<string>|<url>] ';' }
-    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>|<ruleset>] ';'? }
+    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>] ';'| <ruleset> }
 
     rule unary_operator {'-'|'+'}
 
@@ -42,13 +42,13 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     proto rule term { <...> }
 
-    rule term:sym<length>   {<length>}
+    rule term:sym<length>   {<sym>}
     rule term:sym<dropped>  {<dimension>}
     rule term:sym<ems>      {:i em}
     rule term:sym<exs>      {:i ex}
-    rule term:sym<ident>    {<ident>}
+    rule term:sym<ident>    {<sym>}
     rule term:sym<hexcolor> {<id>}
-    rule term:sym<url>      {<url>}
+    rule term:sym<url>      {<sym>}
     rule term:sym<rgb>      {:i 'rgb' '(' <num>('%'?)
                                       ',' <num>('%'?)
                                       ',' <num>('%'?)
@@ -78,9 +78,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
 
     # unquoted strings - as permitted in urls
-    rule url_quotable    {<ws_char> | <[\, \' \" \( \) \\ ]>}
-    rule url_escape_seq  {'\\'<url_quotable>?}
+    rule url_delimiter   {<ws_char> | <[\, \' \" \( \) \\ ]>}
+    rule url_escape_seq  {'\\'<url_delimiter>?}
 
-    rule url_char        {[<- url_quotable>|<url_escape_seq>]}
+    rule url_char        {[<- url_delimiter>|<url_escape_seq>]}
     rule url_spec        {<string>|<url_char>+} 
 }

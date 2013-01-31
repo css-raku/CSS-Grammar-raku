@@ -109,11 +109,11 @@ for (
     ruleset => 'A:link H1 { color: blue; }',
     dimension => '70deg',
     ruleset => 'H2 { color: green; rotation: 70deg; }',
+    TOP => 'H1 { color: blue; }',
     # unclosed rulsets
     ruleset => 'H2 { color: green; rotation: 70deg;',
     ruleset => 'H2 { color: green; rotation:',
     ruleset => 'H2 { profundity: "The meaning of life is',
-    TOP => 'H1 { color: blue; }',
     ) {
 
     my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key), :actions($actions));

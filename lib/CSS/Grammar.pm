@@ -54,7 +54,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 # (URI generic Syntax).
 
     # so that css term url(...) is parseable
-    rule url_escape_needed {\( | \) | ' ' | "'"| '"' }
+    rule url_delimiter {\( | \) | ' ' | "'"| '"' }
 
     proto rule url_char {<...>}
     rule url_char:sym<escape>      {'%'<xdigit><xdigit>|<escape>}
@@ -63,6 +63,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule url_char:sym<sub_delim>   {'!' | '$' | '&' | "'" | '(' | ')'
                                    | '*' | '+' | ',' | ';' | '='}
     rule url_char:sym<unreserved>  {\w|'-'|'.'|'~'}
-    rule url_chars                 {[<!url_escape_needed><url_char>]+}
+    rule url_chars                 {[<!url_delimiter><url_char>]+}
     rule url_spec                  {<string>|<url_chars>}
 }
