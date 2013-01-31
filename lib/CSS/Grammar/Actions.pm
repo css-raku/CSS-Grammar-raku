@@ -1,15 +1,37 @@
 use v6;
 
-# pushing this into the top level CSS namespace, a bit naughty, but...
-
-enum CSS::Compat <css1 css2 css2_1 css3>;
-
 # rules for constructing ASTs for CSS::Grammar
 
 class CSS::Grammar::Actions {
 
+    has Int $line_counter is rw = 1;
+    method nl($/) {$line_counter++}
+
+    # warnings;
+    has Bool $.warn is rw;
+    method unclosed_angle_comment($/) {
+	warn "unclosed '<!--' comment" if $.warn
+    }
+    method unclosed_start_comment($/) {
+	warn "unclosed '/*' comment" if $.warn
+    }
+    method unclosed_rule($/) {
+	warn "unclosed '/*' rule" if $.warn
+    }
+    method term:sym<dimension>($/) {
+	warn 'Quantity ' ~ $<num>.Str ~ ' has unknown dimension '
+            ~ $<0>.Str ~ " at line " ~ $line_counter
+	    ~ '; skipping this declaration' ~ "\n"
+	    if $.warn;
+    }
+    method term:sym<guff>($/) {
+	warn 'unknown input ' ~ $/.Str ~ ' at line ' ~ $line_counter
+	    ~ '; skipping this declaration' ~ "\n"
+	    if $.warn;
+    }
+
     # variable encoding - not yet supported
-    constant $encoding = 'ISO-8859-1';
+    has $.encoding = 'ISO-8859-1';
 
     # _lex method - just return token
     method _lex($/) {make $/.Str}

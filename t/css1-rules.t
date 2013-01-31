@@ -10,6 +10,14 @@ for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
     ok($_ ~~ /^<CSS::Grammar::CSS1::ws>$/, "ws: $_");
 }
 
+# comments
+for ('/**/', '/* hi */', '<!--X-->',
+     '<!-- almost done -->',
+     '<!-- No more coffee',
+     '/* is that the door?',) {
+    ok($_ ~~ /^<CSS::Grammar::CSS1::comment>$/, "comment: $_");
+}
+
 # unicode
 for ("\\f", "\\012f", "\\012A") {
     ok($_ ~~ /^<CSS::Grammar::CSS1::unicode>$/, "unicode: $_");
@@ -63,6 +71,7 @@ for (
     ws => "<!-- comments\n2 -->",
     ws => "<!-- unterminated comment",
     percentage => '50%',
+    unicode => '\\020',
     id => '#zzz',
     class => '.zippy',
     num => '2.52',

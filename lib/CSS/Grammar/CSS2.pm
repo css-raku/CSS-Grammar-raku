@@ -38,7 +38,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule ruleset {
 	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? ('}' | $)
+	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | $<unclose_rule>=$]
     }
 
     rule property {<ident>}
@@ -51,10 +51,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     proto rule term { <...> }
 
-    rule term:sym<length angle freq percentage>
+    rule term:sym<length angle freq percentage dimension num>
                               {<sym>}
-    rule term:sym<dropped>    {<dimension>}
-    rule term:sym<num>        {<sym>}
     rule term:sym<ems>        {:i em}
     rule term:sym<exs>        {:i ex}
     rule term:sym<ident>      {<sym>}
@@ -64,7 +62,6 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
                                         ',' <num>('%'?)
                                         ',' <num>('%'?)
                                         ')' }
-
     rule term:sym<function> {<function>}
     token term:sym<guff> {<- [;}]>+}
 

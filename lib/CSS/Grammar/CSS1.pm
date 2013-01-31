@@ -29,7 +29,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule ruleset {
 	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? ('}' | $)
+	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | $<unclosed_rule>=$]
     }
 
     rule property {<ident>}
@@ -38,22 +38,22 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 	<property> ':' [<expr> <prio>?]?
     }
 
-    rule expr {  <unary_operator>? <term> [ <operator>? <term> ]* }
+    rule expr { <unary_operator>? <term> [ <operator>? <term> ]* }
 
     proto rule term { <...> }
 
-    rule term:sym<length>   {<sym>}
-    rule term:sym<dropped>  {<dimension>}
-    rule term:sym<ems>      {:i em}
-    rule term:sym<exs>      {:i ex}
-    rule term:sym<ident>    {<sym>}
-    rule term:sym<hexcolor> {<id>}
-    rule term:sym<url>      {<sym>}
-    rule term:sym<rgb>      {:i 'rgb' '(' <num>('%'?)
-                                      ',' <num>('%'?)
-                                      ',' <num>('%'?)
-                                      ')' }
-    token term:sym<guff> {<- [;}]>+}
+    rule term:sym<length>    {<sym>}
+    rule term:sym<dimension> {<sym>}
+    rule term:sym<ems>       {:i em}
+    rule term:sym<exs>       {:i ex}
+    rule term:sym<ident>     {<sym>}
+    rule term:sym<hexcolor>  {<id>}
+    rule term:sym<url>       {<sym>}
+    rule term:sym<rgb>       {:i 'rgb' '(' <num>('%'?)
+                                       ',' <num>('%'?)
+                                       ',' <num>('%'?)
+                                       ')' }
+    token term:sym<guff>     {<- [;}]>+}
 
     rule prio {:i \!important}
 

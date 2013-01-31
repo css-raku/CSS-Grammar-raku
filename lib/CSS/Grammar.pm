@@ -11,13 +11,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token nl {["\n"|"r\n"|"\r"|"\f"]+}
 
-    token ws_char {'<!--' .*? ('-->'|$)
-                   |'/*' .*? ('*/'|$)
-		   | "\n" | "\t" | "\f" | "\r" | " "}
+    token comment {'<!--' .*? ['-->'|$<unclosed_angle_comment>=$]
+		   |'/*'  .*? ['*/' |$<unclosed_star_comment>=$]}
 
-    token ws {
-	<!ww>
-	<ws_char>*}
+    token ws_char {"\n" | "\t" | "\f" | "\r" | " " }
+
+    token ws {<!ww>[<ws_char>|<comment>]*}
 
     # "lexer"
 
@@ -39,11 +38,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule percentage     {<num>'%'}
     rule length         {:i <num>(pt|mm|cm|pc|in|px|em|ex)}
-    rule angle          {:i <num>(deg|rad|grad)}  # css2
-    rule time           {:i <num>(m?s)}  # css2
-    rule freq           {:i <num>(k?Hz)} # css2
+    rule angle          {:i <num>(deg|rad|grad)}  # css2+
+    rule time           {:i <num>(m?s)}  # css2+
+    rule freq           {:i <num>(k?Hz)} # css2+
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    rule dimension      {<num><[\w]>+}
+    rule dimension      {<num>(<[\w]>+)}
 
 # I was having trouble grokking the CSS2 url parsing rules, so have
 # re-expressed the URI CSS2 parsing rules as perl6 symbol tokens.
