@@ -48,18 +48,18 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<percentage> {<percentage>}
     rule term:sym<dimension>  {<dimension>}
     rule term:sym<num>        {<num>}
-    rule term:sym<ems>        {:i em}
-    rule term:sym<exs>        {:i ex}
+    rule term:sym<ems>        {:i'em'}
+    rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
-    token term:sym<rgb>       {:i'rgb' <ws_char>* '('
+    token term:sym<rgb>       {:i'rgb('
 				   <ws_char>* <num>('%'?) <ws_char>* ','
 				   <ws_char>* <num>('%'?) <ws_char>* ','
 				   <ws_char>* <num>('%'?) <ws_char>* ')'}
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
-    token term:sym<guff>      {<- [;}]>+}
+    token term:sym<guff>      {<-[;}]>+}
 
-    rule prio {:i \!important}
+    rule prio {:i'!important'}
 
     regex selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 

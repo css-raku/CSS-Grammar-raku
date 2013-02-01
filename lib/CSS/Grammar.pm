@@ -12,14 +12,14 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nl {["\n"|"r\n"|"\r"|"\f"]+}
 
     token unclosed_comment {$}
-    token comment {('<!--') .*? ['-->'|<unclosed_comment>]
-		   |('/*')  .*? ['*/' | <unclosed_comment>]}
+    token comment {('<!--') .*? ['-->' | <unclosed_comment>]
+		  |('/*')  .*?  ['*/'  | <unclosed_comment>]}
 
     token ws_char {"\n" | "\t" | "\f" | "\r" | " " }
 
     token ws {<!ww>[<ws_char>|<comment>]*}
 
-    # "lexer"y
+    # "lexer"
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
     rule nonascii	{<[\o241..\o377]>}
@@ -53,16 +53,17 @@ grammar CSS::Grammar:ver<0.0.1> {
 # Url character sets are taken from http://tools.ietf.org/html/rfc3986
 # (URI generic Syntax).
 
-    # so that css term url(...) is parseable
-    rule url_delimiter {\( | \) | ' ' | "'"| '"' }
+    # need to be escaped - so that css term url(...) is parseable
+    rule url_delim_char {\( | \) | ' ' | "'"| '"' }
 
     proto rule url_char {<...>}
-    rule url_char:sym<escape>      {'%'<xdigit><xdigit>|<escape>}
+    rule url_char:sym<escape>      {<escape>}
     rule url_char:sym<path>        {'/'}
+    rule url_char:sym<esc_delim>   {'%'}
     rule url_char:sym<gen_delim>   {':' | '|' | '?' | '#' | '[' | ']' | '@'}
     rule url_char:sym<sub_delim>   {'!' | '$' | '&' | "'" | '(' | ')'
                                    | '*' | '+' | ',' | ';' | '='}
     rule url_char:sym<unreserved>  {\w|'-'|'.'|'~'}
-    rule url_chars                 {[<!url_delimiter><url_char>]+}
+    rule url_chars                 {[<!url_delim_char><url_char>]+}
     rule url_spec                  {<string>|<url_chars>}
 }

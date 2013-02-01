@@ -17,12 +17,12 @@ class CSS::Grammar::Actions {
 	warn "unclosed rule" if $.warn
     }
     method term:sym<dimension>($/) {
-	warn 'unknown dimension ' ~ $/.Str ~ " at line " ~ $line_counter
+	warn 'unknown dimensioned quantity ' ~ $/.Str ~ " at line " ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
     }
     method term:sym<guff>($/) {
-	warn 'unknown input ' ~ $/.Str ~ ' at line ' ~ $line_counter
+	warn 'unknown term ' ~ $/.Str ~ ' at line ' ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
     }
@@ -70,4 +70,3 @@ class CSS::Grammar::Actions {
     }
 
 }
-
