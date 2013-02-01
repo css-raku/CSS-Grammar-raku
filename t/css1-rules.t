@@ -13,7 +13,7 @@ for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
 # comments
 for ('/**/', '/* hi */', '<!--X-->',
      '<!-- almost done -->',
-     '<!-- No more coffee',
+     '<!-- Out of coffee',
      '/* is that the door?',) {
     ok($_ ~~ /^<CSS::Grammar::CSS1::comment>$/, "comment: $_");
 }
@@ -82,6 +82,7 @@ for (
     url_spec => 'http://www.bg.com/pinkish.gif',
     url => 'url("http://www.bg.com/pinkish.gif")',
     url => 'URL(http://www.bg.com/pinkish.gif)',
+    url => 'URL(http://www.bg.com/pinkish.gif',
     at_rule => "@import 'file:///etc/passwd';",
     at_rule => "@IMPORT 'file:///etc/group';",
     class => '.class',
