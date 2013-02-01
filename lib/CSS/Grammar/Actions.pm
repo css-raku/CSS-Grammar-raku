@@ -10,18 +10,22 @@ class CSS::Grammar::Actions {
     # warnings;
     has Bool $.warn is rw = True;
     method unclosed_comment($/) {
-	warn "unclosed comment" if $.warn
+	warn "unclosed comment at end of input" if $.warn
     }
 
     method unclosed_rule($/) {
-	warn "unclosed rule" if $.warn
+	warn "incomplete rule at end of input" if $.warn
     }
     method term:sym<dimension>($/) {
 	warn 'unknown dimensioned quantity ' ~ $/.Str ~ " at line " ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
     }
-    method term:sym<guff>($/) {
+    method unclosed_url($/) {
+	warn "'url(' missing closing ')' at line " ~ $line_counter ~ "\n"
+	    if $.warn;
+    }
+    method term:sym<dropped>($/) {
 	warn 'unknown term ' ~ $/.Str ~ ' at line ' ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;

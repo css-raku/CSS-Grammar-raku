@@ -57,34 +57,28 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 				   <ws_char>* <num>('%'?) <ws_char>* ')'}
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
-    token term:sym<guff>      {<-[;}]>+}
+    token term:sym<dropped>   {<-[;}]>+}
+
+    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
+    token unclosed_url {<!before ')'>}
 
     rule prio {:i'!important'}
 
-    regex selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
+    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 
-    regex simple_selector { <element_name> <id>? <class>? <pseudo_class>?
+    token simple_selector { <element_name> <id>? <class>? <pseudo_class>?
 	    | <id> <class>? <pseudo_class>?
 	    | <class> <pseudo_class>?
 	    | <pseudo_class> }
 
     rule element_name {<ident>}
 
-    rule  pseudo {<pseudo_class>|<pseudo_element>}
-    rule  pseudo_class      {':'(:i link|visited|active)}
-    rule  pseudo_element    {':'(:i first\-[line|letter])}
-
-    rule url  {:i 'url(' <url_spec> ')' }
+    rule pseudo {<pseudo_class>|<pseudo_element>}
+    rule pseudo_class      {':'(:i link|visited|active)}
+    rule pseudo_element    {':'(:i first\-[line|letter])}
 
     # 'lexer' css1 exceptions
     
     # -- css1 unicode escape sequences only extend to 4 chars
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
-
-    # unquoted strings - as permitted in urls
-    rule url_delimiter   {<ws_char> | <[\, \' \" \( \) \\ ]>}
-    rule url_escape_seq  {'\\'<url_delimiter>?}
-
-    rule url_char        {[<- url_delimiter>|<url_escape_seq>]}
-    rule url_spec        {<string>|<url_char>+} 
 }

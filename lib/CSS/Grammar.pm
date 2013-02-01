@@ -15,9 +15,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token comment {('<!--') .*? ['-->' | <unclosed_comment>]
 		  |('/*')  .*?  ['*/'  | <unclosed_comment>]}
 
-    token ws_char {"\n" | "\t" | "\f" | "\r" | " " }
+    token ws_char {"\n" | "\t" | "\f" | "\r" | " " | <comment> }
 
-    token ws {<!ww>[<ws_char>|<comment>]*}
+    token ws {<!ww><ws_char>*}
 
     # "lexer"
 
@@ -45,25 +45,13 @@ grammar CSS::Grammar:ver<0.0.1> {
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
     rule dimension      {<num>(<[a..zA..Z]>\w*)}
 
-# I was having trouble grokking the CSS2 url parsing rules, so have
-# re-expressed the URI CSS2 parsing rules as perl6 symbol tokens.
-# This rule is constructed from  http://www.w3.org/TR/CSS21/syndata.html#uri,
-# which mentions that uri escapes are permitted (%20 etc),
-# The grammar also seems to allow backslash escape sequences ( \' etc )
-# Url character sets are taken from http://tools.ietf.org/html/rfc3986
-# (URI generic Syntax).
+# I was having trouble groking the CSS2 url parsing rules. This
+# rule is reasonably permissive, allowing empty strings, escapes and
+# everything but delimiters and whitespace
 
     # need to be escaped - so that css term url(...) is parseable
-    rule url_delim_char {\( | \) | ' ' | "'"| '"' }
+    token url_delim_char {\( | \) | "'"| '"' | <ws_char>}
 
-    proto rule url_char {<...>}
-    rule url_char:sym<escape>      {<escape>}
-    rule url_char:sym<path>        {'/'}
-    rule url_char:sym<esc_delim>   {'%'}
-    rule url_char:sym<gen_delim>   {':' | '|' | '?' | '#' | '[' | ']' | '@'}
-    rule url_char:sym<sub_delim>   {'!' | '$' | '&' | "'" | '(' | ')'
-                                   | '*' | '+' | ',' | ';' | '='}
-    rule url_char:sym<unreserved>  {\w|'-'|'.'|'~'}
-    rule url_chars                 {[<!url_delim_char><url_char>]+}
-    rule url_spec                  {<string>|<url_chars>}
+    rule url_chars       {[<escape>|<- url_delim_char>]*}
+    rule url_spec        {<string>|<url_chars>}
 }
