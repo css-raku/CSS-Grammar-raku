@@ -13,7 +13,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     # cleaner, parsable css2 subset:
     # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::comb>/)
 
-    rule comb { <at_rule> | <!after \@><ruleset> }
+    rule comb { <at_rule> | <ruleset> }
 
     # productions
 
@@ -26,10 +26,10 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule at_rule:sym<page>    { \@[:i page] $<puesdo_page>=<ident>?
 		                '{' <declaration> [';' <declaration> ]* ';'? '}'
     }
-    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>] ';'| <ruleset> }
+    rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
     rule media_list {<medium> [',' <medium>]*}
-	      token medium {<ident>}
+    token medium {<ident>}
 
     rule unary_operator {'-'}
 
@@ -40,6 +40,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule unclosed_rule {$}
 
     rule ruleset {
+	<!after \@> # not an "@" rule
 	<selector> [',' <selector>]*
 	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_rule>]
     }
@@ -50,8 +51,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 	 <property> ':' [<expr> <prio>?]?
     }
 
-    rule expr { [<unary_operator>? <term> | <dropped_term>]
-		    [  <operator>? <term> | <dropped_term>]* }
+    rule expr { [<unary_operator>? <term> | <skipped_term>]
+		    [  <operator>? <term> | <skipped_term>]* }
 
     proto rule term {<...>}
 
@@ -68,8 +69,6 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule term:sym<rgb>        {<rgb>}
     rule term:sym<ident>      {<ident>}
     rule term:sym<function>   {<function>}
-
-    rule dropped_term         {<-[;}]>+}
 
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 

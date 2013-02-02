@@ -13,15 +13,17 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     # to a cleaner, parseable, css1 subset:
     # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::comb>/)
 
-    rule comb { <at_rule> | <!after \@><ruleset> }
+    rule comb { <at_rule> | <ruleset> }
 
     # productions
 
-    rule stylesheet { <at_rule>* <ruleset>* }
+    rule stylesheet { <at_rule>* [<ruleset> [<ruleset>|<skipped_at_rule>]* ]? }
+    # css1 is a bit fussy - "@" rules should proceed ruleset declarations
+    rule skipped_at_rule {<at_rule>}
 
     proto rule at_rule { <...> }
     rule at_rule:sym<import> { \@[:i import] [<string>|<url>] ';' }
-    rule at_rule:sym<dropped> { \@(\w+) [<string>|<url>] ';'| <ruleset> }
+    rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
     rule unary_operator {'-'|'+'}
 
@@ -30,6 +32,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule unclosed_rule{$}
 
     rule ruleset {
+	<!after \@> # not an "@" rule
 	<selector> [',' <selector>]*
 	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_rule>]
     }
@@ -40,8 +43,8 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 	<property> ':' [<expr> <prio>?]?
     }
 
-    rule expr { [<unary_operator>? <term> | <dropped_term>]
-		    [  <operator>? <term> | <dropped_term>]* }
+    rule expr { [<unary_operator>? <term> | <skipped_term>]
+		    [  <operator>? <term> | <skipped_term>]* }
 
 
     proto rule term {<...>}
@@ -56,8 +59,6 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<rgb>        {<rgb>}
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
-
-    rule dropped_term         {<-[;}]>+}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 

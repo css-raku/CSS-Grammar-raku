@@ -5,7 +5,7 @@ use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS2;
 use CSS::Grammar::Actions;
 
-my $actions = CSS::Grammar::Actions.new;
+my $css_actions = CSS::Grammar::Actions.new;
 
 for (
     ws => ' ',
@@ -68,10 +68,10 @@ for (
     ruleset => 'H2 { profundity: "The meaning of life is',
     ) {
 
-    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key), :actions($actions));
+    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule($_.key), :actions($css_actions));
     ok($p1, "css1: " ~ $_.key ~ " parse: " ~ $_.value);
 
-    my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule($_.key));
+    my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule($_.key), :actions($css_actions));
     ok($p2, "css2: " ~ $_.key ~ " parse: " ~ $_.value);
 }
 

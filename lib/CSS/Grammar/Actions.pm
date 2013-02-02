@@ -12,7 +12,6 @@ class CSS::Grammar::Actions {
     method unclosed_comment($/) {
 	warn "unclosed comment at end of input" if $.warn
     }
-
     method unclosed_rule($/) {
 	warn "incomplete rule at end of input" if $.warn
     }
@@ -21,13 +20,22 @@ class CSS::Grammar::Actions {
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
     }
+    method at_rule:sym<skipped>($/) {
+	warn 'unknown "@" rule ' ~ $/.Str ~ " at line " ~ $line_counter
+	    ~ '; skipped' ~ "\n"
+	    if $.warn;    }
     method unclosed_url($/) {
 	warn "'url(' missing closing ')' at line " ~ $line_counter ~ "\n"
 	    if $.warn;
     }
-    method dropped_term($/) {
+    method skipped_term($/) {
 	warn 'unknown term ' ~ $/.Str ~ ' at line ' ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
+	    if $.warn;
+    }
+    method skipped_at_rule($/) {
+	warn 'out of sequence "@" rule  ' ~ $/.Str ~ ' at line ' ~ $line_counter
+	    ~ '; skipped' ~ "\n"
 	    if $.warn;
     }
 

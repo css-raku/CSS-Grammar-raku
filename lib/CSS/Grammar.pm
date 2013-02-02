@@ -62,4 +62,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule element_name {<ident>}
 
+    # skip rules
+    # - make sure they trigger <nl> - for accurate line counting
+    rule skipped_term  {[<nl>|<-[;}]>]+}
 }
