@@ -51,18 +51,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<ems>        {:i'em'}
     rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
-    token term:sym<rgb>       {:i'rgb('
-				   <ws_char>* <num>('%'?) <ws_char>* ','
-				   <ws_char>* <num>('%'?) <ws_char>* ','
-				   <ws_char>* <num>('%'?) <ws_char>* ')'}
+    rule term:sym<rgb>       {<rgb>}
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
-    token term:sym<dropped>   {<-[;}]>+}
-
-    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
-    token unclosed_url {<!before ')'>}
-
-    rule prio {:i'!important'}
+    rule term:sym<dropped>   {<-[,;}]>+}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 
@@ -70,8 +62,6 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 	    | <id> <class>? <pseudo_class>?
 	    | <class> <pseudo_class>?
 	    | <pseudo_class> }
-
-    rule element_name {<ident>}
 
     rule pseudo {<pseudo_class>|<pseudo_element>}
     rule pseudo_class      {':'(:i link|visited|active)}

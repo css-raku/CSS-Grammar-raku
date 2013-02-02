@@ -64,26 +64,16 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
     rule term:sym<url>        {<url>}
-    token term:sym<rgb>       {:i'rgb('
-				   <ws_char>* <num>('%'?) <ws_char>* ','
-				   <ws_char>* <num>('%'?) <ws_char>* ','
-				   <ws_char>* <num>('%'?) <ws_char>* ')'}
+    rule term:sym<rgb>        {<rgb>}
     rule term:sym<ident>      {<ident>}
     rule term:sym<function>   {<function>}
-    rule term:sym<dropped>   {<-[;}]>+}
-    token unknown_term   {<-[;}]>+}
-
-    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
-    token unclosed_url {<!before ')'>}
-
-    rule prio {:i'!important'}
+    rule term:sym<dropped>    {<-[,;}]>+}
 
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
 				| [<id> | <class> | <pseudo>]+ }
 
-    rule element_name {<ident>}
     rule pseudo       {':' [<function>|<ident>]? }
     rule function     { <ident>'(' <expr> ')' }
 

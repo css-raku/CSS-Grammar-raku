@@ -45,13 +45,21 @@ grammar CSS::Grammar:ver<0.0.1> {
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
     rule dimension      {<num>(<[a..zA..Z]>\w*)}
 
-# I was having trouble groking the CSS2 url parsing rules. This
-# rule is reasonably permissive, allowing empty strings, escapes and
-# everything but delimiters and whitespace
-
-    # need to be escaped - so that css term url(...) is parseable
     token url_delim_char {\( | \) | "'"| '"' | <ws_char>}
-
     rule url_chars       {[<escape>|<- url_delim_char>]*}
     rule url_spec        {<string>|<url_chars>}
+
+    # productions
+
+    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
+    token unclosed_url {<!before ')'>}
+    token rgb {:i'rgb('
+		   <ws_char>* [<percentage>|<num>] <ws_char>* ','
+		   <ws_char>* [<percentage>|<num>] <ws_char>* ','
+		   <ws_char>* [<percentage>|<num>] <ws_char>* ')'}
+
+    rule prio {:i'!important'}
+
+    rule element_name {<ident>}
+
 }
