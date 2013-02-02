@@ -17,12 +17,13 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <at_rule>* [<ruleset> [<ruleset>|<skipped_at_rule>]* ]? }
-    # css1 is a bit fussy - "@" rules should proceed ruleset declarations
-    rule skipped_at_rule {<at_rule>}
+    rule stylesheet { <at_rule>* [<ruleset> [<late_at_rule>|<ruleset>]* ]? }
+    # css1 is a bit fussy - "@import" should proceed ruleset declarations
+    rule late_at_rule {<at_rule>}
 
     proto rule at_rule { <...> }
     rule at_rule:sym<import> { \@[:i import] [<string>|<url>] ';' }
+    # unrecognised '@" rules possibly css2 or css3
     rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
     rule unary_operator {'-'|'+'}

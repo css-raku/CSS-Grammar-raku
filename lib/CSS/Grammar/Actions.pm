@@ -4,46 +4,51 @@ use v6;
 
 class CSS::Grammar::Actions {
 
-    has Int $line_counter is rw = 1;
-    method nl($/) {$line_counter++}
+    use CSS::Grammar::AST;
+
+    has Int $.line_no is rw = 1;
+    method nl($/) {$.line_no++}
 
     # warnings;
     has Bool $.warn is rw = True;
     method unclosed_comment($/) {
-	warn "unclosed comment at end of input" if $.warn
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning("unclosed comment at end of input"));
     }
     method unclosed_rule($/) {
-	warn "incomplete rule at end of input" if $.warn
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning("incomplete rule at end of input"));
     }
     method term:sym<dimension>($/) {
-	warn 'unknown dimensioned quantity ' ~ $/.Str ~ " at line " ~ $line_counter
-	    ~ '; skipping this declaration' ~ "\n"
-	    if $.warn;
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning('unknown dimensioned quantity'));
     }
     method at_rule:sym<skipped>($/) {
-	warn 'unknown "@" rule ' ~ $/.Str ~ " at line " ~ $line_counter
-	    ~ '; skipped' ~ "\n"
-	    if $.warn;    }
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning('unknown "@" rule'));
+    }
     method unclosed_url($/) {
-	warn "'url(' missing closing ')' at line " ~ $line_counter ~ "\n"
-	    if $.warn;
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning("missing closing ')'"));
     }
     method skipped_term($/) {
-	warn 'unknown term ' ~ $/.Str ~ ' at line ' ~ $line_counter
-	    ~ '; skipping this declaration' ~ "\n"
-	    if $.warn;
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning('unknown term'));
     }
-    method skipped_at_rule($/) {
-	warn 'out of sequence "@" rule  ' ~ $/.Str ~ ' at line ' ~ $line_counter
-	    ~ '; skipped' ~ "\n"
-	    if $.warn;
+    method late_at_rule($/) {
+	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip(True),
+				   :warning('out of sequence "@" rule'));
     }
 
     # variable encoding - not yet supported
     has $.encoding = 'ISO-8859-1';
-
-    # _lex method - just return token
-    method _lex($/) {make $/.Str}
 
     sub _from_hex($hex) {
 
@@ -71,12 +76,6 @@ class CSS::Grammar::Actions {
 	    $result += $hex_digit;
 	}
 	return $result;
-    }
-
-    method unicode($/) {
-	my $ord =  _from_hex($0.Str);
-	my $chr = Buf.new( $ord ).decode( $.encoding );
-	make $chr;
     }
 
 }
