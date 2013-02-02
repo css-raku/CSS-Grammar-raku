@@ -40,7 +40,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 	<property> ':' [<expr> <prio>?]?
     }
 
-    rule expr { <unary_operator>? <term> [ <operator>? <term> ]* }
+    rule expr { [<unary_operator>? <term> | <dropped_term>]
+		    [  <operator>? <term> | <dropped_term>]* }
+
 
     proto rule term {<...>}
 
@@ -51,10 +53,11 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<ems>        {:i'em'}
     rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
-    rule term:sym<rgb>       {<rgb>}
+    rule term:sym<rgb>        {<rgb>}
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
-    rule term:sym<dropped>   {<-[,;}]>+}
+
+    rule dropped_term         {<-[;}]>+}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
 

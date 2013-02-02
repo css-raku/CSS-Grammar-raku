@@ -25,7 +25,7 @@ class CSS::Grammar::Actions {
 	warn "'url(' missing closing ')' at line " ~ $line_counter ~ "\n"
 	    if $.warn;
     }
-    method term:sym<dropped>($/) {
+    method dropped_term($/) {
 	warn 'unknown term ' ~ $/.Str ~ ' at line ' ~ $line_counter
 	    ~ '; skipping this declaration' ~ "\n"
 	    if $.warn;
@@ -66,9 +66,7 @@ class CSS::Grammar::Actions {
     }
 
     method unicode($/) {
-	warn "calling a rule, wish me luck";
 	my $ord =  _from_hex($0.Str);
-	warn "encoding is: " ~ $.encoding;
 	my $chr = Buf.new( $ord ).decode( $.encoding );
 	make $chr;
     }

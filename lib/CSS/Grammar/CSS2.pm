@@ -50,7 +50,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 	 <property> ':' [<expr> <prio>?]?
     }
 
-    rule expr { <unary_operator>? <term> [ <operator>? <term> ]* }
+    rule expr { [<unary_operator>? <term> | <dropped_term>]
+		    [  <operator>? <term> | <dropped_term>]* }
 
     proto rule term {<...>}
 
@@ -67,7 +68,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule term:sym<rgb>        {<rgb>}
     rule term:sym<ident>      {<ident>}
     rule term:sym<function>   {<function>}
-    rule term:sym<dropped>    {<-[,;}]>+}
+
+    rule dropped_term         {<-[;}]>+}
 
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
