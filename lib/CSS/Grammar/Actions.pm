@@ -13,12 +13,12 @@ class CSS::Grammar::Actions {
     has Bool $.warn is rw = True;
     method unclosed_comment($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
+				   :skip(False),
 				   :warning("unclosed comment at end of input"));
     }
     method unclosed_rule($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
+				   :skip(False),
 				   :warning("incomplete rule at end of input"));
     }
     method term:sym<dimension>($/) {
@@ -33,7 +33,7 @@ class CSS::Grammar::Actions {
     }
     method unclosed_url($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
+				   :skip(False),
 				   :warning("missing closing ')'"));
     }
     method skipped_term($/) {
@@ -42,6 +42,7 @@ class CSS::Grammar::Actions {
 				   :warning('unknown term'));
     }
     method late_at_rule($/) {
+	# applicable to CSS1
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(True),
 				   :warning('out of sequence "@" rule'));

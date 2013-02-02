@@ -10,7 +10,7 @@ class CSS::Grammar::AST {
     #          node and its children
     has Bool $.skip is rw;
 
-    # @.warnings - warnings associated with this node.
+    # $.warning - warning associated with this node.
     # Note: child elements may also contain warnings.
     has Str $.warning;
 
