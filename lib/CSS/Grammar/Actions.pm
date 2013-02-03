@@ -25,12 +25,6 @@ class CSS::Grammar::Actions {
 				   :warning('unknown dimensioned quantity'));
     }
 
-    method at_rule:sym<skipped>($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
-				   :warning('unknown "@" rule'));
-    }
-
     method unclosed_url($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(False),

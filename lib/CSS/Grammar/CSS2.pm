@@ -13,18 +13,19 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     # cleaner, parsable css2 subset:
     # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::comb>/)
 
-    rule comb { <at_rule> | <ruleset> }
+    rule comb { <charset> | <import> | <at_rule> | <ruleset> }
 
     # productions
 
-    rule stylesheet { [ <at_rule> | <ruleset> ]* }
+    rule stylesheet { <charset>? <import>* <decl>* }
+    rule decl { $<skipped>=[<import>|<charset>] | <at_rule> | <ruleset> }
+
+    rule charset { \@(:i'charset') $<charset>=<string> ';' }
+    rule import  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<charset> { \@(:i'charset') $<charset>=<string> ';' }
-    rule at_rule:sym<import>  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
     rule at_rule:sym<media>   { \@(:i'media')   <media_list> <media_props> }
     rule at_rule:sym<page>    { \@(:i'page')    $<page>=<ident>? <declarations> }
-    rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}

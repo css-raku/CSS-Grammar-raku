@@ -13,23 +13,17 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     # to a cleaner, parseable, css1 subset:
     # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::comb>/)
 
-    rule comb { <at_rule> | <ruleset> }
+    rule comb { <import> | <ruleset> }
 
     # productions
 
-    rule stylesheet { <at_rule>* [<ruleset> [<late_at_rule>|<ruleset>]* ]? }
-    # css1 is a bit fussy - "@import" should proceed ruleset declarations
-    rule late_at_rule {<at_rule>}
+    rule stylesheet { <import>* [<ruleset> [$<skipped>=<import>|<ruleset>]* ]? }
 
-    proto rule at_rule { <...> }
-    rule at_rule:sym<import> { \@(:i'import') [<string>|<url>] ';' }
-    # unrecognised '@" rules possibly css2 or css3
-    rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
+    rule import { \@(:i'import') [<string>|<url>] ';' }
 
     rule unary_operator {'-'|'+'}
 
     rule operator {'/'|','}
-
 
     rule ruleset {
 	<!after \@> # not an "@" rule
