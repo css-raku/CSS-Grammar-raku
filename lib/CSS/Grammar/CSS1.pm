@@ -22,7 +22,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule late_at_rule {<at_rule>}
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<import> { \@[:i import] [<string>|<url>] ';' }
+    rule at_rule:sym<import> { \@(:i'import') [<string>|<url>] ';' }
     # unrecognised '@" rules possibly css2 or css3
     rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
@@ -30,12 +30,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule operator {'/'|','}
 
-    rule unclosed_rule{$}
 
     rule ruleset {
 	<!after \@> # not an "@" rule
-	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_rule>]
+	<selector> [',' <selector>]* <declarations>
     }
 
     rule property {<ident>}
@@ -43,6 +41,12 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule declaration {
 	<property> ':' [<expr> <prio>?]?
     }
+
+    rule declarations {
+	'{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_declarations>]
+    }
+
+    rule unclosed_declarations {$}
 
     rule expr { [<unary_operator>? <term> | <skipped_term>]
 		    [  <operator>? <term> | <skipped_term>]* }

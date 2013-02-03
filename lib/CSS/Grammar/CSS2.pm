@@ -20,16 +20,15 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule stylesheet { [ <at_rule> | <ruleset> ]* }
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<charset> { \@[:i charset] <string> ';' }
-    rule at_rule:sym<import>  { \@[:i import] [<string>|<url>] ';' }
-    rule at_rule:sym<media>   { \@[:i media] <media_list> '{' <ruleset> '}' ';'? }
-    rule at_rule:sym<page>    { \@[:i page] $<puesdo_page>=<ident>?
-		                '{' <declaration> [';' <declaration> ]* ';'? '}'
-    }
+    rule at_rule:sym<charset> { \@(:i'charset') $<charset>=<string> ';' }
+    rule at_rule:sym<import>  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
+    rule at_rule:sym<media>   { \@(:i'media')   <media_list> <media_props> }
+    rule at_rule:sym<page>    { \@(:i'page')    $<page>=<ident>? <declarations> }
     rule at_rule:sym<skipped> { \@(\w+) [[<string>|<url>] ';'| <ruleset>] }
 
     rule media_list {<medium> [',' <medium>]*}
-    token medium {<ident>}
+    rule medium {<ident>}
+    rule media_props {'{' <ruleset> '}' ';'?}
 
     rule unary_operator {'-'}
 
@@ -37,12 +36,9 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule combinator {'-'|'+'}
 
-    rule unclosed_rule {$}
-
     rule ruleset {
 	<!after \@> # not an "@" rule
-	<selector> [',' <selector>]*
-	    '{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_rule>]
+	<selector> [',' <selector>]* <declarations>
     }
 
     rule property {<ident>}
@@ -50,6 +46,12 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule declaration {
 	 <property> ':' [<expr> <prio>?]?
     }
+
+    rule declarations {
+	'{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_declarations>]
+    }
+
+    rule unclosed_declarations {$}
 
     rule expr { [<unary_operator>? <term> | <skipped_term>]
 		    [  <operator>? <term> | <skipped_term>]* }

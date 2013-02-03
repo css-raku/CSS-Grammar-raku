@@ -9,28 +9,28 @@ class CSS::Grammar::Actions {
     has Int $.line_no is rw = 1;
     method nl($/) {$.line_no++}
 
-    # warnings;
-    has Bool $.warn is rw = True;
     method unclosed_comment($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(False),
 				   :warning("unclosed comment at end of input"));
     }
-    method unclosed_rule($/) {
+    method unclosed_declarations($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(False),
-				   :warning("incomplete rule at end of input"));
+				   :warning("missing '}' at end of input"));
     }
     method term:sym<dimension>($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(True),
 				   :warning('unknown dimensioned quantity'));
     }
+
     method at_rule:sym<skipped>($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(True),
 				   :warning('unknown "@" rule'));
     }
+
     method unclosed_url($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(False),
