@@ -9,8 +9,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # comb; rule to reduce a css3, or generally noisy stylesheet, to a
-    # cleaner, parsable css2 subset:
+    # comb; rule to reduce a css3+ or hand-coded stylesheet, to a  cleaner,
+    # css2 parsable subset:
     # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::comb>/)
 
     rule comb { <charset> | <import> | <at_rule> | <ruleset> }
@@ -24,8 +24,8 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     rule import  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<media>   { \@(:i'media')   <media_list> <media_props> }
-    rule at_rule:sym<page>    { \@(:i'page')    $<page>=<ident>? <declarations> }
+    rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_props> }
+    rule at_rule:sym<page>    { \@(:i'page')  $<page>=<ident>? <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
@@ -44,21 +44,23 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule property {<ident>}
 
+    rule declarations {
+	'{' <declaration> [';' <declaration> ]* ';'?
+        ['}' | <unclosed_declarations>]
+    }
+
     rule declaration {
 	 <property> ':' [<expr> <prio>?]?
     }
 
-    rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_declarations>]
-    }
-
     rule unclosed_declarations {$}
 
-    rule expr { [<unary_operator>? <term> | <skipped_term>]
-		    [  <operator>? <term> | <skipped_term>]* }
+    rule expr { <unary_operator>? <term_etc>
+		    [  <operator>? <term_etc>]* }
+
+    rule term_etc {<term>|<skipped_term>}
 
     proto rule term {<...>}
-
     rule term:sym<length>     {<length>}
     rule term:sym<angle>      {<angle>}
     rule term:sym<freq>       {<freq>}

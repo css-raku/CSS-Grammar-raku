@@ -9,15 +9,15 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # comb; rule to reduce a css3, css2 or generally noisy stylesheet,
-    # to a cleaner, parseable, css1 subset:
+    # comb; rule to reduce a css2+ or hand-coded stylesheet to a cleaner,
+    # css1 parseable subset:
     # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::comb>/)
 
     rule comb { <import> | <ruleset> }
 
     # productions
 
-    rule stylesheet { <import>* [$<skipped>=<import>|<ruleset>]* }
+    rule stylesheet { <import>* [ $<skipped>=<import> | <ruleset> ]* }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
@@ -32,22 +32,23 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule property {<ident>}
 
+    rule declarations {
+	'{' <declaration> [';' <declaration> ]* ';'?
+        ['}' | <unclosed_declarations>]
+    }
+
     rule declaration {
 	<property> ':' [<expr> <prio>?]?
     }
 
-    rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? ['}' | <unclosed_declarations>]
-    }
-
     rule unclosed_declarations {$}
 
-    rule expr { [<unary_operator>? <term> | <skipped_term>]
-		    [  <operator>? <term> | <skipped_term>]* }
+    rule expr { <unary_operator>? <term_etc>
+		    [  <operator>? <term_etc>]* }
 
+    rule term_etc {<term>|<skipped_term>}
 
     proto rule term {<...>}
-
     rule term:sym<length>     {<length>}
     rule term:sym<percentage> {<percentage>}
     rule term:sym<dimension>  {<dimension>}
@@ -59,16 +60,20 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<url>        {<url>}
     rule term:sym<ident>      {<ident>}
 
-    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element>?}
+    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>?}
 
-    token simple_selector { <element_name> <id>? <class>? <pseudo_class>?
-	    | <id> <class>? <pseudo_class>?
-	    | <class> <pseudo_class>?
-	    | <pseudo_class> }
+    token simple_selector { <element_name> <id>? <class>? <pseudo_class_etc>?
+	    | <id> <class>? <pseudo_class_etc>?
+	    | <class> <pseudo_class_etc>?
+	    | <pseudo_class_etc> }
 
-    rule pseudo {<pseudo_class>|<pseudo_element>}
-    rule pseudo_class      {':'(:i link|visited|active)}
-    rule pseudo_element    {':'(:i first\-[line|letter])}
+    rule pseudo {<pseudo_class> | <pseudo_element> | <pseudo_other>}
+    rule pseudo_class   {':'(:i link|visited|active)}
+    rule pseudo_element {':'(:i first\-[line|letter])}
+    rule pseudo_skipped {':'<ident>}
+
+    rule pseudo_class_etc   {<pseudo_class>|<pseudo_skipped>}
+    rule pseudo_element_etc {<pseudo_element>|<pseudo_skipped>}
 
     # 'lexer' css1 exceptions
     
