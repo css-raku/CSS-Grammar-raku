@@ -17,7 +17,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <import>* [<ruleset> [$<skipped>=<import>|<ruleset>]* ]? }
+    rule stylesheet { <import>* [$<skipped>=<import>|<ruleset>]* }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
