@@ -18,7 +18,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     # productions
 
     rule stylesheet { <charset>? <import>* <decl>* }
-    rule decl { $<skipped>=[<charset>|<import>] | <at_rule> | <ruleset> }
+    rule decl { $<ignored>=[<charset>|<import>] | <at_rule> | <ruleset> }
 
     rule charset { \@(:i'charset') $<charset>=<string> ';' }
     rule import  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
@@ -29,7 +29,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
-    rule media_props {'{' <ruleset> '}' }
+    rule media_props {'{' <ruleset>* $<closing_paren>='}'? }
 
     rule unary_operator {'-'}
 
@@ -45,20 +45,18 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'?
-        ['}' ';'? | <unclosed_declarations>]
+	'{' <declaration> [';' <declaration> ]* ';'? <end_statement>
     }
 
     rule rulesets {
-	'{' <ruleset>*
-        ['}' ';'? | <unclosed_declarations>]
+	'{' <ruleset>* <end_statement>
     }
+
+    rule end_statement {[$<clsoing_paren>='}' ';'?]?}
 
     rule declaration {
 	 <property> ':' [<expr> <prio>?]?
     }
-
-    rule unclosed_declarations {$}
 
     rule expr { <unary_operator>? <term_etc>
 		    [  <operator>? <term_etc>]* }

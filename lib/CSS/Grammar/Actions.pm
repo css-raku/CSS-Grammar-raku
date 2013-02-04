@@ -14,10 +14,12 @@ class CSS::Grammar::Actions {
 				   :skip(False),
 				   :warning("unclosed comment at end of input"));
     }
-    method unclosed_declarations($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
+    method end_statement($/) {
+	my $warning = 'assuming "}" at end of statement'
+	    unless $<closing_paren>;
+ 	make CSS::Grammar::AST.new(:line_no($.line_no),
 				   :skip(False),
-				   :warning("missing '}' at end of input"));
+				   :warning($warning || ''));
     }
     method term:sym<dimension>($/) {
 	make CSS::Grammar::AST.new(:line_no($.line_no),

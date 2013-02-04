@@ -17,7 +17,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <import>* [ $<skipped>=<import> | <ruleset> ]* }
+    rule stylesheet { <import>* [ $<ignored>=<import> | <ruleset> ]* }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
@@ -33,15 +33,14 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'?
-        ['}' | <unclosed_declarations>]
+	'{' <declaration> [';' <declaration> ]* ';'? <end_statement>
     }
+
+    rule end_statement {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
 	<property> ':' [<expr> <prio>?]?
     }
-
-    rule unclosed_declarations {$}
 
     rule expr { <unary_operator>? <term_etc>
 		    [  <operator>? <term_etc>]* }
