@@ -32,7 +32,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule d		{<[0..9]>}
     rule notnm		{<-[\- a..z A..Z 0..9\\]>|<nonascii>}
     rule num		{[<d>*\.]?<d>+}
-    rule string		{\"(<stringchar>|\')*\" | \'(<stringchar>|\")*\'}
+    rule string		{\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
 
     rule id             {'#'<name>}
     rule class          {'.'<name>}

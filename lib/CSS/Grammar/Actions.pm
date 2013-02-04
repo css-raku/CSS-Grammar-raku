@@ -41,6 +41,14 @@ class CSS::Grammar::Actions {
 				   :skip(True),
 				   :warning('out of sequence "@" rule'));
     }
+    method string($/) {
+	my $warning = '';
+	$warning = 'unclosed string'
+	    unless $<closing_quote>.Str;
+ 	make CSS::Grammar::AST.new(:line_no($.line_no),
+				   :skip($warning ne ''),
+				   :warning($warning));
+   }
 
     # variable encoding - not yet supported
     has $.encoding = 'ISO-8859-1';

@@ -56,12 +56,12 @@ for ('8', '-i') {
 	or diag $_;
 }
 
-for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
+for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, q{"Hello},  q{"},) {
     ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_")
 	or diag $_;
 }
 
-for (q{"Hello}, q{world'}, q{'''}, q{"}, q{'grocer's'},) {
+for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
     ok($_ !~~ /^<CSS::Grammar::string>$/, "not string: $_")
 	or diag $_;
 }
