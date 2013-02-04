@@ -4,56 +4,79 @@ use v6;
 
 class CSS::Grammar::Actions {
 
-    use CSS::Grammar::AST;
+    use CSS::Grammar::AST::Info;
 
     has Int $.line_no is rw = 1;
-    method nl($/) {$.line_no++}
+    # variable encoding - not yet supported
+    has $.encoding = 'ISO-8859-1';
 
-    method unclosed_comment($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(False),
-				   :warning("unclosed comment at end of input"));
+    method ast(Mu $_ast?, :$warning, :$skip) {
+	my $ast = '';
+	$ast = $_ast if defined $_ast;
+
+	$ast does CSS::Grammar::AST::Info;
+
+	$ast.line_no = $.line_no;
+	$ast.warning = $warning if defined $warning;
+	$ast.skip = $skip if defined $skip;
+
+	return $ast;
     }
+
     method end_statement($/) {
-	my $warning = 'assuming "}" at end of statement'
+ 	my $ast = $.ast;
+	$ast.warning = 'assuming "}" at end of statement'
 	    unless $<closing_paren>;
- 	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(False),
-				   :warning($warning || ''));
+
+ 	make $ast;
     }
+
+    method late_at_rule($/) {
+	# applicable to CSS1
+	make $.ast( :warning('out of sequence "@" rule') );
+    }
+
+    method nl($/) {$.line_no++; make $.ast}
+
+    method skipped_term($/) {
+	make $.ast( :warning('unknown term') );
+    }
+
+    method string($/) {
+ 	my $ast = $.ast;
+
+	unless $<closing_quote>.Str {
+	    $ast.skip = True;
+	    $ast.warning = 'unclosed string';
+	}
+
+	make $ast;
+    }
+
     method term:sym<dimension>($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
-				   :warning('unknown dimensioned quantity'));
+	make $.ast( :skip(True),
+		    :warning('unknown dimensioned quantity') );
     }
 
     method unclosed_url($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(False),
-				   :warning("missing closing ')'"));
+	make $.ast( :skip(False),
+		    :warning("missing closing ')'") );
     }
-    method skipped_term($/) {
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
-				   :warning('unknown term'));
-    }
-    method late_at_rule($/) {
-	# applicable to CSS1
-	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip(True),
-				   :warning('out of sequence "@" rule'));
-    }
-    method string($/) {
-	my $warning = '';
-	$warning = 'unclosed string'
-	    unless $<closing_quote>.Str;
- 	make CSS::Grammar::AST.new(:line_no($.line_no),
-				   :skip($warning ne ''),
-				   :warning($warning));
-   }
 
-    # variable encoding - not yet supported
-    has $.encoding = 'ISO-8859-1';
+    method unclosed_comment($/) {
+	make $.ast( :skip(False),
+		    :warning("unclosed comment at end of input"));
+    }
+
+   method unicode($/) {
+       my $ord =  _from_hex($0.Str);
+       my $chr = Buf.new( $ord ).decode( $.encoding )
+	   does CSS::Grammar::AST::Info;
+       $chr.line_no = $.line_no;
+       make $.ast( $chr );
+    }
+
+    # utiltity methods / subs
 
     sub _from_hex($hex) {
 

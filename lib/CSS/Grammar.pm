@@ -23,8 +23,8 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
     rule nonascii	{<[\o241..\o377]>}
-    rule escape		{<unicode>|'\\'<[\o40..~ ¡..ÿ]>}
-    rule stringchar	{<escape>|<nonascii>|<[\o40 \! \# \$ \% \& \( .. \~]>}
+    rule escape		{<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
+    rule stringchar	{<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
     rule nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
     rule nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
     rule ident		{<nmstrt><nmchar>*}
