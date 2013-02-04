@@ -12,8 +12,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nl {["\n"|"r\n"|"\r"|"\f"]+}
 
     token unclosed_comment {$}
-    token comment {('<!--') .*? ['-->' | <unclosed_comment>]
-		  |('/*')  .*?  ['*/'  | <unclosed_comment>]}
+    token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
+		  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
 
     token ws_char {"\n" | "\t" | "\f" | "\r" | " " | <comment> }
 
