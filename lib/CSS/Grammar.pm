@@ -23,7 +23,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
     rule nonascii	{<[\o241..\o377]>}
-    rule escape		{<unicode>|'\\'<[' '..~¡..ÿ]>}
+    rule escape		{<unicode>|'\\'<[\o40..~ ¡..ÿ]>}
     rule stringchar	{<escape>|<nonascii>|<[\o40 \! \# \$ \% \& \( .. \~]>}
     rule nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
     rule nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
@@ -64,5 +64,5 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # skip rules
     # - make sure they trigger <nl> - for accurate line counting
-    rule skipped_term  {[<nl>|<-[;}]>]+}
+    rule skipped_term  {[<nl>|<string>|<-[;}]>]+}
 }
