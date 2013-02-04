@@ -2,7 +2,7 @@
 
 use Test;
 use CSS::Grammar::CSS1;
-use CSS::Grammar::CSS2;
+use CSS::Grammar::CSS21;
 
 # sample taken from http://www.w3.org/TR/REC-CSS1/#appendix-b
 
@@ -83,9 +83,9 @@ for @tests {
 }
 
 for @tests {
-    my $p2 = CSS::Grammar::CSS2.parse( $_.value, :rule('stylesheet') );
+    my $p2 = CSS::Grammar::CSS21.parse( $_.value, :rule('stylesheet') );
     ok( $p2, 'css2 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS2::stylesheet>)/; $0.Str || $_.value},
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value},
 	    
 }
 

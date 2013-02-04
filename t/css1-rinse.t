@@ -2,7 +2,7 @@ use v6;
 
 use Test;
 use CSS::Grammar::CSS1;
-use CSS::Grammar::CSS2;
+use CSS::Grammar::CSS21;
 use CSS::Grammar::Actions;
 
 # from: http://www.w3.org/Style/CSS/Test/CSS1/current/sec71.htm
@@ -76,18 +76,18 @@ my $css_actions = CSS::Grammar::Actions.new;
 
 for @tests {
     my $css1 = $_.value.comb(/<CSS::Grammar::CSS1::comb>/);
-    ok($css1, 'css1 comb' ~ $_.key);
+    ok($css1, 'css1 comb ' ~ $_.key);
     my $p1 = CSS::Grammar::CSS1.parse( $css1, :actions($css_actions) );
     ok( $p1, 'css1 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value},
 }
 	    
 for @tests {
-    my $css2 = $_.value.comb(/<CSS::Grammar::CSS2::comb>/);
-    ok($css2, 'css2 comb' ~ $_.key);
-    my $p2 = CSS::Grammar::CSS2.parse( $css2, :actions($css_actions) );
+    my $css2 = $_.value.comb(/<CSS::Grammar::CSS21::comb>/);
+    ok($css2, 'css2 comb ' ~ $_.key);
+    my $p2 = CSS::Grammar::CSS21.parse( $css2, :actions($css_actions) );
     ok( $p2, 'css2 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS2::stylesheet>)/; $0.Str || $_.value},
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value},
 	    
 }
 
