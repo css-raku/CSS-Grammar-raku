@@ -18,18 +18,18 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     # productions
 
     rule stylesheet { <charset>? <import>* <decl>* }
-    rule decl { $<skipped>=[<import>|<charset>] | <at_rule> | <ruleset> }
+    rule decl { $<skipped>=[<charset>|<import>] | <at_rule> | <ruleset> }
 
     rule charset { \@(:i'charset') $<charset>=<string> ';' }
     rule import  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_props> }
-    rule at_rule:sym<page>    { \@(:i'page')  $<page>=<ident>? <declarations> }
+    rule at_rule:sym<media>   { \@(:i'media') <media_list> <rulesets> }
+    rule at_rule:sym<page>    { \@(:i'page')  $<page>=<pseudo>? <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
-    rule media_props {'{' <ruleset> '}' ';'?}
+    rule media_props {'{' <ruleset> '}' }
 
     rule unary_operator {'-'}
 
@@ -46,7 +46,12 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
 
     rule declarations {
 	'{' <declaration> [';' <declaration> ]* ';'?
-        ['}' | <unclosed_declarations>]
+        ['}' ';'? | <unclosed_declarations>]
+    }
+
+    rule rulesets {
+	'{' <ruleset>*
+        ['}' ';'? | <unclosed_declarations>]
     }
 
     rule declaration {
@@ -80,7 +85,7 @@ grammar CSS::Grammar::CSS2 is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
 				| [<id> | <class> | <pseudo>]+ }
 
-    rule pseudo       {':' [<function>|<ident>]? }
+    rule pseudo       {':' [<function>|<ident>] }
     rule function     { <ident>'(' <expr> ')' }
 
     # 'lexer' css2 exceptions

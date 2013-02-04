@@ -47,19 +47,40 @@ for ('http://www.bg.com/pink(ish).gif') {
 }
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t') {
-    ok($_ ~~ /^<CSS::Grammar::ident>$/, "ident: $_");
+    ok($_ ~~ /^<CSS::Grammar::ident>$/, "ident: $_")
+	or diag $_;
 }
 
 for ('8', '-i') {
-    ok($_ !~~ /^<CSS::Grammar::ident>$/, "not ident: $_");
+    ok($_ !~~ /^<CSS::Grammar::ident>$/, "not ident: $_")
+	or diag $_;
 }
 
 for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
-    ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_");
+    ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_")
+	or diag $_;
 }
 
 for (q{"Hello}, q{world'}, q{'''}, q{"}, q{'grocer's'},) {
-    ok($_ !~~ /^<CSS::Grammar::string>$/, "not string: $_");
+    ok($_ !~~ /^<CSS::Grammar::string>$/, "not string: $_")
+	or diag $_;
+}
+
+my $rulesets = '{
+   body { font-size: 10pt }
+}';
+
+for ('{ }', $rulesets) { 
+    ok($_ ~~ /^<CSS::Grammar::CSS2::rulesets>$/, "css2 rulesets")
+	or diag $_;
+}
+
+my $at_rule_page = '@page :left { margin: 3cm };';
+my $at_rule_print = '@media print ' ~ $rulesets;
+
+for ($at_rule_page, $at_rule_print) { 
+    ok($_ ~~ /^<CSS::Grammar::CSS2::at_rule>$/, "css2 at_rule: $_")
+	or diag $_;
 }
 
 done;
