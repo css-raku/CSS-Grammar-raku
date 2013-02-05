@@ -23,9 +23,9 @@ class CSS::Grammar::Actions {
 	return $ast;
     }
 
-    method end_statement($/) {
+    method end_block($/) {
  	my $ast = $.ast;
-	$ast.warning = 'assuming "}" at end of statement'
+	$ast.warning = 'assuming "}" at end of block'
 	    unless $<closing_paren>;
 
  	make $ast;
@@ -70,9 +70,7 @@ class CSS::Grammar::Actions {
 
    method unicode($/) {
        my $ord =  _from_hex($0.Str);
-       my $chr = Buf.new( $ord ).decode( $.encoding )
-	   does CSS::Grammar::AST::Info;
-       $chr.line_no = $.line_no;
+       my $chr = Buf.new( $ord ).decode( $.encoding );
        make $.ast( $chr );
     }
 

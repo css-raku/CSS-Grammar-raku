@@ -45,14 +45,14 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? <end_statement>
+	'{' <declaration> [';' <declaration> ]* ';'? <end_block>
     }
 
     rule rulesets {
-	'{' <ruleset>* <end_statement>
+	'{' <ruleset>* <end_block>
     }
 
-    rule end_statement {[$<clsoing_paren>='}' ';'?]?}
+    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
 	 <property> ':' [<expr> <prio>?]?

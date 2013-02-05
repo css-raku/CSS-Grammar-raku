@@ -33,10 +33,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? <end_statement>
+	'{' <declaration> [';' <declaration> ]* ';'? <end_block>
     }
 
-    rule end_statement {[$<closing_paren>='}' ';'?]?}
+    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
 	<property> ':' [<expr> <prio>?]?
