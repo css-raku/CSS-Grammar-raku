@@ -29,7 +29,6 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
-    rule media_props {'{' <ruleset>* $<closing_paren>='}'? }
 
     rule unary_operator {'-'}
 
