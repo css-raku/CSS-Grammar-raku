@@ -21,33 +21,33 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # "lexer"
 
-    rule unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
-    rule nonascii	{<[\o241..\o377]>}
-    rule escape		{<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
-    rule stringchar	{<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
-    rule nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
-    rule nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
-    rule ident		{<nmstrt><nmchar>*}
-    rule name		{<nmchar>+}
-    rule d		{<[0..9]>}
-    rule notnm		{<-[\- a..z A..Z 0..9\\]>|<nonascii>}
-    rule num		{[<d>*\.]?<d>+}
-    rule string		{\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
+    token unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
+    token nonascii	{<[\o241..\o377]>}
+    token escape		{<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
+    token stringchar	{<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
+    token nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
+    token nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
+    token ident		{<nmstrt><nmchar>*}
+    token name		{<nmchar>+}
+    token d		{<[0..9]>}
+    token notnm		{<-[\- a..z A..Z 0..9\\]>|<nonascii>}
+    token num		{[<d>*\.]?<d>+}
+    token string		{\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
 
-    rule id             {'#'<name>}
-    rule class          {'.'<name>}
+    token id             {'#'<name>}
+    token class          {'.'<name>}
 
-    rule percentage     {<num>'%'}
-    rule length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
-    rule angle          {<num>(:i[deg|rad|grad])}  # css2+
-    rule time           {<num>(:i[m?s])}  # css2+
-    rule freq           {<num>(:i[k?Hz])} # css2+
+    token percentage     {<num>'%'}
+    token length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
+    token angle          {<num>(:i[deg|rad|grad])}  # css2+
+    token time           {<num>(:i[m?s])}  # css2+
+    token freq           {<num>(:i[k?Hz])} # css2+
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    rule dimension      {<num>(<[a..zA..Z]>\w*)}
+    token dimension      {<num>(<[a..zA..Z]>\w*)}
 
     token url_delim_char {\( | \) | "'"| '"' | <ws_char>}
-    rule url_chars       {[<escape>|<- url_delim_char>]*}
-    rule url_spec        {<string>|<url_chars>}
+    token url_chars       {[<escape>|<- url_delim_char>]*}
+    token url_spec        {<string>|<url_chars>}
 
     # productions
 
@@ -58,11 +58,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 		   <ws_char>* [<percentage>|<num>] <ws_char>* ','
 		   <ws_char>* [<percentage>|<num>] <ws_char>* ')'}
 
-    rule prio {:i'!important'}
+    token prio {:i'!important'}
 
-    rule element_name {<ident>}
+    token element_name {<ident>}
 
     # skip rules
     # - make sure they trigger <nl> - for accurate line counting
-    rule skipped_term  {[<nl>|<string>|<-[;}]>]+}
+    token skipped_term  {[<nl>|<string>|<-[;}]>]+}
 }
