@@ -86,7 +86,7 @@ for @tests {
     my $p2 = CSS::Grammar::CSS21.parse( $_.value, :rule('stylesheet') );
     ok( $p2, 'css2 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value},
-	    
+            
 }
 
 done;

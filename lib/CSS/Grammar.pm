@@ -13,7 +13,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token unclosed_comment {$}
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
-		  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
+                  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
 
     token ws_char {"\n" | "\t" | "\f" | "\r" | " " | <comment> }
 
@@ -21,18 +21,18 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # "lexer"
 
-    token unicode	{'\\'(<[0..9 a..f A..F]>**1..6)}
-    token nonascii	{<[\o241..\o377]>}
-    token escape		{<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
-    token stringchar	{<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
-    token nmstrt		{<[a..z A..Z]>|<nonascii>|<escape>}
-    token nmchar		{<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
-    token ident		{<nmstrt><nmchar>*}
-    token name		{<nmchar>+}
-    token d		{<[0..9]>}
-    token notnm		{<-[\- a..z A..Z 0..9\\]>|<nonascii>}
-    token num		{[<d>*\.]?<d>+}
-    token string		{\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
+    token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
+    token nonascii       {<[\o241..\o377]>}
+    token escape         {<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
+    token stringchar     {<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
+    token nmstrt         {<[a..z A..Z]>|<nonascii>|<escape>}
+    token nmchar         {<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
+    token ident          {<nmstrt><nmchar>*}
+    token name           {<nmchar>+}
+    token d              {<[0..9]>}
+    token notnm          {<-[\- a..z A..Z 0..9\\]>|<nonascii>}
+    token num            {[<d>*\.]?<d>+}
+    token string         {\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
 
     token id             {'#'<name>}
     token class          {'.'<name>}
@@ -46,17 +46,17 @@ grammar CSS::Grammar:ver<0.0.1> {
     token dimension      {<num>(<[a..zA..Z]>\w*)}
 
     token url_delim_char {\( | \) | "'"| '"' | <ws_char>}
-    token url_chars       {[<escape>|<- url_delim_char>]*}
-    token url_spec        {<string>|<url_chars>}
+    token url_chars      {[<escape>|<- url_delim_char>]*}
+    token url_spec       {<string>|<url_chars>}
 
     # productions
 
     token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
     token unclosed_url {<!before ')'>}
     token rgb {:i'rgb('
-		   <ws_char>* [<percentage>|<num>] <ws_char>* ','
-		   <ws_char>* [<percentage>|<num>] <ws_char>* ','
-		   <ws_char>* [<percentage>|<num>] <ws_char>* ')'}
+                   <ws_char>* [<percentage>|<num>] <ws_char>* ','
+                   <ws_char>* [<percentage>|<num>] <ws_char>* ','
+                   <ws_char>* [<percentage>|<num>] <ws_char>* ')'}
 
     token prio {:i'!important'}
 

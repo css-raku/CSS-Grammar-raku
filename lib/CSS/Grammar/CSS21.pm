@@ -37,28 +37,28 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule combinator {'-'|'+'}
 
     rule ruleset {
-	<!after \@> # not an "@" rule
-	<selector> [',' <selector>]* <declarations>
+        <!after \@> # not an "@" rule
+        <selector> [',' <selector>]* <declarations>
     }
 
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? <end_block>
+        '{' <declaration> [';' <declaration> ]* ';'? <end_block>
     }
 
     rule rulesets {
-	'{' <ruleset>* <end_block>
+        '{' <ruleset>* <end_block>
     }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
-	 <property> ':' [<expr> <prio>?]?
+         <property> ':' [<expr> <prio>?]?
     }
 
     rule expr { <unary_operator>? <term_etc>
-		    [  <operator>? <term_etc>]* }
+                    [  <operator>? <term_etc>]* }
 
     rule term_etc {<term>|<skipped_term>}
 
@@ -80,7 +80,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
-				| [<id> | <class> | <pseudo>]+ }
+                          | [<id> | <class> | <pseudo>]+ }
 
     rule pseudo       {':' [<function>|<ident>] }
     rule function     { <ident>'(' <expr> ')' }

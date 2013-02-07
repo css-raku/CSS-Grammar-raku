@@ -48,22 +48,22 @@ for ('http://www.bg.com/pink(ish).gif') {
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t') {
     ok($_ ~~ /^<CSS::Grammar::ident>$/, "ident: $_")
-	or diag $_;
+        or diag $_;
 }
 
 for ('8', '-i') {
     ok($_ !~~ /^<CSS::Grammar::ident>$/, "not ident: $_")
-	or diag $_;
+        or diag $_;
 }
 
 for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, q{"Hello},  q{"},) {
     ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_")
-	or diag $_;
+        or diag $_;
 }
 
 for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
     ok($_ !~~ /^<CSS::Grammar::string>$/, "not string: $_")
-	or diag $_;
+        or diag $_;
 }
 
 my $rulesets = '{

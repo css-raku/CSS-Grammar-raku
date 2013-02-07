@@ -81,14 +81,14 @@ for @tests {
     ok( $p1, 'css1 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value},
 }
-	    
+            
 for @tests {
     my $css2 = $_.value.comb(/<CSS::Grammar::CSS21::comb>/);
     ok($css2, 'css2 comb ' ~ $_.key);
     my $p2 = CSS::Grammar::CSS21.parse( $css2, :actions($css_actions) );
     ok( $p2, 'css2 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value},
-	    
+            
 }
 
 done;

@@ -26,24 +26,24 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule operator {'/'|','}
 
     rule ruleset {
-	<!after \@> # not an "@" rule
-	<selector> [',' <selector>]* <declarations>
+        <!after \@> # not an "@" rule
+        <selector> [',' <selector>]* <declarations>
     }
 
     rule property {<ident>}
 
     rule declarations {
-	'{' <declaration> [';' <declaration> ]* ';'? <end_block>
+        '{' <declaration> [';' <declaration> ]* ';'? <end_block>
     }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
-	<property> ':' [<expr> <prio>?]?
+        <property> ':' [<expr> <prio>?]?
     }
 
     rule expr { <unary_operator>? <term_etc>
-		    [  <operator>? <term_etc>]* }
+                    [  <operator>? <term_etc>]* }
 
     rule term_etc {<term>|<skipped_term>}
 
@@ -62,9 +62,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>?}
 
     token simple_selector { <element_name> <id>? <class>? <pseudo_class_etc>?
-	    | <id> <class>? <pseudo_class_etc>?
-	    | <class> <pseudo_class_etc>?
-	    | <pseudo_class_etc> }
+                          | <id> <class>? <pseudo_class_etc>?
+                          | <class> <pseudo_class_etc>?
+                          | <pseudo_class_etc> }
 
     rule pseudo {<pseudo_class> | <pseudo_element> | <pseudo_other>}
     rule pseudo_class   {':'(:i link|visited|active)}
@@ -77,5 +77,5 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     # 'lexer' css1 exceptions
     
     # -- css1 unicode escape sequences only extend to 4 chars
-    rule unicode	{'\\'(<[0..9 a..f A..F]>**1..4)}
+    rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
 }
