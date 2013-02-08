@@ -73,7 +73,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting
-    token skipped_term  {[<nl>|<string>|<-[;}]>]+}
+    token skipped_term  {[<ws_char>|<string>|<-[;}]>]+}
 
     proto token unknown {<...>}
     token unknown:sym<string>      {<string>}

@@ -37,6 +37,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule declaration {
         <property> ':' [ <expr> <prio>? | <expr_missing> ]
+        | <skipped_term>
     }
 
     rule expr { <unary_operator>? <term_etc>

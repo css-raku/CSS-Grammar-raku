@@ -55,6 +55,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule declaration {
          <property> ':' [ <expr> <prio>? | <expr_missing> ]
+         | <skipped_term>
     }
 
     rule expr_missing {''}

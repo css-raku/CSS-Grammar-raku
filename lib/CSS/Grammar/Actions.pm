@@ -38,7 +38,7 @@ class CSS::Grammar::Actions {
     method nl($/) {$.line_no++; make $.ast($/)}
 
     method skipped_term($/) {
-        $.warning('unknown term', $/.Str);
+        $.warning('skipping term', $/.Str);
     }
 
     method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
@@ -61,7 +61,7 @@ class CSS::Grammar::Actions {
     }
 
     method expr_missing($/) {
-        $.warning("nothing after ':'");
+        $.warning("incomplete declaration");
     }
 
     method term:sym<dimension>($/) {

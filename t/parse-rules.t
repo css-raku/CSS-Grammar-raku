@@ -14,6 +14,9 @@ for (
     ws => {input => "<!-- unterminated comment",
            warnings => ['unclosed comment at end of input'],
     },
+    ws => {input => "/* unterminated\nstar\ncomment ... ",
+           warnings => ['unclosed comment at end of input'],
+    },
     percentage => {input => '50%'},
     unicode => {input => '\\021'},
     id => {input => '#zzz'},
@@ -62,7 +65,7 @@ for (
     declaration => {input => 'line-height: 1.1px'},
     declaration => {input => 'margin: 1em'},
     declaration => {input => 'border: 2px solid blue'},
-    ruleset => {input => 'H1 { color: blue; }'},
+    ruleset => {input => 'H1 { color: blue; }',},
     ruleset => {input => 'A:link H1 { color: blue; }'},
     ruleset => {input => 'H1#abc { color: blue; }'},
     ruleset => {input => 'A.external:visited { color: blue; }'},
@@ -73,8 +76,23 @@ for (
                   }
     },
     TOP => {input => 'H1 { color: blue; }'},
+    ruleset => {input => 'H1 { color }',
+                warnings => ['skipping term: color '],
+    },
+    ruleset => {input => 'H1 { color; }',
+                warnings => ['skipping term: color'],
+    },
+    ruleset => {input => 'H1 { color: }',
+                warnings => ['incomplete declaration'],
+    },
+    ruleset => {input => 'H1 { : blue }',
+                warnings => ['skipping term: : blue '],
+    },
+    ruleset => {input => 'H1 { color blue }',
+                warnings => ['skipping term: color blue '],
+    },
 
-    # unclosed rulsets
+    # unclosed rulesets
     ruleset => {input => 'H2 { color: green; rotation: 70deg;',
                 warnings => ["no closing '}'"],
                 css1 => {
@@ -84,13 +102,13 @@ for (
     },
 
     ruleset => {input => 'H2 { color: green; rotation: }',
-                warnings => "nothing after ':'",
+                warnings => "incomplete declaration",
     },
 
     ruleset => {input => 'H2 { test: "this is not closed',
                 warnings => [
                     "no closing '}'",
-                    'unknown term: "this is not closed',
+                    'skipping term: "this is not closed',
                     'unterminated string',
                     ]
     },

@@ -80,7 +80,7 @@ for @tests {
     ok( $p1, 'css1 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value};
     # warnings are normal here - tests to be added
-    diag $css_actions.warnings if $css_actions.warnings;
+    note $css_actions.warnings if $css_actions.warnings;
 }
             
 for @tests {
@@ -90,7 +90,7 @@ for @tests {
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value};
             
     # warnings are normal here - tests to be added
-    diag $css_actions.warnings if $css_actions.warnings;
+    note $css_actions.warnings if $css_actions.warnings;
 }
 
 done;
