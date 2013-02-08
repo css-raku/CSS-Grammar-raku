@@ -16,16 +16,16 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule comb { <charset> | <import> | <at_rule> | <ruleset> }
 
     # productions
+    rule stylesheet   { <charset>? <import_etc>* <rule_etc>* }
+    rule import_etc   { <import>  | <late=charset> }
+    rule rule_etc     { <at_rule> | <ruleset> | <late=import_etc> }
 
-    rule stylesheet { <charset>? <import>* <decl>* }
-    rule decl { $<ignored>=[<charset>|<import>] | <at_rule> | <ruleset> }
-
-    rule charset { \@(:i'charset') $<charset>=<string> ';' }
-    rule import  { \@(:i'import')  $<import>=[<string>|<url>] ';' }
+    rule charset { \@(:i'charset') <charset=string> ';' }
+    rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <rulesets> }
-    rule at_rule:sym<page>    { \@(:i'page')  $<page>=<pseudo>? <declarations> }
+    rule at_rule:sym<page>    { \@(:i'page')  <page=pseudo>? <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
@@ -58,9 +58,9 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     }
 
     rule expr { <unary_operator>? <term_etc>
-                    [  <operator>? <term_etc>]* }
+                    [ <operator>? <term_etc> ]* }
 
-    rule term_etc {<term>|<skipped_term>}
+    rule term_etc { <term> | <skipped_term> }
 
     proto rule term {<...>}
     rule term:sym<length>     {<length>}
@@ -80,7 +80,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
-                          | [<id> | <class> | <pseudo>]+ }
+                          |                [<id> | <class> | <pseudo>]+ }
 
     rule pseudo       {':' [<function>|<ident>] }
     rule function     { <ident>'(' <expr> ')' }

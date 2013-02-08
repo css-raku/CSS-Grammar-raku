@@ -17,7 +17,8 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <import>* [ $<ignored>=<import> | <ruleset> ]* }
+    rule stylesheet { <import>* <rule_etc>* }
+    rule rule_etc  { <ruleset> | <late=import> }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
@@ -43,9 +44,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     }
 
     rule expr { <unary_operator>? <term_etc>
-                    [  <operator>? <term_etc>]* }
+                    [ <operator>? <term_etc> ]* }
 
-    rule term_etc {<term>|<skipped_term>}
+    rule term_etc { <term> | <skipped_term> }
 
     proto rule term {<...>}
     rule term:sym<length>     {<length>}

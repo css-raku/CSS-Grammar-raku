@@ -24,7 +24,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
     token nonascii       {<[\o241..\o377]>}
     token escape         {<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
-    token stringchar     {<escape>|<nonascii>|$<char>=<[\o40 \! \# \$ \% \& \( .. \~]>}
     token nmstrt         {<[a..z A..Z]>|<nonascii>|<escape>}
     token nmchar         {<[\- a..z A..Z 0..9]>|<nonascii>|<escape>}
     token ident          {<nmstrt><nmchar>*}
@@ -32,7 +31,16 @@ grammar CSS::Grammar:ver<0.0.1> {
     token d              {<[0..9]>}
     token notnm          {<-[\- a..z A..Z 0..9\\]>|<nonascii>}
     token num            {[<d>*\.]?<d>+}
-    token string         {\"(<stringchar>|\')* $<closing_quote>=\"? | \'(<stringchar>|\")* $<closing_quote>=\'}
+
+    proto token stringchar {<...>}
+    token stringchar:sym<escape>    {<escape>}
+    token stringchar:sym<nonascii>  {<nonascii>}
+    token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \( .. \~ \' \"]>}
+
+    token single_quote   {\'}
+    token double_quote   {\"}
+    token string         {\"[<!before \"><stringchar>]*$<closing_quote>=\"?
+                         |\'[<!before \'><stringchar>]*$<closing_quote>=\'?}
 
     token id             {'#'<name>}
     token class          {'.'<name>}
@@ -51,8 +59,9 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # productions
 
-    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_url>] }
-    token unclosed_url {<!before ')'>}
+    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_paren>] }
+    token unclosed_paren {<!before ')'>}
+
     token rgb {:i'rgb('
                    <ws_char>* [<percentage>|<num>] <ws_char>* ','
                    <ws_char>* [<percentage>|<num>] <ws_char>* ','

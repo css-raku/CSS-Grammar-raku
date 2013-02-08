@@ -10,71 +10,83 @@ class CSS::Grammar::Actions {
     # variable encoding - not yet supported
     has $.encoding = 'ISO-8859-1';
 
-    method ast($/, Mu $_ast?, :$warning, :$skip) {
-        my $ast = '';
-        $ast = $_ast if defined $_ast;
+    # accumulated warnings
+    has @.warnings;
+
+    method ast($/, Mu $_ast?, :$skip) {
+        my $ast = $_ast || $/.Str;
 
         $ast does CSS::Grammar::AST::Info;
 
         $ast.line_no = $.line_no;
-        $ast.warning = $warning if defined $warning;
         $ast.skip = $skip if defined $skip;
-
-        warn $warning ~ ': ' ~$/.Str ~ "\nat source line " ~ $.line_no
-            if defined $warning;
 
         return $ast;
     }
 
-    method end_block($/) {
-        my $ast = $.ast($/);
-        $ast.warning = 'assuming "}" at end of block'
-            unless $<closing_paren>;
-
-        make $ast;
+    method warning ($message, $str?) {
+        my $warning = $message;
+        $warning ~= ': ' ~ $str if $str;
+        push @.warnings, $warning;
     }
 
     method late_at_rule($/) {
         # applicable to CSS1
-        make $.ast($/, :warning('out of sequence "@" rule') );
+        $.warning('out of sequence "@" rule', $/.Str);
     }
 
     method nl($/) {$.line_no++; make $.ast($/)}
 
     method skipped_term($/) {
-        make $.ast($/, :warning('unknown term') );
+        $.warning('unknown term', $/.Str);
     }
 
+    method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
+    method nonascii($/){make $/.Str}
+    method single_quote($/) {make "'"}
+    method double_quote($/) {make '"'}
+
+    method stringchar:sym<escape>($/)   {make 'E'}
+    method stringchar:sym<nonascii>($/) {make 'N'}
+    method stringchar:sym<ascii>($/)    {make 'A'}
+
     method string($/) {
-        my $ast = $.ast($/);
-
-        unless $<closing_quote>.Str {
-            $ast.skip = True;
-            $ast.warning = 'unclosed string';
+        my Bool $skip = False;
+        unless ($<closing_quote>.Str) {
+            $.warning('unterminated string');
+            $skip = True;
         }
+        my $string = $<stringchar>.map({ $_.ast }).join('');
+        make $.ast($/, $string, :skip($skip) );
+    }
 
-        make $ast;
+    method declaration($/) {
+        $.warning("nothing after ':'")
+            unless $<expr>.Str;
     }
 
     method term:sym<dimension>($/) {
-        make $.ast($/, :skip(True),
-                   :warning('unknown dimensioned quantity') );
-    }
-
-    method unclosed_url($/) {
-        make $.ast($/, :skip(False),
-                    :warning("missing closing ')'") );
+        $.warning('unknown dimensioned quantity', $/.Str);
+        make $.ast($/, :skip(True));
     }
 
     method unclosed_comment($/) {
-        make $.ast($/, :skip(False),
-                    :warning("unclosed comment at end of input"));
+        $.warning('unclosed comment at end of input');
+    }
+
+    method unclosed_paren($/) {
+        $.warning("missing closing ')'");
     }
 
    method unicode($/) {
        my $ord =  _from_hex($0.Str);
        my $chr = Buf.new( $ord ).decode( $.encoding );
        make $.ast($/, $chr );
+    }
+
+    method end_block($/) {
+        $.warning("no closing '}'")
+            unless $<closing_paren>;
     }
 
     # utiltity methods / subs
