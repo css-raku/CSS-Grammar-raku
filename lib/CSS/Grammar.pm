@@ -65,7 +65,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token rgb {:i'rgb('
                    <ws_char>* [<percentage>|<num>] <ws_char>* ','
                    <ws_char>* [<percentage>|<num>] <ws_char>* ','
-                   <ws_char>* [<percentage>|<num>] <ws_char>* ')'}
+                   <ws_char>* [<percentage>|<num>] <ws_char>*
+                   [')' | <unclosed_paren>]
+    }
 
     token prio {:i'!important'}
 
@@ -79,6 +81,5 @@ grammar CSS::Grammar:ver<0.0.1> {
     token unknown:sym<string>      {<string>}
     token unknown:sym<name>        {<name>}
     token unknown:sym<nonascii>    {<nonascii>+}
-    token unknown:sym<ws>          {<ws_char>+}
     token unknown:sym<stringchars> {<stringchar>+}
 }

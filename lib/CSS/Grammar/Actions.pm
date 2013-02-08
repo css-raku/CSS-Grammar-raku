@@ -27,12 +27,9 @@ class CSS::Grammar::Actions {
     method warning ($message, $str?) {
         my $warning = $message;
         $warning ~= ': ' ~ $str if $str;
+        $warning does CSS::Grammar::AST::Info;
+        $warning.line_no = $.line_no;
         push @.warnings, $warning;
-    }
-
-    method late_at_rule($/) {
-        # applicable to CSS1
-        $.warning('out of sequence "@" rule', $/.Str);
     }
 
     method nl($/) {$.line_no++; make $.ast($/)}
@@ -43,12 +40,10 @@ class CSS::Grammar::Actions {
 
     method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
     method nonascii($/){make $/.Str}
-    method single_quote($/) {make "'"}
-    method double_quote($/) {make '"'}
 
-    method stringchar:sym<escape>($/)   {make 'E'}
-    method stringchar:sym<nonascii>($/) {make 'N'}
-    method stringchar:sym<ascii>($/)    {make 'A'}
+    method stringchar:sym<escape>($/)   { make $<escape>.ast }
+    method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
+    method stringchar:sym<ascii>($/)    { make $/.Str }
 
     method string($/) {
         my Bool $skip = False;

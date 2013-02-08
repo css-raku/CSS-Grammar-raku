@@ -18,7 +18,12 @@ for (
            warnings => ['unclosed comment at end of input'],
     },
     percentage => {input => '50%'},
-    unicode => {input => '\\021'},
+    unicode => {input => '\\021',
+                ast => '!',
+    },
+    string => {input => '"Hello World\\021"',
+                ast => 'Hello World!',
+    },
     id => {input => '#zzz'},
     class => {input => '.zippy'},
     num => {input => '2.52'},
@@ -32,8 +37,7 @@ for (
     url => {input => 'URL(http://www.bg.com/pinkish.gif',
             warnings => ["missing closing ')'"],
     },
-    import => {input => "@import 'file:///etc/passwd';"
-    },
+    import => {input => "@import 'file:///etc/passwd';"},
     import => {input => "@IMPORT 'file:///etc/group';"},
     class => {input => '.class'},
     simple_selector => {input => 'BODY'},
@@ -51,6 +55,9 @@ for (
     selector => {input => 'A:Link IMG'},
     term => {input => '#eeeeee'},
     term => {input => 'rgb(17%, 33%, 70%)'},
+    term => {input => 'rgb(17%, 33%, 70%',
+             warnings => ["missing closing ')'"],
+    },
     num => {input => '1'},
     num => {input => '.1'},
     num => {input => '1.9'},
@@ -71,9 +78,9 @@ for (
     ruleset => {input => 'A.external:visited { color: blue; }'},
     dimension => {input => '70deg'},
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
-                  css1 => {
-                      warnings => ['unknown dimensioned quantity: 70deg']
-                  }
+                css1 => {
+                    warnings => ['unknown dimensioned quantity: 70deg']
+                }
     },
     TOP => {input => 'H1 { color: blue; }'},
     ruleset => {input => 'H1 { color }',
@@ -124,18 +131,29 @@ for (
     ok($p1, "css1: " ~ $rule ~ " parse: " ~ $input);
 
     my $css1 =  %test<css1> || {};
-    my @css1_expected_warnings = %$css1<warnings> || %test<warnings> || ();
+    my @css1_expected_warnings = %$css1<warnings> // %test<warnings> // ();
     my @css1_warnings = sort $css_actions.warnings;
     is(@css1_warnings, @css1_expected_warnings, 'css1 warnings');
+
+    if defined (my $ast1 = %$css1<ast> // %test<ast>) {
+        is($p1.ast, $ast1, 'css1 - ast')
+            or diag $p1.ast.perl
+    }
 
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
     ok($p2, "css2: " ~ $rule ~ " parse: " ~ $input);
 
     my $css2 =  %test<css2> || {};
-    my @css2_expected_warnings = %$css2<warnings> || %test<warnings> || ();
+    my @css2_expected_warnings = %$css2<warnings> // %test<warnings> // ();
     my @css2_warnings = sort $css_actions.warnings;
     is(@css2_warnings, @css2_expected_warnings, 'css2 warnings');
+
+    if defined (my $ast2 = %$css2<ast> // %test<ast>) {
+        is($p2.ast, $ast2, 'css2 - ast')
+            or diag $p1.ast.perl
+    }
+
 }
 
 done;
