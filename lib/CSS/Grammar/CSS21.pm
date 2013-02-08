@@ -9,16 +9,14 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # comb; rule to reduce a css3+ or hand-coded stylesheet, to a  cleaner,
-    # css2 parsable subset:
-    # my $css2 = $css_input.comb(/<CSS::Grammar::CSS2::comb>/)
-
-    rule comb { <charset> | <import> | <at_rule> | <ruleset> }
-
     # productions
     rule stylesheet   { <charset>? <import_etc>* <rule_etc>* }
-    rule import_etc   { <import>  | <late=charset> }
-    rule rule_etc     { <at_rule> | <ruleset> | <late=import_etc> }
+
+    rule import_etc   { <import> | $<late>=<charset>
+                      | <unknown> }
+
+    rule rule_etc     { <at_rule> | <ruleset> | $<late>=[<charset>|<import>] 
+                      | <unknown> }
 
     rule charset { \@(:i'charset') <charset=string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
@@ -54,8 +52,10 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
-         <property> ':' [<expr> <prio>?]?
+         <property> ':' [ <expr> <prio>? | <expr_missing> ]
     }
+
+    rule expr_missing {''}
 
     rule expr { <unary_operator>? <term_etc>
                     [ <operator>? <term_etc> ]* }

@@ -9,16 +9,11 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
-    # comb; rule to reduce a css2+ or hand-coded stylesheet to a cleaner,
-    # css1 parseable subset:
-    # my $css1 = $css_input.comb(/<CSS::Grammar::CSS1::comb>/)
-
-    rule comb { <import> | <ruleset> }
-
     # productions
 
-    rule stylesheet { <import>* <rule_etc>* }
-    rule rule_etc  { <ruleset> | <late=import> }
+    rule stylesheet { <import_etc>* <rule_etc>* }
+    rule import_etc { <import>  | <unknown> }
+    rule rule_etc   { <ruleset> | <late=import> | <unknown> }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
@@ -40,11 +35,13 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
     rule declaration {
-        <property> ':' [<expr> <prio>?]?
+        <property> ':' [ <expr> <prio>? | <expr_missing> ]
     }
 
     rule expr { <unary_operator>? <term_etc>
                     [ <operator>? <term_etc> ]* }
+
+    rule expr_missing {''}
 
     rule term_etc { <term> | <skipped_term> }
 

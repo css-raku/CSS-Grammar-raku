@@ -15,7 +15,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
                   |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
 
-    token ws_char {"\n" | "\t" | "\f" | "\r" | " " | <comment> }
+    token ws_char {<nl> | "\t"  | " " | <comment> }
 
     token ws {<!ww><ws_char>*}
 
@@ -71,7 +71,14 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token element_name {<ident>}
 
-    # skip rules
+    # error recovery
     # - make sure they trigger <nl> - for accurate line counting
     token skipped_term  {[<nl>|<string>|<-[;}]>]+}
+
+    proto token unknown {<...>}
+    token unknown:sym<string>      {<string>}
+    token unknown:sym<name>        {<name>}
+    token unknown:sym<nonascii>    {<nonascii>+}
+    token unknown:sym<ws>          {<ws_char>+}
+    token unknown:sym<stringchars> {<stringchar>+}
 }

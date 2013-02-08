@@ -60,9 +60,8 @@ class CSS::Grammar::Actions {
         make $.ast($/, $string, :skip($skip) );
     }
 
-    method declaration($/) {
-        $.warning("nothing after ':'")
-            unless $<expr>.Str;
+    method expr_missing($/) {
+        $.warning("nothing after ':'");
     }
 
     method term:sym<dimension>($/) {
@@ -89,6 +88,11 @@ class CSS::Grammar::Actions {
             unless $<closing_paren>;
     }
 
+    # this can get a bit too verbose
+    method unknown:sym<string>($/) {$.warning('skipping', $/)}
+    method unknown:sym<name>($/) {$.warning('skipping', $/)}
+    method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
+    method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
     # utiltity methods / subs
 
     sub _from_hex($hex) is pure {
