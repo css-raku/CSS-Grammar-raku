@@ -64,6 +64,8 @@ for (
     declaration => {input => 'border: 2px solid blue'},
     ruleset => {input => 'H1 { color: blue; }'},
     ruleset => {input => 'A:link H1 { color: blue; }'},
+    ruleset => {input => 'H1#abc { color: blue; }'},
+    ruleset => {input => 'A.external:visited { color: blue; }'},
     dimension => {input => '70deg'},
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
                   css1 => {

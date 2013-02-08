@@ -11,9 +11,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <import_etc>* <rule_etc>* }
-    rule import_etc { <import>  | <unknown> }
-    rule rule_etc   { <ruleset> | <late=import> | <unknown> }
+    rule stylesheet { <import>* <rule_etc>* }
+    rule rule_etc   { <ruleset>
+                    | <unexpected=import>
+                    | <unknown> }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 

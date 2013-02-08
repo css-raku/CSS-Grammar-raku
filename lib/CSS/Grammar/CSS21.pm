@@ -12,10 +12,12 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     # productions
     rule stylesheet   { <charset>? <import_etc>* <rule_etc>* }
 
-    rule import_etc   { <import> | $<late>=<charset>
-                      | <unknown> }
+    rule import_etc   { <import>
+                      | $<unexpected>=<charset>
+                      }
 
-    rule rule_etc     { <at_rule> | <ruleset> | $<late>=[<charset>|<import>] 
+    rule rule_etc     { <at_rule> | <ruleset>
+                      | $<unexpected>=[<charset>|<import>] 
                       | <unknown> }
 
     rule charset { \@(:i'charset') <charset=string> ';' }
