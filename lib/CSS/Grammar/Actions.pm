@@ -13,13 +13,14 @@ class CSS::Grammar::Actions {
     # accumulated warnings
     has @.warnings;
 
-    method ast($/, Mu $_ast?, :$skip) {
-        my $ast = $_ast || $/.Str;
-
-        $ast does CSS::Grammar::AST::Info;
+    method ast(Mu $ast, :$skip, :$type, ) {
+        $ast
+            does CSS::Grammar::AST::Info
+            unless $ast.can('css_type');
 
         $ast.line_no = $.line_no;
         $ast.skip = $skip if defined $skip;
+        $ast.css_type = $type if defined $type;
 
         return $ast;
     }
@@ -32,14 +33,34 @@ class CSS::Grammar::Actions {
         push @.warnings, $warning;
     }
 
-    method nl($/) {$.line_no++; make $.ast($/)}
+    method nl($/) {$.line_no++;}
 
     method skipped_term($/) {
         $.warning('skipping term', $/.Str);
     }
 
-    method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
+   method unicode($/) {
+       my $ord =  _from_hex($0.Str);
+       my $chr = Buf.new( $ord ).decode( $.encoding );
+       make $chr;
+    }
     method nonascii($/){make $/.Str}
+    method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
+    method nmstrt($/){
+        make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
+    }
+    method nmchar($/){
+        make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
+    }
+    method ident($/) {
+        make $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+    }
+    method name($/) {
+        make $<nmchar>.map({$_.ast}).join('');
+    }
+    method d($/) { make $/.Str }
+    method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
+    method num($/) { make $/.Num }
 
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
@@ -52,8 +73,30 @@ class CSS::Grammar::Actions {
             $skip = True;
         }
         my $string = $<stringchar>.map({ $_.ast }).join('');
-        make $.ast($/, $string, :skip($skip) );
+        make $.ast($string, :type('string'), :skip($skip) );
     }
+
+    method id($/) { make $<name>.ast }
+    method class($/) { make $<name>.ast }
+
+    method _dim($/) {
+        my %dim;
+        %dim<qty units> =  ($<num>.ast,  $0.Str);
+        return %dim;
+    }
+
+    method percentage($/) { make $._dim($/); }
+    method length($/) { make $._dim($/); }
+    method angle($/) { make $._dim($/); }
+    method time($/) { make $._dim($/); }
+    method freq($/) { make $._dim($/); }
+    method dimension($/) { make $._dim($/); }
+
+    method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
+    method url_spec($/) {
+        make $<string> ?? $<string>.ast !! $<url_char>.map({$_.ast}).join('');
+    }
+    method url($/) { make $<url_spec>.ast; }
 
     method expr_missing($/) {
         $.warning("incomplete declaration");
@@ -61,7 +104,8 @@ class CSS::Grammar::Actions {
 
     method term:sym<dimension>($/) {
         $.warning('unknown dimensioned quantity', $/.Str);
-        make $.ast($/, :skip(True));
+        my $ast = $<dimension>.ast;
+        make $.ast($ast, :skip(True));
     }
 
     method unclosed_comment($/) {
@@ -70,12 +114,6 @@ class CSS::Grammar::Actions {
 
     method unclosed_paren($/) {
         $.warning("missing closing ')'");
-    }
-
-   method unicode($/) {
-       my $ord =  _from_hex($0.Str);
-       my $chr = Buf.new( $ord ).decode( $.encoding );
-       make $.ast($/, $chr );
     }
 
     method end_block($/) {

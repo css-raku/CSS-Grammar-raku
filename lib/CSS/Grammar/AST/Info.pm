@@ -6,9 +6,7 @@ role CSS::Grammar::AST::Info {
     #          node and its children
     has Bool $.skip is rw;
 
-    # $.warning - warning associated with this node.
-    # Note: child elements may also contain warnings.
-    has Str $.warning is rw;
+    has $.css_type is rw;
 
     # $.line_no - source line number
     has Int $.line_no is rw;
