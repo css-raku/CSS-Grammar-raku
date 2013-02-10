@@ -22,7 +22,13 @@ for (
                 ast => '!',
     },
     string => {input => '"Hello World\\021"',
-                ast => 'Hello World!',
+               ast => 'Hello World!',
+               skip => False,
+    },
+    string => {input => '"Hello Black H',
+               ast => 'Hello Black H',
+               warnings => ['unterminated string'],
+               skip => True,
     },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
@@ -39,6 +45,11 @@ for (
     url => {input => 'URL(http://www.bg.com/pinkish.gif)'},
     url => {input => 'URL(http://www.bg.com/pinkish.gif',
             warnings => ["missing closing ')'"],
+            skip => False,
+    },
+    url => {input => 'URL("http://www.bg.com/pinkish.gif',
+            warnings => ["missing closing ')'", 'unterminated string'],
+            skip => True,
     },
     pseudo => {input => ':visited'},
     import => {input => "@import 'file:///etc/passwd';"},
@@ -134,28 +145,39 @@ for (
     my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
     ok($p1, "css1: " ~ $rule ~ " parse: " ~ $input);
 
-    my $css1 =  %test<css1> || {};
-    my @css1_expected_warnings = %$css1<warnings> // %test<warnings> // ();
-    my @css1_warnings = sort $css_actions.warnings;
-    is(@css1_warnings, @css1_expected_warnings, 'css1 warnings');
+    my $css1 =  %test<css1> // {};
+    my $css2 =  %test<css2> // {};
 
-    if defined (my $ast1 = %$css1<ast> // %test<ast>) {
+    my @css1_expected_warnings = %$css1<warnings> // %$css2<warnings> // %test<warnings> // ();
+    my @css1_warnings = sort $css_actions.warnings;
+    is(@css1_warnings, @css1_expected_warnings,
+       @css1_expected_warnings ?? 'css1 warnings' !! 'css1 no warnings');
+
+    if defined (my $ast1 = %$css1<ast> // %$css2<ast> // %test<ast>) {
         is($p1.ast, $ast1, 'css1 - ast')
             or diag $p1.ast.perl
+    }
+
+    if defined (my $skip1 = %$css1<skip> // %$css2<skip> // %test<skip>) {
+        is($p1.ast.skip, $skip1, 'css1 - skip is ' ~ $skip1);
     }
 
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
     ok($p2, "css2: " ~ $rule ~ " parse: " ~ $input);
 
-    my $css2 =  %test<css2> || {};
     my @css2_expected_warnings = %$css2<warnings> // %test<warnings> // ();
     my @css2_warnings = sort $css_actions.warnings;
-    is(@css2_warnings, @css2_expected_warnings, 'css2 warnings');
+    is(@css2_warnings, @css2_expected_warnings,
+       @css2_expected_warnings ?? 'css2 warnings' !! 'css2 no warnings');
 
     if defined (my $ast2 = %$css2<ast> // %test<ast>) {
         is($p2.ast, $ast2, 'css2 - ast')
             or diag $p1.ast.perl
+    }
+
+    if defined (my $skip2 = %$css2<skip> // %test<skip>) {
+        is($p2.ast.skip, $skip1, 'css2 - skip is ' ~ $skip2);
     }
 
 }

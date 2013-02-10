@@ -19,7 +19,7 @@ class CSS::Grammar::Actions {
             unless $ast.can('css_type');
 
         $ast.line_no = $.line_no;
-        $ast.skip = $skip if defined $skip;
+        $ast.skip = $skip // False;
         $ast.css_type = $type if defined $type;
 
         return $ast;
@@ -94,7 +94,9 @@ class CSS::Grammar::Actions {
 
     method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
     method url_spec($/) {
-        make $<string> ?? $<string>.ast !! $<url_char>.map({$_.ast}).join('');
+        make $<string>
+            ?? $<string>.ast
+            !! $.ast( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/) { make $<url_spec>.ast; }
 
