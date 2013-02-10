@@ -32,9 +32,9 @@ for (
     },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
-    percentage => {input => '50%', ast => {qty => 50, units => '%'}},
+    percentage => {input => '50%', ast => 50, units => '%'},
     class => {input => '.zippy', ast => 'zippy'},
-    length => {input => '2.52cm', ast => {qty => 2.52, units => 'cm'}},
+    length => {input => '2.52cm', ast => 2.52, units => 'cm'},
     url_spec => {input => '"http://www.bg.com/pinkish.gif"',
                  ast => 'http://www.bg.com/pinkish.gif',
     },
@@ -51,6 +51,8 @@ for (
             warnings => ["missing closing ')'", 'unterminated string'],
             skip => True,
     },
+    rgb => {input => 'Rgb(10, 20, 30)',
+            ast => {r => 10, g => 20, b => 30}},
     pseudo => {input => ':visited'},
     import => {input => "@import 'file:///etc/passwd';"},
     import => {input => "@IMPORT 'file:///etc/group';"},
@@ -91,7 +93,7 @@ for (
     ruleset => {input => 'A:link H1 { color: blue; }'},
     ruleset => {input => 'H1#abc { color: blue; }'},
     ruleset => {input => 'A.external:visited { color: blue; }'},
-    dimension => {input => '70deg', ast => {qty => 70, units => 'deg'}},
+    dimension => {input => '70deg', ast => 70, units => 'deg'},
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
                 css1 => {
                     warnings => ['unknown dimensioned quantity: 70deg']
@@ -158,6 +160,13 @@ for (
             or diag $p1.ast.perl
     }
 
+    if defined (my $units1 = %$css1<units> // %$css2<units> // %test<units>) {
+        if ok($p1.ast.can('units'), "css1 does units") {
+            is($p1.ast.units, $units1, 'css1 - units')
+                or diag $p1.ast.units
+            }
+    }
+
     if defined (my $skip1 = %$css1<skip> // %$css2<skip> // %test<skip>) {
         is($p1.ast.skip, $skip1, 'css1 - skip is ' ~ $skip1);
     }
@@ -176,8 +185,15 @@ for (
             or diag $p1.ast.perl
     }
 
+    if defined (my $units2 = %$css2<units> // %test<units>) {
+        if ok($p2.ast.can('units'), "css2 does units") {
+            is($p2.ast.units, $units2, 'css2 - units')
+                or diag $p2.ast.units
+            }
+    }
+
     if defined (my $skip2 = %$css2<skip> // %test<skip>) {
-        is($p2.ast.skip, $skip1, 'css2 - skip is ' ~ $skip2);
+        is($p2.ast.skip, $skip2, 'css2 - skip is ' ~ $skip2);
     }
 
 }

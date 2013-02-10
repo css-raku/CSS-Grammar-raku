@@ -9,13 +9,14 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Comments and whitespace
 
-    token nl {["\n"|"r\n"|"\r"|"\f"]+}
+    token nl {"\n"|"r\n"|"\r"|"\f"}
 
     token unclosed_comment {$}
+    # comments: nb trigger <nl> for accurate line counting
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
                   |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
 
-    token ws_char {<nl> | "\t"  | " " | <comment> }
+    token ws_char {<nl> | "\t"  | " " | <comment>}
 
     token ws {<!ww><ws_char>*}
 
@@ -60,12 +61,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     # productions
 
     token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_paren>] }
-    token unclosed_paren {<!before ')'>}
+    token unclosed_paren {''}
 
     token rgb {:i'rgb('
-                   <ws_char>* [<percentage>|<num>] <ws_char>* ','
-                   <ws_char>* [<percentage>|<num>] <ws_char>* ','
-                   <ws_char>* [<percentage>|<num>] <ws_char>*
+                   <ws_char>* $<r>=[<percentage>|<num>] <ws_char>* ','
+                   <ws_char>* $<g>=[<percentage>|<num>] <ws_char>* ','
+                   <ws_char>* $<b>=[<percentage>|<num>] <ws_char>*
                    [')' | <unclosed_paren>]
     }
 

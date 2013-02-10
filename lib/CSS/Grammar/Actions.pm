@@ -79,18 +79,26 @@ class CSS::Grammar::Actions {
     method id($/) { make $<name>.ast }
     method class($/) { make $<name>.ast }
 
-    method _dim($/) {
-        my %dim;
-        %dim<qty units> =  ($<num>.ast,  $0.Str);
-        return %dim;
+    role _Units_Stub {
+        # interim units role; just until there's more appropriate modules
+        # available. A role-based port of Math::Units or similar, might be in
+        # order
+        has Str $.units is rw;
     }
 
-    method percentage($/) { make $._dim($/); }
-    method length($/) { make $._dim($/); }
-    method angle($/) { make $._dim($/); }
-    method time($/) { make $._dim($/); }
-    method freq($/) { make $._dim($/); }
-    method dimension($/) { make $._dim($/); }
+    method _qty($/) {
+        my $qty = $<num>.ast
+            does _Units_Stub;
+        $qty.units = $0.Str;
+        return $qty;
+    }
+
+    method percentage($/) { make $._qty($/); }
+    method length($/) { make $._qty($/); }
+    method angle($/) { make $._qty($/); }
+    method time($/) { make $._qty($/); }
+    method freq($/) { make $._qty($/); }
+    method dimension($/) { make $._qty($/); }
 
     method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
     method url_spec($/) {
@@ -99,6 +107,12 @@ class CSS::Grammar::Actions {
             !! $.ast( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/) { make $<url_spec>.ast; }
+
+    method rgb($/) {
+        my %rgb;
+        %rgb<r g b> = ($<r>, $<g>, $<b>);
+        make %rgb;
+    }
 
     method expr_missing($/) {
         $.warning("incomplete declaration");
