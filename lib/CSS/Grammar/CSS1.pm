@@ -45,14 +45,15 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule term_etc { <term> | <skipped_term> }
+    rule term_etc { <uterm> | <term> | <skipped_term> }
 
+    proto rule uterm {<...>}
+    rule uterm:sym<length>     {<length>}
+    rule uterm:sym<percentage> {<percentage>}
+    rule uterm:sym<num>        {<num>}
+    rule uterm:sym<ems>        {:i'em'}
+    rule uterm:sym<exs>        {:i'ex'}
     proto rule term {<...>}
-    rule term:sym<length>     {<length>}
-    rule term:sym<percentage> {<percentage>}
-    rule term:sym<num>        {<num>}
-    rule term:sym<ems>        {:i'em'}
-    rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
     rule term:sym<rgb>        {<rgb>}
     rule term:sym<url>        {<url>}

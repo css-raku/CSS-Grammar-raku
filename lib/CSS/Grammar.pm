@@ -54,7 +54,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
     token dimension      {<num>(<[a..zA..Z]>\w*)}
 
-    token url_delim_char {\( | \) | "'"| '"' | <ws_char>}
+    token url_delim_char {\( | \) | "'" | '"' | <ws_char>}
     token url_char       {<escape>|<- url_delim_char>}
     token url_spec       {<string>|<url_char>*}
 

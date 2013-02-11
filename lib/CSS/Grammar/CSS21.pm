@@ -60,20 +60,23 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule expr { <unary_operator>? <term_etc>
+    rule expr { <term_etc>
                     [ <operator>? <term_etc> ]* }
 
-    rule term_etc { <term> | [<!before ')'><skipped_term>] }
+    rule term_etc { <unary_operator>? <uterm> | <term> | [<!before ')'><skipped_term>] }
 
+    # uterm - able to be prefixed by a unary operator
+    proto rule uterm {<...>}
+    rule uterm:sym<length>     {<length>}
+    rule uterm:sym<angle>      {<angle>}
+    rule uterm:sym<freq>       {<freq>}
+    rule uterm:sym<percentage> {<percentage>}
+    rule uterm:sym<dimension>  {<dimension>}
+    rule uterm:sym<num>        {<num>}
+    rule uterm:sym<ems>        {:i'em'}
+    rule uterm:sym<exs>        {:i'ex'}
+    # term - these can't be prefixed by a unary operator
     proto rule term {<...>}
-    rule term:sym<length>     {<length>}
-    rule term:sym<angle>      {<angle>}
-    rule term:sym<freq>       {<freq>}
-    rule term:sym<percentage> {<percentage>}
-    rule term:sym<dimension>  {<dimension>}
-    rule term:sym<num>        {<num>}
-    rule term:sym<ems>        {:i'em'}
-    rule term:sym<exs>        {:i'ex'}
     rule term:sym<hexcolor>   {<id>}
     rule term:sym<url>        {<url>}
     rule term:sym<rgb>        {<rgb>}

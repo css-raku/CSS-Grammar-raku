@@ -33,6 +33,17 @@ class CSS::Grammar::Actions {
         push @.warnings, $warning;
     }
 
+    method mop($/) {
+        # lazy way of collecting terms
+        my %terms;
+
+        for $/.caps.grep({defined $_.value.ast}) -> $term {
+            push( %terms{ $term.key }, $term.value.ast );
+        }
+
+        return %terms;
+    }
+
     method nl($/) {$.line_no++;}
 
     method skipped_term($/) {
@@ -115,14 +126,35 @@ class CSS::Grammar::Actions {
         make %rgb;
     }
 
+    method expr($/) {
+        make $.mop( $/ );
+    }
+
     method expr_missing($/) {
         $.warning("incomplete declaration");
     }
 
-    method term:sym<dimension>($/) {
+    method uterm:sym<length>($/)     { make $<length>.ast }
+    method uterm:sym<angle>($/)      { make $<angle>.ast }
+    method uterm:sym<freq>($/)       { make $<freq>.ast }
+    method uterm:sym<percentage>($/) { make $<percentage>.ast }
+    method uterm:sym<dimension>($/)  {
         $.warning('unknown dimensioned quantity', $/.Str);
         my $ast = $<dimension>.ast;
         make $.ast($ast, :skip(True));
+    }
+    method uterm:sym<num>($/)        { make $<num>.ast }
+    method uterm:sym<ems>($/)        { make $/.Str.lc }
+    method term:sym<exs>($/)         { make $/.Str.lc }
+
+    method term:sym<hexcolor>($/)   { make $<id>.ast }
+    method term:sym<url>($/)        { make $<url>.ast }
+    method term:sym<rgb>($/)        { make $<rgb>.ast }
+    method term:sym<function>($/)   { make $<function>.ast }
+    method term:sym<ident>($/)      { make $<ident>.ast }
+
+    method term_etc($/) {
+        make $<term>.ast if $<term>;
     }
 
     method unclosed_comment($/) {
@@ -144,6 +176,8 @@ class CSS::Grammar::Actions {
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
     # utiltity methods / subs
+
+    method function($/) {make $.mop($/)}
 
     sub _from_hex($hex) {
 
