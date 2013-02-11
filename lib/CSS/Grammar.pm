@@ -63,10 +63,10 @@ grammar CSS::Grammar:ver<0.0.1> {
     token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_paren>] }
     token unclosed_paren {''}
 
-    token rgb {:i'rgb('
-                   <ws_char>* $<r>=[<percentage>|<num>] <ws_char>* ','
-                   <ws_char>* $<g>=[<percentage>|<num>] <ws_char>* ','
-                   <ws_char>* $<b>=[<percentage>|<num>] <ws_char>*
+    rule rgb {:i'rgb('
+                   [<r=.percentage>|<r=.num>] ','
+                   [<g=.percentage>|<g=.num>] ','
+                   [<b=.percentage>|<b=.num>]
                    [')' | <unclosed_paren>]
     }
 

@@ -123,15 +123,8 @@ class CSS::Grammar::Actions {
     }
     method url($/) { make $<url_spec>.ast; }
 
-    method rgb($/) {
-        my %rgb;
-        %rgb<r g b> = ($<r>, $<g>, $<b>);
-        make %rgb;
-    }
-
-    method expr($/) {
-        make $.mop( $/ );
-    }
+    method rgb($/)  { make $.mop($/) }
+    method expr($/) { make $.mop($/) }
 
     method expr_missing($/) {
         $.warning("incomplete declaration");
