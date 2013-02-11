@@ -34,6 +34,7 @@ for (
     id => {input => '#z0y\021', ast => 'z0y!'},
     percentage => {input => '50%', ast => 50, units => '%'},
     class => {input => '.zippy', ast => 'zippy'},
+    class => {input => '.\55ft', ast => Buf.new(0x55f).decode('ISO-8859-1')~'t'},
     length => {input => '2.52cm', ast => 2.52, units => 'cm'},
     url_spec => {input => '"http://www.bg.com/pinkish.gif"',
                  ast => 'http://www.bg.com/pinkish.gif',
@@ -97,9 +98,9 @@ for (
     # CSS21  Expressions
     expr => {input => 'top, #CCC, #DDD'},
     ident => {input => '-moz-linear-gradient',
-              # neither css1 or css2 allow leading '-'
+              # css doesn't allow leading '-'
               css1 => {parse => ''},
-              css2 => {parse => ''},
+              css2 => {ast => '-moz-linear-gradient'},
     },
     # css2 understands some functions
     expr => {input => '-moz-linear-gradient(top, #CCC, #DDD)',
@@ -117,7 +118,7 @@ for (
     dimension => {input => '70deg', ast => 70, units => 'deg'},
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
                 css1 => {
-                    warnings => ['unknown dimensioned quantity: 70deg']
+                    warnings => ['skipping term: 70deg']
                 }
     },
     TOP => {input => 'H1 { color: blue; }'},
@@ -142,7 +143,7 @@ for (
                 warnings => ["no closing '}'"],
                 css1 => {
                     warnings => ["no closing '}'",
-                                 'unknown dimensioned quantity: 70deg']
+                                 'skipping term: 70deg']
                 }
     },
 
@@ -170,28 +171,28 @@ for (
 
     # CSS1 Compat
     my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    my $parsed1 = %$css1<parse> // %$css2<parse> // $input;
+    my $parsed1 = %$css1<parse> // $input;
 
     is($p1.Str, $parsed1, "css1: " ~ $rule ~ " parse: " ~ $input);
 
-    my @css1_expected_warnings = %$css1<warnings> // %$css2<warnings> // %test<warnings> // ();
+    my @css1_expected_warnings = %$css1<warnings> // %test<warnings> // ();
     my @css1_warnings = sort $css_actions.warnings;
     is(@css1_warnings, @css1_expected_warnings,
        @css1_expected_warnings ?? 'css1 warnings' !! 'css1 no warnings');
 
-    if defined (my $ast1 = %$css1<ast> // %$css2<ast> // %test<ast>) {
+    if defined (my $ast1 = %$css1<ast> // %test<ast>) {
         is($p1.ast, $ast1, 'css1 - ast')
             or diag $p1.ast.perl
     }
 
-    if defined (my $units1 = %$css1<units> // %$css2<units> // %test<units>) {
+    if defined (my $units1 = %$css1<units> // %test<units>) {
         if ok($p1.ast.can('units'), "css1 does units") {
             is($p1.ast.units, $units1, 'css1 - units')
                 or diag $p1.ast.units
             }
     }
 
-    if defined (my $skip1 = %$css1<skip> // %$css2<skip> // %test<skip>) {
+    if defined (my $skip1 = %$css1<skip> // %test<skip>) {
         is($p1.ast.skip, $skip1, 'css1 - skip is ' ~ $skip1);
     }
 

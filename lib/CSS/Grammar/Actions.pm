@@ -53,7 +53,8 @@ class CSS::Grammar::Actions {
         make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
     }
     method ident($/) {
-        make $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $dash = $0 ?? $0.Str !! '';
+        make $dash ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
     }
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');

@@ -5,6 +5,17 @@ use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::Actions;
 
+for ("\\012AF", "\\012AFc") {
+    # css2 unicode is up to 6 digits
+    ok($_ !~~ /^<CSS::Grammar::CSS1::unicode>$/, "not css1 unicode: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS21::unicode>$/, "css2 unicode: $_");
+}
+
+for ('70deg') { 
+    ok($_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::ident>$/, "css2 angle: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS21::angle>$/, "css2 angle: $_");
+}
+
 # from: http://www.w3.org/Style/CSS/Test/CSS1/current/sec71.htm
 my $css3_sample = q:to/END_CSS3/;
 @Import 'foo.bar';

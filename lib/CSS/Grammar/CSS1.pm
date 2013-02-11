@@ -50,7 +50,6 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     proto rule term {<...>}
     rule term:sym<length>     {<length>}
     rule term:sym<percentage> {<percentage>}
-    rule term:sym<dimension>  {<dimension>}
     rule term:sym<num>        {<num>}
     rule term:sym<ems>        {:i'em'}
     rule term:sym<exs>        {:i'ex'}
@@ -76,9 +75,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     # 'lexer' css1 exceptions
 
-    # css1 identifiers - don't allow '_'
+    # css1 identifiers - don't allow '_' or leading '-'
     token nmstrt         {(<[a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {(<[\- a..z A..Z 0..9]>)|<nonascii>|<escape>}
+    token ident          {<nmstrt><nmchar>*}
     # -- css1 unicode escape sequences only extend to 4 chars
     rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
 }
