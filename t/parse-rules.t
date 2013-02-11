@@ -60,13 +60,22 @@ for (
     simple_selector => {input => 'BODY'},
     selector => {input => 'A:visited'},
     selector => {input => ':visited'},
-    selector => {input => '.some_class'},
-    selector => {input => '.some_class:link'},
-    name => {input => 'some_class'},
-    element_name => {input => 'BODY', class => '.some_class'},
-    simple_selector => {input => 'BODY.some_class'},
+    # Note: CSS1 doesn't allow '_' in names or identifiers
+    selector => {input => '.some_class',
+                 css1 => {parse => '.some'},
+    },
+    selector => {input => '.some_class:link',
+                 css1 => {parse => '.some'},
+    },
+    name => {input => 'some_class',
+                 css1 => {parse => 'some'},
+    },
+    element_name => {input => 'BODY'},
+    simple_selector => {input => 'BODY.some_class',
+                 css1 => {parse => 'BODY.some'},
+    },
     pseudo => {input => ':first-line'},
-    selector => {input => 'BODY.some_class:active'},
+    selector => {input => 'BODY.some-class:active'},
     selector => {input => '#my-id :first-line'},
     selector => {input => 'A:first-letter'},
     selector => {input => 'A:Link IMG'},
@@ -85,6 +94,18 @@ for (
     expr => {input => '13mm EM'},
     expr => {input => '-1CM'},
     expr => {input => '2px solid blue'},
+    # CSS21  Expressions
+    expr => {input => 'top, #CCC, #DDD'},
+    ident => {input => '-moz-linear-gradient',
+              # neither css1 or css2 allow leading '-'
+              css1 => {parse => ''},
+              css2 => {parse => ''},
+    },
+    # css2 understands some functions
+    expr => {input => '-moz-linear-gradient(top, #CCC, #DDD)',
+             css1 => {warnings => ['skipping term: (top, #CCC, #DDD)']},
+    },
+    expr => {input => '12px/20px'},
     declaration => {input => 'line-height: 1.1'},
     declaration => {input => 'line-height: 1.1px'},
     declaration => {input => 'margin: 1em'},
@@ -144,11 +165,14 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    ok($p1, "css1: " ~ $rule ~ " parse: " ~ $input);
-
     my $css1 =  %test<css1> // {};
     my $css2 =  %test<css2> // {};
+
+    # CSS1 Compat
+    my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
+    my $parsed1 = %$css1<parse> // %$css2<parse> // $input;
+
+    is($p1.Str, $parsed1, "css1: " ~ $rule ~ " parse: " ~ $input);
 
     my @css1_expected_warnings = %$css1<warnings> // %$css2<warnings> // %test<warnings> // ();
     my @css1_warnings = sort $css_actions.warnings;
@@ -171,9 +195,12 @@ for (
         is($p1.ast.skip, $skip1, 'css1 - skip is ' ~ $skip1);
     }
 
+    # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    ok($p2, "css2: " ~ $rule ~ " parse: " ~ $input);
+    my $parsed2 = %$css2<parse> // $input;
+
+    is($p2.Str, $parsed2, "css2: " ~ $rule ~ " parse: " ~ $input);
 
     my @css2_expected_warnings = %$css2<warnings> // %test<warnings> // ();
     my @css2_warnings = sort $css_actions.warnings;

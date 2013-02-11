@@ -144,7 +144,7 @@ class CSS::Grammar::Actions {
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
     # utiltity methods / subs
 
-    sub _from_hex($hex) is pure {
+    sub _from_hex($hex) {
 
         my $result = 0;
 

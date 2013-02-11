@@ -75,7 +75,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule pseudo_element_etc {<pseudo_element>|<pseudo_skipped>}
 
     # 'lexer' css1 exceptions
-    
+
+    # css1 identifiers - don't allow '_'
+    token nmstrt         {(<[a..z A..Z]>)|<nonascii>|<escape>}
+    token nmchar         {(<[\- a..z A..Z 0..9]>)|<nonascii>|<escape>}
     # -- css1 unicode escape sequences only extend to 4 chars
     rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
 }

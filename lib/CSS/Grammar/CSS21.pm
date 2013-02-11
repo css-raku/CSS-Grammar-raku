@@ -63,7 +63,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule expr { <unary_operator>? <term_etc>
                     [ <operator>? <term_etc> ]* }
 
-    rule term_etc { <term> | <skipped_term> }
+    rule term_etc { <term> | [<!before ')'><skipped_term>] }
 
     proto rule term {<...>}
     rule term:sym<length>     {<length>}
@@ -77,8 +77,8 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule term:sym<hexcolor>   {<id>}
     rule term:sym<url>        {<url>}
     rule term:sym<rgb>        {<rgb>}
-    rule term:sym<ident>      {<ident>}
     rule term:sym<function>   {<function>}
+    rule term:sym<ident>      {<ident>}
 
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
@@ -86,7 +86,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
                           |                [<id> | <class> | <pseudo>]+ }
 
     rule pseudo       {':' [<function>|<ident>] }
-    rule function     { <ident>'(' <expr> ')' }
+    token function     {<ident> '(' <expr> ')'}
 
     # 'lexer' css2 exceptions
 }

@@ -25,8 +25,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
     token nonascii       {<[\o241..\o377]>}
     token escape         {<unicode>|'\\'$<char>=<[\o40..~ ¡..ÿ]>}
-    token nmstrt         {(<[a..z A..Z]>)|<nonascii>|<escape>}
-    token nmchar         {(<[\- a..z A..Z 0..9]>)|<nonascii>|<escape>}
+    token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
+    token nmchar         {(<[_ \- a..z A..Z 0..9]>)|<nonascii>|<escape>}
     token ident          {<nmstrt><nmchar>*}
     token name           {<nmchar>+}
     token d              {<[0..9]>}
@@ -76,7 +76,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting
-    token skipped_term  {[<ws_char>|<string>|<-[;}]>]+}
+    token skipped_term  {[<ws_char>|<string>|<!after ')'><-[;}]>]+}
 
     proto token unknown {<...>}
     token unknown:sym<string>      {<string>}
