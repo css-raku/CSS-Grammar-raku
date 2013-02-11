@@ -37,8 +37,11 @@ class CSS::Grammar::Actions {
         # lazy way of collecting terms
         my %terms;
 
-        for $/.caps.grep({defined $_.value.ast}) -> $term {
-            push( %terms{ $term.key }, $term.value.ast );
+        for $/.caps -> $cap {
+            my ($key, $value) = $cap.kv;
+            next unless defined $value.ast;
+
+            push( %terms{ $key.subst(/_etc$/,'') }, $value.ast );
         }
 
         return %terms;
@@ -145,7 +148,7 @@ class CSS::Grammar::Actions {
     }
     method uterm:sym<num>($/)        { make $<num>.ast }
     method uterm:sym<ems>($/)        { make $/.Str.lc }
-    method term:sym<exs>($/)         { make $/.Str.lc }
+    method uterm:sym<exs>($/)        { make $/.Str.lc }
 
     method term:sym<hexcolor>($/)   { make $<id>.ast }
     method term:sym<url>($/)        { make $<url>.ast }
@@ -154,7 +157,8 @@ class CSS::Grammar::Actions {
     method term:sym<ident>($/)      { make $<ident>.ast }
 
     method term_etc($/) {
-        make $<term>.ast if $<term>;
+        my $term = $<uterm> || $<term>;
+        make $term.ast if $term;
     }
 
     method unclosed_comment($/) {
