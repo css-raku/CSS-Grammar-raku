@@ -40,12 +40,11 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
         | <skipped_term>
     }
 
-    rule expr { <unary_operator>? <term_etc>
-                    [ <operator>? <term_etc> ]* }
+    rule expr { <term_etc> [ <operator>? <term_etc> ]* }
 
     rule expr_missing {''}
 
-    rule term_etc { <uterm> | <term> | <skipped_term> }
+    rule term_etc { <unary_operator>? [ <term=.uterm> | <term> | <skipped_term> ] }
 
     proto rule uterm {<...>}
     rule uterm:sym<length>     {<length>}
@@ -54,10 +53,10 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule uterm:sym<ems>        {:i'em'}
     rule uterm:sym<exs>        {:i'ex'}
     proto rule term {<...>}
-    rule term:sym<hexcolor>   {<id>}
-    rule term:sym<rgb>        {<rgb>}
-    rule term:sym<url>        {<url>}
-    rule term:sym<ident>      {<ident>}
+    rule term:sym<hexcolor>    {<id>}
+    rule term:sym<rgb>         {<rgb>}
+    rule term:sym<url>         {<url>}
+    rule term:sym<ident>       {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>?}
 
@@ -66,13 +65,12 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
                           | <class> <pseudo_class_etc>?
                           | <pseudo_class_etc> }
 
-    rule pseudo {<pseudo_class> | <pseudo_element> | <pseudo_other>}
     rule pseudo_class   {':'(:i link|visited|active)}
     rule pseudo_element {':'(:i first\-[line|letter])}
-    rule pseudo_skipped {':'<ident>}
+    rule pseudo         {':'<ident>}
 
-    rule pseudo_class_etc   {<pseudo_class>|<pseudo_skipped>}
-    rule pseudo_element_etc {<pseudo_element>|<pseudo_skipped>}
+    rule pseudo_class_etc   {<pseudo_class>|<pseudo>}
+    rule pseudo_element_etc {<pseudo_element>|<pseudo>}
 
     # 'lexer' css1 exceptions
 

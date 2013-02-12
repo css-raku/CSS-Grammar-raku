@@ -13,7 +13,8 @@ class CSS::Grammar::Actions {
     # accumulated warnings
     has @.warnings;
 
-    method ast(Mu $ast, :$skip, :$type, ) {
+    method leaf(Mu $ast, :$skip, :$type, ) {
+        # make a leaf element (token)
         $ast
             does CSS::Grammar::AST::Info
             unless $ast.can('css_type');
@@ -25,16 +26,8 @@ class CSS::Grammar::Actions {
         return $ast;
     }
 
-    method warning ($message, $str?) {
-        my $warning = $message;
-        $warning ~= ': ' ~ $str if $str;
-        $warning does CSS::Grammar::AST::Info;
-        $warning.line_no = $.line_no;
-        push @.warnings, $warning;
-    }
-
-    method mop($/) {
-        # lazy way of collecting terms
+    method node($/) {
+        # make an intermediate node
         my %terms;
 
         for $/.caps -> $cap {
@@ -45,6 +38,14 @@ class CSS::Grammar::Actions {
         }
 
         return %terms;
+    }
+
+    method warning ($message, $str?) {
+        my $warning = $message;
+        $warning ~= ': ' ~ $str if $str;
+        $warning does CSS::Grammar::AST::Info;
+        $warning.line_no = $.line_no;
+        push @.warnings, $warning;
     }
 
     method nl($/) {$.line_no++;}
@@ -88,7 +89,7 @@ class CSS::Grammar::Actions {
             $skip = True;
         }
         my $string = $<stringchar>.map({ $_.ast }).join('');
-        make $.ast($string, :type('string'), :skip($skip) );
+        make $.leaf($string, :type('string'), :skip($skip) );
     }
 
     method id($/) { make $<name>.ast }
@@ -119,12 +120,26 @@ class CSS::Grammar::Actions {
     method url_spec($/) {
         make $<string>
             ?? $<string>.ast
-            !! $.ast( $<url_char>.map({$_.ast}).join('') );
+            !! $.leaf( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/) { make $<url_spec>.ast; }
+    method rgb($/)  { make $.node($/) }
 
-    method rgb($/)  { make $.mop($/) }
-    method expr($/) { make $.mop($/) }
+    method media_list($/) { make $.node($/) }
+    method medium($/) { make $.node($/) }
+
+    method unary_operator($/) { make $.leaf($/.Str) }
+    method operator($/) { make $.leaf($/.Str) }
+    method combinator($/) { make $.leaf($/.Str) }
+
+    # css2
+    method ruleset($/)      { make $.node($/) }
+    method property($/)     { make $.node($/) }
+    method declarations($/) { make $.node($/) }
+    method rulesets($/)     { make $.node($/) }
+    method declaration($/)  { make $.node($/) }
+
+    method expr($/) { make $.node($/) }
 
     method expr_missing($/) {
         $.warning("incomplete declaration");
@@ -137,11 +152,11 @@ class CSS::Grammar::Actions {
     method uterm:sym<dimension>($/)  {
         $.warning('unknown dimensioned quantity', $/.Str);
         my $ast = $<dimension>.ast;
-        make $.ast($ast, :skip(True));
+        make $.leaf($ast, :skip(True));
     }
     method uterm:sym<num>($/)        { make $<num>.ast }
-    method uterm:sym<ems>($/)        { make $/.Str.lc }
-    method uterm:sym<exs>($/)        { make $/.Str.lc }
+    method uterm:sym<ems>($/)        { make $.leaf($/.Str.lc) }
+    method uterm:sym<exs>($/)        { make $.leaf($/.Str.lc) }
 
     method term:sym<hexcolor>($/)   { make $<id>.ast }
     method term:sym<url>($/)        { make $<url>.ast }
@@ -150,8 +165,14 @@ class CSS::Grammar::Actions {
     method term:sym<ident>($/)      { make $<ident>.ast }
 
     method term_etc($/) {
-        my $term = $<uterm> || $<term>;
-        make $term.ast if $term;
+        if (my $term = $<term>) {
+            my $term_ast = $term.ast;
+            $term_ast does CSS::Grammar::AST::Info
+                unless $term_ast.can('unary_operator');
+            $term_ast.unary_operator = $<unary_operator>
+                if $<unary_operator>;
+            make $term_ast;
+        }
     }
 
     method unclosed_comment($/) {
@@ -172,9 +193,19 @@ class CSS::Grammar::Actions {
     method unknown:sym<name>($/) {$.warning('skipping', $/)}
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
-    # utiltity methods / subs
 
-    method function($/) {make $.mop($/)}
+    method selector($/) { make $.node($/) }
+    method simple_selector($/) { make $.node($/) }
+
+    method psuedo($/)   { make $.leaf($0.Str.lc) }
+    method function($/) { make $.node($/) }
+    #css1
+    method psuedo_class($/)     { make $.leaf($0.Str.lc) }
+    method psuedo_class_etc($/) { make $.node($/) }
+    method psuedo_element($/)   { make $.leaf($0.Str.lc) }
+    method psuedo_element_etc($/) { make $.node($/) }
+
+    # utiltity methods / subs
 
     sub _from_hex($hex) {
 

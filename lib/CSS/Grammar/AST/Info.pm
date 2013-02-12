@@ -8,6 +8,8 @@ role CSS::Grammar::AST::Info {
 
     has $.css_type is rw;
 
+    has $.unary_operator is rw;
+
     # $.line_no - source line number
     has Int $.line_no is rw;
 }

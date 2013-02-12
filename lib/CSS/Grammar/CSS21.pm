@@ -60,10 +60,9 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule expr { <term_etc>
-                    [ <operator>? <term_etc> ]* }
+    rule expr { <term_etc> [ <operator>? <term_etc> ]* }
 
-    rule term_etc { <unary_operator>? <uterm> | <term> | [<!before ')'><skipped_term>] }
+    rule term_etc { <unary_operator>? <term=.uterm> | <term> | [<!before ')'><skipped_term>] }
 
     # uterm - able to be prefixed by a unary operator
     proto rule uterm {<...>}
@@ -77,11 +76,11 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule uterm:sym<exs>        {:i'ex'}
     # term - these can't be prefixed by a unary operator
     proto rule term {<...>}
-    rule term:sym<hexcolor>   {<id>}
-    rule term:sym<url>        {<url>}
-    rule term:sym<rgb>        {<rgb>}
-    rule term:sym<function>   {<function>}
-    rule term:sym<ident>      {<ident>}
+    rule term:sym<hexcolor>    {<id>}
+    rule term:sym<url>         {<url>}
+    rule term:sym<rgb>         {<rgb>}
+    rule term:sym<function>    {<function>}
+    rule term:sym<ident>       {<ident>}
 
     token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
 
@@ -89,7 +88,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
                           |                [<id> | <class> | <pseudo>]+ }
 
     rule pseudo       {':' [<function>|<ident>] }
-    token function     {<ident> '(' <expr> ')'}
+    token function    {<ident> '(' <expr> ')'}
 
     # 'lexer' css2 exceptions
 }
