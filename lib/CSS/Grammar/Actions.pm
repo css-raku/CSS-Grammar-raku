@@ -33,11 +33,27 @@ class CSS::Grammar::Actions {
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
             next unless defined $value.ast;
+            $key = $key.subst(/_etc$/, '');
+            die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
+                if %terms.exists($key);
 
-            push( %terms{ $key.subst(/_etc$/,'') }, $value.ast );
+            %terms{$key} = $value.ast;
         }
 
         return %terms;
+    }
+
+    method list($/) {
+        my @terms;
+
+        for $/.caps -> $cap {
+            my ($key, $value) = $cap.kv;
+            next unless defined $value.ast;
+            $key = $key.subst(/_etc$/, '');
+            push @terms, ($key => $value.ast);
+        }
+
+        return @terms;
     }
 
     method warning ($message, $str?) {
@@ -49,6 +65,8 @@ class CSS::Grammar::Actions {
     }
 
     method nl($/) {$.line_no++;}
+
+    method element_name($/) {make $<ident>.ast}
 
     method skipped_term($/) {
         $.warning('skipping term', $/.Str);
@@ -110,11 +128,11 @@ class CSS::Grammar::Actions {
     }
 
     method percentage($/) { make $._qty($/); }
-    method length($/) { make $._qty($/); }
-    method angle($/) { make $._qty($/); }
-    method time($/) { make $._qty($/); }
-    method freq($/) { make $._qty($/); }
-    method dimension($/) { make $._qty($/); }
+    method length($/)     { make $._qty($/); }
+    method angle($/)      { make $._qty($/); }
+    method time($/)       { make $._qty($/); }
+    method freq($/)       { make $._qty($/); }
+    method dimension($/)  { make $._qty($/); }
 
     method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
     method url_spec($/) {
@@ -122,8 +140,20 @@ class CSS::Grammar::Actions {
             ?? $<string>.ast
             !! $.leaf( $<url_char>.map({$_.ast}).join('') );
     }
-    method url($/) { make $<url_spec>.ast; }
+    method url($/)  { make $<url_spec>.ast; }
     method rgb($/)  { make $.node($/) }
+
+    # from the TOP (CSS1 + CSS21)
+    method TOP($/) { make $<stylesheet>.ast }
+    method stylesheet($/) { make $.list($/) }
+    method import_etc($/) { make $.node($/) }
+    method rule_etc($/)   { make $.node($/) }
+
+    method charset($/) { make $.leaf($<charset>.ast) }
+    method import($/)  { make $.leaf( ($<string> || $<url>).ast ) }
+
+    method  at_rule:sym<media>($/) { make $.node($/) }
+    method  at_rule:sym<page>($/) { make $.node($/) }
 
     method media_list($/) { make $.node($/) }
     method medium($/) { make $.node($/) }
@@ -135,11 +165,11 @@ class CSS::Grammar::Actions {
     # css2
     method ruleset($/)      { make $.node($/) }
     method property($/)     { make $.node($/) }
-    method declarations($/) { make $.node($/) }
-    method rulesets($/)     { make $.node($/) }
+    method declarations($/) { make $.list($/) }
+    method rulesets($/)     { make $.list($/) }
     method declaration($/)  { make $.node($/) }
 
-    method expr($/) { make $.node($/) }
+    method expr($/) { make $.list($/) }
 
     method expr_missing($/) {
         $.warning("incomplete declaration");
@@ -194,7 +224,7 @@ class CSS::Grammar::Actions {
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
 
-    method selector($/) { make $.node($/) }
+    method selector($/) { make $.list($/) }
     method simple_selector($/) { make $.node($/) }
 
     method psuedo($/)   { make $.leaf($0.Str.lc) }

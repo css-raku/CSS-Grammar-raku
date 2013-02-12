@@ -20,20 +20,18 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
                       | $<unexpected>=[<charset>|<import>] 
                       | <unknown> }
 
-    rule charset { \@(:i'charset') <charset=string> ';' }
+    rule charset { \@(:i'charset') <charset=.string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <rulesets> }
-    rule at_rule:sym<page>    { \@(:i'page')  <page=pseudo>? <declarations> }
+    rule at_rule:sym<page>    { \@(:i'page')  <page=.pseudo>? <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
 
     rule unary_operator {'-'}
-
     rule operator {'/'|','}
-
     rule combinator {'-'|'+'}
 
     rule ruleset {

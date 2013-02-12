@@ -126,7 +126,6 @@ for (
                     warnings => ['skipping term: 70deg']
                 }
     },
-    TOP => {input => 'H1 { color: blue; }'},
     ruleset => {input => 'H1 { color }',
                 warnings => ['skipping term: color '],
     },
@@ -163,7 +162,9 @@ for (
                     'unterminated string',
                     ]
     },
-    
+
+    # from the top
+    TOP => {input => 'H1 { color: blue; }; H2 {color: green}'},
     ) {
 
     my $rule = $_.key;
@@ -187,7 +188,15 @@ for (
 
     if defined (my $ast1 = %$css1<ast> // %test<ast>) {
         is($p1.ast, $ast1, 'css1 - ast')
-            or diag $p1.ast.perl
+            or diag $p1.ast.perl;
+    }
+    else {
+        if defined $p1.ast {
+            note {untested_css1_ast =>  $p1.ast}.perl;
+        }
+        else {
+            diag "no css1 ast: " ~ $input;
+        }
     }
 
     if defined (my $units1 = %$css1<units> // %test<units>) {
@@ -215,7 +224,15 @@ for (
 
     if defined (my $ast2 = %$css2<ast> // %test<ast>) {
         is($p2.ast, $ast2, 'css2 - ast')
-            or diag $p1.ast.perl
+            or diag $p2.ast.perl
+    }
+    else {
+        if defined $p2.ast {
+            note {untested_css1_ast =>  $p1.ast}.perl;
+        }
+        else {
+            diag "no css2 ast: " ~ $input;
+        }
     }
 
     if defined (my $units2 = %$css2<units> // %test<units>) {
