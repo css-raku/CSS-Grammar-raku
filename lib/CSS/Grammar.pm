@@ -56,11 +56,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token url_delim_char {\( | \) | "'" | '"' | <ws_char>}
     token url_char       {<escape>|<- url_delim_char>}
-    token url_spec       {<string>|<url_char>*}
+    token url_string     {<string>|<url_char>*}
 
     # productions
 
-    token url  {:i'url(' <ws_char>* <url_spec> <ws_char>* [')' | <unclosed_paren>] }
+    rule url  {:i'url(' <url_string> [')' | <unclosed_paren>] }
     token unclosed_paren {''}
 
     rule rgb {:i'rgb('

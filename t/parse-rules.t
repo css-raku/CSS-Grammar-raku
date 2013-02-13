@@ -36,17 +36,11 @@ for (
     class => {input => '.zippy', ast => 'zippy'},
     class => {input => '.\55ft', ast => Buf.new(0x55f).decode('ISO-8859-1')~'t'},
     length => {input => '2.52cm', ast => 2.52, units => 'cm'},
-    url_spec => {input => '"http://www.bg.com/pinkish.gif"',
-                 ast => 'http://www.bg.com/pinkish.gif',
-    },
-    url_spec => {input => 'http://www.bg.com/pinkish.gif',
-                 ast => 'http://www.bg.com/pinkish.gif',
-    },
     url => {input => 'url("http://www.bg.com/pinkish.gif")',
-                 ast => 'http://www.bg.com/pinkish.gif',
+            ast => 'http://www.bg.com/pinkish.gif',
     },
     url => {input => 'URL(http://www.bg.com/pinkish.gif)',
-                 ast => 'http://www.bg.com/pinkish.gif',
+            ast => 'http://www.bg.com/pinkish.gif',
     },
     url => {input => 'URL(http://www.bg.com/pinkish.gif',
             ast => 'http://www.bg.com/pinkish.gif',
@@ -54,34 +48,74 @@ for (
             skip => False,
     },
     url => {input => 'URL("http://www.bg.com/pinkish.gif',
+            ast => 'http://www.bg.com/pinkish.gif',
             warnings => ["missing closing ')'", 'unterminated string'],
             skip => True,
     },
     rgb => {input => 'Rgb(10, 20, 30)',
             ast => {r => 10, g => 20, b => 30}},
-    pseudo => {input => ':visited'},
-    import => {input => "@import 'file:///etc/passwd';"},
-    import => {input => "@IMPORT 'file:///etc/group';"},
-    class => {input => '.class'},
-    simple_selector => {input => 'BODY'},
-    selector => {input => 'A:visited'},
-    selector => {input => ':visited'},
+    pseudo => {input => ':visited', ast => {ident => 'visited'}},
+    import => {input => "@import url('file:///etc/passwd');",
+               ast => {url => 'file:///etc/passwd'}},
+    import => {input => "@IMPORT '/etc/group';",
+               ast => {string => '/etc/group'}},
+    class => {input => '.class', ast => 'class'},
+    simple_selector => {input => 'BODY',
+                        ast => {element_name => 'BODY'},},
+    selector => {input => 'A:visited',
+                 css1 => {
+                     ast => {"simple_selector"
+                                 => {"element_name" => "A",
+                                     "pseudo_class" => "visited"}},
+                 },
+                 css2 => {
+                     ast => {"simple_selector"
+                                 => {"element_name" => "A",
+                                     "pseudo" => {"ident" => "visited"}}},
+                 },
+    },
+    selector => {input => ':visited',
+                 css1 => {
+                     ast => {"simple_selector"
+                                 => {pseudo_class => "visited"}},
+                 },
+                 css2 => {
+                     ast => {"simple_selector"
+                                 => {pseudo => {ident => "visited"}}},
+                 },
+    },
     # Note: CSS1 doesn't allow '_' in names or identifiers
     selector => {input => '.some_class',
-                 css1 => {parse => '.some'},
+                 css1 => {parse => '.some',
+                          ast => {simple_selector => {class => 'some'}}},
+                 css2 => {ast => {simple_selector => {class => 'some_class'}}},
     },
     selector => {input => '.some_class:link',
-                 css1 => {parse => '.some'},
+                 css1 => {parse => '.some',
+                          ast => {"simple_selector"
+                                      => {"class" => "some"}}},
+                 css2 => {ast => {"simple_selector"
+                                      => {"class" => "some_class",
+                                          "pseudo" => {"ident" => "link"}}}},
     },
-    name => {input => 'some_class',
-                 css1 => {parse => 'some'},
-    },
-    element_name => {input => 'BODY'},
     simple_selector => {input => 'BODY.some_class',
-                 css1 => {parse => 'BODY.some'},
+                        css1 => {parse => 'BODY.some',
+                                 ast => {"element_name" => "BODY",
+                                         "class" => "some"}},
+                        css2 => {ast => {"element_name" => "BODY",
+                                         "class" => "some_class"}},
     },
-    pseudo => {input => ':first-line'},
-    selector => {input => 'BODY.some-class:active'},
+    pseudo => {input => ':first-line', ast => {ident => 'first-line'}},
+    selector => {input => 'BODY.some-class:active',
+                 css1 => {ast => {"simple_selector"
+                                      => {"element_name" => "BODY",
+                                          "class" => "some-class",
+                                          "pseudo_class" => "active"}}},
+                 css2 => {ast => {"simple_selector"
+                                      => {"element_name" => "BODY",
+                                          "class" => "some-class",
+                                          "pseudo" => {"ident" => "active"}}}},
+    },
     selector => {input => '#my-id :first-line'},
     selector => {input => 'A:first-letter'},
     selector => {input => 'A:Link IMG'},
@@ -228,7 +262,7 @@ for (
     }
     else {
         if defined $p2.ast {
-            note {untested_css1_ast =>  $p1.ast}.perl;
+            note {untested_css2_ast =>  $p2.ast}.perl;
         }
         else {
             diag "no css2 ast: " ~ $input;

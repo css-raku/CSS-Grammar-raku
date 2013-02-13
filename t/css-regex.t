@@ -32,11 +32,11 @@ for (chr(0), ' ', '~') {
 } 
 
 for ('http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif') {
-    ok($_ ~~ /^<CSS::Grammar::url_spec>$/, "css1 url_spec: $_");
+    ok($_ ~~ /^<CSS::Grammar::url_string>$/, "css1 url_string: $_");
 }
 
 for ('http://www.bg.com/pink(ish).gif') {
-    ok($_ !~~ /^<CSS::Grammar::url_spec>$/, "not css1 url_spec: $_");
+    ok($_ !~~ /^<CSS::Grammar::url_string>$/, "not css1 url_string: $_");
 }
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t', '-i') {

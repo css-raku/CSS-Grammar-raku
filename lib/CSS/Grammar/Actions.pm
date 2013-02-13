@@ -44,6 +44,7 @@ class CSS::Grammar::Actions {
     }
 
     method list($/) {
+        # make a node that contains repeatable elements
         my @terms;
 
         for $/.caps -> $cap {
@@ -54,6 +55,12 @@ class CSS::Grammar::Actions {
         }
 
         return @terms;
+    }
+
+    method etc($/) {
+        # grouping node that contains one matched child
+        my ($cap) = $/.caps;
+        return $cap.value.ast;
     }
 
     method warning ($message, $str?) {
@@ -115,8 +122,8 @@ class CSS::Grammar::Actions {
 
     role _Units_Stub {
         # interim units role; just until there's more appropriate modules
-        # available. A role-based port of Math::Units or similar, might be in
-        # order
+        # available. A role-based port of Math::Units or similar, might be
+        # in order
         has Str $.units is rw;
     }
 
@@ -135,22 +142,22 @@ class CSS::Grammar::Actions {
     method dimension($/)  { make $._qty($/); }
 
     method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
-    method url_spec($/) {
+    method url_string($/) {
         make $<string>
             ?? $<string>.ast
             !! $.leaf( $<url_char>.map({$_.ast}).join('') );
     }
-    method url($/)  { make $<url_spec>.ast; }
+    method url($/)  { make $<url_string>.ast }
     method rgb($/)  { make $.node($/) }
 
     # from the TOP (CSS1 + CSS21)
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.list($/) }
-    method import_etc($/) { make $.node($/) }
-    method rule_etc($/)   { make $.node($/) }
+    method import_etc($/) { make $.etc($/) }
+    method rule_etc($/)   { make $.etc($/) }
 
-    method charset($/) { make $.leaf($<charset>.ast) }
-    method import($/)  { make $.leaf( ($<string> || $<url>).ast ) }
+    method charset($/) { make $.leaf( $<charset>.ast ) }
+    method import($/)  { make $.node($/) }
 
     method  at_rule:sym<media>($/) { make $.node($/) }
     method  at_rule:sym<page>($/) { make $.node($/) }
@@ -203,6 +210,9 @@ class CSS::Grammar::Actions {
                 if $<unary_operator>;
             make $term_ast;
         }
+        else {
+            make $.etc($/);
+        }
     }
 
     method unclosed_comment($/) {
@@ -218,7 +228,7 @@ class CSS::Grammar::Actions {
             unless $<closing_paren>;
     }
 
-    # this can get a bit too verbose
+    # todo: warnings can get a bit too verbose here
     method unknown:sym<string>($/) {$.warning('skipping', $/)}
     method unknown:sym<name>($/) {$.warning('skipping', $/)}
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
@@ -227,13 +237,13 @@ class CSS::Grammar::Actions {
     method selector($/) { make $.list($/) }
     method simple_selector($/) { make $.node($/) }
 
-    method psuedo($/)   { make $.leaf($0.Str.lc) }
+    method pseudo($/)   { make $.node($/) }
     method function($/) { make $.node($/) }
     #css1
-    method psuedo_class($/)     { make $.leaf($0.Str.lc) }
-    method psuedo_class_etc($/) { make $.node($/) }
-    method psuedo_element($/)   { make $.leaf($0.Str.lc) }
-    method psuedo_element_etc($/) { make $.node($/) }
+    method pseudo_class($/)       { make $0.Str }
+    method pseudo_class_etc($/)   { make $.etc($/) }
+    method pseudo_element($/)     { make $0.Str }
+    method pseudo_element_etc($/) { make $.etc($/) }
 
     # utiltity methods / subs
 
