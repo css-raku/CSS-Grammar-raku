@@ -116,7 +116,42 @@ for (
                                           "class" => "some-class",
                                           "pseudo" => {"ident" => "active"}}}},
     },
-    selector => {input => '#my-id :first-line'},
+    # Test for whitespace sensitivity in selectors
+    selector => {input => '#my-id /* white-space */ :first-line',
+                 css1 => {
+                     ast => [
+                         "simple_selector" => {"id" => "my-id"},
+                         "simple_selector" => {"pseudo_class" => {"ident" => "first-line"}}],
+                 },
+                 css2 => {
+                     ast => [
+                         "simple_selector" => {"id" => "my-id"},
+                         "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]
+             }
+    },
+    selector => {input => '#my-id:first-line',
+                 css1 => {
+                     ast => ["simple_selector" => {"id" => "my-id",
+                                                       "pseudo_class" => {"ident" => "first-line"}}],
+                 },
+                 css2 => {
+                     ast => ["simple_selector" => {"id" => "my-id", "pseudo" => {"ident" => "first-line"}}],
+                 },
+    },
+    selector => {input => '#my-id+:first-line',
+                 css1 => {parse => '#my-id',
+                          ast => ["simple_selector" => {"id" => "my-id"}]},
+                 css2 => {ast => ["simple_selector" => {"id" => "my-id"},
+                                  "combinator" => "+",
+                                  "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
+    },
+    selector => {input => '#my-id + :first-line',
+                 css1 => {parse => '#my-id',
+                          ast => ["simple_selector" => {"id" => "my-id"}]},
+                 css2 => {ast => ["simple_selector" => {"id" => "my-id"},
+                                  "combinator" => "+",
+                                  "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
+    },
     selector => {input => 'A:first-letter'},
     selector => {input => 'A:Link IMG'},
     term => {input => '#eeeeee'},

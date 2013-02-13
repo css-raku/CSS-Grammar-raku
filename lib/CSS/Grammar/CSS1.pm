@@ -24,16 +24,16 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule ruleset {
         <!after \@> # not an "@" rule
-        <selector> [',' <selector>]* <declarations>
+        <selector> <declarations>
     }
 
-    rule property {<ident>}
-
-    rule declarations {
+   rule declarations {
         '{' <declaration> [';' <declaration> ]* ';'? <end_block>
     }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
+
+    rule property {<ident>}
 
     rule declaration {
         <property> ':' [ <expr> <prio>? | <expr_missing> ]
@@ -58,7 +58,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<url>         {<url>}
     rule term:sym<ident>       {<ident>}
 
-    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>?}
+    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>? [<.ws>?',']?}
 
     token simple_selector { <element_name> <id>? <class>? <pseudo_class_etc>?
                           | <id> <class>? <pseudo_class_etc>?

@@ -36,10 +36,8 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule ruleset {
         <!after \@> # not an "@" rule
-        <selector> [',' <selector>]* <declarations>
+        <selector> <declarations>
     }
-
-    rule property {<ident>}
 
     rule declarations {
         '{' <declaration> [';' <declaration> ]* ';'? <end_block>
@@ -49,7 +47,13 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
         '{' <ruleset>* <end_block>
     }
 
+    rule selectors {
+        <selector> [',' <selector>]*
+    }
+
     rule end_block {[$<closing_paren>='}' ';'?]?}
+
+    rule property {<ident>}
 
     rule declaration {
          <property> ':' [ <expr> <prio>? | <expr_missing> ]
@@ -80,7 +84,10 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule term:sym<function>    {<function>}
     rule term:sym<ident>       {<ident>}
 
-    token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
+    # the css2 selector rule make no sense to me ...
+    ## token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
+    # ... i've just used the css3 rule
+    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]* [<.ws>?',']?}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
                           |                [<id> | <class> | <pseudo>]+ }
