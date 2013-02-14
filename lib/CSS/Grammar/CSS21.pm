@@ -58,9 +58,9 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule expr { <term_etc> [ <operator>? <term_etc> ]* }
+    rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term_etc { <unary_operator>? <term=.uterm> | <term> | [<!before ')'><skipped_term>] }
+    rule term { <unary_operator>? <term=.uterm> | <term=_term> | [<!before ')'><skipped_term>] }
 
     # uterm - able to be prefixed by a unary operator
     proto rule uterm {<...>}
@@ -72,14 +72,14 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule uterm:sym<num>        {<num>}
     rule uterm:sym<ems>        {:i'em'}
     rule uterm:sym<exs>        {:i'ex'}
-    # term - these can't be prefixed by a unary operator
-    proto rule term {<...>}
-    rule term:sym<string>      {<string>}
-    rule term:sym<url>         {<url>}
-    rule term:sym<rgb>         {<rgb>}
-    rule term:sym<hexcolor>    {<id>}
-    rule term:sym<function>    {<function>}
-    rule term:sym<ident>       {<ident>}
+    # _term - these can't be prefixed by a unary operator
+    proto rule _term {<...>}
+    rule _term:sym<string>     {<string>}
+    rule _term:sym<url>        {<url>}
+    rule _term:sym<rgb>        {<rgb>}
+    rule _term:sym<hexcolor>   {<id>}
+    rule _term:sym<function>   {<function>}
+    rule _term:sym<ident>      {<ident>}
 
     # the css2 selector rule make no sense to me ...
     ## token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}

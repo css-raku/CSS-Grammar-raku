@@ -33,7 +33,6 @@ class CSS::Grammar::Actions {
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
             next unless defined $value.ast;
-            $key = $key.subst(/_etc$/, '');
             die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
                 if %terms.exists($key);
 
@@ -50,17 +49,10 @@ class CSS::Grammar::Actions {
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
             next unless defined $value.ast;
-            $key = $key.subst(/_etc$/, '');
             push @terms, ($key => $value.ast);
         }
 
         return @terms;
-    }
-
-    method etc($/) {
-        # grouping node that contains one matched child
-        my ($cap) = $/.caps;
-        return $cap.value.ast;
     }
 
     method warning ($message, $str?) {
@@ -193,14 +185,14 @@ class CSS::Grammar::Actions {
     method uterm:sym<ems>($/)        { make $.leaf($/.Str.lc) }
     method uterm:sym<exs>($/)        { make $.leaf($/.Str.lc) }
 
-    method term:sym<string>($/)     { make $<string>.ast }
-    method term:sym<hexcolor>($/)   { make $<id>.ast }
-    method term:sym<url>($/)        { make $<url>.ast }
-    method term:sym<rgb>($/)        { make $<rgb>.ast }
-    method term:sym<function>($/)   { make $<function>.ast }
-    method term:sym<ident>($/)      { make $<ident>.ast }
+    method _term:sym<string>($/)     { make $<string>.ast }
+    method _term:sym<hexcolor>($/)   { make $<id>.ast }
+    method _term:sym<url>($/)        { make $<url>.ast }
+    method _term:sym<rgb>($/)        { make $<rgb>.ast }
+    method _term:sym<function>($/)   { make $<function>.ast }
+    method _term:sym<ident>($/)      { make $<ident>.ast }
 
-    method term_etc($/) {
+    method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {
             $term_ast does CSS::Grammar::AST::Info
                 unless $term_ast.can('unary_operator');
@@ -209,7 +201,7 @@ class CSS::Grammar::Actions {
             make $term_ast;
         }
         else {
-            make $.etc($/);
+            ##make (skipped => $<skipped_term>.ast);
         }
     }
 
