@@ -124,17 +124,18 @@ for (
                                   "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
     },
     selector => {input => 'A:first-letter',
-                 ast => ["simple_selector"
-                         => {"element_name" => "A",
-                             "pseudo" => {"ident" => "first-letter"}}]
+                 ast => ["simple_selector" => {"element_name" => "A",
+                                               "pseudo" => {"ident" => "first-letter"}}],
     },
     selector => {input => 'A:Link IMG',
-                 ast => {"element_name" => "A", "pseudo" => {"ident" => "Link"}}, "simple_selector" => {"element_name" => "IMG"},
+                 ast => ["simple_selector" => {"element_name" => "A",
+                                               "pseudo" => {"ident" => "Link"}},
+                          "simple_selector" => {"element_name" => "IMG"}],
     },
     term => {input => '#eeeeee', ast => 'eeeeee'},
     term => {input => 'rgb(17%, 33%, 70%)',
              ast => {r => 17, g => 33, b => 70},
-    }
+    },
     term => {input => 'rgb(17%, 33%, 70%',
              warnings => ["missing closing ')'"],
              ast => {r => 17, g => 33, b => 70},
@@ -146,7 +147,9 @@ for (
     uterm => {input => 'em', ast => 'em'},
     uterm => {input => '01.10', ast => 1.1},
     expr => {input => 'RGB(70,133,200 ), #fff',
-             ast => ["term" => {"r" => 70e0, "g" => 133e0, "b" => 200e0}, "operator" => ",", "term" => "fff"],
+             ast => ["term" => {"r" => 70, "g" => 133, "b" => 200},
+                     "operator" => ",",
+                     "term" => "fff"],
     },
     expr => {input => "'Helvetica Neue',helvetica-neue, helvetica",
              ast => ["term" => "Helvetica Neue", "operator" => ",",
@@ -156,7 +159,7 @@ for (
     expr => {input => '13mm EM', ast => ["term" => 13, "term" => "em"]},
     expr => {input => '-1CM', ast => [term => 1]},
     expr => {input => '2px solid blue',
-             ast => ["term" => 2e0, "term" => "solid", "term" => "blue"],
+             ast => ["term" => 2, "term" => "solid", "term" => "blue"],
     },
     # CSS21  Expressions
     expr => {input => 'top,ccc/#IDID',
@@ -194,16 +197,40 @@ for (
                     ast => {"property" => {"ident" => "margin"},
                             "expr" => ["term" => 1]},
     },
-    declaration => {input => 'border: 2px solid blue'},
-    ruleset => {input => 'H1 { color: blue; }',},
-    ruleset => {input => 'A:link H1 { color: blue; }'},
-    ruleset => {input => 'H1#abc { color: blue; }'},
-    ruleset => {input => 'A.external:visited { color: blue; }'},
+    declaration => {input => 'border: 2px solid blue',
+                    ast => {"property" => {"ident" => "border"},
+                            "expr" => ["term" => 2,
+                                       "term" => "solid",
+                                       "term" => "blue"]},
+    },
+    ruleset => {input => 'H1 { color: blue; }',
+                ast => {"selector" => ["simple_selector" => {"element_name" => "H1"}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+    },
+    ruleset => {input => 'A:link H1 { color: blue; }',
+                ast => {"selector" => ["simple_selector" => {"element_name" => "A",
+                                                             "pseudo" => {"ident" => "link"}},
+                                       "simple_selector" => {"element_name" => "H1"}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+    },
+    ruleset => {input => 'H1#abc { color: blue; }',
+                ast => {"selector" => ["simple_selector" => {"element_name" => "H1", "id" => "abc"}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+    },
+    ruleset => {input => 'A.external:visited { color: blue; }',
+                ast => {"selector" => ["simple_selector" => {"element_name" => "A", "class" => "external", "pseudo" => {"ident" => "visited"}}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                                             "expr" => ["term" => "blue"]}]},
+    },
     dimension => {input => '70deg', ast => 70, units => 'deg'},
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
+                ast => {"selector" => ["simple_selector" => {"element_name" => "H2"}], "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}, "declaration" => {"property" => {"ident" => "rotation"}, "expr" => ["term" => 70]}]},
                 css1 => {
-                    warnings => ['skipping term: 70deg']
-                }
+                    warnings => ['skipping term: 70deg'],
+                    ast => {"selector" => ["simple_selector" => {"element_name" => "H2"}],
+                            "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]},
+                                               "declaration" => {"property" => {"ident" => "rotation"}, "expr" => []}]},
+                },
     },
     ruleset => {input => 'H1 { color }',
                 warnings => ['skipping term: color '],
@@ -242,7 +269,33 @@ for (
     },
 
     # from the top
-    TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n\@import 'too-late';\nH2\{color:green\}"},
+    TOP => {input => "@charset 'bazinga';\n",
+            css1 => {
+                warnings => [q{skipping: @charset 'bazinga';}]
+            },
+            css2 => {
+                ast => [charset => "bazinga"],
+            },
+    },
+    TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
+            ast => ["import" => {"string" => "foo"},
+                    "ruleset" => {"selector" => ["simple_selector" => {"element_name" => "H1"}],
+                                  "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+                    "ruleset" => {"selector" => ["simple_selector" => {"element_name" => "H2"}], 
+                                  "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}]}],
+            css1 => {
+                warnings => [
+                    q{ignoring out of sequence declaration: @import 'too-late';},
+                    q{skipping: @charset 'bazinga';},
+                    ],
+            },
+            css2 => {
+                warnings => [
+                    q{ignoring out of sequence declaration: @charset 'bazinga';},
+                    q{ignoring out of sequence declaration: @import 'too-late';},
+                    ],
+            }
+    },
     ) {
 
     my $rule = $_.key;

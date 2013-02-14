@@ -14,7 +14,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
                         [<import> | <unexpected>]*
                         [<at_rule> | <ruleset> | <unexpected> | <unknown>]* }
 
-    rule charset { \@(:i'charset') <charset=.string> ';' }
+    rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
     rule unexpected {<charset>|<import>}

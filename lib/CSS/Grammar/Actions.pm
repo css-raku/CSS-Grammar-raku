@@ -32,11 +32,12 @@ class CSS::Grammar::Actions {
 
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
-            next unless defined $value.ast;
+            $value = $value.ast;
+            next unless defined $value;
             die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
                 if %terms.exists($key);
 
-            %terms{$key} = $value.ast;
+            %terms{$key} = $value;
         }
 
         return %terms;
@@ -48,8 +49,9 @@ class CSS::Grammar::Actions {
 
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
-            next unless defined $value.ast;
-            push @terms, ($key => $value.ast);
+            $value = $value.ast;
+            next unless defined $value;
+            push @terms, ($key => $value);
         }
 
         return @terms;
@@ -60,7 +62,7 @@ class CSS::Grammar::Actions {
         $warning ~= ': ' ~ $str if $str;
         $warning does CSS::Grammar::AST::Info;
         $warning.line_no = $.line_no;
-        push @.warnings, $warning;
+        push @.warnings, $warning.chomp;
     }
 
     method nl($/) {$.line_no++;}
@@ -146,10 +148,12 @@ class CSS::Grammar::Actions {
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.list($/) }
 
-    method charset($/) { make $.leaf( $<charset>.ast ) }
-    method import($/)  { make $.node($/) }
+    method charset($/)  { make $<string>.ast }
+    method import($/)   { make $.node($/) }
 
-    method unexpected($/) { make $.node($/) }
+    method unexpected($/) {
+        $.warning('ignoring out of sequence declaration', $/.Str)
+    }
     method  at_rule:sym<media>($/) { make $.node($/) }
     method  at_rule:sym<page>($/) { make $.node($/) }
 
