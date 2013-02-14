@@ -172,10 +172,10 @@ for (
     expr => {input => '2px solid blue'},
     # CSS21  Expressions
     expr => {input => 'top, #CCC, #DDD'},
-    ident => {input => '-moz-linear-gradient',
-              # css doesn't allow leading '-'
-              css1 => {parse => ''},
-              css2 => {ast => '-moz-linear-gradient'},
+    expr => {input => '-moz-linear-gradient',
+              # css1 treats leading '-' as an operator
+              css1 => {ast => ["term" => "moz-linear-gradient"]},
+              css2 => {ast => ["term" => "-moz-linear-gradient"]},
     },
     # css2 understands some functions
     expr => {input => '-moz-linear-gradient(top, #CCC, #DDD)',

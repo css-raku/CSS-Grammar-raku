@@ -165,7 +165,6 @@ class CSS::Grammar::Actions {
     method media_list($/) { make $.node($/) }
     method medium($/) { make $.node($/) }
 
-    method unary_operator($/) { make $.leaf($/.Str) }
     method operator($/) { make $.leaf($/.Str) }
     method combinator($/) { make $.leaf($/.Str) }
 
@@ -203,10 +202,10 @@ class CSS::Grammar::Actions {
     method term:sym<ident>($/)      { make $<ident>.ast }
 
     method term_etc($/) {
-        if $<term> && defined (my $term_ast = $<term_ast>) {
+        if $<term> && defined (my $term_ast = $<term>.ast) {
             $term_ast does CSS::Grammar::AST::Info
                 unless $term_ast.can('unary_operator');
-            $term_ast.unary_operator = $<unary_operator>
+            $term_ast.unary_operator = $<unary_operator>.Str
                 if $<unary_operator>;
             make $term_ast;
         }
