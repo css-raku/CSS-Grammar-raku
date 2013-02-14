@@ -59,26 +59,20 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule term:sym<url>         {<url>}
     rule term:sym<ident>       {<ident>}
 
-    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo_element_etc>? [<.ws>?',']?}
+    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>? [<.ws>?',']?}
 
-    token simple_selector { <element_name> <id>? <class>? <pseudo_class_etc>?
-                          | <id> <class>? <pseudo_class_etc>?
-                          | <class> <pseudo_class_etc>?
-                          | <pseudo_class_etc> }
+    token simple_selector { <element_name> <id>? <class>? <pseudo>?
+                          | <id> <class>? <pseudo>?
+                          | <class> <pseudo>?
+                          | <pseudo> }
 
-    rule pseudo_class   {':'(:i link|visited|active)}
-    rule pseudo_element {':'(:i first\-[line|letter])}
-    rule pseudo         {':'<ident>}
+    rule pseudo  {':'<ident>}
 
-    rule pseudo_class_etc   {<pseudo_class>|<pseudo>}
-    rule pseudo_element_etc {<pseudo_element>|<pseudo>}
-
-    # 'lexer' css1 exceptions
-
-    # css1 identifiers - don't allow '_' or leading '-'
-    token nmstrt         {(<[a..z A..Z]>)|<nonascii>|<escape>}
-    token nmchar         {(<[\- a..z A..Z 0..9]>)|<nonascii>|<escape>}
-    token ident          {<nmstrt><nmchar>*}
+    # 'lexer' css1 exceptions:
+    # -- css1 identifiers - don't allow '_' or leading '-'
+    token nmstrt {(<[a..z A..Z]>)|<nonascii>|<escape>}
+    token nmchar {(<[\- a..z A..Z 0..9]>)|<nonascii>|<escape>}
+    token ident  {<nmstrt><nmchar>*}
     # -- css1 unicode escape sequences only extend to 4 chars
     rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
 }

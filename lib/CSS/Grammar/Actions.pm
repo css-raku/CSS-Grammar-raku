@@ -238,11 +238,6 @@ class CSS::Grammar::Actions {
 
     method pseudo($/)   { make $.node($/) }
     method function($/) { make $.node($/) }
-    #css1
-    method pseudo_class($/)       { make {ident => $0.Str} }
-    method pseudo_class_etc($/)   { make $.etc($/) }
-    method pseudo_element($/)     { make {ident => $0.Str} }
-    method pseudo_element_etc($/) { make $.etc($/) }
 
     # utiltity methods / subs
 

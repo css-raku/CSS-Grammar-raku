@@ -63,26 +63,13 @@ for (
     simple_selector => {input => 'BODY',
                         ast => {element_name => 'BODY'},},
     selector => {input => 'A:Visited',
-                 css1 => {
-                     ast => {"simple_selector"
-                                 => {"element_name" => "A",
-                                     "pseudo_class" => {"ident" => "Visited"}}},
-                 },
-                 css2 => {
-                     ast => {"simple_selector"
-                                 => {"element_name" => "A",
-                                     "pseudo" => {"ident" => "Visited"}}},
-                 },
+                 ast => {"simple_selector"
+                             => {"element_name" => "A",
+                                 "pseudo" => {"ident" => "Visited"}}},
     },
     selector => {input => ':visited',
-                 css1 => {
-                     ast => {"simple_selector"
-                                 => {pseudo_class => {ident => "visited"}}},
-                 },
-                 css2 => {
-                     ast => {"simple_selector"
-                                 => {pseudo => {ident => "visited"}}},
-                 },
+                 ast => {"simple_selector"
+                             => {pseudo => {ident => "visited"}}},
     },
     # Note: CSS1 doesn't allow '_' in names or identifiers
     selector => {input => '.some_class',
@@ -107,36 +94,19 @@ for (
     },
     pseudo => {input => ':first-line', ast => {ident => 'first-line'}},
     selector => {input => 'BODY.some-class:active',
-                 css1 => {ast => {"simple_selector"
-                                      => {"element_name" => "BODY",
-                                          "class" => "some-class",
-                                          "pseudo_class" => {ident => "active"}}}},
-                 css2 => {ast => {"simple_selector"
-                                      => {"element_name" => "BODY",
-                                          "class" => "some-class",
-                                          "pseudo" => {"ident" => "active"}}}},
+                 ast => {"simple_selector"
+                             => {"element_name" => "BODY",
+                                 "class" => "some-class",
+                                 "pseudo" => {"ident" => "active"}}},
     },
     # Test for whitespace sensitivity in selectors
     selector => {input => '#my-id /* white-space */ :first-line',
-                 css1 => {
-                     ast => [
-                         "simple_selector" => {"id" => "my-id"},
-                         "simple_selector" => {"pseudo_class" => {"ident" => "first-line"}}],
-                 },
-                 css2 => {
-                     ast => [
-                         "simple_selector" => {"id" => "my-id"},
-                         "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]
-             }
+                 ast => [
+                     "simple_selector" => {"id" => "my-id"},
+                     "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]
     },
     selector => {input => '#my-id:first-line',
-                 css1 => {
-                     ast => ["simple_selector" => {"id" => "my-id",
-                                                       "pseudo_class" => {"ident" => "first-line"}}],
-                 },
-                 css2 => {
-                     ast => ["simple_selector" => {"id" => "my-id", "pseudo" => {"ident" => "first-line"}}],
-                 },
+                 ast => ["simple_selector" => {"id" => "my-id", "pseudo" => {"ident" => "first-line"}}],
     },
     selector => {input => '#my-id+:first-line',
                  css1 => {parse => '#my-id',
@@ -145,6 +115,7 @@ for (
                                   "combinator" => "+",
                                   "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
     },
+    # css1 doesn't understand '+' combinator
     selector => {input => '#my-id + :first-line',
                  css1 => {parse => '#my-id',
                           ast => ["simple_selector" => {"id" => "my-id"}]},
@@ -152,7 +123,11 @@ for (
                                   "combinator" => "+",
                                   "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
     },
-    selector => {input => 'A:first-letter'},
+    selector => {input => 'A:first-letter',
+                 ast => ["simple_selector"
+                         => {"element_name" => "A",
+                             "pseudo" => {"ident" => "first-letter"}}]
+    },
     selector => {input => 'A:Link IMG'},
     term => {input => '#eeeeee'},
     term => {input => 'rgb(17%, 33%, 70%)'},
