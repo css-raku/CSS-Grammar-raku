@@ -62,22 +62,22 @@ for (
     class => {input => '.class', ast => 'class'},
     simple_selector => {input => 'BODY',
                         ast => {element_name => 'BODY'},},
-    selector => {input => 'A:visited',
+    selector => {input => 'A:Visited',
                  css1 => {
                      ast => {"simple_selector"
                                  => {"element_name" => "A",
-                                     "pseudo_class" => "visited"}},
+                                     "pseudo_class" => {"ident" => "Visited"}}},
                  },
                  css2 => {
                      ast => {"simple_selector"
                                  => {"element_name" => "A",
-                                     "pseudo" => {"ident" => "visited"}}},
+                                     "pseudo" => {"ident" => "Visited"}}},
                  },
     },
     selector => {input => ':visited',
                  css1 => {
                      ast => {"simple_selector"
-                                 => {pseudo_class => "visited"}},
+                                 => {pseudo_class => {ident => "visited"}}},
                  },
                  css2 => {
                      ast => {"simple_selector"
@@ -110,7 +110,7 @@ for (
                  css1 => {ast => {"simple_selector"
                                       => {"element_name" => "BODY",
                                           "class" => "some-class",
-                                          "pseudo_class" => "active"}}},
+                                          "pseudo_class" => {ident => "active"}}}},
                  css2 => {ast => {"simple_selector"
                                       => {"element_name" => "BODY",
                                           "class" => "some-class",
