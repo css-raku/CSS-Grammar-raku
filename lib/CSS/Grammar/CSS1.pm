@@ -53,6 +53,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule uterm:sym<ems>        {:i'em'}
     rule uterm:sym<exs>        {:i'ex'}
     proto rule term {<...>}
+    rule term:sym<string>      {<string>}
     rule term:sym<hexcolor>    {<id>}
     rule term:sym<rgb>         {<rgb>}
     rule term:sym<url>         {<url>}

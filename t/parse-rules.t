@@ -166,6 +166,7 @@ for (
     uterm => {input => 'em'},
     uterm => {input => '1.1'},
     expr => {input => 'RGB(70,133,200 ), #fff'},
+    expr => {input => "'Helvetica Neue',helvetica-neue, helvetica"},
     expr => {input => '13mm EM'},
     expr => {input => '-1CM'},
     expr => {input => '2px solid blue'},
@@ -227,7 +228,6 @@ for (
     ruleset => {input => 'H2 { test: "this is not closed',
                 warnings => [
                     "no closing '}'",
-                    'skipping term: "this is not closed',
                     'unterminated string',
                     ]
     },

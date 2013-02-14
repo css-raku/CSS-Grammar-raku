@@ -78,9 +78,10 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule uterm:sym<exs>        {:i'ex'}
     # term - these can't be prefixed by a unary operator
     proto rule term {<...>}
-    rule term:sym<hexcolor>    {<id>}
+    rule term:sym<string>      {<string>}
     rule term:sym<url>         {<url>}
     rule term:sym<rgb>         {<rgb>}
+    rule term:sym<hexcolor>    {<id>}
     rule term:sym<function>    {<function>}
     rule term:sym<ident>       {<ident>}
 

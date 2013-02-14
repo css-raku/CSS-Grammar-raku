@@ -195,6 +195,7 @@ class CSS::Grammar::Actions {
     method uterm:sym<ems>($/)        { make $.leaf($/.Str.lc) }
     method uterm:sym<exs>($/)        { make $.leaf($/.Str.lc) }
 
+    method term:sym<string>($/)     { make $<string>.ast }
     method term:sym<hexcolor>($/)   { make $<id>.ast }
     method term:sym<url>($/)        { make $<url>.ast }
     method term:sym<rgb>($/)        { make $<rgb>.ast }
@@ -202,8 +203,7 @@ class CSS::Grammar::Actions {
     method term:sym<ident>($/)      { make $<ident>.ast }
 
     method term_etc($/) {
-        if (my $term = $<term>) {
-            my $term_ast = $term.ast;
+        if $<term> && defined (my $term_ast = $<term_ast>) {
             $term_ast does CSS::Grammar::AST::Info
                 unless $term_ast.can('unary_operator');
             $term_ast.unary_operator = $<unary_operator>
