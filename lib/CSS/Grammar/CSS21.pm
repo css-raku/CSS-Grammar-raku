@@ -10,18 +10,14 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule TOP {^ <stylesheet> $}
 
     # productions
-    rule stylesheet   { <charset>? <import_etc>* <rule_etc>* }
-
-    rule import_etc   { <import>
-                      | $<unexpected>=<charset>
-                      }
-
-    rule rule_etc     { <at_rule> | <ruleset>
-                      | $<unexpected>=[<charset>|<import>] 
-                      | <unknown> }
+    rule stylesheet   { <charset>?
+                        [<import> | <unexpected>]*
+                        [<at_rule> | <ruleset> | <unexpected> | <unknown>]* }
 
     rule charset { \@(:i'charset') <charset=.string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
+
+    rule unexpected {<charset>|<import>}
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <rulesets> }

@@ -153,12 +153,11 @@ class CSS::Grammar::Actions {
     # from the TOP (CSS1 + CSS21)
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.list($/) }
-    method import_etc($/) { make $.etc($/) }
-    method rule_etc($/)   { make $.etc($/) }
 
     method charset($/) { make $.leaf( $<charset>.ast ) }
     method import($/)  { make $.node($/) }
 
+    method unexpected($/) { make $.node($/) }
     method  at_rule:sym<media>($/) { make $.node($/) }
     method  at_rule:sym<page>($/) { make $.node($/) }
 
