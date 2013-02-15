@@ -143,7 +143,7 @@ class CSS::Grammar::Actions {
     }
     method url($/)  { make $<url_string>.ast }
     method rgb($/)  { make $.node($/) }
-    method prio($/) { make $0.Str.lc }
+    method prio($/) { make $0.Str.lc if $0}
 
     # from the TOP (CSS1 + CSS21)
     method TOP($/) { make $<stylesheet>.ast }
