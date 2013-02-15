@@ -43,7 +43,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule term { <unary_operator>? [ <term=.uterm> | <term=._term> | <skipped_term> ] }
+    rule term { <unary_operator>? [ <term=.uterm> | <term=._term> | <!before <[\!]>><skipped_term> ] }
 
     proto rule uterm {<...>}
     rule uterm:sym<length>     {<length>}

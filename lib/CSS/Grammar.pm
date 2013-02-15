@@ -70,7 +70,7 @@ grammar CSS::Grammar:ver<0.0.1> {
                    [')' | <unclosed_paren>]
     }
 
-    token prio {:i'!important'}
+    token prio {'!':i('important')}
 
     token element_name {<ident>}
 

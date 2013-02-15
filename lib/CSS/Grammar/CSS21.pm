@@ -60,7 +60,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>? <term=.uterm> | <term=_term> | [<!before ')'><skipped_term>] }
+    rule term { <unary_operator>? <term=.uterm> | <term=_term> | [<!before <[\!\)]>><skipped_term>] }
 
     # uterm - able to be prefixed by a unary operator
     proto rule uterm {<...>}
