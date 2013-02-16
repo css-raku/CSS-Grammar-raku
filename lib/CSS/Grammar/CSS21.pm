@@ -10,9 +10,9 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule TOP {^ <stylesheet> $}
 
     # productions
-    rule stylesheet   { <charset>?
-                        [<import> | <unexpected>]*
-                        [<at_rule> | <ruleset> | <unexpected> | <unknown>]* }
+    rule stylesheet { <charset>?
+                      [<import> | <unexpected>]*
+                      [<at_rule> | <ruleset> | <unexpected> | <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
@@ -83,7 +83,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     # the css2 selector rule make no sense to me ...
     ## token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
-    # ... i've just used the css3 rule
+    # ... i've just adopted the css3 rule
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]* [<.ws>?',']?}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*

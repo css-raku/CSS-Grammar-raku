@@ -23,7 +23,7 @@ for ("\\f", "\\012f", "\\012A") {
 }
 
 # nonascii
-for ('¡', "\o250", 'ÿ') {
+for ('¡', "\o250", 'ÿ', '') {
     ok($_ ~~ /^<CSS::Grammar::nonascii>$/, "nonascii: $_");
 }
 

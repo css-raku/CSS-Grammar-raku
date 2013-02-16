@@ -73,24 +73,24 @@ for (
     },
     # Note: CSS1 doesn't allow '_' in names or identifiers
     selector => {input => '.some_class',
+                 ast => {simple_selector => {class => 'some_class'}},
                  css1 => {parse => '.some',
                           ast => {simple_selector => {class => 'some'}}},
-                 css2 => {ast => {simple_selector => {class => 'some_class'}}},
     },
     selector => {input => '.some_class:link',
+                 ast => {"simple_selector"
+                             => {"class" => "some_class",
+                                 "pseudo" => {"ident" => "link"}}},
                  css1 => {parse => '.some',
                           ast => {"simple_selector"
                                       => {"class" => "some"}}},
-                 css2 => {ast => {"simple_selector"
-                                      => {"class" => "some_class",
-                                          "pseudo" => {"ident" => "link"}}}},
     },
     simple_selector => {input => 'BODY.some_class',
+                        ast => {"element_name" => "BODY",
+                                "class" => "some_class"},
                         css1 => {parse => 'BODY.some',
                                  ast => {"element_name" => "BODY",
                                          "class" => "some"}},
-                        css2 => {ast => {"element_name" => "BODY",
-                                         "class" => "some_class"}},
     },
     pseudo => {input => ':first-line', ast => {ident => 'first-line'}},
     selector => {input => 'BODY.some-class:active',
@@ -109,19 +109,19 @@ for (
                  ast => ["simple_selector" => {"id" => "my-id", "pseudo" => {"ident" => "first-line"}}],
     },
     selector => {input => '#my-id+:first-line',
+                 ast => ["simple_selector" => {"id" => "my-id"},
+                         "combinator" => "+",
+                         "simple_selector" => {"pseudo" => {"ident" => "first-line"}}],
                  css1 => {parse => '#my-id',
                           ast => ["simple_selector" => {"id" => "my-id"}]},
-                 css2 => {ast => ["simple_selector" => {"id" => "my-id"},
-                                  "combinator" => "+",
-                                  "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
     },
     # css1 doesn't understand '+' combinator
     selector => {input => '#my-id + :first-line',
+                 ast => ["simple_selector" => {"id" => "my-id"},
+                                  "combinator" => "+",
+                                  "simple_selector" => {"pseudo" => {"ident" => "first-line"}}],
                  css1 => {parse => '#my-id',
                           ast => ["simple_selector" => {"id" => "my-id"}]},
-                 css2 => {ast => ["simple_selector" => {"id" => "my-id"},
-                                  "combinator" => "+",
-                                  "simple_selector" => {"pseudo" => {"ident" => "first-line"}}]}
     },
     selector => {input => 'A:first-letter',
                  ast => ["simple_selector" => {"element_name" => "A",
@@ -168,22 +168,21 @@ for (
                      "term" => 'IDID'],
     },
     expr => {input => '-moz-linear-gradient',
-              # css1 treats leading '-' as an operator
-              css1 => {ast => ["term" => "moz-linear-gradient"]},
-              css2 => {ast => ["term" => "-moz-linear-gradient"]},
+             ast => ["term" => "-moz-linear-gradient"],
+             # css1 treats leading '-' as an operator
+             css1 => {ast => ["term" => "moz-linear-gradient"]},
     },
     # css2 understands some functions
     expr => {input => '-moz-linear-gradient(top, #CCC, #DDD)',
+             ast =>  ["term"
+                      => {"ident" => "-moz-linear-gradient",
+                          "expr" => ["term" => "top",
+                                     "operator" => ",",
+                                     "term" => "CCC",
+                                     "operator" => ",",
+                                     "term" => "DDD"]}],
              css1 => {warnings => ['skipping term: (top, #CCC, #DDD)'],
                       ast => ["term" => "moz-linear-gradient"],
-             },
-             css2 => {ast =>  ["term"
-                               => {"ident" => "-moz-linear-gradient",
-                                   "expr" => ["term" => "top",
-                                              "operator" => ",",
-                                              "term" => "CCC",
-                                              "operator" => ",",
-                                              "term" => "DDD"]}],
              },
     },
     expr => {input => '12px/20px',
@@ -211,31 +210,55 @@ for (
     },
     ruleset => {input => 'H1 { color: blue; }',
                 ast => {"selector" => ["simple_selector" => {"element_name" => "H1"}],
-                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                                             "expr" => ["term" => "blue"]}]},
     },
     ruleset => {input => 'A:link H1 { color: blue; }',
                 ast => {"selector" => ["simple_selector" => {"element_name" => "A",
                                                              "pseudo" => {"ident" => "link"}},
                                        "simple_selector" => {"element_name" => "H1"}],
-                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                                             "expr" => ["term" => "blue"]}]},
     },
     ruleset => {input => 'H1#abc { color: blue; }',
                 ast => {"selector" => ["simple_selector" => {"element_name" => "H1", "id" => "abc"}],
-                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                                             "expr" => ["term" => "blue"]}]},
     },
     ruleset => {input => 'A.external:visited { color: blue; }',
-                ast => {"selector" => ["simple_selector" => {"element_name" => "A", "class" => "external", "pseudo" => {"ident" => "visited"}}],
+                ast => {"selector" => ["simple_selector" => {"element_name" => "A",
+                                                             "class" => "external",
+                                                             "pseudo" => {"ident" => "visited"}}],
                         "declarations" => ["declaration" => {"property" => {"ident" => "color"},
                                                              "expr" => ["term" => "blue"]}]},
     },
     dimension => {input => '70deg', ast => 70, units => 'deg'},
+    # character set differences:
+    # \255 is not in the css1 charset, but is in css2; some tricksters
+    # use this to verify that the parse is css2 compliant
+    #
+    ruleset => {input => '.TB	{mso-special-format:nobullet;}',
+                ast => {"selector" => ["simple_selector" => {"class" => "TB"}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"},
+                                                             "expr" => ["term" => "nobullet\x[95]"]}]},
+                css1 => {
+                    ast => {"selector" => ["simple_selector" => {"class" => "TB"}],
+                            "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"},
+                                                                 "expr" => ["term" => "nobullet"]}]},
+                    warnings => ["skipping term: \x[95]"],
+                },
+    },
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
-                ast => {"selector" => ["simple_selector" => {"element_name" => "H2"}], "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}, "declaration" => {"property" => {"ident" => "rotation"}, "expr" => ["term" => 70]}]},
+                ast => {"selector" => ["simple_selector" => {"element_name" => "H2"}],
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]},
+                                           "declaration" => {"property" => {"ident" => "rotation"}, "expr" => ["term" => 70]}]},
                 css1 => {
                     warnings => ['skipping term: 70deg'],
                     ast => {"selector" => ["simple_selector" => {"element_name" => "H2"}],
-                            "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]},
-                                               "declaration" => {"property" => {"ident" => "rotation"}, "expr" => []}]},
+                            "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                                                 "expr" => ["term" => "green"]},
+                                               "declaration" => {"property" => {"ident" => "rotation"},
+                                                                 "expr" => []}]},
                 },
     },
     ruleset => {input => 'H1 { color }',
@@ -262,7 +285,6 @@ for (
                                  'skipping term: 70deg']
                 }
     },
-
     ruleset => {input => 'H2 { color: green; rotation: }',
                 warnings => "incomplete declaration",
     },
@@ -276,11 +298,11 @@ for (
 
     # from the top
     TOP => {input => "@charset 'bazinga';\n",
-            css1 => {
-                warnings => [q{skipping: @charset 'bazinga';}]
-            },
             css2 => {
                 ast => [charset => "bazinga"],
+            },
+            css1 => {
+                warnings => [q{skipping: @charset 'bazinga';}]
             },
     },
     TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
@@ -289,18 +311,16 @@ for (
                                   "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
                     "ruleset" => {"selector" => ["simple_selector" => {"element_name" => "H2"}], 
                                   "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}]}],
-            css1 => {
+            warnings => [
+                q{ignoring out of sequence declaration: @charset 'bazinga';},
+                q{ignoring out of sequence declaration: @import 'too-late';},
+                ],
+             css1 => {
                 warnings => [
                     q{ignoring out of sequence declaration: @import 'too-late';},
                     q{skipping: @charset 'bazinga';},
                     ],
             },
-            css2 => {
-                warnings => [
-                    q{ignoring out of sequence declaration: @charset 'bazinga';},
-                    q{ignoring out of sequence declaration: @import 'too-late';},
-                    ],
-            }
     },
     ) {
 
