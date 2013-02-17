@@ -237,7 +237,7 @@ for (
     # \255 is not in the css1 charset, but is in css2; some tricksters
     # use this to verify that the parse is css2 compliant
     #
-    ruleset => {input => '.TB	{mso-special-format:nobullet;}',
+    ruleset => {input => ".TB	\{mso-special-format:nobullet\x[95];\}",
                 ast => {"selector" => ["simple_selector" => {"class" => "TB"}],
                         "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"},
                                                              "expr" => ["term" => "nobullet\x[95]"]}]},
@@ -245,7 +245,7 @@ for (
                     ast => {"selector" => ["simple_selector" => {"class" => "TB"}],
                             "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"},
                                                                  "expr" => ["term" => "nobullet"]}]},
-                    warnings => ["skipping term: \x[95]"],
+                    warnings => 'skipping term: \\x[95]',
                 },
     },
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',

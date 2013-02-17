@@ -57,12 +57,29 @@ class CSS::Grammar::Actions {
         return @terms;
     }
 
+    sub _display_string($str) {
+
+        my %unesc = (
+            "\n" => '\n',
+            "\r" => '\t',
+            "\f" => '\f',
+            "\\"  => '\\',
+            );
+
+        $str.split('').map({
+            my $c = %unesc{$_} // (
+               $_ ~~ /<[\t\o40 \!..\~]>/ ?? $_ !! sprintf "\\x[%x]", $_.ord
+            )
+       }).join('');
+    }
+
     method warning ($message, $str?) {
         my $warning = $message;
-        $warning ~= ': ' ~ $str if $str;
+        $warning ~= ': ' ~ _display_string( $str.chomp )
+            if defined $str;
         $warning does CSS::Grammar::AST::Info;
         $warning.line_no = $.line_no;
-        push @.warnings, $warning.chomp;
+        push @.warnings, $warning;
     }
 
     method nl($/) {$.line_no++;}
