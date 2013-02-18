@@ -2,7 +2,9 @@
 
 use Test;
 use CSS::Grammar;
+use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
+use CSS::Grammar::CSS3;
 
 # whitespace
 for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
@@ -20,6 +22,19 @@ for ('/**/', '/* hi */', '<!--X-->',
 # unicode
 for ("\\f", "\\012f", "\\012A") {
     ok($_ ~~ /^<CSS::Grammar::unicode>$/, "unicode: $_");
+}
+
+for ("\\012AF", "\\012AFc") {
+    # css2 unicode is up to 6 digits
+    ok($_ !~~ /^<CSS::Grammar::CSS1::unicode>$/, "not css1 unicode: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS21::unicode>$/, "css2 unicode: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::unicode>$/, "css3 unicode: $_");
+}
+
+for ('70deg') { 
+    ok($_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::ident>$/, "css2 angle: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS21::angle>$/, "css2 angle: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::angle>$/, "css3 angle: $_");
 }
 
 # nonascii
@@ -55,6 +70,7 @@ my $rulesets = '{
 
 for ('{ }', $rulesets) { 
     ok($_ ~~ /^<CSS::Grammar::CSS21::rulesets>$/, "css2 rulesets: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::rulesets>$/, "css3 rulesets: $_");
 }
 
 my $at_rule_page = '@page :left { margin: 3cm };';

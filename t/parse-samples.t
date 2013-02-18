@@ -91,8 +91,8 @@ for @tests {
 }
 
 for @tests {
-    my $p2 = CSS::Grammar::CSS3.parse( $_.value, :rule('stylesheet') );
-    ok( $p2, 'css3 parse ' ~ $_.key)
+    my $p3 = CSS::Grammar::CSS3.parse( $_.value, :rule('stylesheet') );
+    ok( $p3, 'css3 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || $_.value},
             
 }
