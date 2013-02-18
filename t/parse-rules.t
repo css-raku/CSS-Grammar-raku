@@ -1,8 +1,10 @@
 #!/usr/bin/env perl6
 
 use Test;
+
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
+use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 my $css_actions = CSS::Grammar::Actions.new;
@@ -312,12 +314,12 @@ for (
                     "ruleset" => {"selector" => ["simple_selector" => {"element_name" => "H2"}], 
                                   "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}]}],
             warnings => [
-                q{ignoring out of sequence declaration: @charset 'bazinga';},
-                q{ignoring out of sequence declaration: @import 'too-late';},
+                q{ignoring out of sequence directive: @charset 'bazinga';},
+                q{ignoring out of sequence directive: @import 'too-late';},
                 ],
              css1 => {
                 warnings => [
-                    q{ignoring out of sequence declaration: @import 'too-late';},
+                    q{ignoring out of sequence directive: @import 'too-late';},
                     q{skipping: @charset 'bazinga';},
                     ],
             },
@@ -329,78 +331,61 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $css1 =  %test<css1> // {};
-    my $css2 =  %test<css2> // {};
+    my $css1 = %test<css1> // {};
+    my $css2 = %test<css2> // {};
+    my $css3 = %test<css3> // {};
 
     # CSS1 Compat
+    $css_actions.warnings = ();
     my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    my $parsed1 = %$css1<parse> // $input;
-
-    is($p1.Str, $parsed1, "css1: " ~ $rule ~ " parse: " ~ $input);
-
-    my @css1_expected_warnings = %$css1<warnings> // %test<warnings> // ();
-    my @css1_warnings = sort $css_actions.warnings;
-    is(@css1_warnings, @css1_expected_warnings,
-       @css1_expected_warnings ?? 'css1 warnings' !! 'css1 no warnings');
-
-    if defined (my $ast1 = %$css1<ast> // %test<ast>) {
-        is($p1.ast, $ast1, 'css1 - ast')
-            or diag $p1.ast.perl;
-    }
-    else {
-        if defined $p1.ast {
-            note {untested_css1_ast =>  $p1.ast}.perl;
-        }
-        else {
-            diag "no css1 ast: " ~ $input;
-        }
-    }
-
-    if defined (my $units1 = %$css1<units> // %test<units>) {
-        if ok($p1.ast.can('units'), "css1 does units") {
-            is($p1.ast.units, $units1, 'css1 - units')
-                or diag $p1.ast.units
-            }
-    }
-
-    if defined (my $skip1 = %$css1<skip> // %test<skip>) {
-        is($p1.ast.skip, $skip1, 'css1 - skip is ' ~ $skip1);
-    }
+    compat_tests($input, $p1, :rule($rule), :compat('css1'), :expected( %(%test, %$css1)) );
 
     # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    my $parsed2 = %$css2<parse> // $input;
+    compat_tests($input, $p2, :rule($rule), :compat('css2'), :expected( %(%test, %$css2)) );
 
-    is($p2.Str, $parsed2, "css2: " ~ $rule ~ " parse: " ~ $input);
+    # CSS3 Compat
+    $css_actions.warnings = ();
+    my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
+    compat_tests($input, $p3, :rule($rule), :compat('css3'), :expected( %(%test, %$css3)) );
+}
 
-    my @css2_expected_warnings = %$css2<warnings> // %test<warnings> // ();
-    my @css2_warnings = sort $css_actions.warnings;
-    is(@css2_warnings, @css2_expected_warnings,
-       @css2_expected_warnings ?? 'css2 warnings' !! 'css2 no warnings');
+sub compat_tests($input, $parse, :$rule, :$compat, :%expected) {
 
-    if defined (my $ast2 = %$css2<ast> // %test<ast>) {
-        is($p2.ast, $ast2, 'css2 - ast')
-            or diag $p2.ast.perl
+    my $parsed = %expected<parse> // $input;
+
+    is($parse.Str, $parsed, "{$compat}: " ~ $rule ~ " parse: " ~ $input);
+
+    my @expected_warnings = %expected<warnings> // ();
+    my @warnings = sort $css_actions.warnings;
+    is(@warnings, @expected_warnings,
+       @expected_warnings ?? "{$compat} warnings" !! "{$compat} no warnings");
+
+    if defined (my $ast = %expected<ast>) {
+        is($parse.ast, $ast, "{$compat} - ast")
+            or diag $parse.ast.perl;
     }
     else {
-        if defined $p2.ast {
-            note {untested_css2_ast =>  $p2.ast}.perl;
+        if defined $parse.ast {
+            note {untested_ast =>  $parse.ast}.perl;
         }
         else {
-            diag "no css2 ast: " ~ $input;
+            diag "no {$compat} ast: " ~ $input;
         }
     }
 
-    if defined (my $units2 = %$css2<units> // %test<units>) {
-        if ok($p2.ast.can('units'), "css2 does units") {
-            is($p2.ast.units, $units2, 'css2 - units')
-                or diag $p2.ast.units
+    if defined (my $units = %expected<units>) {
+        if ok($parse.ast.can('units'), "{$compat} does units") {
+            is($parse.ast.units, $units, "{$compat} - units")
+                or diag $parse.ast.units
             }
     }
 
-    if defined (my $skip2 = %$css2<skip> // %test<skip>) {
-        is($p2.ast.skip, $skip2, 'css2 - skip is ' ~ $skip2);
+    if defined (my $skip = %expected<skip>) {
+        if ok($parse.ast.can('skip'), "{$compat} does skip") {
+            is($parse.ast.skip, $skip, "{$compat} - skip is " ~ $skip);
+        }
     }
 
 }

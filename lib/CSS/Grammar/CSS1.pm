@@ -76,5 +76,5 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
     # -- css1 extended characters limited to latin1
     token nonascii       {<[\o241..\o377]>}
-    token escape         {<unicode>|'\\'$<char>=<[\o40..~ \o241..\o377]>}
+    token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
 }

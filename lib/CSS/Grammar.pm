@@ -16,24 +16,27 @@ grammar CSS::Grammar:ver<0.0.1> {
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
                   |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
 
-    token ws_char {<nl> | "\t"  | " " | <comment>}
+    token wc {<nl> | "\t"  | " "}
 
-    token ws {<!ww><ws_char>*}
+    token ws {<!ww>[<wc>|<comment>]*}
 
     # "lexer"
+    # Taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
+    # todo: \o377 should be \o4177777. Rakudo (and flex) can't handle this yet
 
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
-    token nonascii       {<[\o200..\o377]>}
-    token escape         {<unicode>|'\\'$<char>=<[\o40..~ \o200..\o377]>}
+    token nonascii       {<- [\o0..\o177]>}
+    token regascii       {<[\o40..~]>}
+    token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {(<[_ \- a..z A..Z 0..9]>)|<nonascii>|<escape>}
     token ident          {('-')?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
-    token d              {<[0..9]>}
     token notnm          {(<-[\- a..z A..Z 0..9\\]>)|<nonascii>}
-    token num            {[<d>*\.]?<d>+}
+    token num            {[\d* \.]? \d+}
 
     proto token stringchar {<...>}
+    token stringchar:sym<cont>      {\\<nl>}
     token stringchar:sym<escape>    {<escape>}
     token stringchar:sym<nonascii>  {<nonascii>}
     token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \( .. \~ \' \"]>}
@@ -54,8 +57,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
     token dimension      {<num>(<[a..zA..Z]>\w*)}
 
-    token url_delim_char {\( | \) | "'" | '"' | <ws_char>}
-    token url_char       {<escape>|<- url_delim_char>}
+    token url_delim_char {\( | \) | "'" | '"' | <wc>}
+    token url_char       {<escape>|<nonascii>|<- url_delim_char>}
     token url_string     {<string>|<url_char>*}
 
     # productions
@@ -76,7 +79,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting
-    token skipped_term  {[<ws_char>|<string>|<-[;}]>]+}
+    token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}
 
     proto token unknown {<...>}
     token unknown:sym<string>      {<string>}

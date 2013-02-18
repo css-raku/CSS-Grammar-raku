@@ -110,10 +110,10 @@ class CSS::Grammar::Actions {
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');
     }
-    method d($/) { make $/.Str }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
 
+    method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
     method stringchar:sym<ascii>($/)    { make $/.Str }
@@ -152,7 +152,10 @@ class CSS::Grammar::Actions {
     method freq($/)       { make $._qty($/); }
     method dimension($/)  { make $._qty($/); }
 
-    method url_char($/) {make $<escape> ?? $<escape>.ast !! $/.Str}
+    method url_char($/) {
+        my $cap = $<escape> || $<nonascii>;
+        make $cap ?? $cap.ast !! $/.Str
+    }
     method url_string($/) {
         make $<string>
             ?? $<string>.ast
@@ -170,7 +173,10 @@ class CSS::Grammar::Actions {
     method import($/)   { make $.node($/) }
 
     method unexpected($/) {
-        $.warning('ignoring out of sequence declaration', $/.Str)
+        $.warning('ignoring out of sequence directive', $/.Str)
+    }
+    method unexpected2($/) {
+        $.warning('ignoring out of sequence directive', $/.Str)
     }
     method  at_rule:sym<media>($/) { make $.node($/) }
     method  at_rule:sym<page>($/) { make $.node($/) }

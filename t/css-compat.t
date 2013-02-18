@@ -3,6 +3,7 @@ use v6;
 use Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
+use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 for ("\\012AF", "\\012AFc") {
@@ -99,6 +100,16 @@ for @tests {
     my $p2 = CSS::Grammar::CSS21.parse( $_.value, :actions($css_actions) );
     ok( $p2, 'css2 parse ' ~ $_.key)
     or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value};
+            
+    # warnings are normal here - tests to be added
+    note $css_actions.warnings if $css_actions.warnings;
+}
+
+for @tests {
+    $css_actions.warnings = ();     
+    my $p3 = CSS::Grammar::CSS3.parse( $_.value, :actions($css_actions) );
+    ok( $p3, 'css3 parse ' ~ $_.key)
+    or diag do {$_.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || $_.value};
             
     # warnings are normal here - tests to be added
     note $css_actions.warnings if $css_actions.warnings;
