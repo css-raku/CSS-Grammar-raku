@@ -5,7 +5,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # abstract base grammar for CSS instance grammars:
     #  CSS::Grammar::CSS1  - CSS level 1
     #  CSS::Grammar::CSS21 - CSS level 2.1
-    #  CSS::Grammar::CSS3  - CSS level 3 (tba)
+    #  CSS::Grammar::CSS3  - CSS level 3
 
     # Comments and whitespace
 
@@ -25,7 +25,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # todo: \o377 should be \o4177777. Rakudo (and flex) can't handle this yet
 
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
-    # w3c nonasci :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
+    # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token nonascii       {<- [\c0..\c[0x7E]]>}
     token regascii       {<[\c[0x20]..\c[0x7E]]>}
     token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}

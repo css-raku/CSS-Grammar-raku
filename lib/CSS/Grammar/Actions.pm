@@ -273,6 +273,7 @@ class CSS::Grammar::Actions {
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
 
+    method selectors($/)       { make $.list($/) }
     method selector($/)        { make $.list($/) }
     method simple_selector($/) { make $.node($/) }
     method attrib($/)          { make $.node($/) }

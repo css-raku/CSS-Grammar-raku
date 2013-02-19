@@ -39,7 +39,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule ruleset {
         <!after \@> # not an "@" rule
-        <selector> <declarations>
+        <selectors> <declarations>
     }
 
     rule declarations {
@@ -95,7 +95,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
     # tba there's a second grottier format
 
-    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]* [<.ws>?',']?}
+    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }

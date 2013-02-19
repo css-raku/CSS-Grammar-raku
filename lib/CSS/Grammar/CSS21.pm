@@ -32,7 +32,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule ruleset {
         <!after \@> # not an "@" rule
-        <selector> <declarations>
+        <selectors> <declarations>
     }
 
     rule declarations {
@@ -81,10 +81,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule _term:sym<function>   {<function>}
     rule _term:sym<ident>      {<ident>}
 
-    # the css2 selector rule make no sense to me ...
-    ## token selector {<simple_selector>[<combinator> <selector>|<ws>[<combinator>? <selector>]?]?}
-    # ... i've just adopted the css3 rule
-    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]* [<.ws>?',']?}
+    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
     token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
                           |                [<id> | <class> | <pseudo>]+ }
