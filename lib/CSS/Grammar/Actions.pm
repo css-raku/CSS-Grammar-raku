@@ -90,10 +90,13 @@ class CSS::Grammar::Actions {
         $.warning('skipping term', $/.Str);
     }
 
-   method unicode($/) {
-       my $ord =  _from_hex($0.Str);
-       my $chr = Buf.new( $ord ).decode( $.encoding );
-       make $chr;
+    method _to_unicode($str) {
+        my $ord = _from_hex($str);
+        return Buf.new( $ord ).decode( $.encoding );
+    }
+
+    method unicode($/) {
+       make $._to_unicode( $0.Str );
     }
     method nonascii($/){make $/.Str}
     method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
@@ -169,8 +172,9 @@ class CSS::Grammar::Actions {
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.list($/) }
 
-    method charset($/)  { make $<string>.ast }
-    method import($/)   { make $.node($/) }
+    method charset($/)   { make $<string>.ast }
+    method import($/)    { make $.node($/) }
+    method namespace($/) { make $.node($/) }
 
     method unexpected($/) {
         $.warning('ignoring out of sequence directive', $/.Str)
@@ -178,8 +182,9 @@ class CSS::Grammar::Actions {
     method unexpected2($/) {
         $.warning('ignoring out of sequence directive', $/.Str)
     }
-    method  at_rule:sym<media>($/) { make $.node($/) }
-    method  at_rule:sym<page>($/) { make $.node($/) }
+    method at_rule:sym<media>($/) { make $.node($/) }
+    method at_rule:sym<page>($/) { make $.node($/) }
+    method at_rule:sym<fontface>($/) { make $.node($/) }
 
     method media_list($/) { make $.node($/) }
     method medium($/) { make $.node($/) }
@@ -200,25 +205,26 @@ class CSS::Grammar::Actions {
         $.warning("incomplete declaration");
     }
 
-    method uterm:sym<length>($/)     { make $<length>.ast }
-    method uterm:sym<angle>($/)      { make $<angle>.ast }
-    method uterm:sym<freq>($/)       { make $<freq>.ast }
-    method uterm:sym<percentage>($/) { make $<percentage>.ast }
-    method uterm:sym<dimension>($/)  {
+    method uterm:sym<length>($/)        { make $<length>.ast }
+    method uterm:sym<angle>($/)         { make $<angle>.ast }
+    method uterm:sym<freq>($/)          { make $<freq>.ast }
+    method uterm:sym<percentage>($/)    { make $<percentage>.ast }
+    method uterm:sym<dimension>($/)     {
         $.warning('unknown dimensioned quantity', $/.Str);
         my $ast = $<dimension>.ast;
         make $.leaf($ast, :skip(True));
     }
-    method uterm:sym<num>($/)        { make $<num>.ast }
-    method uterm:sym<ems>($/)        { make $.leaf($/.Str.lc) }
-    method uterm:sym<exs>($/)        { make $.leaf($/.Str.lc) }
+    method uterm:sym<num>($/)           { make $<num>.ast }
+    method uterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
+    method uterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
 
-    method _term:sym<string>($/)     { make $<string>.ast }
-    method _term:sym<hexcolor>($/)   { make $<id>.ast }
-    method _term:sym<url>($/)        { make $<url>.ast }
-    method _term:sym<rgb>($/)        { make $<rgb>.ast }
-    method _term:sym<function>($/)   { make $<function>.ast }
-    method _term:sym<ident>($/)      { make $<ident>.ast }
+    method _term:sym<string>($/)        { make $<string>.ast }
+    method _term:sym<hexcolor>($/)      { make $<id>.ast }
+    method _term:sym<url>($/)           { make $<url>.ast }
+    method _term:sym<rgb>($/)           { make $<rgb>.ast }
+    method _term:sym<function>($/)      { make $<function>.ast }
+    method _term:sym<unicode_range>($/) { make $<unicode_range>.ast }
+    method _term:sym<ident>($/)         { make $<ident>.ast }
 
     method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {
@@ -231,6 +237,21 @@ class CSS::Grammar::Actions {
         else {
             ##make (skipped => $<skipped_term>.ast);
         }
+    }
+
+    method unicode_range { make $<range>.ast }
+    method range:sym<from_to> {
+        # don't produce actual hex chars; could be out of range
+        make ( _from_hex($<from>.Str) => _from_hex($<to>.Str) );
+    }
+
+    method range:sym<masked> {
+        my $mask = $/.Str;
+        my $lo = $mask.subst('?', '0'):g;
+        my $hi = $mask.subst('?', 'F'):g;
+
+        # don't produce actual hex chars; could be out of range
+        make ( _from_hex($lo) => _from_hex($hi) );
     }
 
     method unclosed_comment($/) {
@@ -252,8 +273,16 @@ class CSS::Grammar::Actions {
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
 
-    method selector($/) { make $.list($/) }
+    method selector($/)        { make $.list($/) }
     method simple_selector($/) { make $.node($/) }
+    method attrib($/)          { make $.node($/) }
+
+    method match:sym<equals>($/)    { make $/.Str }
+    method match:sym<includes>($/)  { make $/.Str }
+    method match:sym<dash>($/)      { make $/.Str }
+    method match:sym<prefix>($/)    { make $/.Str }
+    method match:sym<suffix>($/)    { make $/.Str }
+    method match:sym<substring>($/) { make $/.Str }
 
     method pseudo($/)   { make $.node($/) }
     method function($/) { make $.node($/) }

@@ -25,8 +25,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     # todo: \o377 should be \o4177777. Rakudo (and flex) can't handle this yet
 
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
-    token nonascii       {<- [\o0..\o177]>}
-    token regascii       {<[\o40..~]>}
+    # w3c nonasci :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
+    token nonascii       {<- [\c0..\c[0x7E]]>}
+    token regascii       {<[\c[0x20]..\c[0x7E]]>}
     token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {(<[_ \- a..z A..Z 0..9]>)|<nonascii>|<escape>}

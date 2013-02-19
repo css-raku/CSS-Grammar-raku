@@ -26,9 +26,9 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule unexpected2 {<charset>|<import>|<namespace>}
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<media>     { \@(:i'media') <media_list> <rulesets> }
-    rule at_rule:sym<page>      { \@(:i'page')  <page=.pseudo>? <declarations> }
-    rule at_rule:sym<font_face> { \@(:i'font-face') <declarations> }
+    rule at_rule:sym<media>    { \@(:i'media') <media_list> <rulesets> }
+    rule at_rule:sym<page>     { \@(:i'page')  <page=.pseudo>? <declarations> }
+    rule at_rule:sym<fontface> { \@(:i'font-face') <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
@@ -89,7 +89,10 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule _term:sym<unicode_range> {<unicode_range>}
     rule _term:sym<ident>         {<ident>}
 
-    rule unicode_range {'U'(<xdigit> ** 1..6) '-' (<xdigit> ** 1..6)}
+    rule unicode_range {:i'U+'<range>}
+    proto rule range { <...> }
+    rule range:sym<from_to> {<from=xdigit> ** 1..6 '-' <to=xdigit> ** 1..6}
+    rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
     # tba there's a second grottier format
 
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]* [<.ws>?',']?}
@@ -97,13 +100,18 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib       {'[' <ident> [<eq> | <includes> | <dashmatch>] [<ident>|<string>] ']'}
-    rule eq {'='}
-    rule includes {'~='}
-    rule dashmatch {'|='}
+    rule attrib       {'[' <ident> <match> [<ident>|<string>] ']'}
+
+    proto rule match {<...>}
+    rule match:sym<equals>    {'='}
+    rule match:sym<includes>  {'~='}
+    rule match:sym<dash>      {'|='}
+    rule match:sym<prefix>    {'^='}
+    rule match:sym<suffix>    {'$='}
+    rule match:sym<substring> {'*='}
 
     rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> ')'}
 
-    # 'lexer' css2 exceptions
+    # 'lexer' css3 exceptions
 }

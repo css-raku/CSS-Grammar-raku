@@ -93,4 +93,6 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     token function    {<ident> '(' <expr> ')'}
 
     # 'lexer' css2 exceptions
+    token nonascii       {<- [\o0..\o177]>}
+    token regascii       {<[\o40..~]>}
 }
