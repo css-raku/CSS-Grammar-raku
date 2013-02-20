@@ -6,6 +6,8 @@ use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
+use lib '.';
+use t::CSS;
 
 my $css_actions = CSS::Grammar::Actions.new;
 
@@ -51,7 +53,7 @@ for (
     },
     url => {input => 'URL("http://www.bg.com/pinkish.gif',
             ast => 'http://www.bg.com/pinkish.gif',
-            warnings => ["missing closing ')'", 'unterminated string'],
+            warnings => ['unterminated string', "missing closing ')'"],
             skip => True,
     },
     rgb => {input => 'Rgb(10, 20, 30)',
@@ -275,8 +277,9 @@ for (
     ruleset => {input => 'H2 { color: green; rotation: 70deg;',
                 warnings => ["no closing '}'"],
                 css1 => {
-                    warnings => ["no closing '}'",
-                                 'skipping term: 70deg']
+                    warnings => ['skipping term: 70deg',
+                                 "no closing '}'",
+                                 ]
                 }
     },
     ruleset => {input => 'H2 { color: green; rotation: }',
@@ -285,8 +288,8 @@ for (
 
     ruleset => {input => 'H2 { test: "this is not closed',
                 warnings => [
-                    "no closing '}'",
                     'unterminated string',
+                    "no closing '}'",
                     ]
     },
 
@@ -311,8 +314,8 @@ for (
                 ],
              css1 => {
                 warnings => [
-                    q{ignoring out of sequence directive: @import 'too-late';},
                     q{skipping: @charset 'bazinga';},
+                    q{ignoring out of sequence directive: @import 'too-late';},
                     ],
             },
     },
@@ -330,56 +333,23 @@ for (
     # CSS1 Compat
     $css_actions.warnings = ();
     my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    compat_tests($input, $p1, :rule($rule), :compat('css1'), :expected( %(%test, %$css1)) );
+    t::CSS::compat_tests($input, $p1, :rule($rule), :compat('css1'),
+                         :warnings($css_actions.warnings),
+                         :expected( %(%test, %$css1)) );
 
     # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    compat_tests($input, $p2, :rule($rule), :compat('css2'), :expected( %(%test, %$css2)) );
+    t::CSS::compat_tests($input, $p2, :rule($rule), :compat('css2'),
+                         :warnings($css_actions.warnings),
+                         :expected( %(%test, %$css2)) );
 
     # CSS3 Compat
     $css_actions.warnings = ();
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    compat_tests($input, $p3, :rule($rule), :compat('css3'), :expected( %(%test, %$css3)) );
-}
-
-sub compat_tests($input, $parse, :$rule, :$compat, :%expected) {
-
-    my $parsed = %expected<parse> // $input;
-
-    is($parse.Str, $parsed, "{$compat}: " ~ $rule ~ " parse: " ~ $input);
-
-    my @expected_warnings = %expected<warnings> // ();
-    my @warnings = sort $css_actions.warnings;
-    is(@warnings, @expected_warnings,
-       @expected_warnings ?? "{$compat} warnings" !! "{$compat} no warnings");
-
-    if defined (my $ast = %expected<ast>) {
-        is($parse.ast, $ast, "{$compat} - ast")
-            or diag $parse.ast.perl;
-    }
-    else {
-        if defined $parse.ast {
-            note {untested_ast =>  $parse.ast}.perl;
-        }
-        else {
-            diag "no {$compat} ast: " ~ $input;
-        }
-    }
-
-    if defined (my $units = %expected<units>) {
-        if ok($parse.ast.can('units'), "{$compat} does units") {
-            is($parse.ast.units, $units, "{$compat} - units")
-                or diag $parse.ast.units
-            }
-    }
-
-    if defined (my $skip = %expected<skip>) {
-        if ok($parse.ast.can('skip'), "{$compat} does skip") {
-            is($parse.ast.skip, $skip, "{$compat} - skip is " ~ $skip);
-        }
-    }
-
+    t::CSS::compat_tests($input, $p3, :rule($rule), :compat('css3'),
+                         :warnings($css_actions.warnings),
+                         :expected( %(%test, %$css3)) );
 }
 
 done;
