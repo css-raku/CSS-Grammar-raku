@@ -239,19 +239,19 @@ class CSS::Grammar::Actions {
         }
     }
 
-    method unicode_range { make $<range>.ast }
-    method range:sym<from_to> {
+    method unicode_range($/) { make $<range>.ast }
+    method range:sym<from_to>($/) {
         # don't produce actual hex chars; could be out of range
-        make ( _from_hex($<from>.Str) => _from_hex($<to>.Str) );
+        make [ _from_hex($<from>.Str), _from_hex($<to>.Str) ];
     }
 
-    method range:sym<masked> {
+    method range:sym<masked>($/) {
         my $mask = $/.Str;
         my $lo = $mask.subst('?', '0'):g;
         my $hi = $mask.subst('?', 'F'):g;
 
         # don't produce actual hex chars; could be out of range
-        make ( _from_hex($lo) => _from_hex($hi) );
+        make [ _from_hex($lo), _from_hex($hi) ];
     }
 
     method unclosed_comment($/) {

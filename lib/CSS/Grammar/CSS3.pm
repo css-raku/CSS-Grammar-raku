@@ -19,7 +19,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
-    rule namespace { \@(:i'namespace') <namespace_prefix=ident>? [<string>|<url>] ';' }
+    rule namespace { \@(:i'namespace') <ident>? [<string>|<url>] ';' }
 
     # to detect out of order directives
     rule unexpected  {<charset>|<import>}
@@ -91,9 +91,8 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule unicode_range {:i'U+'<range>}
     proto rule range { <...> }
-    rule range:sym<from_to> {<from=xdigit> ** 1..6 '-' <to=xdigit> ** 1..6}
+    rule range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
-    # tba there's a second grottier format
 
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 

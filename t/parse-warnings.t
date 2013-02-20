@@ -23,12 +23,12 @@ P.sixc {border-width: 50Hz; border-style: solid;}
 P.sixd {border-width: px; border-style: solid;}
 
 @three-dee {
- @background-lighting {
-  azimuth: 30deg;
-  elevation: 190deg;
-  }
- P.seven { color: red }
- }
+   @background-lighting {
+     azimuth: 30deg;
+     elevation: 190deg;
+   }
+   P.seven { color: red }
+}
 
 P.eight {COLOR: GREEN;}
 OL:wait {color: maroon;}
@@ -39,12 +39,12 @@ ACRONYM[href="foo"] {color: purple;}
 ADDRESS[href~="foo"] {color: purple;}
 SPAN[lang|="fr"] {color: #c37;}
 @media tty {
- H1 {color: red;}
- P.sixteen {color: red;}
- }
+   H1 {color: red;}
+   P.sixteen {color: red;}
+}
 @three-dee {
- P.seventeen {color: red }
- }
+   P.seventeen {color: red }
+}
 P.eighteena {text-decoration: underline overline line-through diagonal;
             font: bold highlighted 100% sans-serif;}
 P.eighteenb {text-decoration: underline overline line-through diagonal;
@@ -60,9 +60,9 @@ P.twentyonea {rotation-code: '}'; color: purple;}
 P.twentyoneb {rotation-code: '\'}\''; color: green;}
 
 P.twentytwo {
- type-display: @threedee {rotation-code: '}';};
- color: green;
- }
+  type-display: @threedee {rotation-code: '}';};
+  color: green;
+}
 
 P.twentythree {text-indent: 0.5in;}
 
