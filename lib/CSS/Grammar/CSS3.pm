@@ -99,7 +99,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib       {'[' <ident> <match> [<ident>|<string>] ']'}
+    rule attrib       {'[' <ident> [ <match> [<ident>|<string>] ]? ']'}
 
     proto rule match {<...>}
     rule match:sym<equals>    {'='}
