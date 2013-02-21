@@ -36,15 +36,15 @@ plus the fonts module:
     use CSS::Grammar::Actions;
     use CSS::Grammar::CSS3::Module::Fonts;
 
-    grammar MyApp::CSS3::FontGrammar
+    grammar MyApp::CSS3::Grammar
           is CSS::Grammar::CSS3
           is CSS::Grammar::CSS3::Module::Fonts {};
 
-    class MyApp::CSS3::FontActions
+    class MyApp::CSS3::Actions
         is CSS::Grammar::Actions
         is CSS::Grammar::CSS3::Module::Fonts::Actions {};
 
-For an example, seee t/parse-css3-module-fonts.t
+For an example, see t/parse-css3-module-fonts.t
 
-CSS3 also allows for vendor extensions. You should be able to easily add your
+CSS3 also allows for vendor extensions. You should be able to add your
 own custom grammar extensions and bundle them using the above mechanisms.
