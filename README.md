@@ -17,12 +17,12 @@ This distribution includes:
 - `CSS::Grammar::CSS21` - CSS 2.1 compatable grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatable grammar
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
-- `CSS::Grammar::CSS3::Module::Font` - CSS 3.0 Fonts extension module
+- `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
 
 Bundling CSS Modules
 --------------------
-CSS3 is evolving an extensive set of optional modules. Each are optional
-and extend both the grammar and generated Abstract Syntax Tree (AST).
+CSS3 is evolving an extensive set of modules. Each is optional
+and may extend both the grammar and generated Abstract Syntax Tree (AST).
 
 We've just got a stub for the Fonts module at the moment; but here's how it'll
 will work:
