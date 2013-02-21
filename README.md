@@ -18,33 +18,34 @@ This distribution includes:
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatable grammar
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
+- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors extension module
 
 Bundling CSS Modules
 --------------------
 CSS3 is evolving an extensive set of modules. Each is optional
 and may extend both the grammar and generated Abstract Syntax Tree (AST).
 
-We've just got a stub for the Fonts module at the moment; but here's how it'll
-will work:
-
 You need to compose a custom grammar thats include `CSS::Grammar::CSS3::Module::XXXX` and a custom action class that includes `CSS::Grammar::CSS3::Module::XXXX::Actions`.
 
 E.g. to build a custom CSS3 subset that includes the core CSS3 grammar
-plus the fonts module:
+plus the colors and fonts modules:
 
     use CSS::Grammar::CSS3;
     use CSS::Grammar::Actions;
+    use CSS::Grammar::CSS3::Module::Colors;
     use CSS::Grammar::CSS3::Module::Fonts;
 
     grammar MyApp::CSS3::Grammar
           is CSS::Grammar::CSS3
+          is CSS::Grammar::CSS3::Module::Colors
           is CSS::Grammar::CSS3::Module::Fonts {};
 
     class MyApp::CSS3::Actions
         is CSS::Grammar::Actions
+        is CSS::Grammar::CSS3::Module::Colors::Actions
         is CSS::Grammar::CSS3::Module::Fonts::Actions {};
 
-For an example, see t/parse-css3-module-fonts.t
+For examples, see t/parse-css3-module-colors.t, t/parse-css3-module-fonts.t.
 
 CSS3 also allows for vendor extensions. You should be able to add your
 own custom grammar extensions and bundle them using the above mechanisms.
