@@ -184,7 +184,6 @@ class CSS::Grammar::Actions {
     }
     method at_rule:sym<media>($/) { make $.node($/) }
     method at_rule:sym<page>($/) { make $.node($/) }
-    method at_rule:sym<fontface>($/) { make $.node($/) }
 
     method media_list($/) { make $.node($/) }
     method medium($/) { make $.node($/) }

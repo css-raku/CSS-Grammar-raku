@@ -17,13 +17,6 @@ for (
     namespace => {input => '@namespace "http://blah.com";',
                   ast => {"string" => "http://blah.com"},
     },
-    at_rule   => {input => '@font-face {
-                                font-family: Gentium;
-                                src: url(http://example.com/fonts/Gentium.ttf);
-                            };',
-                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "font-family"}, "expr" => ["term" => "Gentium"]},
-                                             "declaration" => {"property" => {"ident" => "src"}, "expr" => ["term" => "http://example.com/fonts/Gentium.ttf"]}]}
-    },
     unicode_range => {input => 'U+416', ast => [0x416, 0x416]},
     unicode_range => {input => 'U+400-4FF', ast => [0x400, 0x4FF]},
     unicode_range => {input => 'U+4??', ast => [0x400, 0x4FF]},

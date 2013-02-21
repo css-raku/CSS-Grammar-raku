@@ -1,5 +1,4 @@
 use v6;
-
 use CSS::Grammar;
 
 grammar CSS::Grammar::CSS3 is CSS::Grammar {
@@ -28,7 +27,6 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     proto rule at_rule { <...> }
     rule at_rule:sym<media>    { \@(:i'media') <media_list> <rulesets> }
     rule at_rule:sym<page>     { \@(:i'page')  <page=.pseudo>? <declarations> }
-    rule at_rule:sym<fontface> { \@(:i'font-face') <declarations> }
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
