@@ -29,7 +29,7 @@ leads to a large number of possible grammar combinations.
 This distribtion takes the approach of making it easy to compose a custom grammar thats includes the modules that you intend to support.
 
 In general, to support module XXXX you need to build a custom grammar on the fly
-that inherits `CSS::Grammar::CSS3::Module::XXXX; Likewise, you'll need to build a custom action class that inherits `CSS::Grammar::CSS3::Module::XXXX::Actions`.
+that inherits `CSS::Grammar::CSS3::Module::XXXX`; Likewise, you'll need to build a custom action class that inherits `CSS::Grammar::CSS3::Module::XXXX::Actions`.
 
 E.g. if you want to support the core CSS3 grammar plus the colors and fonts modules:
 
