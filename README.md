@@ -22,16 +22,16 @@ This distribution currently includes:
 
 Defining CSS Subsets
 --------------------
-CSS3 is evolving an extensive set of modules. Each is optional
-and may extend both the grammar and generated Abstract Syntax Tree (AST).
-This leads to a large number of possible ways of combining grammars.
+CSS3 is evolving into an extensive set of (modules)[http://www.css3.info/modules/].
+Most are optional and may extend both the grammar and generated Abstract Syntax
+Tree (AST). This leads to a large number of possible ways of combining grammars.
 
 You may need to define your own custom grammar subset and
 parsing actions that are tailored to the particular CSS3 modules that
 you intend to support..
 
-E.g. if to support the CSS3 Core grammar plus the Colors and Fonts
-modules; the definitions could be:
+E.g. to support the following definitions support the CSS3 Core grammar
+plus the Colors and Fonts modules:
 
     use CSS::Grammar::CSS3;
     use CSS::Grammar::CSS3::Module::Colors;
