@@ -206,6 +206,7 @@ class CSS::Grammar::Actions {
 
     method uterm:sym<length>($/)        { make $<length>.ast }
     method uterm:sym<angle>($/)         { make $<angle>.ast }
+    method uterm:sym<time>($/)          { make $<time>.ast }
     method uterm:sym<freq>($/)          { make $<freq>.ast }
     method uterm:sym<percentage>($/)    { make $<percentage>.ast }
     method uterm:sym<dimension>($/)     {
@@ -217,13 +218,13 @@ class CSS::Grammar::Actions {
     method uterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
     method uterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
 
-    method _term:sym<string>($/)        { make $<string>.ast }
-    method _term:sym<hexcolor>($/)      { make $<id>.ast }
-    method _term:sym<url>($/)           { make $<url>.ast }
-    method _term:sym<rgb>($/)           { make $<rgb>.ast }
-    method _term:sym<function>($/)      { make $<function>.ast }
-    method _term:sym<unicode_range>($/) { make $<unicode_range>.ast }
-    method _term:sym<ident>($/)         { make $<ident>.ast }
+    method sterm:sym<string>($/)        { make $<string>.ast }
+    method sterm:sym<hexcolor>($/)      { make $<id>.ast }
+    method sterm:sym<url>($/)           { make $<url>.ast }
+    method sterm:sym<rgb>($/)           { make $<rgb>.ast }
+    method sterm:sym<function>($/)      { make $<function>.ast }
+    method sterm:sym<unicode_range>($/) { make $<unicode_range>.ast }
+    method sterm:sym<ident>($/)         { make $<ident>.ast }
 
     method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {

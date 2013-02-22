@@ -65,27 +65,28 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>? <term=.uterm> | <term=_term> | [<!before <[\!\)]>><skipped_term>] }
+    rule term { <unary_operator>? <term=.uterm> | <term=.sterm> | [<!before <[\!\)]>><skipped_term>] }
 
     # uterm - able to be prefixed by a unary operator
     proto rule uterm {<...>}
     rule uterm:sym<length>        {<length>}
     rule uterm:sym<angle>         {<angle>}
+    rule uterm:sym<time>          {<time>}
     rule uterm:sym<freq>          {<freq>}
     rule uterm:sym<percentage>    {<percentage>}
     rule uterm:sym<dimension>     {<dimension>}
     rule uterm:sym<num>           {<num>}
     rule uterm:sym<ems>           {:i'em'}
     rule uterm:sym<exs>           {:i'ex'}
-    # _term - these can't be prefixed by a unary operator
-    proto rule _term {<...>}
-    rule _term:sym<string>        {<string>}
-    rule _term:sym<url>           {<url>}
-    rule _term:sym<rgb>           {<rgb>}
-    rule _term:sym<hexcolor>      {<id>}
-    rule _term:sym<function>      {<function>}
-    rule _term:sym<unicode_range> {<unicode_range>}
-    rule _term:sym<ident>         {<ident>}
+    # sterm - these can't be prefixed by a unary operator
+    proto rule sterm {<...>}
+    rule sterm:sym<string>        {<string>}
+    rule sterm:sym<url>           {<url>}
+    rule sterm:sym<rgb>           {<rgb>}
+    rule sterm:sym<hexcolor>      {<id>}
+    rule sterm:sym<function>      {<function>}
+    rule sterm:sym<unicode_range> {<unicode_range>}
+    rule sterm:sym<ident>         {<ident>}
 
     rule unicode_range {:i'U+'<range>}
     proto rule range { <...> }

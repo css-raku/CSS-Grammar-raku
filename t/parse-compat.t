@@ -37,6 +37,18 @@ for (
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
     percentage => {input => '50%', ast => 50, units => '%'},
+    freq => {input => '50hz', ast => '50'},
+    # number, percent, length, em, exs, angle, time, freq
+    expr => {input => '42 7% 12.5cm -1 em 2 ex 45deg 10s 50Hz "ZZ"',
+             ast => [term => 42, term => 7, term => 12.5, term => 1,
+                     term => "em", term => 2, term => "ex", term => 45,
+                     term => 10, term => 50, term => 'ZZ'],
+             css1 => {
+                 warnings => 'skipping term: 45deg 10s 50Hz "ZZ"',
+                 ast => [term => 42, term => 7, term => 12.5, 
+                         term => 1, term => "em", term => 2, term => "ex"],
+             },
+    },
     class => {input => '.zippy', ast => 'zippy'},
     class => {input => '.\55ft', ast => "\x[55f]t"},
     length => {input => '2.52cm', ast => 2.52, units => 'cm'},

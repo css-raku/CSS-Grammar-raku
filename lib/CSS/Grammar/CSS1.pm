@@ -47,7 +47,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule term { <unary_operator>? [ <term=.uterm> | <term=._term> | <!before <[\!]>><skipped_term> ] }
+    rule term { <unary_operator>? [ <term=.uterm> | <term=.sterm> | <!before <[\!]>><skipped_term> ] }
 
     proto rule uterm {<...>}
     rule uterm:sym<length>     {<length>}
@@ -55,12 +55,12 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule uterm:sym<num>        {<num>}
     rule uterm:sym<ems>        {:i'em'}
     rule uterm:sym<exs>        {:i'ex'}
-    proto rule _term {<...>}
-    rule _term:sym<string>     {<string>}
-    rule _term:sym<hexcolor>   {<id>}
-    rule _term:sym<rgb>        {<rgb>}
-    rule _term:sym<url>        {<url>}
-    rule _term:sym<ident>      {<ident>}
+    proto rule sterm {<...>}
+    rule sterm:sym<string>     {<string>}
+    rule sterm:sym<hexcolor>   {<id>}
+    rule sterm:sym<rgb>        {<rgb>}
+    rule sterm:sym<url>        {<url>}
+    rule sterm:sym<ident>      {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
