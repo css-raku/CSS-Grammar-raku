@@ -28,11 +28,11 @@ grammar CSS::Grammar::CSS3::Module::Colors {
                    [')' | <unclosed_paren>]
     }
 
-    rule sterm:sym<color_rgb>     {<color_rgb>}
-    rule sterm:sym<color_hex>     {<id>}
-    rule sterm:sym<color_rgba>    {<color_rgba>}
-    rule sterm:sym<color_hsl>     {<color_hsl>}
-    rule sterm:sym<color_hsla>    {<color_hsla>}
+    rule aterm:sym<color_rgb>     {<color_rgb>}
+    rule aterm:sym<color_hex>     {<id>}
+    rule aterm:sym<color_rgba>    {<color_rgba>}
+    rule aterm:sym<color_hsl>     {<color_hsl>}
+    rule aterm:sym<color_hsla>    {<color_hsla>}
 }
 
 class CSS::Grammar::CSS3::Module::Colors::Actions {
@@ -41,8 +41,8 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
     method color_hsl($/)  { make $.node($/) }
     method color_hsla($/) { make $.node($/) }
 
-    method sterm:sym<color_rgba>($/) { make $.node($/) }
-    method sterm:sym<color_hsl>($/)  { make $.node($/) }
-    method sterm:sym<color_hsla>($/) { make $.node($/) }
+    method aterm:sym<color_rgba>($/) { make $.node($/) }
+    method aterm:sym<color_hsl>($/)  { make $.node($/) }
+    method aterm:sym<color_hsla>($/) { make $.node($/) }
 }
 

@@ -65,7 +65,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>? <term=.uterm> | <term=.sterm> | [<!before <[\!\)]>><skipped_term>] }
+    rule term { <unary_operator>? <term=.uterm> | <term=.aterm> | [<!before <[\!\)]>><skipped_term>] }
 
     # uterm - able to be prefixed by a unary operator
     proto rule uterm {<...>}
@@ -78,13 +78,13 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule uterm:sym<num>           {<num>}
     rule uterm:sym<ems>           {:i'em'}
     rule uterm:sym<exs>           {:i'ex'}
-    # sterm - these can't be prefixed by a unary operator
-    proto rule sterm {<...>}
-    rule sterm:sym<string>        {<string>}
-    rule sterm:sym<url>           {<url>}
-    rule sterm:sym<function>      {<function>}
-    rule sterm:sym<unicode_range> {<unicode_range>}
-    rule sterm:sym<ident>         {<ident>}
+    # aterm - atomic; these can't be prefixed by a unary operator
+    proto rule aterm {<...>}
+    rule aterm:sym<string>        {<string>}
+    rule aterm:sym<url>           {<url>}
+    rule aterm:sym<function>      {<function>}
+    rule aterm:sym<unicode_range> {<unicode_range>}
+    rule aterm:sym<ident>         {<ident>}
 
     rule unicode_range {:i'U+'<range>}
     proto rule range { <...> }

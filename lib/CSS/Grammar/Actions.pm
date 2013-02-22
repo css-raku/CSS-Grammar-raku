@@ -218,13 +218,13 @@ class CSS::Grammar::Actions {
     method uterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
     method uterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
 
-    method sterm:sym<string>($/)        { make $<string>.ast }
-    method sterm:sym<url>($/)           { make $<url>.ast }
-    method sterm:sym<color_hex>($/)     { make $<id>.ast }
-    method sterm:sym<color_rgb>($/)     { make $<color_rgb>.ast }
-    method sterm:sym<function>($/)      { make $<function>.ast }
-    method sterm:sym<unicode_range>($/) { make $<unicode_range>.ast }
-    method sterm:sym<ident>($/)         { make $<ident>.ast }
+    method aterm:sym<string>($/)        { make $<string>.ast }
+    method aterm:sym<url>($/)           { make $<url>.ast }
+    method aterm:sym<color_hex>($/)     { make $<id>.ast }
+    method aterm:sym<color_rgb>($/)     { make $<color_rgb>.ast }
+    method aterm:sym<function>($/)      { make $<function>.ast }
+    method aterm:sym<unicode_range>($/) { make $<unicode_range>.ast }
+    method aterm:sym<ident>($/)         { make $<ident>.ast }
 
     method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {
