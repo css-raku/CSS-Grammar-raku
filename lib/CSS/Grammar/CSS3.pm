@@ -97,15 +97,14 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib       {'[' <ident> [ <match> [<ident>|<string>] ]? ']'}
+    
 
-    proto rule match {<...>}
-    rule match:sym<equals>    {'='}
-    rule match:sym<includes>  {'~='}
-    rule match:sym<dash>      {'|='}
-    rule match:sym<prefix>    {'^='}
-    rule match:sym<suffix>    {'$='}
-    rule match:sym<substring> {'*='}
+    rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
+
+    # CSS3 introduces some new attribute selectors
+    rule attribute_selector:sym<prefix>    {'^='}
+    rule attribute_selector:sym<suffix>    {'$='}
+    rule attribute_selector:sym<substring> {'*='}
 
     rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> ')'}

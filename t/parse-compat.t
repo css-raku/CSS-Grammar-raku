@@ -235,6 +235,18 @@ for (
                         "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "blue"]}]},
     },
     dimension => {input => '70deg', ast => 70, units => 'deg'},
+    simple_selector => {input => 'A[ href ]',
+                        ast => {"element_name" => "A", "attrib" => {"ident" => "href"}},
+                        css1 => {
+                            parse => 'A', ast => {"element_name" => "A"},
+                        },
+    },
+    simple_selector => {input => 'a[href~="foo"]',
+                        ast => {"element_name" => "a", "attrib" => {"ident" => "href", "attribute_selector" => "~=", "string" => "foo"}},
+                        css1 => {
+                            parse => 'a', ast => {"element_name" => "a"},
+                        },
+    },
     # character set differences:
     # \255 is not in the css1 charset, but is in css2; some tricksters
     # use this to verify that the parse is css2 compliant

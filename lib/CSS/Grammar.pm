@@ -78,6 +78,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token element_name {<ident>}
 
+    # Attribute selector - core set introduced with css2.1
+    proto token attribute_selector {<...>}
+    rule attribute_selector:sym<equals>    {'='}
+    rule attribute_selector:sym<includes>  {'~='}
+    rule attribute_selector:sym<dash>      {'|='}
+
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting
     token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}

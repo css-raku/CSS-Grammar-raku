@@ -277,12 +277,12 @@ class CSS::Grammar::Actions {
     method simple_selector($/) { make $.node($/) }
     method attrib($/)          { make $.node($/) }
 
-    method match:sym<equals>($/)    { make $/.Str }
-    method match:sym<includes>($/)  { make $/.Str }
-    method match:sym<dash>($/)      { make $/.Str }
-    method match:sym<prefix>($/)    { make $/.Str }
-    method match:sym<suffix>($/)    { make $/.Str }
-    method match:sym<substring>($/) { make $/.Str }
+    method attribute_selector:sym<equals>($/)    { make $/.Str }
+    method attribute_selector:sym<includes>($/)  { make $/.Str }
+    method attribute_selector:sym<dash>($/)      { make $/.Str }
+    method attribute_selector:sym<prefix>($/)    { make $/.Str }
+    method attribute_selector:sym<suffix>($/)    { make $/.Str }
+    method attribute_selector:sym<substring>($/) { make $/.Str }
 
     method pseudo($/)   { make $.node($/) }
     method function($/) { make $.node($/) }

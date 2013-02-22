@@ -83,8 +83,10 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
-    token simple_selector { <element_name> [<id> | <class> | <pseudo>]*
-                          |                [<id> | <class> | <pseudo>]+ }
+    token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
+                          |                [<id> | <class> | <attrib> | <pseudo>]+ }
+
+    rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
     rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> ')'}
