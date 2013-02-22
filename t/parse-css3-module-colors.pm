@@ -23,6 +23,9 @@ use t::CSS;
 my $css_actions = t::CSS3::ColorActions.new;
 
 for (
+    term   => {input => 'rgb(70%, 50%, 10%, 0.5)',
+               ast => {color_rgb => {r => 70, g => 50, b => 10, a=> .5}},
+    },
     term   => {input => 'rgba(100%, 50%, 0%, 0.1)',
                ast => {color_rgba => {r => 100, g => 50, b => 0, a=> .1}},
     },

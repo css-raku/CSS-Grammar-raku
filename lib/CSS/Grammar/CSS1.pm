@@ -57,8 +57,8 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule uterm:sym<exs>        {:i'ex'}
     proto rule sterm {<...>}
     rule sterm:sym<string>     {<string>}
-    rule sterm:sym<hexcolor>   {<id>}
-    rule sterm:sym<rgb>        {<rgb>}
+    rule sterm:sym<color_hex>  {<id>}
+    rule sterm:sym<color_rgb>  {<color_rgb>}
     rule sterm:sym<url>        {<url>}
     rule sterm:sym<ident>      {<ident>}
 

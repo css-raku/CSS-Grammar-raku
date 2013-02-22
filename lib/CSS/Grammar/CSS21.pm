@@ -77,8 +77,8 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     proto rule sterm {<...>}
     rule sterm:sym<string>     {<string>}
     rule sterm:sym<url>        {<url>}
-    rule sterm:sym<rgb>        {<rgb>}
-    rule sterm:sym<hexcolor>   {<id>}
+    rule sterm:sym<color_rgb>  {<color_rgb>}
+    rule sterm:sym<color_hex>  {<id>}
     rule sterm:sym<function>   {<function>}
     rule sterm:sym<ident>      {<ident>}
 
@@ -90,7 +90,7 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
     rule pseudo       {':' [<function>|<ident>] }
-    token function    {<ident> '(' <expr> ')'}
+    token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
 
     # 'lexer' css2 exceptions
     token nonascii       {<- [\o0..\o177]>}

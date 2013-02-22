@@ -20,15 +20,17 @@ This distribution currently includes:
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
 - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors extension module
 
-Defining CSS Subsets
---------------------
+Defining CSS3 Subsets
+---------------------
 CSS3 is evolving into an extensive set of [modules](http://www.css3.info/modules/).
 Most are optional and may extend both the grammar and generated Abstract Syntax
 Tree (AST). This leads to a large number of possible ways of combining grammars.
 
-You may need to define your own custom grammar subset and
-parsing actions that are tailored to the particular CSS3 modules that
-you intend to support..
+The CSS3 core is quite miminalistic; For example, it does not understand colors.
+
+You will probably need to define your own custom grammar subset and
+set of parsing actions that are tailored to the particular CSS3 modules that
+you intend to support.
 
 E.g. to support the following definitions support the CSS3 Core grammar
 plus the Colors and Fonts modules:
@@ -49,7 +51,7 @@ plus the Colors and Fonts modules:
         is CSS::Grammar::CSS3::Module::Fonts::Actions {};
 
 This gives you a customised grammar and parser that understands just the
-core CSS3 language, plus Colors and Fonts. Other CSS directives will be
+core CSS3 language, plus Colors and Fonts. Other CSS elements will be
 ignored.
 
     my $actions = My_Custom_CSS3_Actions.new;

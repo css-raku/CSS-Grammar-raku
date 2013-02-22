@@ -165,7 +165,7 @@ class CSS::Grammar::Actions {
             !! $.leaf( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/)  { make $<url_string>.ast }
-    method rgb($/)  { make $.node($/) }
+    method color_rgb($/)  { make $.node($/) }
     method prio($/) { make $0.Str.lc if $0}
 
     # from the TOP (CSS1 + CSS21)
@@ -219,9 +219,9 @@ class CSS::Grammar::Actions {
     method uterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
 
     method sterm:sym<string>($/)        { make $<string>.ast }
-    method sterm:sym<hexcolor>($/)      { make $<id>.ast }
     method sterm:sym<url>($/)           { make $<url>.ast }
-    method sterm:sym<rgb>($/)           { make $<rgb>.ast }
+    method sterm:sym<color_hex>($/)     { make $<id>.ast }
+    method sterm:sym<color_rgb>($/)     { make $<color_rgb>.ast }
     method sterm:sym<function>($/)      { make $<function>.ast }
     method sterm:sym<unicode_range>($/) { make $<unicode_range>.ast }
     method sterm:sym<ident>($/)         { make $<ident>.ast }

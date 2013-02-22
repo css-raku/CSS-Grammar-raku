@@ -1,8 +1,9 @@
 grammar CSS::Grammar::CSS3::Module::Colors {
 
 # extensions for CSS3 Color Module
-# - see http://www.w3.org/TR/css3-color/#hsla-color
-# Note: plain rgb() is included in the CSS3 core
+# - see http://www.w3.org/TR/css3-color/
+
+    # color_rgb and color_hex iare defined in CSS core grammar
 
     rule color_rgba {:i'rgba('
                    [<r=.percentage>|<r=.num>] ','
@@ -27,18 +28,21 @@ grammar CSS::Grammar::CSS3::Module::Colors {
                    [')' | <unclosed_paren>]
     }
 
-    rule _term:sym<color_rgba>     {<color_rgba>}
-    rule _term:sym<color_hsl>      {<color_hsl>}
-    rule _term:sym<color_hsla>     {<color_hsla>}
+    rule sterm:sym<color_rgb>     {<color_rgb>}
+    rule sterm:sym<color_hex>     {<id>}
+    rule sterm:sym<color_rgba>    {<color_rgba>}
+    rule sterm:sym<color_hsl>     {<color_hsl>}
+    rule sterm:sym<color_hsla>    {<color_hsla>}
 }
 
 class CSS::Grammar::CSS3::Module::Colors::Actions {
+    # color_rgb is defined in core actions
     method color_rgba($/) { make $.node($/) }
     method color_hsl($/)  { make $.node($/) }
     method color_hsla($/) { make $.node($/) }
 
-    method _term:sym<color_rgba>($/) { make $.node($/) }
-    method _term:sym<color_hsl>($/)  { make $.node($/) }
-    method _term:sym<color_hsla>($/) { make $.node($/) }
+    method sterm:sym<color_rgba>($/) { make $.node($/) }
+    method sterm:sym<color_hsl>($/)  { make $.node($/) }
+    method sterm:sym<color_hsla>($/) { make $.node($/) }
 }
 

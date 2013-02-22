@@ -68,8 +68,8 @@ for (
             warnings => ['unterminated string', "missing closing ')'"],
             skip => True,
     },
-    rgb => {input => 'Rgb(10, 20, 30)',
-            ast => {r => 10, g => 20, b => 30}},
+    color_rgb => {input => 'Rgb(10, 20, 30)',
+                ast => {r => 10, g => 20, b => 30}},
     pseudo => {input => ':visited', ast => {ident => 'visited'}},
     import => {input => "@import url('file:///etc/passwd');",
                ast => {url => 'file:///etc/passwd'}},
@@ -148,13 +148,24 @@ for (
                                                "pseudo" => {"ident" => "Link"}},
                           "simple_selector" => {"element_name" => "IMG"}],
     },
-    term => {input => '#eeeeee', ast => 'eeeeee'},
+    term => {input => '#eeeeee', ast => 'eeeeee',
+             css3 => {  # color module not loaded
+                 ast => Mu,
+                 warnings => 'skipping term: #eeeeee'
+             },
+    },
     term => {input => 'rgb(17%, 33%, 70%)',
              ast => {r => 17, g => 33, b => 70},
-    },
+             css3 => {  # color module not loaded - parses a plain function
+                 ast => {"ident" => "rgb", "expr" => ["term" => 17, "operator" => ",", "term" => 33, "operator" => ",", "term" => 70]}
+             },
+     },
     term => {input => 'rgb(17%, 33%, 70%',
              warnings => ["missing closing ')'"],
              ast => {r => 17, g => 33, b => 70},
+             css3 => { # color module not loaded
+                 ast => {"ident" => "rgb", "expr" => ["term" => 17, "operator" => ",", "term" => 33, "operator" => ",", "term" => 70]}
+             },
     },
     num => {input => '1',ast => 1},
     num => {input => '.1', ast => .1 },
@@ -166,6 +177,10 @@ for (
              ast => ["term" => {"r" => 70, "g" => 133, "b" => 200},
                      "operator" => ",",
                      "term" => "fff"],
+             css3 => { # color module not loaded
+                 warnings => 'skipping term: #fff',
+                 ast => ["term" => {"ident" => "RGB", "expr" => ["term" => 70, "operator" => ",", "term" => 133, "operator" => ",", "term" => 200]}, "operator" => ","]
+             }
     },
     expr => {input => "'Helvetica Neue',helvetica-neue, helvetica",
              ast => ["term" => "Helvetica Neue", "operator" => ",",
@@ -178,10 +193,10 @@ for (
              ast => ["term" => 2, "term" => "solid", "term" => "blue"],
     },
     # CSS21  Expressions
-    expr => {input => 'top,ccc/#IDID',
+    expr => {input => 'top,ccc/dddd',
              ast => ["term" => "top", "operator" => ",",
                      "term" => 'ccc', "operator" => '/',
-                     "term" => 'IDID'],
+                     "term" => 'dddd'],
     },
     expr => {input => '-moz-linear-gradient',
              ast => ["term" => "-moz-linear-gradient"],
@@ -189,15 +204,15 @@ for (
              css1 => {ast => ["term" => "moz-linear-gradient"]},
     },
     # css2 understands some functions
-    expr => {input => '-moz-linear-gradient(top, #CCC, #DDD)',
+    expr => {input => '-moz-linear-gradient(top, t2, t3)',
              ast =>  ["term"
                       => {"ident" => "-moz-linear-gradient",
                           "expr" => ["term" => "top",
                                      "operator" => ",",
-                                     "term" => "CCC",
+                                     "term" => "t2",
                                      "operator" => ",",
-                                     "term" => "DDD"]}],
-             css1 => {warnings => ['skipping term: (top, #CCC, #DDD)'],
+                                     "term" => "t3"]}],
+             css1 => {warnings => ['skipping term: (top, t2, t3)'],
                       ast => ["term" => "moz-linear-gradient"],
              },
     },
@@ -274,7 +289,7 @@ for (
     },
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
                 ast => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
-                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}, "declaration" => {"property" => {"ident" => "rotation"}, "expr" => ["term" => 70e0]}]},
+                        "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => "green"]}, "declaration" => {"property" => {"ident" => "rotation"}, "expr" => ["term" => 70]}]},
                 css1 => {
                     warnings => ['skipping term: 70deg'],
                     ast => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],

@@ -82,8 +82,6 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     proto rule sterm {<...>}
     rule sterm:sym<string>        {<string>}
     rule sterm:sym<url>           {<url>}
-    rule sterm:sym<rgb>           {<rgb>}
-    rule sterm:sym<hexcolor>      {<id>}
     rule sterm:sym<function>      {<function>}
     rule sterm:sym<unicode_range> {<unicode_range>}
     rule sterm:sym<ident>         {<ident>}
@@ -108,7 +106,7 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     rule attribute_selector:sym<substring> {'*='}
 
     rule pseudo       {':' [<function>|<ident>] }
-    token function    {<ident> '(' <expr> ')'}
+    token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
 
     # 'lexer' css3 exceptions
 }
