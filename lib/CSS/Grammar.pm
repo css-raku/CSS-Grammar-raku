@@ -78,6 +78,14 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token element_name {<ident>}
 
+    rule pseudo_ident     {<pseudo_keyw>|<pseudo_foreign>}
+
+    proto token pseudo_keyw {<...>}
+    token pseudo_keyw:sym<pclass> {:i(link|visited|active)}
+    token pseudo_keyw:sym<element> {:i(first\-[line|letter])}
+
+    token pseudo_foreign {<ident>}
+
     # Attribute selector - core set introduced with css2.1
     proto token attribute_selector {<...>}
     rule attribute_selector:sym<equals>    {'='}

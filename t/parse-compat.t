@@ -81,7 +81,7 @@ for (
     selector => {input => 'A:Visited',
                  ast => {"simple_selector"
                              => {"element_name" => "A",
-                                 "pseudo" => {"ident" => "Visited"}}},
+                                 "pseudo" => {"ident" => "visited"}}},
     },
     selector => {input => ':visited',
                  ast => {"simple_selector"
@@ -145,8 +145,17 @@ for (
     },
     selector => {input => 'A:Link IMG',
                  ast => ["simple_selector" => {"element_name" => "A",
-                                               "pseudo" => {"ident" => "Link"}},
+                                               "pseudo" => {"ident" => "link"}},
                           "simple_selector" => {"element_name" => "IMG"}],
+    },
+    # :after keyword introduced with css2.x
+    selector => {input => 'A:After IMG',
+                 ast => ["simple_selector" => {"element_name" => "A",
+                                               "pseudo" => {"ident" => "after"}},
+                          "simple_selector" => {"element_name" => "IMG"}],
+                 css1 => {
+                     warnings => 'unknown pseudo keyword: After',
+                 },
     },
     term => {input => '#eeeeee', ast => 'eeeeee',
              css3 => {  # color module not loaded

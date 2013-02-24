@@ -47,14 +47,14 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule term { <unary_operator>? [ <term=.uterm> | <term=.aterm> | <!before <[\!]>><skipped_term> ] }
+    rule term { <unary_operator>? [ <term=.pterm> | <term=.aterm> | <!before <[\!]>><skipped_term> ] }
 
-    proto rule uterm {<...>}
-    rule uterm:sym<length>     {<length>}
-    rule uterm:sym<percentage> {<percentage>}
-    rule uterm:sym<num>        {<num>}
-    rule uterm:sym<ems>        {:i'em'}
-    rule uterm:sym<exs>        {:i'ex'}
+    proto rule pterm {<...>}
+    rule pterm:sym<length>     {<length>}
+    rule pterm:sym<percentage> {<percentage>}
+    rule pterm:sym<num>        {<num>}
+    rule pterm:sym<ems>        {:i'em'}
+    rule pterm:sym<exs>        {:i'ex'}
     proto rule aterm {<...>}
     rule aterm:sym<string>     {<string>}
     rule aterm:sym<color_hex>  {<id>}
@@ -69,7 +69,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
                           | <class> <pseudo>?
                           | <pseudo> }
 
-    rule pseudo  {':'<ident>}
+    rule pseudo  {':'<ident=.pseudo_ident>}
 
     # 'lexer' css1 exceptions:
     # -- css1 identifiers - don't allow '_' or leading '-'

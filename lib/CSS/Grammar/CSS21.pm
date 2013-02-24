@@ -60,19 +60,19 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>? <term=.uterm> | <term=aterm> | [<!before <[\!\)]>><skipped_term>] }
+    rule term { <unary_operator>? <term=.pterm> | <term=aterm> | [<!before <[\!\)]>><skipped_term>] }
 
-    # uterm - able to be prefixed by a unary operator
-    proto rule uterm {<...>}
-    rule uterm:sym<length>     {<length>}
-    rule uterm:sym<angle>      {<angle>}
-    rule uterm:sym<time>       {<time>}
-    rule uterm:sym<freq>       {<freq>}
-    rule uterm:sym<percentage> {<percentage>}
-    rule uterm:sym<dimension>  {<dimension>}
-    rule uterm:sym<num>        {<num>}
-    rule uterm:sym<ems>        {:i'em'}
-    rule uterm:sym<exs>        {:i'ex'}
+    # pterm - able to be prefixed by a unary operator
+    proto rule pterm {<...>}
+    rule pterm:sym<length>     {<length>}
+    rule pterm:sym<angle>      {<angle>}
+    rule pterm:sym<time>       {<time>}
+    rule pterm:sym<freq>       {<freq>}
+    rule pterm:sym<percentage> {<percentage>}
+    rule pterm:sym<dimension>  {<dimension>}
+    rule pterm:sym<num>        {<num>}
+    rule pterm:sym<ems>        {:i'em'}
+    rule pterm:sym<exs>        {:i'ex'}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {<...>}
     rule aterm:sym<string>     {<string>}
@@ -89,8 +89,12 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
-    rule pseudo       {':' [<function>|<ident>] }
+    rule pseudo       {':' [<function>|<ident=.pseudo_ident>] }
     token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
+
+    token pseudo_keyw:sym<element> {:i(first\-[line|letter]|before|after)}
+    token pseudo_keyw:sym<dclass> {:i(hover|active|focus)}
+    token pseudo_keyw:sym<lang> {:i(lang)}
 
     # 'lexer' css2 exceptions
     token nonascii       {<- [\o0..\o177]>}

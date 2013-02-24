@@ -22,9 +22,10 @@ This distribution currently includes:
 
 Defining CSS3 Subsets
 ---------------------
-CSS3 is evolving into an extensive set of [modules](http://www.css3.info/modules/).
-Most are optional and may extend both the grammar and generated Abstract Syntax
-Tree (AST). This leads to a large number of possible ways of combining grammars.
+CSS3 is evolving into a core grammar plus an extensive set of extension
+[modules](http://www.css3.info/modules/). Most are optional and may extend
+both the grammar and generated Abstract Syntax Tree (AST). This leads to a
+large number of possible grammar dialects.
 
 The CSS3 core is quite miminalistic; For example, it does not understand colors.
 

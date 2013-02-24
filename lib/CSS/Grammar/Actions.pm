@@ -204,19 +204,19 @@ class CSS::Grammar::Actions {
         $.warning("incomplete declaration");
     }
 
-    method uterm:sym<length>($/)        { make $<length>.ast }
-    method uterm:sym<angle>($/)         { make $<angle>.ast }
-    method uterm:sym<time>($/)          { make $<time>.ast }
-    method uterm:sym<freq>($/)          { make $<freq>.ast }
-    method uterm:sym<percentage>($/)    { make $<percentage>.ast }
-    method uterm:sym<dimension>($/)     {
+    method pterm:sym<length>($/)        { make $<length>.ast }
+    method pterm:sym<angle>($/)         { make $<angle>.ast }
+    method pterm:sym<time>($/)          { make $<time>.ast }
+    method pterm:sym<freq>($/)          { make $<freq>.ast }
+    method pterm:sym<percentage>($/)    { make $<percentage>.ast }
+    method pterm:sym<dimension>($/)     {
         $.warning('unknown dimensioned quantity', $/.Str);
         my $ast = $<dimension>.ast;
         make $.leaf($ast, :skip(True));
     }
-    method uterm:sym<num>($/)           { make $<num>.ast }
-    method uterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
-    method uterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
+    method pterm:sym<num>($/)           { make $<num>.ast }
+    method pterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
+    method pterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
 
     method aterm:sym<string>($/)        { make $<string>.ast }
     method aterm:sym<url>($/)           { make $<url>.ast }
@@ -285,8 +285,19 @@ class CSS::Grammar::Actions {
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
-    method pseudo($/)   { make $.node($/) }
-    method function($/) { make $.node($/) }
+    method pseudo($/)       { make $.node($/) }
+    method pseudo_ident($/) { make ($<pseudo_keyw> || $<pseudo_foreign>).ast }
+    method function($/)     { make $.node($/) }
+
+    # core pseudo vocabulary
+    method pseudo_keyw:sym<element>($/) { make $0.Str.lc }
+    method pseudo_keyw:sym<dclass>($/)  { make $0.Str.lc }
+    method pseudo_keyw:sym<pclass>($/)  { make $0.Str.lc }
+    method pseudo_keyw:sym<lang>($/)    { make $0.Str.lc }
+
+    method pseudo_foreign($/) { $.warning('unknown pseudo keyword', $<ident>.Str);
+                                make $.leaf( $<ident>.ast.lc, :skip(True) );
+    }
 
     # utiltity methods / subs
 
