@@ -1,11 +1,13 @@
 use v6;
 use CSS::Grammar;
+use CSS::Grammar::CSS3::Module::Selectors;
 
-grammar CSS::Grammar::CSS3 is CSS::Grammar {
+grammar CSS::Grammar::CSS3
+    is CSS::Grammar 
+    is CSS::Grammar::CSS3::Module::Selectors {
 
 # core CSS3 Grammar - no extensions yet
-# as defined in w3c Appendix G: Grammar of CSS 2.1
-# http://www.w3.org/TR/CSS21/grammar.html
+# as defined in w3c http://www.w3.org/TR/css3-syntax/#
 
     rule TOP {^ <stylesheet> $}
 
@@ -35,7 +37,6 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule unary_operator {'-'|'+'}
     rule operator {'/'|','}
-    rule combinator {'+'|'>'}
 
     rule ruleset {
         <!after \@> # not an "@" rule
@@ -48,10 +49,6 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
 
     rule rulesets {
         '{' <ruleset>* <end_block>
-    }
-
-    rule selectors {
-        <selector> [',' <selector>]*
     }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
@@ -92,28 +89,6 @@ grammar CSS::Grammar::CSS3 is CSS::Grammar {
     proto rule range { <...> }
     rule range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
-
-    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
-
-    token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
-                          |                [<id> | <class> | <attrib> | <pseudo>]+ }
-
-    
-
-    rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
-
-    # CSS3 introduces some new attribute selectors
-    # Todo: factor into css3 Selectors module
-    rule attribute_selector:sym<prefix>    {'^='}
-    rule attribute_selector:sym<suffix>    {'$='}
-    rule attribute_selector:sym<substring> {'*='}
-
-    rule pseudo       {':' [<function>|<ident=.pseudo_ident>] }
-    token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
-
-    token pseudo_keyw:sym<element> {:i(first\-[line|letter]|before|after)}
-    token pseudo_keyw:sym<dclass> {:i(hover|active|focus)}
-    token pseudo_keyw:sym<lang> {:i(lang)}
 
     # 'lexer' css3 exceptions
 }

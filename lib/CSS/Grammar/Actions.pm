@@ -1,8 +1,11 @@
 use v6;
 
+use CSS::Grammar::CSS3::Module::Selectors;
+
 # rules for constructing ASTs for CSS::Grammar
 
-class CSS::Grammar::Actions {
+class CSS::Grammar::Actions
+    is CSS::Grammar::CSS3::Module::Selectors::Actions {
 
     use CSS::Grammar::AST::Info;
 
@@ -272,32 +275,6 @@ class CSS::Grammar::Actions {
     method unknown:sym<name>($/) {$.warning('skipping', $/)}
     method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
-
-    method selectors($/)       { make $.list($/) }
-    method selector($/)        { make $.list($/) }
-    method simple_selector($/) { make $.node($/) }
-    method attrib($/)          { make $.node($/) }
-
-    method attribute_selector:sym<equals>($/)    { make $/.Str }
-    method attribute_selector:sym<includes>($/)  { make $/.Str }
-    method attribute_selector:sym<dash>($/)      { make $/.Str }
-    method attribute_selector:sym<prefix>($/)    { make $/.Str }
-    method attribute_selector:sym<suffix>($/)    { make $/.Str }
-    method attribute_selector:sym<substring>($/) { make $/.Str }
-
-    method pseudo($/)       { make $.node($/) }
-    method pseudo_ident($/) { make ($<pseudo_keyw> || $<pseudo_foreign>).ast }
-    method function($/)     { make $.node($/) }
-
-    # core pseudo vocabulary
-    method pseudo_keyw:sym<element>($/) { make $0.Str.lc }
-    method pseudo_keyw:sym<dclass>($/)  { make $0.Str.lc }
-    method pseudo_keyw:sym<pclass>($/)  { make $0.Str.lc }
-    method pseudo_keyw:sym<lang>($/)    { make $0.Str.lc }
-
-    method pseudo_foreign($/) { $.warning('unknown pseudo keyword', $<ident>.Str);
-                                make $.leaf( $<ident>.ast.lc, :skip(True) );
-    }
 
     # utiltity methods / subs
 
