@@ -42,14 +42,14 @@ plus the Colors and Fonts modules:
     use CSS::Grammar::Actions;
 
     grammar My_Custom_CSS3_Grammar
-          is CSS::Grammar::CSS3
           is CSS::Grammar::CSS3::Module::Colors
-          is CSS::Grammar::CSS3::Module::Fonts {};
+          is CSS::Grammar::CSS3::Module::Fonts
+          is CSS::Grammar::CSS3 {};
 
     class My_Custom_CSS3_Actions
-        is CSS::Grammar::Actions
         is CSS::Grammar::CSS3::Module::Colors::Actions
-        is CSS::Grammar::CSS3::Module::Fonts::Actions {};
+        is CSS::Grammar::CSS3::Module::Fonts::Actions
+        is CSS::Grammar::Actions {};
 
 This gives you a customised grammar and parser that understands just the
 core CSS3 language, plus Colors and Fonts. Other CSS elements will be
@@ -59,4 +59,5 @@ ignored.
     my $parse = My_Custom_CSS3_Grammar.parse( $css_input, :actions($actions) );
 
 For working examples, see t/parse-css3-module-colors.t, t/parse-css3-module-fonts.t.
+
 
