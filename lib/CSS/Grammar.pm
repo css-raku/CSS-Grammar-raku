@@ -84,6 +84,10 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule attribute_selector:sym<includes>  {'~='}
     rule attribute_selector:sym<dash>      {'|='}
 
+    # Combinators - introduced with css2.1
+    proto token combinator {<...>}
+    token combinator:sym<adjacent> {'+'}
+
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting
     token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}

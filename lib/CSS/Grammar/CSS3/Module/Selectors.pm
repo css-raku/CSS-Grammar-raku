@@ -2,11 +2,13 @@ use v6;
 
 # CSS3 Selectors Module
 # see http://www.w3.org/TR/2001/CR-css3-selectors-20011113/
-
+# ** under construction **
 
 grammar CSS::Grammar::CSS3::Module::Selectors {
 
-    rule combinator {'+'|'>'}
+    # inherited combinators: '+' (adjacent)
+    token combinator:sym<child>   {'>'}
+    token combinator:sym<sibling> {'~'}
 
     rule selectors {
         <selector> [',' <selector>]*

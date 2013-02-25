@@ -28,7 +28,9 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule unary_operator {'-'}
     rule operator {'/'|','}
-    rule combinator {'-'|'+'}
+
+    # inherited combinators: '+' (adjacent)
+    token combinator:sym<not>   {'-'}
 
     rule ruleset {
         <!after \@> # not an "@" rule

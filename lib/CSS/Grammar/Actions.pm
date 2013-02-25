@@ -192,7 +192,12 @@ class CSS::Grammar::Actions
     method medium($/) { make $.node($/) }
 
     method operator($/) { make $.leaf($/.Str) }
-    method combinator($/) { make $.leaf($/.Str) }
+
+    # combinators
+    method combinator:sym<adjacent>($/) { make $.leaf($/.Str) } # '+'
+    method combinator:sym<child>($/)    { make $.leaf($/.Str) } # '>'
+    method combinator:sym<not>($/)      { make $.leaf($/.Str) } # '-' css2.1
+    method combinator:sym<sibling>($/)  { make $.leaf($/.Str) } # '~'
 
     # css2
     method ruleset($/)      { make $.node($/) }
