@@ -2,7 +2,9 @@ use v6;
 
 use CSS::Grammar;
 
-grammar CSS::Grammar::CSS1 is CSS::Grammar {
+# specification: http://www.w3.org/TR/2008/REC-CSS1-20080411/
+
+grammar CSS::Grammar::CSS1:ver<01.20080411.000> is CSS::Grammar {
 
 # as defined in w3c Appendix B: CSS1 Grammar
 # http://www.w3.org/TR/REC-CSS1/#appendix-b
@@ -61,6 +63,9 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
     rule aterm:sym<color_rgb>  {<color_rgb>}
     rule aterm:sym<url>        {<url>}
     rule aterm:sym<ident>      {<ident>}
+
+    token class        {'.'<name>}
+    token element_name {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 

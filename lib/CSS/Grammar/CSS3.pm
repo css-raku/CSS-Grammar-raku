@@ -2,8 +2,11 @@ use v6;
 use CSS::Grammar;
 use CSS::Grammar::CSS3::Module::Selectors;
 
-grammar CSS::Grammar::CSS3::_Core {
+# specification: http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
 
+grammar CSS::Grammar::CSS3:ver<03.20030813.000>
+    is CSS::Grammar::CSS3::Module::Selectors
+    is CSS::Grammar {
     # core CSS3 Grammar - no extensions yet
     # as defined in w3c http://www.w3.org/TR/css3-syntax/#
 
@@ -89,9 +92,3 @@ grammar CSS::Grammar::CSS3::_Core {
 
     # 'lexer' css3 exceptions
 }
-
-grammar CSS::Grammar::CSS3
-    is CSS::Grammar::CSS3::Module::Selectors
-    is CSS::Grammar::CSS3::_Core
-    is CSS::Grammar 
-{};

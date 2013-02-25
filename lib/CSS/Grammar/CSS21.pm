@@ -2,7 +2,9 @@ use v6;
 
 use CSS::Grammar;
 
-grammar CSS::Grammar::CSS21 is CSS::Grammar {
+# specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
+
+grammar CSS::Grammar::CSS21:ver<02.20110607.000> is CSS::Grammar {
 
 # as defined in w3c Appendix G: Grammar of CSS 2.1
 # http://www.w3.org/TR/CSS21/grammar.html
@@ -89,7 +91,10 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
+    token class        {'.'<name>}
+    token element_name {<ident>}
+
+    rule attrib        {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
     rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}

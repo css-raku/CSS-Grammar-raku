@@ -48,7 +48,6 @@ grammar CSS::Grammar:ver<0.0.1> {
                          |\'[<!before \'><stringchar>]*$<closing_quote>=\'?}
 
     token id             {'#'<name>}
-    token class          {'.'<name>}
 
     token percentage     {<num>('%')}
     token length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
@@ -75,8 +74,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     }
 
     token prio {'!'[:i('important')|<skipped_term>]}
-
-    token element_name {<ident>}
 
     # Attribute selector - core set introduced with css2.1
     proto token attribute_selector {<...>}
