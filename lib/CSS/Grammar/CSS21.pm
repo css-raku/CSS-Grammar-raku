@@ -89,12 +89,8 @@ grammar CSS::Grammar::CSS21 is CSS::Grammar {
 
     rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
-    rule pseudo       {':' [<function>|<ident=.pseudo_ident>] }
+    rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
-
-    token pseudo_keyw:sym<element> {:i(first\-[line|letter]|before|after)}
-    token pseudo_keyw:sym<dclass> {:i(hover|active|focus)}
-    token pseudo_keyw:sym<lang> {:i(lang)}
 
     # 'lexer' css2 exceptions
     token nonascii       {<- [\o0..\o177]>}

@@ -69,7 +69,7 @@ grammar CSS::Grammar::CSS1 is CSS::Grammar {
                           | <class> <pseudo>?
                           | <pseudo> }
 
-    rule pseudo  {':'<ident=.pseudo_ident>}
+    rule pseudo  {':'<ident>}
 
     # 'lexer' css1 exceptions:
     # -- css1 identifiers - don't allow '_' or leading '-'

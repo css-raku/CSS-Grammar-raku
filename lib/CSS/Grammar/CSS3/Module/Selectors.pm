@@ -21,16 +21,13 @@ grammar CSS::Grammar::CSS3::Module::Selectors {
 
     rule attrib       {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
+    # inherited from base: = ~= |=
     rule attribute_selector:sym<prefix>    {'^='}
     rule attribute_selector:sym<suffix>    {'$='}
     rule attribute_selector:sym<substring> {'*='}
 
-    rule pseudo       {':' [<function>|<ident=.pseudo_ident>] }
+    rule pseudo       {':' [<function>|<ident>] }
     token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
-
-    token pseudo_keyw:sym<element> {:i(first\-[line|letter]|before|after)}
-    token pseudo_keyw:sym<dclass> {:i(hover|active|focus)}
-    token pseudo_keyw:sym<lang> {:i(lang)}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {
@@ -47,19 +44,13 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
-    method pseudo($/)       { make $.node($/) }
-    method pseudo_ident($/) { make ($<pseudo_keyw> || $<pseudo_foreign>).ast }
-    method function($/)     { make $.node($/) }
-
-    # core pseudo vocabulary
-    method pseudo_keyw:sym<element>($/) { make $0.Str.lc }
-    method pseudo_keyw:sym<dclass>($/)  { make $0.Str.lc }
-    method pseudo_keyw:sym<pclass>($/)  { make $0.Str.lc }
-    method pseudo_keyw:sym<lang>($/)    { make $0.Str.lc }
-
-    method pseudo_foreign($/) { $.warning('unknown pseudo keyword', $<ident>.Str);
-                                make $.leaf( $<ident>.ast.lc, :skip(True) );
+    method pseudo($/) {
+        my %node = $.node($/);
+        %node<ident> = %node<ident>.lc
+            if %node.exists('ident');
+        make %node;
     }
 
+    method function($/)     { make $.node($/) }
 }
 

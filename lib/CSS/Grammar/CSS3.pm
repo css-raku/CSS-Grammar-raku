@@ -28,7 +28,6 @@ grammar CSS::Grammar::CSS3::_Core {
     rule at_rule:sym<media>    { \@(:i'media') <media_list> <rulesets> }
     # todo: factor into Page css3 module?
     rule at_rule:sym<page>     { \@(:i'page')  <page=.pseudo>? <declarations> }
-    token pseudo_keyw:sym<page> {:i(left|right|first)}
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}
