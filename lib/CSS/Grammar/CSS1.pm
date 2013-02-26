@@ -4,7 +4,7 @@ use CSS::Grammar;
 
 # specification: http://www.w3.org/TR/2008/REC-CSS1-20080411/
 
-grammar CSS::Grammar::CSS1:ver<01.20080411.000> is CSS::Grammar {
+grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
 
 # as defined in w3c Appendix B: CSS1 Grammar
 # http://www.w3.org/TR/REC-CSS1/#appendix-b
@@ -74,7 +74,9 @@ grammar CSS::Grammar::CSS1:ver<01.20080411.000> is CSS::Grammar {
                           | <class> <pseudo>?
                           | <pseudo> }
 
-    rule pseudo  {':'<ident>}
+    rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]]}
+    # assume anything else is a class
+    rule pseudo:sym<class>     {':' <class=.ident> }
 
     # 'lexer' css1 exceptions:
     # -- css1 identifiers - don't allow '_' or leading '-'

@@ -75,6 +75,10 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token prio {'!'[:i('important')|<skipped_term>]}
 
+    # pseudos
+    proto rule pseudo {<...>}
+    rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]|before|after]}
+
     # Attribute selector - core set introduced with css2.1
     proto token attribute_selector {<...>}
     rule attribute_selector:sym<equals>    {'='}
@@ -84,6 +88,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Combinators - introduced with css2.1
     proto token combinator {<...>}
     token combinator:sym<adjacent> {'+'}
+    token combinator:sym<child>   {'>'}
 
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting

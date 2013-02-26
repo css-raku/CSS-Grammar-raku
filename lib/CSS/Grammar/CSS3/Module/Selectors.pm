@@ -2,12 +2,14 @@ use v6;
 
 # CSS3 Selectors Module
 # specification: http://www.w3.org/TR/2001/CR-css3-selectors-20090929/
+# Notes:
+# -- have modelled <expr> and <term> on css3-syntax-20030813; ehich has
+#    more detail and structure
 # ** under construction **
 
-grammar CSS::Grammar::CSS3::Module::Selectors:ver<03.20090929.000> {
+grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
-    # inherited combinators: '+' (adjacent)
-    token combinator:sym<child>   {'>'}
+    # inherited combinators: '+' (adjacent), '>' (child)
     token combinator:sym<sibling> {'~'}
 
     rule selectors {
@@ -31,7 +33,12 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<03.20090929.000> {
     rule attribute_selector:sym<suffix>    {'$='}
     rule attribute_selector:sym<substring> {'*='}
 
-    rule pseudo       {':' [<function>|<ident>] }
+    # pseudo:sym<element> inherited from base 
+    rule pseudo:sym<function>   {':' <function> }
+    rule pseudo:sym<lang>       {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
+    rule pseudo:sym<class>      {':' <class=.ident> }
+    rule pseudo:sym<element2>   {'::' <element=.ident> }
+ 
     token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
 }
 

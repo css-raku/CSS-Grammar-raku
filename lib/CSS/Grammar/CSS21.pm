@@ -4,7 +4,7 @@ use CSS::Grammar;
 
 # specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
 
-grammar CSS::Grammar::CSS21:ver<02.20110607.000> is CSS::Grammar {
+grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
 # as defined in w3c Appendix G: Grammar of CSS 2.1
 # http://www.w3.org/TR/CSS21/grammar.html
@@ -96,8 +96,12 @@ grammar CSS::Grammar::CSS21:ver<02.20110607.000> is CSS::Grammar {
 
     rule attrib        {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
-    rule pseudo       {':' [<function>|<ident>] }
-    token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
+    # pseudo:sym<elem> inherited from base 
+    rule pseudo:sym<function> {':' <function> }
+    rule pseudo:sym<lang>     {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
+    # assume anything else is a class
+    rule pseudo:sym<class>     {':' <class=.ident> }
+    token function             {<ident> '(' <expr> [')' | <unclosed_paren>]}
 
     # 'lexer' css2 exceptions
     token nonascii       {<- [\o0..\o177]>}

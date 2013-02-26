@@ -193,6 +193,16 @@ class CSS::Grammar::Actions
 
     method operator($/) { make $.leaf($/.Str) }
 
+    # pseudos
+    method pseudo:sym<element>($/) { my %node; # :first-line
+                                     %node<element> = $<element>.Str;
+                                     make %node;
+    }
+    method pseudo:sym<element2>($/) { make $.node($/) }
+    method pseudo:sym<lang>($/)     { make $.node($/) }
+    method pseudo:sym<function>($/) { make $.node($/) }
+    method pseudo:sym<class>($/)    { make $.node($/) }
+
     # combinators
     method combinator:sym<adjacent>($/) { make $.leaf($/.Str) } # '+'
     method combinator:sym<child>($/)    { make $.leaf($/.Str) } # '>'

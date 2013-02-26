@@ -4,7 +4,7 @@ use CSS::Grammar::CSS3::Module::Selectors;
 
 # specification: http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
 
-grammar CSS::Grammar::CSS3:ver<03.20030813.000>
+grammar CSS::Grammar::CSS3:ver<20030813.000>
     is CSS::Grammar::CSS3::Module::Selectors
     is CSS::Grammar {
     # core CSS3 Grammar - no extensions yet
