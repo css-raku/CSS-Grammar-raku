@@ -187,6 +187,11 @@ class CSS::Grammar::Actions
     }
     method at_rule:sym<media>($/) { make $.node($/) }
     method at_rule:sym<page>($/) { make $.node($/) }
+    method page_pseudo:sym<left>($/) {make 'left'}
+    method page_pseudo:sym<right>($/) {make 'right'}
+    method page_pseudo:sym<first>($/) {make 'first'}
+    method page_pseudo:sym<other>($/) {$.warning('ignoring page pseudo', $/.Str)}
+    method page_pseudo:sym<missing>($/) {$.warning("':' should be followed by one of: left right first")}
 
     method media_list($/) { make $.node($/) }
     method medium($/) { make $.node($/) }

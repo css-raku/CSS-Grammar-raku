@@ -10,12 +10,12 @@ use CSS::Grammar::CSS3::Module::Colors;
 # prepare our own composite class with font extensions
 
 grammar t::CSS3::ColorGrammar
-      is CSS::Grammar::CSS3
-      is CSS::Grammar::CSS3::Module::Colors {};
+      is CSS::Grammar::CSS3::Module::Colors
+      is CSS::Grammar::CSS3 {};
 
 class t::CSS3::ColorActions
-    is CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::Colors::Actions {};
+    is CSS::Grammar::CSS3::Module::Colors::Actions
+    is CSS::Grammar::Actions {};
 
 use lib '.';
 use t::CSS;
@@ -23,8 +23,8 @@ use t::CSS;
 my $css_actions = t::CSS3::ColorActions.new;
 
 for (
-    term   => {input => 'rgb(70%, 50%, 10%, 0.5)',
-               ast => {color_rgb => {r => 70, g => 50, b => 10, a=> .5}},
+    term   => {input => 'rgb(70%, 50%, 10%)',
+               ast => {color_rgb => {r => 70, g => 50, b => 10}},
     },
     term   => {input => 'rgba(100%, 50%, 0%, 0.1)',
                ast => {color_rgba => {r => 100, g => 50, b => 0, a=> .1}},

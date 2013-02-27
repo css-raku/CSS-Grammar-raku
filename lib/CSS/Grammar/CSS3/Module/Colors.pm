@@ -41,6 +41,7 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
     method color_hsl($/)  { make $.node($/) }
     method color_hsla($/) { make $.node($/) }
 
+    method aterm:sym<color_rgb>($/)  { make $.node($/) }
     method aterm:sym<color_rgba>($/) { make $.node($/) }
     method aterm:sym<color_hsl>($/)  { make $.node($/) }
     method aterm:sym<color_hsla>($/) { make $.node($/) }

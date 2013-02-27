@@ -3,7 +3,7 @@ use v6;
 # CSS3 Selectors Module
 # specification: http://www.w3.org/TR/2001/CR-css3-selectors-20090929/
 # Notes:
-# -- have modelled <expr> and <term> on css3-syntax-20030813; ehich has
+# -- have taken <expr> and <term> on css3-syntax-20030813; which has
 #    more detail and structure
 # ** under construction **
 
@@ -57,13 +57,6 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<prefix>($/)    { make $/.Str }
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
     method attribute_selector:sym<substring>($/) { make $/.Str }
-
-    method pseudo($/) {
-        my %node = $.node($/);
-        %node<ident> = %node<ident>.lc
-            if %node.exists('ident');
-        make %node;
-    }
 
     method function($/)     { make $.node($/) }
 }
