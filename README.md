@@ -19,21 +19,17 @@ This distribution currently includes:
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
 
-Defining CSS3 Subsets
----------------------
+Defining CSS3 Extensions
+------------------------
 CSS3 is evolving into a core grammar plus an extensive set of extension
 [modules](http://www.css3.info/modules/). Most are optional and may extend
 both the grammar and generated Abstract Syntax Tree (AST). This leads to a
 large number of possible grammar dialects.
 
-The CSS3 core is quite miminalistic; For example, it does not understand colors.
+You may need to define custom grammar and action classes subset for
+the particular CSS3 modules that you intend to support.
 
-You will probably need to define your own custom grammar subset and
-set of parsing actions that are tailored to the particular CSS3 modules that
-you intend to support.
-
-E.g. to support the following definitions support the CSS3 Core grammar
-plus the Fonts modules:
+E.g. to support the CSS3 Core grammar plus the Fonts modules:
 
     use CSS::Grammar::CSS3;
     use CSS::Grammar::CSS3::Module::Fonts;
@@ -47,13 +43,13 @@ plus the Fonts modules:
         is CSS::Grammar::CSS3::Module::Fonts::Actions
         is CSS::Grammar::Actions {};
 
-This gives you a customised grammar and parser that understands just the
-core CSS3 language, plus Colors and Fonts. Other CSS elements will be
-ignored.
+This gives you a customised grammar and parser that understands the
+core CSS3 language, plus Fonts. Any references, to other CSS extensions
+will be ignored.
 
     my $actions = My_Custom_CSS3_Actions.new;
     my $parse = My_Custom_CSS3_Grammar.parse( $css_input, :actions($actions) );
 
-For working examples, see t/parse-css3-module-colors.t, t/parse-css3-module-fonts.t.
+For a working example, see t/parse-css3-module-fonts.t.
 
 
