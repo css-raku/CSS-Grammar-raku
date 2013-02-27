@@ -1,12 +1,14 @@
 use v6;
 
+use CSS::Grammar::CSS3::Module::Colors;
 use CSS::Grammar::CSS3::Module::Selectors;
 
 # rules for constructing ASTs for CSS::Grammar
 
 class CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::Selectors::Actions {
-
+    is CSS::Grammar::CSS3::Module::Colors::Actions
+    is CSS::Grammar::CSS3::Module::Selectors::Actions
+{
     use CSS::Grammar::AST::Info;
 
     has Int $.line_no is rw = 1;

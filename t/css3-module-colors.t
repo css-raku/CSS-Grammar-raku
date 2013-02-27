@@ -11,7 +11,7 @@ use CSS::Grammar::Actions;
 use lib '.';
 use t::CSS;
 
-my $css_actions = CSS::Grammar::CSS3.new;
+my $css_actions = CSS::Grammar::Actions.new;
 
 for (
     term   => {input => 'rgb(70%, 50%, 10%)',

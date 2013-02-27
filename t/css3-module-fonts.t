@@ -15,7 +15,7 @@ grammar t::CSS3::FontGrammar
 
 class t::CSS3::FontActions
     is CSS::Grammar::Actions
-    is  CSS::Grammar::CSS3::Module::Fonts::Actions {};
+    is CSS::Grammar::CSS3::Module::Fonts::Actions {};
 
 use lib '.';
 use t::CSS;
