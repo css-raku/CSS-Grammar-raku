@@ -1,10 +1,12 @@
 use v6;
 use CSS::Grammar;
+use CSS::Grammar::CSS3::Module::Colors;
 use CSS::Grammar::CSS3::Module::Selectors;
 
 # specification: http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
 
 grammar CSS::Grammar::CSS3:ver<20030813.000>
+    is CSS::Grammar::CSS3::Module::Colors
     is CSS::Grammar::CSS3::Module::Selectors
     is CSS::Grammar {
 
@@ -79,15 +81,14 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     rule pterm:sym<percentage>    {<percentage>}
     rule pterm:sym<dimension>     {<dimension>}
     rule pterm:sym<num>           {<num>}
-    rule pterm:sym<ems>           {:i'em'}
-    rule pterm:sym<exs>           {:i'ex'}
+    rule pterm:sym<emx>           {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {<...>}
     rule aterm:sym<string>        {<string>}
     rule aterm:sym<url>           {<url>}
     rule aterm:sym<function>      {<function>}
     rule aterm:sym<unicode_range> {<unicode_range>}
-    rule aterm:sym<ident>         {<ident>}
+    rule aterm:sym<ident>         {<!before emx><ident>}
 
     rule unicode_range {:i'U+'<range>}
     proto rule range { <...> }

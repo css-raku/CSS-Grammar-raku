@@ -75,8 +75,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule pterm:sym<percentage> {<percentage>}
     rule pterm:sym<dimension>  {<dimension>}
     rule pterm:sym<num>        {<num>}
-    rule pterm:sym<ems>        {:i'em'}
-    rule pterm:sym<exs>        {:i'ex'}
+    rule pterm:sym<emx>        {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {<...>}
     rule aterm:sym<string>     {<string>}

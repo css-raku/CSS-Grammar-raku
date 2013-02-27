@@ -55,8 +55,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule pterm:sym<length>     {<length>}
     rule pterm:sym<percentage> {<percentage>}
     rule pterm:sym<num>        {<num>}
-    rule pterm:sym<ems>        {:i'em'}
-    rule pterm:sym<exs>        {:i'ex'}
+    rule pterm:sym<emx>        {<emx>}
     proto rule aterm {<...>}
     rule aterm:sym<string>     {<string>}
     rule aterm:sym<color_hex>  {<id>}

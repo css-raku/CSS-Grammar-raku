@@ -227,27 +227,27 @@ class CSS::Grammar::Actions
         $.warning("incomplete declaration");
     }
 
-    method pterm:sym<length>($/)        { make $<length>.ast }
-    method pterm:sym<angle>($/)         { make $<angle>.ast }
-    method pterm:sym<time>($/)          { make $<time>.ast }
-    method pterm:sym<freq>($/)          { make $<freq>.ast }
-    method pterm:sym<percentage>($/)    { make $<percentage>.ast }
+    method pterm:sym<length>($/)        { make $.node($/) }
+    method pterm:sym<angle>($/)         { make $.node($/) }
+    method pterm:sym<time>($/)          { make $.node($/) }
+    method pterm:sym<freq>($/)          { make $.node($/) }
+    method pterm:sym<percentage>($/)    { make $.node($/) }
     method pterm:sym<dimension>($/)     {
         $.warning('unknown dimensioned quantity', $/.Str);
-        my $ast = $<dimension>.ast;
-        make $.leaf($ast, :skip(True));
+        make $.node($/, :skip(True));
     }
-    method pterm:sym<num>($/)           { make $<num>.ast }
-    method pterm:sym<ems>($/)           { make $.leaf($/.Str.lc) }
-    method pterm:sym<exs>($/)           { make $.leaf($/.Str.lc) }
+    method pterm:sym<num>($/)           { make $.node($/) }
+    method pterm:sym<emx>($/)           { make $.node($/) }
 
-    method aterm:sym<string>($/)        { make $<string>.ast }
-    method aterm:sym<url>($/)           { make $<url>.ast }
-    method aterm:sym<color_hex>($/)     { make $<id>.ast }
-    method aterm:sym<color_rgb>($/)     { make $<color_rgb>.ast }
-    method aterm:sym<function>($/)      { make $<function>.ast }
-    method aterm:sym<unicode_range>($/) { make $<unicode_range>.ast }
-    method aterm:sym<ident>($/)         { make $<ident>.ast }
+    method aterm:sym<string>($/)        { make $.node($/) }
+    method aterm:sym<url>($/)           { make $.node($/) }
+    method aterm:sym<color_hex>($/)     { make $.node($/) }
+    method aterm:sym<color_rgb>($/)     { make $.node($/) }
+    method aterm:sym<function>($/)      { make $.node($/) }
+    method aterm:sym<unicode_range>($/) { make $.node($/) }
+    method aterm:sym<ident>($/)         { make $.node($/) }
+
+    method emx($/) { make $/.Str.lc }
 
     method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {

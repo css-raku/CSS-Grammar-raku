@@ -20,7 +20,7 @@ for (
     unicode_range => {input => 'U+416', ast => [0x416, 0x416]},
     unicode_range => {input => 'U+400-4FF', ast => [0x400, 0x4FF]},
     unicode_range => {input => 'U+4??', ast => [0x400, 0x4FF]},
-    term => {input => 'U+2??a', ast => [0x200A, 0x2FFA]},
+    term => {input => 'U+2??a', ast => {unicode_range => [0x200A, 0x2FFA]}},
     string => {input => "'\\\nto \\\n\\\nbe \\\ncontinued\\\n'",
                ast => 'to be continued'},
     ) {

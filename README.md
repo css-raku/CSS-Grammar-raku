@@ -18,7 +18,6 @@ This distribution currently includes:
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
-- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors extension module
 
 Defining CSS3 Subsets
 ---------------------
@@ -34,20 +33,17 @@ set of parsing actions that are tailored to the particular CSS3 modules that
 you intend to support.
 
 E.g. to support the following definitions support the CSS3 Core grammar
-plus the Colors and Fonts modules:
+plus the Fonts modules:
 
     use CSS::Grammar::CSS3;
-    use CSS::Grammar::CSS3::Module::Colors;
     use CSS::Grammar::CSS3::Module::Fonts;
     use CSS::Grammar::Actions;
 
     grammar My_Custom_CSS3_Grammar
-          is CSS::Grammar::CSS3::Module::Colors
           is CSS::Grammar::CSS3::Module::Fonts
           is CSS::Grammar::CSS3 {};
 
     class My_Custom_CSS3_Actions
-        is CSS::Grammar::CSS3::Module::Colors::Actions
         is CSS::Grammar::CSS3::Module::Fonts::Actions
         is CSS::Grammar::Actions {};
 

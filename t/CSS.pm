@@ -21,7 +21,8 @@ module t::CSS {
         }
         else {
             if defined $parse.ast {
-                note {untested_ast =>  $parse.ast}.perl;
+                note {untested_ast =>  $parse.ast}.perl
+                    unless %expected.exists('ast');
             }
             else {
                 diag "no {$compat} ast: " ~ $input;

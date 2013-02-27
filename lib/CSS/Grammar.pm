@@ -66,6 +66,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule url  {:i'url(' <url_string> [')' | <unclosed_paren>] }
     token unclosed_paren {''}
 
+    rule emx {:i e[m|x]}
+
     rule color_rgb {:i'rgb('
                    [<r=.percentage>|<r=.num>] ','
                    [<g=.percentage>|<g=.num>] ','

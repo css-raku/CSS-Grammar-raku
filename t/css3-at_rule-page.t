@@ -22,10 +22,10 @@ my $nested = '
 
 for (
     at_rule   => {input => '@page :left { margin-left: 4cm; }',
-                  ast => {"page_pseudo" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => 4]}]},
+                  ast => {"page_pseudo" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}]},
     },
     at_rule   => {input => '@page :junk { margin-right: 2cm }',
-                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => 2]}]},
+                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}]},
                   warnings => 'ignoring page pseudo: junk',
     },
     at_rule   => {input => '@page : { margin-right: 2cm }',
