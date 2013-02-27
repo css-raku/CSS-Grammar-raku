@@ -37,13 +37,27 @@ for ('70deg') {
     ok($_ ~~ /^<CSS::Grammar::CSS3::angle>$/, "css3 angle: $_");
 }
 
-# nonascii
-for ('¡', "\o250", 'ÿ', '') {
-    ok($_ ~~ /^<CSS::Grammar::nonascii>$/, "nonascii: $_");
+# non-ascii
+for ('¡', "\o250", 'ÿ') {
+    ok($_ ~~ /^<CSS::Grammar::nonascii>$/, "non-ascii: $_ ("~$_.ord~')');
+    ok($_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_");
+}
+
+# css1 and css21 only recognise latin chars as non-ascii (\o240-\o377)
+for ('') {
+    ok($_ ~~ /^<CSS::Grammar::nonascii>$/, "non-ascii: $_ ("~$_.ord~')');
+    ok($_ !~~ /^<CSS::Grammar::CSS1::nonascii>$/, "not non-ascii css1: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS21::nonascii>$/, "not non-ascii css21: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_");
 }
 
 for (chr(0), ' ', '~') {
-    ok($_ !~~ /^<CSS::Grammar::nonascii>$/, "not nonascii: $_");
+    ok($_ !~~ /^<CSS::Grammar::nonascii>$/, "not non-ascii: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS1::nonascii>$/, "not non-ascii css1: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS21::nonascii>$/, "not non-ascii css21: $_");
+    ok($_ !~~ /^<CSS::Grammar::CSS3::nonascii>$/, "not non-ascii css3: $_");
 } 
 
 for ('http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif') {

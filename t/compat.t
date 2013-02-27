@@ -297,16 +297,15 @@ for (
                         },
     },
     # character set differences:
-    # \255 is not in the css1 charset, but is in css2; some tricksters
-    # use this to verify that the parse is css2 compliant
-    #
+    # \255 is not recognised by css1 or css2 as non-ascii chars
     ruleset => {input => ".TB	\{mso-special-format:nobullet\x[95];\}",
                 ast => {"selectors" => ["selector" => ["simple_selector" => {"class" => "TB"}]],
-                        "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"}, "expr" => ["term" => {ident => "nobullet\x[95]"}]}]},
-                css1 => {
+                        "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"}, "expr" => ["term" => {ident => "nobullet"}]}]},
+                warnings => 'skipping term: \\x[95]',
+                css3 => {
+                    warnings => Mu,
                     ast => {"selectors" => ["selector" => ["simple_selector" => {"class" => "TB"}]],
-                            "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"}, "expr" => ["term" => {ident => "nobullet"}]}]},
-                    warnings => 'skipping term: \\x[95]',
+                            "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"}, "expr" => ["term" => {ident => "nobullet\x[95]"}]}]},
                 },
     },
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',

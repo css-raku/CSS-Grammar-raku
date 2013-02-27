@@ -6,9 +6,6 @@ use CSS::Grammar;
 
 grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
-# as defined in w3c Appendix G: Grammar of CSS 2.1
-# http://www.w3.org/TR/CSS21/grammar.html
-
     rule TOP {^ <stylesheet> $}
 
     # productions
@@ -83,7 +80,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule aterm:sym<color_rgb>  {<color_rgb>}
     rule aterm:sym<color_hex>  {<id>}
     rule aterm:sym<function>   {<function>}
-    rule aterm:sym<ident>      {<ident>}
+    rule aterm:sym<ident>      {<!before emx><ident>}
 
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
@@ -99,10 +96,10 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule pseudo:sym<function> {':' <function> }
     rule pseudo:sym<lang>     {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
     # assume anything else is a class
-    rule pseudo:sym<class>     {':' <class=.ident> }
-    token function             {<ident> '(' <expr> [')' | <unclosed_paren>]}
+    rule pseudo:sym<class>    {':' <class=.ident> }
+    token function            {<ident> '(' <expr> [')' | <unclosed_paren>]}
 
     # 'lexer' css2 exceptions
-    token nonascii       {<- [\o0..\o177]>}
-    token regascii       {<[\o40..~]>}
+    # non-ascii limited to single byte characters
+    token nonascii       {<[\o240..\o377]>}
 }

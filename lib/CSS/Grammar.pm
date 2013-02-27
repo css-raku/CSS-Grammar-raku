@@ -26,8 +26,8 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
+    token regascii       {<[\x20..\x7F]>}
     token nonascii       {<- [\x0..\x7F]>}
-    token regascii       {<[\x20..\x7E]>}
     token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {(<[_ \- a..z A..Z 0..9]>)|<nonascii>|<escape>}

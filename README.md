@@ -19,14 +19,14 @@ This distribution currently includes:
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
 
-Defining CSS3 Extensions
-------------------------
+Including CSS3 Extensions
+-------------------------
 CSS3 is evolving into a core grammar plus an extensive set of extension
 [modules](http://www.css3.info/modules/). Most are optional and may extend
 both the grammar and generated Abstract Syntax Tree (AST). This leads to a
 large number of possible grammar dialects.
 
-You may need to define custom grammar and action classes subset for
+You may need to define custom grammar and action classes for
 the particular CSS3 modules that you intend to support.
 
 E.g. to support the CSS3 Core grammar plus the Fonts modules:

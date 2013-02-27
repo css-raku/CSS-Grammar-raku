@@ -6,9 +6,6 @@ use CSS::Grammar;
 
 grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
 
-# as defined in w3c Appendix B: CSS1 Grammar
-# http://www.w3.org/TR/REC-CSS1/#appendix-b
-
     rule TOP {^ <stylesheet> $}
 
     # productions
@@ -61,7 +58,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule aterm:sym<color_hex>  {<id>}
     rule aterm:sym<color_rgb>  {<color_rgb>}
     rule aterm:sym<url>        {<url>}
-    rule aterm:sym<ident>      {<ident>}
+    rule aterm:sym<ident>      {<!before emx><ident>}
 
     token class        {'.'<name>}
     token element_name {<ident>}
@@ -86,5 +83,4 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule unicode {'\\'(<[0..9 a..f A..F]>**1..4)}
     # -- css1 extended characters limited to latin1
     token nonascii       {<[\o241..\o377]>}
-    token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
 }
