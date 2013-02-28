@@ -16,8 +16,8 @@ This distribution currently includes:
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
--- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
--- `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
+    - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
+    - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts extension module
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 
@@ -76,6 +76,6 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
 - CSS 2.1 Grammar - http://www.w3.org/TR/CSS21/grammar.html
 - CSS3 module: Syntax - http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
-- CSS Selectors Module Level 3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
+- CSS Selectors Module Level sub3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
 - CSS Color Module Level 3 - http://www.w3.org/TR/2011/REC-css3-color-20110607/
 - CSS Fonts Module Level 3 - http://www.w3.org/TR/2013/WD-css3-fonts-20130212/
