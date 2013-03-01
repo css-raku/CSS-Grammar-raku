@@ -53,19 +53,19 @@ E.g. to support the CSS3 Core grammar plus the Fonts modules:
     use CSS::Grammar::CSS3::Module::Fonts;
     use CSS::Grammar::Actions;
 
-    grammar My_Custom_CSS3_Grammar
+    grammar My_CSS3_Dialect_Grammar
         is CSS::Grammar::CSS3::Module::Fonts
         is CSS::Grammar::CSS3 {};
 
-    class My_Custom_CSS3_Actions
+    class My_CSS3_Dialect_Actions
         is CSS::Grammar::CSS3::Module::Fonts::Actions
         is CSS::Grammar::Actions {};
 
 This gives you a customised grammar and parser that understands the
 core CSS3 language, plus Fonts.
 
-    my $actions = My_Custom_CSS3_Actions.new;
-    my $parse = My_Custom_CSS3_Grammar.parse( $css_input, :actions($actions) );
+    my $actions = My_CSS3_Dialect_Actions.new;
+    my $parse = My_CSS3_Dialect_Grammar.parse( $css_input, :actions($actions) );
 
 For a working example, see t/parse-css3-module-fonts.t.
 
@@ -76,6 +76,6 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
 - CSS 2.1 Grammar - http://www.w3.org/TR/CSS21/grammar.html
 - CSS3 module: Syntax - http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
-- CSS Selectors Module Level sub3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
+- CSS Selectors Module Level 3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
 - CSS Color Module Level 3 - http://www.w3.org/TR/2011/REC-css3-color-20110607/
 - CSS Fonts Module Level 3 - http://www.w3.org/TR/2013/WD-css3-fonts-20130212/
