@@ -10,6 +10,7 @@ use CSS::Grammar::CSS3;
 for (' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->') {
     ok($_ ~~ /^<CSS::Grammar::ws>$/, "ws: $_");
 }
+nok("r\n" ~~ /^<CSS::Grammar::ws>$/, "ws: r\\n");
 
 # comments
 for ('/**/', '/* hi */', '<!--X-->',

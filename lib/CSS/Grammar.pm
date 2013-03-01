@@ -9,7 +9,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Comments and whitespace
 
-    token nl {"\n"|"r\n"|"\r"|"\f"}
+    token nl {"\n"|"\r\n"|"\r"|"\f"}
 
     token unclosed_comment {$}
     # comments: nb trigger <nl> for accurate line counting
