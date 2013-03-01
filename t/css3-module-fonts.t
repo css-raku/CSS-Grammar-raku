@@ -37,7 +37,7 @@ for (
 
     $css_actions.warnings = ();
     my $p3 = t::CSS3::FontGrammar.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::compat_tests($input, $p3, :rule($rule), :compat('css3-font-composite'),
+    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3-font-composite'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

@@ -30,10 +30,10 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nonascii       {<- [\x0..\x7F]>}
     token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
-    token nmchar         {(<[_ \- a..z A..Z 0..9]>)|<nonascii>|<escape>}
-    token ident          {('-')?<nmstrt><nmchar>*}
+    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
+    token nmchar         {<nmreg>|<nonascii>|<escape>}
+    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
-    token notnm          {(<-[\- a..z A..Z 0..9\\]>)|<nonascii>}
     token num            {[\d* \.]? \d+}
 
     proto token stringchar {<...>}

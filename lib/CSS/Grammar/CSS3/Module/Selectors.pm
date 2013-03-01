@@ -48,7 +48,6 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule pseudo:sym<element2>   {'::' <element=.ident> }
  
     token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ [')' | <unclosed_paren>]}
-    token function    {<ident> '(' <expr> [')' | <unclosed_paren>]}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {

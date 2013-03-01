@@ -109,11 +109,11 @@ class CSS::Grammar::Actions
         make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
     }
     method nmchar($/){
-        make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
+        make $<nmreg> ?? $<nmreg>.Str !! ($<nonascii> || $<escape>).ast;
     }
     method ident($/) {
-        my $dash = $0 ?? $0.Str !! '';
-        make $dash ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $pfx = $<pfx> ?? $<pfx>.Str !! '';
+        make $pfx ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
     }
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');

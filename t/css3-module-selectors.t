@@ -49,7 +49,7 @@ for (
 
     $css_actions.warnings = ();
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::compat_tests($input, $p3, :rule($rule), :compat('css3-selector'),
+    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3-selector'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

@@ -4,12 +4,17 @@ module t::CSS {
 
     use Test;
 
-    our sub compat_tests($input, $parse,
+    our sub parse_tests($input, $parse,
                          :$rule, :$compat, :%expected, :@warnings) {
 
         my $parsed = %expected<parse> // $input;
 
-        is($parse.Str, $parsed, "{$compat}: " ~ $rule ~ " parse: " ~ $input);
+        if (defined $input) {
+            is($parse.Str, $parsed, "{$compat}: " ~ $rule ~ " parse: " ~ $input)
+        }
+        else {
+            ok($parse.Str, "{$compat}: " ~ $rule ~ " parsed")
+        }
 
         my @expected_warnings = %expected<warnings> // ();
         is(@warnings, @expected_warnings,
@@ -25,7 +30,7 @@ module t::CSS {
                     unless %expected.exists('ast');
             }
             else {
-                diag "no {$compat} ast: " ~ $input;
+                diag "no {$compat} ast: " ~ ($input // '');
             }
         }
 

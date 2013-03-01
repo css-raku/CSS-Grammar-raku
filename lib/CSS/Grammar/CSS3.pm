@@ -1,4 +1,5 @@
 use v6;
+
 use CSS::Grammar;
 use CSS::Grammar::CSS3::Module::Colors;
 use CSS::Grammar::CSS3::Module::Selectors;
@@ -89,6 +90,8 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     rule aterm:sym<function>      {<function>}
     rule aterm:sym<unicode_range> {<unicode_range>}
     rule aterm:sym<ident>         {<!before emx><ident>}
+
+    token function    {<ident> '(' <expr>? [')' | <unclosed_paren>]}
 
     rule unicode_range {:i'U+'<range>}
     proto rule range { <...> }

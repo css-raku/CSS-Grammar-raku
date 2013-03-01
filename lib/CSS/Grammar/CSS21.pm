@@ -97,7 +97,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule pseudo:sym<lang>     {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
-    token function            {<ident> '(' <expr> [')' | <unclosed_paren>]}
+    token function            {<ident> '(' <expr>? [')' | <unclosed_paren>]}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

@@ -198,6 +198,14 @@ for (
     term => {input => '1cm', ast => {length => 1}},
     term => {input => 'em', ast => {emx => 'em'}},
     term => {input => '01.10', ast => {num => 1.1}},
+    # function without arguments, e.g. jquery-ui-themeroller.css
+    term => {input => 'mask()',
+             ast => {"function" => {"ident" => "mask"}},
+             css1 => {
+                 parse => 'mask',
+                 ast => {ident => 'mask'},
+             },
+    },
     expr => {input => 'RGB(70,133,200 ), #fff',
              ast => ["term" => {color_rgb => {"r" => 70, "g" => 133, "b" => 200}},
                      "operator" => ",",
@@ -402,21 +410,21 @@ for (
     # CSS1 Compat
     $css_actions.warnings = ();
     my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::compat_tests($input, $p1, :rule($rule), :compat('css1'),
+    t::CSS::parse_tests($input, $p1, :rule($rule), :compat('css1'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css1)) );
 
     # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::compat_tests($input, $p2, :rule($rule), :compat('css2'),
+    t::CSS::parse_tests($input, $p2, :rule($rule), :compat('css2'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css2)) );
 
     # CSS3 Compat
     $css_actions.warnings = ();
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::compat_tests($input, $p3, :rule($rule), :compat('css3'),
+    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css3)) );
 }
