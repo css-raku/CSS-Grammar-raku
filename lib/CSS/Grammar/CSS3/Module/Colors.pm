@@ -1,7 +1,11 @@
-grammar CSS::Grammar::CSS3::Module::Colors {
+use v6;
+
+# CSS3 Color Module Extensions
+# specification: http://www.w3.org/TR/2011/REC-css3-color-20110607/
+
+grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
 # extensions for CSS3 Color Module
-# - see http://www.w3.org/TR/css3-color/
 
     # color_rgb and color_hex iare defined in CSS core grammar
 
