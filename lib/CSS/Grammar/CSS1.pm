@@ -60,9 +60,6 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule aterm:sym<url>        {<url>}
     rule aterm:sym<ident>      {<!before emx><ident>}
 
-    token class        {'.'<name>}
-    token element_name {<ident>}
-
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
     token simple_selector { <element_name> <id>? <class>? <pseudo>?

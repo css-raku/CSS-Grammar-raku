@@ -87,9 +87,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    token class        {'.'<name>}
-    token element_name {<ident>}
-
     rule attrib        {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
     # pseudo:sym<elem> inherited from base 

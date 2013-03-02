@@ -48,6 +48,8 @@ grammar CSS::Grammar:ver<0.0.1> {
                          |\'[<!before \'><stringchar>]*$<closing_quote>=\'?}
 
     token id             {'#'<name>}
+    token class          {'.'<name>}
+    token element_name   {<ident>}
 
     token percentage     {<num>('%')}
     token length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
