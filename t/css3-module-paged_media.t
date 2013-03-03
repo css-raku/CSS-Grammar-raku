@@ -17,13 +17,10 @@ class t::CSS3::PagedMediaActions
     is CSS::Grammar::Actions
     is CSS::Grammar::CSS3::Module::PagedMedia::Actions {};
 
-
 use lib '.';
 use t::CSS;
 
 my $css_actions = t::CSS3::PagedMediaActions.new;
-
-# to do: nested rule-sets. grammars?
 
 my $top_center = '
 @page { color: red;
@@ -35,7 +32,7 @@ my $top_center = '
 my $top_center_ast = {
     "page_declarations" => ["declaration" => {"property" => {"ident" => "color"},
                                               "expr" => ["term" => {"ident" => "red"}]},
-                            "page_box" => {"page_pos" => {"hpos" => "center", "vpos" => "top"},
+                            "media_feature" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                                            "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
                                                                                                                                  "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
                             }
@@ -54,17 +51,17 @@ for (
                   ast => Mu,
                   warnings => "':' should be followed by one of: left right first",
     },
-    page_pos => {input => 'top-left', ast => {hpos => 'left', vpos => 'top'}},
-    page_pos => {input => 'top-center', ast => {hpos => 'center', vpos => 'top'}},
-    page_pos => {input => 'RIGHT-TOP', ast => {hpos => 'right', vpos => 'top'}},
-    page_pos => {input => 'bottom-left-corner', ast => {hpos => 'left', vpos => 'bottom'}},
-    page_pos => {input => 'bottom-right', ast => {hpos => 'right', vpos => 'bottom'}},
-    page_box => {input => '@bottom-right {color:blue}',
-                 ast => {"page_pos" => {"hpos" => "right", "vpos" => "bottom"},
+    margin_box => {input => 'top-left', ast => {hpos => 'left', vpos => 'top'}},
+    margin_box => {input => 'top-center', ast => {hpos => 'center', vpos => 'top'}},
+    margin_box => {input => 'RIGHT-TOP', ast => {hpos => 'right', vpos => 'top'}},
+    margin_box => {input => 'bottom-left-corner', ast => {hpos => 'left', vpos => 'bottom'}},
+    margin_box => {input => 'bottom-right', ast => {hpos => 'right', vpos => 'bottom'}},
+    media_feature => {input => '@bottom-right {color:blue}',
+                 ast => {"margin_box" => {"hpos" => "right", "vpos" => "bottom"},
                          "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => {"ident" => "blue"}]}]},
     },
-    page_box => {input => '@top-center {content: "Page " counter(page);}',
-                 ast => {"page_pos" => {"hpos" => "center", "vpos" => "top"},
+    media_feature => {input => '@top-center {content: "Page " counter(page);}',
+                 ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                          "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "}, "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]},
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
