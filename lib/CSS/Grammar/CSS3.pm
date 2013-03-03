@@ -30,14 +30,6 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>    { \@(:i'media') <media_list> <rulesets> }
-    # todo: factor into Page css3 module?
-    rule at_rule:sym<page>     { \@(:i'page') [\:<page_pseudo>]? <declarations> }
-    proto rule page_pseudo {<...>}
-    rule page_pseudo:sym<left>    {:i'left'}
-    rule page_pseudo:sym<right>   {:i'right'}
-    rule page_pseudo:sym<first>   {:i'first'}
-    rule page_pseudo:sym<other>   {<ident>}
-    rule page_pseudo:sym<missing> {''}
 
     rule media_list {<medium> [',' <medium>]*}
     rule medium {<ident>}

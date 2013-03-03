@@ -7,7 +7,7 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
 # extensions for CSS3 Color Module
 
-    # color_rgb and color_hex iare defined in CSS core grammar
+    # color_rgb and color_hex are defined in CSS core grammar
 
     rule color_rgba {:i'rgba('
                    [<r=.percentage>|<r=.num>] ','
