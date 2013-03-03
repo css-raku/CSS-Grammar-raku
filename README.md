@@ -19,6 +19,7 @@ This distribution currently includes:
     - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
     - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face) extension module
+- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Paged Media (@media) extension module
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 

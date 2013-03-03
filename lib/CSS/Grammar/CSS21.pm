@@ -19,11 +19,12 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule unexpected {<charset>|<import>}
 
     proto rule at_rule { <...> }
-    rule at_rule:sym<media>   { \@(:i'media') <media_list> <rulesets> }
-    rule at_rule:sym<page>    { \@(:i'page')  <page=.pseudo>? <declarations> }
+    rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_rules> }
+    rule media_list {<media_type> [',' <media_type>]*}
+    rule media_type {<ident>}
+    rule media_rules {'{' <ruleset>* <end_block>}
 
-    rule media_list {<medium> [',' <medium>]*}
-    rule medium {<ident>}
+    rule at_rule:sym<page>    { \@(:i'page')  <page=.pseudo>? <declarations> }
 
     rule unary_operator {'-'}
     rule operator {'/'|','}
@@ -38,10 +39,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule declarations {
         '{' <declaration> [';' <declaration> ]* ';'? <end_block>
-    }
-
-    rule rulesets {
-        '{' <ruleset>* <end_block>
     }
 
     rule selectors {

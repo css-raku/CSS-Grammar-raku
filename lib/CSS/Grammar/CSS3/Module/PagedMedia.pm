@@ -16,17 +16,17 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
     rule at_rule:sym<page>  { \@(:i'page') [\:<page_pseudo>]? <page_declarations> }
 
     rule page_declarations {
-        '{' [<media_feature> | <declaration>] [';' [<media_feature> | <declaration>]]* ';'? <end_block>
+        '{' [<page_rules> | <declaration>] [';' [<page_rules> | <declaration>]]* ';'? <end_block>
     }
 
-    proto rule media_feature {<...>} 
-    rule media_feature:sym<margin_box> {
+    # protoregex for future expansion
+    proto rule page_rules {<...>} 
+    rule page_rules:sym<margin_box> {
         '@'<margin_box> <declarations>
     }
 
     token margin_box {<hpos>'-'[<vpos>'-corner'?|<center>]
-                   |<vpos>'-'[<hpos>'-corner'?|<center>]
-                   }
+                     |<vpos>'-'[<hpos>'-corner'?|<center>]}
 
     token hpos   {:i[left|right]}
     token vpos   {:i[top|bottom]}
@@ -35,21 +35,20 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
 
 class CSS::Grammar::CSS3::Module::PagedMedia::Actions {
 
-    method at_rule:sym<page>($/) { make $.node($/) }
     method page_pseudo:sym<left>($/) {make 'left'}
     method page_pseudo:sym<right>($/) {make 'right'}
     method page_pseudo:sym<first>($/) {make 'first'}
     method page_pseudo:sym<other>($/) {$.warning('ignoring page pseudo', $/.Str)}
     method page_pseudo:sym<missing>($/) {$.warning("':' should be followed by one of: left right first")}
 
-    method media_feature:sym<margin_box>($/) { make $.node($/) }
+    method page_rules:sym<margin_box>($/) { make $.node($/) }
     method page_declarations($/) { make $.list($/) }
 
     method margin_box($/) {
-       my %pos;
-       %pos<hpos> = $<hpos> ?? $<hpos>.Str.lc !! 'center';
-       %pos<vpos> = $<vpos> ?? $<vpos>.Str.lc !! 'center';
-       make %pos;
+       my %box;
+       %box<hpos> = $<hpos> ?? $<hpos>.Str.lc !! 'center';
+       %box<vpos> = $<vpos> ?? $<vpos>.Str.lc !! 'center';
+       make %box;
     }
 }
 

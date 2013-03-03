@@ -10,12 +10,14 @@ use CSS::Grammar::CSS3::Module::PagedMedia;
 # prepare our own composite class with paged media extensions
 
 grammar t::CSS3::PagedMediaGrammar
-      is CSS::Grammar::CSS3
-      is CSS::Grammar::CSS3::Module::PagedMedia {};
+    is CSS::Grammar::CSS3::Module::PagedMedia
+    is CSS::Grammar::CSS3
+    {};
 
 class t::CSS3::PagedMediaActions
+    is CSS::Grammar::CSS3::Module::PagedMedia::Actions
     is CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::PagedMedia::Actions {};
+    {};
 
 use lib '.';
 use t::CSS;
@@ -32,7 +34,7 @@ my $top_center = '
 my $top_center_ast = {
     "page_declarations" => ["declaration" => {"property" => {"ident" => "color"},
                                               "expr" => ["term" => {"ident" => "red"}]},
-                            "media_feature" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
+                            "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                                            "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
                                                                                                                                  "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
                             }
@@ -56,11 +58,11 @@ for (
     margin_box => {input => 'RIGHT-TOP', ast => {hpos => 'right', vpos => 'top'}},
     margin_box => {input => 'bottom-left-corner', ast => {hpos => 'left', vpos => 'bottom'}},
     margin_box => {input => 'bottom-right', ast => {hpos => 'right', vpos => 'bottom'}},
-    media_feature => {input => '@bottom-right {color:blue}',
+    page_rules => {input => '@bottom-right {color:blue}',
                  ast => {"margin_box" => {"hpos" => "right", "vpos" => "bottom"},
                          "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => {"ident" => "blue"}]}]},
     },
-    media_feature => {input => '@top-center {content: "Page " counter(page);}',
+    page_rules => {input => '@top-center {content: "Page " counter(page);}',
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                          "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "}, "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]},
     },
@@ -72,7 +74,7 @@ for (
 
     $css_actions.warnings = ();
     my $p3 = t::CSS3::PagedMediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3 at-rule'),
+    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3 @page'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

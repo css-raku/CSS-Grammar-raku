@@ -28,11 +28,17 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     rule unexpected  {<charset>|<import>}
     rule unexpected2 {<charset>|<import>|<namespace>}
 
+    # at_rule - see extension modules; e.g. PagedMedia (@media)
     proto rule at_rule { <...> }
-    rule at_rule:sym<media>    { \@(:i'media') <media_list> <rulesets> }
 
-    rule media_list {<medium> [',' <medium>]*}
-    rule medium {<ident>}
+    # nb @media rule is extendable via the Media and Paged Media modules
+    rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_rules> }
+    rule media_list {<media_type> [',' <media_type>]*}
+    rule media_type {<ident>}
+    rule media_rules {'{' <ruleset>* <end_block>}
+
+    # nb @page rule is extendable via the Paged Media module
+    rule at_rule:sym<page>    { \@(:i'page') <page=.pseudo>? <declarations> }
 
     rule unary_operator {'-'|'+'}
     rule operator {'/'|','}
@@ -44,10 +50,6 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
 
     rule declarations {
         '{' <declaration> [';' <declaration> ]* ';'? <end_block>
-    }
-
-    rule rulesets {
-        '{' <ruleset>* <end_block>
     }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}

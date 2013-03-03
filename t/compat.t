@@ -368,6 +368,14 @@ for (
                     ],
                 ast => Mu,
     },
+    at_rule => {input => '@media print {body{margin: 1cm}}',
+                ast => {"media_list" => ["media_type" => "print"], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
+                css1 => {skip => True},
+    },
+    at_rule => {input => '@page :first { margin-right: 2cm }',
+                ast => {"page" => {"class" => "first"}, "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}]},
+                css1 => {skip => True},
+    },
 
     # from the top
     TOP => {input => "@charset 'bazinga';\n",
@@ -408,12 +416,14 @@ for (
     my $css3 = %test<css3> // {};
 
     # CSS1 Compat
-    $css_actions.warnings = ();
-    my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p1, :rule($rule), :compat('css1'),
-                         :warnings($css_actions.warnings),
-                         :expected( %(%test, %$css1)) );
-
+    unless %$css1<skip> {
+        $css_actions.warnings = ();
+        my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
+        t::CSS::parse_tests($input, $p1, :rule($rule), :compat('css1'),
+                            :warnings($css_actions.warnings),
+                            :expected( %(%test, %$css1)) );
+    }
+        
     # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
