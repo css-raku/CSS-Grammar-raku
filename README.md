@@ -84,4 +84,5 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS Selectors Module Level 3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
 - CSS Color Module Level 3 - http://www.w3.org/TR/2011/REC-css3-color-20110607/
 - CSS Fonts Module Level 3 - http://www.w3.org/TR/2013/WD-css3-fonts-20130212/
+- CSS3 Media Query Extensions - http://www.w3.org/TR/2012/REC-css3-mediaqueries-20120619/
 - CSS3 Module: Paged Media - http://www.w3.org/TR/2006/WD-css3-page-20061010/
