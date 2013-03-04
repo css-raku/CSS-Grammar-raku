@@ -16,8 +16,8 @@ This distribution currently includes:
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
-    - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
-    - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
+- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
+- `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face) extension module
 - `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Paged Media (@media) extension module
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
@@ -25,7 +25,7 @@ This distribution currently includes:
 
 Rakudo Star
 -----------
-You'll first need to download and build Rakudo Star 2012.11 or better (https://github.com/rakudo/star/downloads - don't forget the final `make install`):
+You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
 
 Ensure that `perl6` and `panda` are available on your path, e.g. :
 
@@ -40,15 +40,32 @@ To try parsing some content:
 
     % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
 
-Adding CSS3 Extensions
-----------------------
+CSS3 Core Grammar
+-----------------
+Grammar `CSS::Grammar::CSS3`, without extensions, is mostly CSS2.1 compatabile. In particular, it understands:
+
+-- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
+-- basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
+-- basic css2 compatibile selectors.
+
+CSS3 Extended Grammar
+---------------------
+Grammar `CSS::Grammar::CSS3::Extended` and class
+CSS::Grammar::CSS3::Extended::Actions` are included for your convenience. They
+have all currently implemented extensions enabled.
+
+    use CSS::Grammar::CSS3::Extended;
+
+Enabling CSS3 Extensions
+------------------------
 CSS3 is evolving into a core grammar plus a comprehensive set of extension
 [modules](http://www.css3.info/modules/). Most are optional and may extend
 both the grammar and generated Abstract Syntax Tree (AST). This leads to a
 large number of possible grammar combinations.
 
-You may need to define custom grammar and action classes for
-the particular CSS3 modules that you intend to support.
+If you wish to use these extensions, you'll need to construct a custom grammar
+and actions that include the particular CSS3 extension modules that you intend
+to support.
 
 E.g. to support the CSS3 Core grammar plus Paged Media and Fonts modules:
 

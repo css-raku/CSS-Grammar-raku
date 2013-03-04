@@ -1,14 +1,8 @@
 use v6;
 
-use CSS::Grammar::CSS3::Module::Colors;
-use CSS::Grammar::CSS3::Module::Selectors;
-
 # rules for constructing ASTs for CSS::Grammar
 
-class CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::Colors::Actions
-    is CSS::Grammar::CSS3::Module::Selectors::Actions
-{
+class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Info;
 
     has Int $.line_no is rw = 1;
@@ -96,7 +90,7 @@ class CSS::Grammar::Actions
     }
 
     method _to_unicode($str) {
-        my $ord = _from_hex($str);
+        my $ord = $._from_hex($str);
         return Buf.new( $ord ).decode( $.encoding );
     }
 
@@ -210,15 +204,16 @@ class CSS::Grammar::Actions
     method at_rule:sym<media>($/) { make $.node($/) }
     method media_rules($/)  { make $.list($/) }
     method media_list($/)   { make $.list($/) }
-    method media_type($/)   { make $<ident>.ast }
+    method media($/)   { make $<ident>.ast }
 
     # css2/css3 core - page support
     method at_rule:sym<page>($/) { make $.node($/) }
 
     method ruleset($/)      { make $.node($/) }
-    method property($/)     { make $.node($/) }
+    method selectors($/)        { make $.list($/) }
     method declarations($/) { make $.list($/) }
     method declaration($/)  { make $.node($/) }
+    method property($/)     { make $.node($/) }
 
     method expr($/) { make $.list($/) }
 
@@ -243,7 +238,6 @@ class CSS::Grammar::Actions
     method aterm:sym<color_hex>($/)     { make $.node($/) }
     method aterm:sym<color_rgb>($/)     { make $.node($/) }
     method aterm:sym<function>($/)      { make $.node($/) }
-    method aterm:sym<unicode_range>($/) { make $.node($/) }
     method aterm:sym<ident>($/)         { make $.node($/) }
 
     method emx($/) { make $/.Str.lc }
@@ -261,20 +255,14 @@ class CSS::Grammar::Actions
         }
     }
 
-    method unicode_range($/) { make $<range>.ast }
-    method range:sym<from_to>($/) {
-        # don't produce actual hex chars; could be out of range
-        make [ _from_hex($<from>.Str), _from_hex($<to>.Str) ];
-    }
+    method selector($/)         { make $.list($/) }
+    method simple_selector($/)  { make $.list($/) }
+    method attrib($/)           { make $.node($/) }
+    method function($/)     { make $.node($/) }
 
-    method range:sym<masked>($/) {
-        my $mask = $/.Str;
-        my $lo = $mask.subst('?', '0'):g;
-        my $hi = $mask.subst('?', 'F'):g;
-
-        # don't produce actual hex chars; could be out of range
-        make [ _from_hex($lo), _from_hex($hi) ];
-    }
+    method attribute_selector:sym<equals>($/)    { make $/.Str }
+    method attribute_selector:sym<includes>($/)  { make $/.Str }
+    method attribute_selector:sym<dash>($/)      { make $/.Str }
 
     method unclosed_comment($/) {
         $.warning('unclosed comment at end of input');
@@ -297,7 +285,7 @@ class CSS::Grammar::Actions
 
     # utiltity methods / subs
 
-    sub _from_hex($hex) {
+    method _from_hex($hex) {
 
         my $result = 0;
 

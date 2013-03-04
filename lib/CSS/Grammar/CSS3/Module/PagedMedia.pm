@@ -13,7 +13,7 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
     rule page_pseudo:sym<other>   {<ident>}
     rule page_pseudo:sym<missing> {''}
 
-    rule at_rule:sym<page>  { \@(:i'page') [\:<page_pseudo>]? <page_declarations> }
+    rule at_rule:sym<page>  { \@(:i'page') [\:<page=.page_pseudo>]? <declarations=.page_declarations> }
 
     rule page_declarations {
         '{' [<page_rules> | <declaration>] [';' [<page_rules> | <declaration>]]* ';'? <end_block>

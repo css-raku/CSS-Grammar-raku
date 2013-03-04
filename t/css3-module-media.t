@@ -31,30 +31,27 @@ my $embedded_page = '@media print and (width: 21cm) and (height: 29.7cm) {
       @page { margin: 3cm; }
    }';
 
-my $embedded_page_ast = {"media_list" => ["media_query" => ["media_type" => "print", "media_expr" => {"media_feature" => "width", "expr" => ["term" => {"length" => 21}]}, "media_expr" => {"media_feature" => "height", "expr" => ["term" => {"length" => 29.7}]}]], "media_rules" => ["at_rule" => {"page_declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 3}]}]}]};
+my $embedded_page_ast = {"media_list" => ["media_query" => ["media" => "print", "media_expr" => {"media_feature" => "width", "expr" => ["term" => {"length" => 21}]}, "media_expr" => {"media_feature" => "height", "expr" => ["term" => {"length" => 29.7}]}]], "media_rules" => ["at_rule" => {"declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 3}]}]}]};
 
 for (
     at_rule   => {input => '@media all { body { background:lime } }',
-                  ast => {"media_list" => ["media_query" => {"media_type" => "all"}],
-                          "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]],
-                                                          "declarations" => ["declaration" => {"property" => {"ident" => "background"}, "expr" => ["term" => {"ident" => "lime"}]}]}]},
+                  ast => {"media_list" => ["media_query" => ["media" => "all"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "background"}, "expr" => ["term" => {"ident" => "lime"}]}]}]},
     },
     at_rule => {input => '@media all and (color) { }',
-                ast => {"media_list" => ["media_query" => ["media_type" => "all", "media_expr" => {"media_feature" => "color"}]], "media_rules" => []},
+                ast => {"media_list" => ["media_query" => ["media" => "all", "media_expr" => {"media_feature" => "color"}]], "media_rules" => []},
     },
     at_rule => {input => '@media all and (min-color: 2) { }',
-                ast => {"media_list" => ["media_query" => ["media_type" => "all", "media_expr" => {"media_feature" => "min-color", "expr" => ["term" => {"num" => 2}]}]], "media_rules" => []},
+                ast => {"media_list" => ["media_query" => ["media" => "all", "media_expr" => {"media_feature" => "min-color", "expr" => ["term" => {"num" => 2}]}]], "media_rules" => []},
     },
     # try out dpi and dpcm term extensions
     at_rule => {input => '@media all and (min-resolution: 300dpi) and (min-resolution: 118dpcm) {}',
-                ast => {"media_list" => ["media_query" => ["media_type" => "all", "media_expr" => {"media_feature" => "min-resolution", "expr" => 300, "resolution" => 300}, "media_expr" => {"media_feature" => "min-resolution", "expr" => 118, "resolution" => 118}]], "media_rules" => []},
+                ast => {"media_list" => ["media_query" => ["media" => "all", "media_expr" => {"media_feature" => "min-resolution", "expr" => 300}, "media_expr" => {"media_feature" => "min-resolution", "expr" => 118}]], "media_rules" => []},
     },
     at_rule => {input => '@media not print {body{margin: 1cm}}',
-                ast => {"media_list" => ["media_query" => ["media_op" => "not", "media_type" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
+                ast => {"media_list" => ["media_query" => ["media_op" => "not", "media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
     },
-    # forgetting to enclose sub-rule
-     at_rule => {input => '@media not print {body{margin: 1cm}}',
-                 ast => {"media_list" => ["media_query" => ["media_op" => "not", "media_type" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
+    at_rule => {input => '@media not print {body{margin: 1cm}}',
+                ast => {"media_list" => ["media_query" => ["media_op" => "not", "media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
     },
     at_rule => {input => $embedded_page, ast => $embedded_page_ast},
     ) {

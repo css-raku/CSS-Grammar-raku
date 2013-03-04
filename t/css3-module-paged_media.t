@@ -32,21 +32,21 @@ my $top_center = '
 }';
 
 my $top_center_ast = {
-    "page_declarations" => ["declaration" => {"property" => {"ident" => "color"},
-                                              "expr" => ["term" => {"ident" => "red"}]},
-                            "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                                           "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
-                                                                                                                                 "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
-                            }
+    "declarations" => ["declaration" => {"property" => {"ident" => "color"},
+                                         "expr" => ["term" => {"ident" => "red"}]},
+                       "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
+                                        "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
+                                                                                                                              "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
+                       }
         ]
 };
 
 for (
     at_rule   => {input => '@page :left { margin-left: 4cm; }',
-                  ast => {"page_pseudo" => "left", "page_declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}]},
+                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}]},
     },
     at_rule   => {input => '@page :junk { margin-right: 2cm }',
-                  ast => {"page_declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}]},
+                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}]},
                   warnings => 'ignoring page pseudo: junk',
     },
     at_rule   => {input => '@page : { margin-right: 2cm }',

@@ -10,12 +10,14 @@ use CSS::Grammar::CSS3::Module::Fonts;
 # prepare our own composite class with font extensions
 
 grammar t::CSS3::FontGrammar
+      is CSS::Grammar::CSS3::Module::Fonts
       is CSS::Grammar::CSS3
-      is CSS::Grammar::CSS3::Module::Fonts {};
+      {};
 
 class t::CSS3::FontActions
+    is CSS::Grammar::CSS3::Module::Fonts::Actions
     is CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::Fonts::Actions {};
+{};
 
 use lib '.';
 use t::CSS;

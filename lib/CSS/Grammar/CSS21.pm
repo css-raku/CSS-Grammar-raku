@@ -16,12 +16,13 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
+    # to detect out of order directives
     rule unexpected {<charset>|<import>}
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_rules> }
-    rule media_list {<media_type> [',' <media_type>]*}
-    rule media_type {<ident>}
+    rule media_list {<media> [',' <media>]*}
+    rule media {<ident>}
     rule media_rules {'{' <ruleset>* <end_block>}
 
     rule at_rule:sym<page>    { \@(:i'page')  <page=.pseudo>? <declarations> }

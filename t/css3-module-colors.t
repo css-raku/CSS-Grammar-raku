@@ -5,13 +5,22 @@ use Test;
 use CSS::Grammar;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
+use CSS::Grammar::CSS3::Module::Colors;
 
-# prepare our own composite class with font extensions
+# prepare our own composite class with color extensions
+
+grammar t::CSS3::ColorGrammar
+      is CSS::Grammar::CSS3
+      is CSS::Grammar::CSS3::Module::Colors {};
+
+class t::CSS3::ColorActions
+    is CSS::Grammar::Actions
+    is CSS::Grammar::CSS3::Module::Colors::Actions {};
 
 use lib '.';
 use t::CSS;
 
-my $css_actions = CSS::Grammar::Actions.new;
+my $css_actions = t::CSS3::ColorActions.new;
 
 for (
     term   => {input => 'rgb(70%, 50%, 10%)',
@@ -32,7 +41,7 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = t::CSS3::ColorGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3-color-composite'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );

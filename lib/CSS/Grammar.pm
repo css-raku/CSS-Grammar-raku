@@ -20,7 +20,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token ws {<!ww>[<wc>|<comment>]*}
 
-    # "lexer"
+    # "lexer"com
     # Taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
     # todo: \o377 should be \o4177777. Rakudo (and flex) can't handle this yet
 

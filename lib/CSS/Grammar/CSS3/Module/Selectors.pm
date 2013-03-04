@@ -31,7 +31,6 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
     rule universal      {<namespace_prefix>? <wildcard>}
 
-
     # inherited from base: = ~= |=
     rule attribute_selector:sym<prefix>    {'^='}
     rule attribute_selector:sym<suffix>    {'$='}
@@ -44,31 +43,46 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule pseudo:sym<class>    {':' <class=.ident> }
     rule pseudo:sym<element2> {'::' <element=.ident> }
  
+    rule aterm:sym<unicode_range> {<unicode_range>}
+    rule aterm:sym<ident>         {<!before emx><ident>}
+
+    rule unicode_range {:i'U+'<range>}
+    proto rule range { <...> }
+    rule range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
+    rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
+
     token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ [')' | <unclosed_paren>]}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {
 
-    method selectors($/)        { make $.list($/) }
-    method selector($/)         { make $.list($/) }
     method namespace_prefix($/) { make $.node($/) }
     method wildcard($/)         { make $/.Str }
-    method simple_selector($/)  { make $.list($/) }
     method type_selector($/)    { make $.node($/) }
-    method attrib($/)           { make $.node($/) }
     method universal($/)        { make $.node($/) }
 
     method pseudo:sym<negation>($/) {$.warning('unexpected negation', $/.Str)}
 
-    method attribute_selector:sym<equals>($/)    { make $/.Str }
-    method attribute_selector:sym<includes>($/)  { make $/.Str }
-    method attribute_selector:sym<dash>($/)      { make $/.Str }
     method attribute_selector:sym<prefix>($/)    { make $/.Str }
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
+    method aterm:sym<unicode_range>($/) { make $.node($/) }
+    method unicode_range($/) { make $<range>.ast }
+    method range:sym<from_to>($/) {
+        # don't produce actual hex chars; could be out of range
+        make [ $._from_hex($<from>.Str), $._from_hex($<to>.Str) ];
+    }
+
+    method range:sym<masked>($/) {
+        my $mask = $/.Str;
+        my $lo = $mask.subst('?', '0'):g;
+        my $hi = $mask.subst('?', 'F'):g;
+
+        # don't produce actual hex chars; could be out of range
+        make [ $._from_hex($lo), $._from_hex($hi) ];
+    }
 
     method negation($/)     { make $.list($/) }
-    method function($/)     { make $.node($/) }
 }
 
