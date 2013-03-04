@@ -120,6 +120,9 @@ class CSS::Grammar::Actions {
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
     method stringchar:sym<ascii>($/)    { make $/.Str }
 
+    method single_quote($/) {make "'"}
+    method double_quote($/) {make '"'}
+
     method string($/) {
         my Bool $skip = False;
         unless ($<closing_quote>.Str) {

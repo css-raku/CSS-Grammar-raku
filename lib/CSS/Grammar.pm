@@ -44,8 +44,8 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token single_quote   {\'}
     token double_quote   {\"}
-    token string         {\"[<stringchar>|$<stringchar>=\']*$<closing_quote>=\"?
-                         |\'[<stringchar>|$<stringchar>=\"]*$<closing_quote>=\'?}
+    token string         {\"[<stringchar>|<stringchar=.single_quote>]*$<closing_quote>=\"?
+                         |\'[<stringchar>|<stringchar=.double_quote>]*$<closing_quote>=\'?}
 
     token id             {'#'<name>}
     token class          {'.'<name>}
