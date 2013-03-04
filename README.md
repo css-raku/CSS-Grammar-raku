@@ -49,9 +49,10 @@ CSS3 Core Grammar
 -----------------
 Grammar `CSS::Grammar::CSS3`, without extensions, is mostly CSS2.1 compatabile. In particular, it understands:
 
--- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
--- basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
--- basic css2 compatibile selectors.
+- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
+- basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
+- basic `@page` page description rules
+- basic css2.1 compatibile selectors.
 
 CSS3 Extended Grammar
 ---------------------
