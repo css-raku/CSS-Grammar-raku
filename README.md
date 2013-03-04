@@ -86,10 +86,11 @@ E.g. to support the CSS3 Core grammar plus Paged Media and Fonts modules:
 
     class My_CSS3_Actions
         is CSS::Grammar::CSS3::Module::Fonts::Actions
+        is CSS::Grammar::CSS3::Module::PagedMedia::Actions
         is CSS::Grammar::Actions {};
 
 This gives you a customised grammar and parser that understands the
-core CSS3 language, plus Fonts and Paged Media extensions.
+core CSS3 language, plus Fonts and Paged Media extensions
 
     my $actions = My_CSS3_Actions.new;
     my $parse = My_CSS3_Grammar.parse( $css_input, :actions($actions) );
