@@ -31,6 +31,7 @@ for (
     pseudo => {input => '::my-elem',
                ast => {element => 'my-elem'},
     },
+    selector   => {input => '*', ast => ["simple_selector" => ["wildcard" => "*"]],},
     # thanks to: http://kilianvalkhof.com/2008/css-xhtml/the-css3-not-selector/
     negation   => {input => ':not(p)',
                    ast => {"type_selector" => {"element_name" => "p"}},

@@ -12,11 +12,6 @@ use t::CSS;
 my $css_actions = CSS::Grammar::Actions.new;
 
 for (
-    namespace => {input => '@namespace foo url(http://example.com);',
-                  ast => {"ident" => "foo", "url" => "http://example.com"}},
-    namespace => {input => '@namespace "http://blah.com";',
-                  ast => {"string" => "http://blah.com"},
-    },
     string => {input => "'\\\nto \\\n\\\nbe \\\ncontinued\\\n'",
                ast => 'to be continued'},
     ) {

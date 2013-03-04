@@ -13,13 +13,14 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     # productions
     rule stylesheet { <charset>?
                       [<import>              | <unexpected>]*
-                      [<namespace>           | <unexpected>]*
+                      [<at_decl>             | <unexpected>]*
                       [<at_rule> | <ruleset> | <unexpected2> | <unknown>]* }
 
-    rule namespace { \@(:i'namespace') <ident>? [<string>|<url>] ';' }
+    # <at_decl> - must preceed main css body - aka @namespace
+    proto rule at_decl {<...>}
 
     # to detect out of order directives
-    rule unexpected2 {<charset>|<import>|<namespace>}
+    rule unexpected2 {<charset>|<import>|<at_decl>}
 
     # 'lexer' css3 exceptions
    token nonascii       {<- [\x0..\x7F]>}
