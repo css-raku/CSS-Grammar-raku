@@ -13,13 +13,18 @@ It aims to implement a reasonable portion of the standards; in particular:
 
 This distribution currently includes:
 
+Base Grammars
+-------------
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
+
+CSS3 Extension Modules
+----------------------
 - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
 - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face) extension module
-- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Paged Media (@media) extension module
+- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media) extension module
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
 - `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 
@@ -63,9 +68,9 @@ CSS3 is evolving into a core grammar plus a comprehensive set of extension
 both the grammar and generated Abstract Syntax Tree (AST). This leads to a
 large number of possible grammar combinations.
 
-If you wish to use these extensions, you'll need to construct a custom grammar
-and actions that include the particular CSS3 extension modules that you intend
-to support.
+If you wish to use a subset of the available extensions, you'll need to
+construct a custom grammar and actions that include just the particular CSS3
+extension modules that you intend to support.
 
 E.g. to support the CSS3 Core grammar plus Paged Media and Fonts modules:
 
