@@ -11,13 +11,33 @@ It aims to implement a reasonable portion of the standards; in particular:
 - CSS3 / CSS4 modules and the ability to define grammar subsets
 - Mechanisms for custom CSS extensions
 
-This distribution currently includes:
+Installation (Rakudo Star)
+--------------------------
+You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
+
+Ensure that `perl6` and `panda` are available on your path, e.g. :
+
+    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
+
+You can then use `panda` to test and install `CSS::Grammar`:
+
+
+    % panda install CSS::Grammar
+
+To try parsing some content:
+
+    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
+
+
+Contents
+========
 
 Base Grammars
 -------------
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
+- `CSS::Grammar::CSS3::Extended` - CSS3 plus all available extensions
 - `CSS::Grammar::Actions` - Parser actions for CSS1, CSS2 and CSS3 base grammars
 
 CSS3 Extension Modules
@@ -81,25 +101,8 @@ core CSS3 language, plus Fonts and Paged Media extensions
 
 For a working example, see t/parse-css3-module-fonts.t.
 
-Installation (Rakudo Star)
---------------------------
-You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
-
-Ensure that `perl6` and `panda` are available on your path, e.g. :
-
-    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
-
-You can then use `panda` to test and install `CSS::Grammar`:
-
-
-    % panda install CSS::Grammar
-
-To try parsing some content:
-
-    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
-
 References
-----------
+==========
 These grammars have been built from the W3C CSS Specifications. In particular:
 
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
