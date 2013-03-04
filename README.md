@@ -28,23 +28,6 @@ CSS3 Extension Modules
 - `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media) extension module
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
 
-Rakudo Star
------------
-You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
-
-Ensure that `perl6` and `panda` are available on your path, e.g. :
-
-    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
-
-You can then use `panda` to test and install `CSS::Grammar`:
-
-
-    % panda install CSS::Grammar
-
-To try parsing some content:
-
-    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
-
 CSS3 Core Grammar
 -----------------
 Grammar `CSS::Grammar::CSS3`, without extensions, is mostly CSS2.1 compatabile. In particular, it understands:
@@ -97,6 +80,23 @@ core CSS3 language, plus Fonts and Paged Media extensions
     my $parse = My_CSS3_Grammar.parse( $css_input, :actions($actions) );
 
 For a working example, see t/parse-css3-module-fonts.t.
+
+Installation (Rakudo Star)
+--------------------------
+You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
+
+Ensure that `perl6` and `panda` are available on your path, e.g. :
+
+    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
+
+You can then use `panda` to test and install `CSS::Grammar`:
+
+
+    % panda install CSS::Grammar
+
+To try parsing some content:
+
+    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
 
 References
 ----------
