@@ -389,7 +389,7 @@ for (
                 ast => [charset => "bazinga"],
             },
             css1 => {
-                warnings => [q{skipping: @charset 'bazinga';}]
+                warnings => [q{skipping: @charset }, q{skipping: 'bazinga'}, q{skipping: ;} ]
             },
     },
     TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
@@ -404,7 +404,7 @@ for (
                 ],
                 css1 => {
                     warnings => [
-                        q{skipping: @charset 'bazinga';},
+                        q{skipping: @charset }, q{skipping: 'bazinga'}, q{skipping: ;},
                         q{ignoring out of sequence directive: @import 'too-late';},
                         ],
             },

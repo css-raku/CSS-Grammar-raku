@@ -42,16 +42,16 @@ Base Grammars
 
 CSS3 Extension Modules
 ----------------------
-- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors core module
-- `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors core module
-- `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face) extension module
-- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media) extension module
-- `CSS::Grammar::CSS3::Module::Namespaces` - CSS 3.0 Namespace (@namespace) extension module
-- `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
+- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors
+- `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors
+- `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face)
+- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media)
+- `CSS::Grammar::CSS3::Module::Namespaces` - CSS 3.0 Namespace (@namespace)
+- `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page)
 
 CSS3 Core Grammar
 -----------------
-Grammar `CSS::Grammar::CSS3`, without extensions, is mostly CSS2.1 compatabile. In particular, it understands:
+The CSS 3 core grammar, `CSS::Grammar::CSS3`, is mostly feature-compatabile with CSS2.1. In particular, it understands:
 
 - `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
 - basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.

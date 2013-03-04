@@ -3,11 +3,10 @@ use v6;
 # CSS3 Selectors Module
 # specification: http://www.w3.org/TR/2001/CR-css3-selectors-20090929/
 # Notes:
-# -- have taken <expr> and <term> on css3-syntax-20030813; which has
+# -- have taken <expr> and <term> from css3-syntax-20030813; which has
 #    more detail and structure
 # -- have relaxed negation rule to take a list of arguments - in common use
 #    and supported  by major browsers.
-# ** under construction **
 
 grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 

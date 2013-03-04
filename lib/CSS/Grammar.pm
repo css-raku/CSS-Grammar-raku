@@ -40,12 +40,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     token stringchar:sym<cont>      {\\<nl>}
     token stringchar:sym<escape>    {<escape>}
     token stringchar:sym<nonascii>  {<nonascii>}
-    token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \( .. \~ \' \"]>}
+    token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \(..\[ \]..\~]>+}
 
     token single_quote   {\'}
     token double_quote   {\"}
-    token string         {\"[<!before \"><stringchar>]*$<closing_quote>=\"?
-                         |\'[<!before \'><stringchar>]*$<closing_quote>=\'?}
+    token string         {\"[<stringchar>|$<stringchar>=\']*$<closing_quote>=\"?
+                         |\'[<stringchar>|$<stringchar>=\"]*$<closing_quote>=\'?}
 
     token id             {'#'<name>}
     token class          {'.'<name>}

@@ -280,10 +280,10 @@ class CSS::Grammar::Actions {
     }
 
     # todo: warnings can get a bit too verbose here
-    method unknown:sym<string>($/) {$.warning('skipping', $/)}
-    method unknown:sym<name>($/) {$.warning('skipping', $/)}
-    method unknown:sym<nonascii>($/) {$.warning('skipping', $/)}
-    method unknown:sym<stringchars>($/) {$.warning('skipping', $/)}
+    method unknown:sym<string>($/) {$.warning('skipping', $/.Str)}
+    method unknown:sym<name>($/) {$.warning('skipping', $/.Str)}
+    method unknown:sym<nonascii>($/) {$.warning('skipping', $/.Str)}
+    method unknown:sym<stringchars>($/) {$.warning('skipping', $/.Str)}
 
     # utiltity methods / subs
 
