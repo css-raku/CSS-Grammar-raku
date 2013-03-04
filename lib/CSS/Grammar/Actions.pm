@@ -202,18 +202,20 @@ class CSS::Grammar::Actions {
 
     # css2/css3 core - media support
     method at_rule:sym<media>($/) { make $.node($/) }
-    method media_rules($/)  { make $.list($/) }
-    method media_list($/)   { make $.list($/) }
-    method media($/)   { make $<ident>.ast }
+    method media_rules($/)        { make $.list($/) }
+    method media_list($/)         { make $.list($/) }
+    method media_query($/)        { make $.list($/) }
+    method media($/)              { make $<ident>.ast }
 
     # css2/css3 core - page support
-    method at_rule:sym<page>($/) { make $.node($/) }
+    method at_rule:sym<page>($/)  { make $.node($/) }
+    method page_pseudo($/)        { make $<ident>.ast }
 
-    method ruleset($/)      { make $.node($/) }
-    method selectors($/)        { make $.list($/) }
-    method declarations($/) { make $.list($/) }
-    method declaration($/)  { make $.node($/) }
-    method property($/)     { make $.node($/) }
+    method ruleset($/)            { make $.node($/) }
+    method selectors($/)          { make $.list($/) }
+    method declarations($/)       { make $.list($/) }
+    method declaration($/)        { make $.node($/) }
+    method property($/)           { make $.node($/) }
 
     method expr($/) { make $.list($/) }
 

@@ -29,8 +29,7 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
 
 class CSS::Grammar::CSS3::Module::Media::Actions {
 
-    # media_rules, media_list, media_type see core actions
-    method media_query($/)   { make $.list($/) }
+    # media_rules, media_list, media_query, Acmedia see core actions
     method media_op($/)      { make $/.Str.lc }
     method media_expr($/)    { make $.node($/) }
     method resolution($/)    { make $._qty($/); }

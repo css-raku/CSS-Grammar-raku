@@ -21,11 +21,13 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     proto rule at_rule { <...> }
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_rules> }
-    rule media_list {<media> [',' <media>]*}
+    rule media_list {<media_query> [',' <media_query>]*}
+    rule media_query {<media>}
     rule media {<ident>}
     rule media_rules {'{' <ruleset>* <end_block>}
 
-    rule at_rule:sym<page>    { \@(:i'page')  <page=.pseudo>? <declarations> }
+    rule at_rule:sym<page>    { \@(:i'page')  <page=.page_pseudo>? <declarations> }
+    rule page_pseudo {':'<ident>}
 
     rule unary_operator {'-'}
     rule operator {'/'|','}

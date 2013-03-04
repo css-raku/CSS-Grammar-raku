@@ -373,14 +373,13 @@ for (
                 ast => Mu,
     },
     at_rule => {input => '@media print {body{margin: 1cm}}',
-                ast => {"media_list" => ["media" => "print"], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
-                css1 => {skip => True},
+                ast => {"media_list" => ["media_query" => ["media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
+                css1 => {skip_test => True},
                 # haven't managed to keep @media compatible
-                'css3+' => {skip => True},
     },
     at_rule => {input => '@page :first { margin-right: 2cm }',
-                ast => {"page" => {"class" => "first"}, "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}]},
-                css1 => {skip => True},
+                ast => {"page" => "first", "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}]},
+                css1 => {skip_test => True},
     },
 
     # from the top
@@ -423,7 +422,7 @@ for (
     my $css3p = %test{'css3+'} // {};
 
     # CSS1 Compat
-    unless %$css1<skip> {
+    unless %$css1<skip_test> {
         $css_actions.warnings = ();
         my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
         t::CSS::parse_tests($input, $p1, :rule($rule), :compat('css1'),
@@ -447,13 +446,11 @@ for (
                          :expected( %(%test, %$css3)) );
 
     # -- css3 with all extensions enabled
-    unless %$css1<skip> {
-        $css_extended_actions.warnings = ();
-        my $p3ext = CSS::Grammar::CSS3::Extended.parse( $input, :rule($rule), :actions($css_extended_actions));
-        t::CSS::parse_tests($input, $p3ext, :rule($rule), :compat('css3-ext'),
-                            :warnings($css_extended_actions.warnings),
-                            :expected( %(%test, %$css3)) );
-    }
+    $css_extended_actions.warnings = ();
+    my $p3ext = CSS::Grammar::CSS3::Extended.parse( $input, :rule($rule), :actions($css_extended_actions));
+    t::CSS::parse_tests($input, $p3ext, :rule($rule), :compat('css3-ext'),
+                        :warnings($css_extended_actions.warnings),
+                        :expected( %(%test, %$css3)) );
 }
 
 done;
