@@ -7,7 +7,7 @@ use v6;
 # module follows the latest W3C recommendations, to extend the syntax.
 #
 # -- if you want the capability to to embed '@page' rules, you'll also need
-#    to load Paged Media extension module in your class structure.
+#    to load the Paged Media extension module in your class structure.
 
 grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
 
@@ -21,15 +21,11 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
     rule media_query {[<media_op>? <media_type>|<media_expr>]
                       [:i'and' <media_expr>]*}
     rule media_op    {[:i'only'|'not']}
-    rule media_expr  {'(' <media_feature> [ ':' <expr> ]? [')' | <unclosed_paren>]}
+    rule media_expr  {'(' <media_feature> [ ':' [<expr=.resolution>|<expr>] ]? [')' | <unclosed_paren>]}
     rule media_type {<ident>}
     rule media_feature {<ident>}
 
-    # extend the <term> production
-    rule aterm:sym<resolution> {<resolution>}
-    
     token resolution {<num>(:i[dpi|dpcm])}
-
 }
 
 class CSS::Grammar::CSS3::Module::Media::Actions {

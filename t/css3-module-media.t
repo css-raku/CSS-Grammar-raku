@@ -45,6 +45,10 @@ for (
     at_rule => {input => '@media all and (min-color: 2) { }',
                 ast => {"media_list" => ["media_query" => ["media_type" => "all", "media_expr" => {"media_feature" => "min-color", "expr" => ["term" => {"num" => 2}]}]], "media_rules" => []},
     },
+    # try out dpi and dpcm term extensions
+    at_rule => {input => '@media all and (min-resolution: 300dpi) and (min-resolution: 118dpcm) {}',
+                ast => {"media_list" => ["media_query" => ["media_type" => "all", "media_expr" => {"media_feature" => "min-resolution", "expr" => 300, "resolution" => 300}, "media_expr" => {"media_feature" => "min-resolution", "expr" => 118, "resolution" => 118}]], "media_rules" => []},
+    },
     at_rule => {input => '@media not print {body{margin: 1cm}}',
                 ast => {"media_list" => ["media_query" => ["media_op" => "not", "media_type" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
     },
