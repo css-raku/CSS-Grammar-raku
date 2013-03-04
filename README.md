@@ -18,6 +18,7 @@ Base Grammars
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
+- `CSS::Grammar::Actions` - Parser actions for CSS1, CSS2 and CSS3 base grammars
 
 CSS3 Extension Modules
 ----------------------
@@ -26,7 +27,6 @@ CSS3 Extension Modules
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face) extension module
 - `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media) extension module
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page) extension module
-- `CSS::Grammar::Actions`  - Actions for CSS1, CSS2 and CSS3 (core)
 
 Rakudo Star
 -----------
@@ -61,8 +61,8 @@ have all currently implemented extensions enabled.
 
     use CSS::Grammar::CSS3::Extended;
 
-Enabling CSS3 Extensions
-------------------------
+Enabling Specific CSS3 Extensions
+---------------------------------
 CSS3 is evolving into a core grammar plus a comprehensive set of extension
 [modules](http://www.css3.info/modules/). Most are optional and may extend
 both the grammar and generated Abstract Syntax Tree (AST). This leads to a
