@@ -42,7 +42,7 @@ Base Grammars
 
 CSS3 Extension Modules
 ----------------------
-- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors
+- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors (@color-profile)
 - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face)
 - `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media)

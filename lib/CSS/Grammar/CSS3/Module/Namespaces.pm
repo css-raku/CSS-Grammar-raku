@@ -9,6 +9,6 @@ grammar CSS::Grammar::CSS3::Module::Namespaces:ver<20110929.000> {
 }
 
 class CSS::Grammar::CSS3::Module::Namespaces::Actions {
-    method at_decl:sym<namespace>($/) { make $.node($/) }
+    method at_decl:sym<namespace>($/) { make $.at_rule($/) }
 }
 

@@ -35,6 +35,9 @@ for (
     term   => {input => 'hsla(240, 100%, 50%, 0.5)',
                ast => {color_hsla => {h => 240, 's' => 100, 'l' => 50, 'a' => .5}},
     },
+    at_rule => {input => '@color-profile { name: acme_cmyk; src: url(http://printers.example.com/acmecorp/model1234); }',
+                ast => {"declarations" => ["declaration" => {"property" => {"ident" => "name"}, "expr" => ["term" => {"ident" => "acme_cmyk"}]}, "declaration" => {"property" => {"ident" => "src"}, "expr" => ["term" => {"url" => "http://printers.example.com/acmecorp/model1234"}]}], '@' => "color-profile"},
+    },
     ) {
     my $rule = $_.key;
     my %test = $_.value;

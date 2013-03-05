@@ -21,8 +21,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token ws {<!ww>[<wc>|<comment>]*}
 
     # "lexer"com
-    # Taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
-    # todo: \o377 should be \o4177777. Rakudo (and flex) can't handle this yet
+    # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
     token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF

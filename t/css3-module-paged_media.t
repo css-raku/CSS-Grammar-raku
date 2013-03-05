@@ -38,15 +38,16 @@ my $top_center_ast = {
                                         "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
                                                                                                                               "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
                        }
-        ]
+        ],
+    '@' => 'page',
 };
 
 for (
     at_rule   => {input => '@page :left { margin-left: 4cm; }',
-                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}]},
+                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}], '@' => "page"},
     },
     at_rule   => {input => '@page :junk { margin-right: 2cm }',
-                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}]},
+                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}], '@' => "page"},
                   warnings => 'ignoring page pseudo: junk',
     },
     at_rule   => {input => '@page : { margin-right: 2cm }',

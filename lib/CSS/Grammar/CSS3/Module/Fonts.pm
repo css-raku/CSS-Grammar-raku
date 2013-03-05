@@ -11,6 +11,6 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
-    method at_rule:sym<font_face>($/) { make $.node($/) }
+    method at_rule:sym<font_face>($/) { make $.at_rule($/) }
 }
 

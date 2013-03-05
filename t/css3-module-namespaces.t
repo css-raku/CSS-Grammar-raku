@@ -26,19 +26,19 @@ my $css_actions = t::CSS3::NamespaceActions.new;
 
 for (
     at_decl => {input => '@namespace empty "";',
-                ast => {"prefix" => "empty", "url" => ""},
+                ast => {"prefix" => "empty", "url" => "", '@' => "namespace"},
     },
     at_decl => {input => '@namespace "";',
-                ast => {"url" => ""},
+                ast => {"url" => "", '@' => "namespace"},
     },
     at_decl => {input => '@namespace "http://www.w3.org/1999/xhtml";',
-                ast => {"url" => "http://www.w3.org/1999/xhtml"},
+                ast => {"url" => "http://www.w3.org/1999/xhtml", '@' => "namespace"},
     },
     at_decl => {input => '@namespace svg "http://www.w3.org/2000/svg";',
-                ast => {"prefix" => "svg", "url" => "http://www.w3.org/2000/svg"},
+                ast => {"prefix" => "svg", "url" => "http://www.w3.org/2000/svg", '@' => "namespace"},
     },
     at_decl => {input => '@namespace toto url(http://toto.example.org);',
-                ast => {"prefix" => "toto", "url" => "http://toto.example.org"},
+                ast => {"prefix" => "toto", "url" => "http://toto.example.org", '@' => "namespace"},
     },
     ) {
     my $rule = $_.key;

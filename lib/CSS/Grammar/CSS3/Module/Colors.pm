@@ -5,7 +5,9 @@ use v6;
 
 grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
-# extensions for CSS3 Color Module
+# extensions and at rules for CSS3 Color Module
+
+    rule at_rule:sym<color_profile> { \@(:i'color-profile') <declarations> }
 
     # color_rgb and color_hex are defined in CSS core grammar
 
@@ -40,6 +42,9 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 }
 
 class CSS::Grammar::CSS3::Module::Colors::Actions {
+
+    method at_rule:sym<color_profile>($/) { make $.at_rule($/) }
+
     # color_rgb is defined in core actions
     method color_rgba($/) { make $.node($/) }
     method color_hsl($/)  { make $.node($/) }

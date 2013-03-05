@@ -373,12 +373,12 @@ for (
                 ast => Mu,
     },
     at_rule => {input => '@media print {body{margin: 1cm}}',
-                ast => {"media_list" => ["media_query" => ["media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}]},
+                ast => {"media_list" => ["media_query" => ["media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}], '@' => 'media'},
                 css1 => {skip_test => True},
                 # haven't managed to keep @media compatible
     },
     at_rule => {input => '@page :first { margin-right: 2cm }',
-                ast => {"page" => "first", "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}]},
+                ast => {"page" => "first", "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}], '@' => 'page'},
                 css1 => {skip_test => True},
     },
 

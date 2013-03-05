@@ -42,6 +42,12 @@ class CSS::Grammar::Actions {
         return %terms;
     }
 
+    method at_rule($/) {
+        my %terms = $.node($/);
+        %terms<@> = $0.Str;
+        return %terms;
+    }
+
     method list($/) {
         # make a node that contains repeatable elements
         my @terms;
@@ -204,14 +210,14 @@ class CSS::Grammar::Actions {
     method combinator:sym<sibling>($/)  { make $.leaf($/.Str) } # '~'
 
     # css2/css3 core - media support
-    method at_rule:sym<media>($/) { make $.node($/) }
+    method at_rule:sym<media>($/) { make $.at_rule($/) }
     method media_rules($/)        { make $.list($/) }
     method media_list($/)         { make $.list($/) }
     method media_query($/)        { make $.list($/) }
     method media($/)              { make $<ident>.ast }
 
     # css2/css3 core - page support
-    method at_rule:sym<page>($/)  { make $.node($/) }
+    method at_rule:sym<page>($/)  { make $.at_rule($/) }
     method page_pseudo($/)        { make $<ident>.ast }
 
     method ruleset($/)            { make $.node($/) }
