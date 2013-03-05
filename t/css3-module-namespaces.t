@@ -28,7 +28,7 @@ for (
     at_decl => {input => '@namespace empty "";',
                 ast => {"prefix" => "empty", "url" => "", '@' => "namespace"},
     },
-    at_decl => {input => '@namespace "";',
+    at_decl => {input => '@NAMESPACE "";',
                 ast => {"url" => "", '@' => "namespace"},
     },
     at_decl => {input => '@namespace "http://www.w3.org/1999/xhtml";',
@@ -37,8 +37,8 @@ for (
     at_decl => {input => '@namespace svg "http://www.w3.org/2000/svg";',
                 ast => {"prefix" => "svg", "url" => "http://www.w3.org/2000/svg", '@' => "namespace"},
     },
-    at_decl => {input => '@namespace toto url(http://toto.example.org);',
-                ast => {"prefix" => "toto", "url" => "http://toto.example.org", '@' => "namespace"},
+    stylesheet => {input => '@namespace toto url(http://toto.example.org);',
+                ast => [at_rule => {"prefix" => "toto", "url" => "http://toto.example.org", '@' => "namespace"}],
     },
     ) {
     my $rule = $_.key;

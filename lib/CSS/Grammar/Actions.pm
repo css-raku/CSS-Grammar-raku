@@ -44,7 +44,7 @@ class CSS::Grammar::Actions {
 
     method at_rule($/) {
         my %terms = $.node($/);
-        %terms<@> = $0.Str;
+        %terms<@> = $0.Str.lc;
         return %terms;
     }
 

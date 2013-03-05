@@ -13,10 +13,10 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     # productions
     rule stylesheet { <charset>?
                       [<import>              | <unexpected>]*
-                      [<at_decl>             | <unexpected>]*
+                      [<at_rule=.at_decl>    | <unexpected>]*
                       [<at_rule> | <ruleset> | <unexpected2> | <unknown>]* }
 
-    # <at_decl> - must preceed main css body - aka @namespace
+    # <at_decl> - at rules preceding main css body - aka @namespace
     proto rule at_decl {<...>}
 
     # to detect out of order directives
