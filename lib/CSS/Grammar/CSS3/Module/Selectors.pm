@@ -38,7 +38,6 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     # pseudo:sym<element> inherited from base 
     rule pseudo:sym<negation> {<negation>}
     rule pseudo:sym<function> {':' <function> }
-    rule pseudo:sym<lang>     {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
     rule pseudo:sym<class>    {':' <class=.ident> }
     rule pseudo:sym<element2> {'::' <element=.ident> }
  

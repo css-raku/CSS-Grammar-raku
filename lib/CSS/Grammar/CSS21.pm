@@ -20,6 +20,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule unexpected {<charset>|<import>}
 
     proto rule at_rule { <...> }
+
     rule at_rule:sym<media>   { \@(:i'media') <media_list> <media_rules> }
     rule media_list {<media_query> [',' <media_query>]*}
     rule media_query {<media>}
@@ -91,7 +92,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # pseudo:sym<elem> inherited from base 
     rule pseudo:sym<function> {':' <function> }
-    rule pseudo:sym<lang>     {':lang(' <lang=.ident> [')' | <unclosed_paren>]}
+    rule pseudo:sym<lang>     {:i':lang(' <lang=.ident> [')' | <unclosed_paren>]}
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
     token function            {<ident> '(' <expr>? [')' | <unclosed_paren>]}

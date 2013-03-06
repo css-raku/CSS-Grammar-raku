@@ -86,11 +86,11 @@ for (
     color_rgb => {input => 'Rgb(10, 20, 30)',
                   ast => {r => 10, g => 20, b => 30}},
     pseudo => {input => ':visited', ast => {class => 'visited'}},
-    pseudo => {input => ':lang(fr-ca)',
+    pseudo => {input => ':Lang(fr-ca)',
                ast => {lang => 'fr-ca'},
                css1 => {  # not understood by css1
-                   parse => ':lang',
-                   ast => {class => 'lang'},
+                   parse => ':Lang',
+                   ast => {class => 'Lang'},
                },
     },
     import => {input => "@import url('file:///etc/passwd');",
@@ -309,7 +309,7 @@ for (
                         },
     },
     # character set differences:
-    # \255 is not recognised by css1 or css2 as non-ascii chars
+    # \255 is not recognised by css1 or css2.1 as non-ascii chars
     ruleset => {input => ".TB	\{mso-special-format:nobullet\x[95];\}",
                 ast => {"selectors" => ["selector" => ["simple_selector" => {"class" => "TB"}]],
                         "declarations" => ["declaration" => {"property" => {"ident" => "mso-special-format"}, "expr" => ["term" => {ident => "nobullet"}]}]},
@@ -375,7 +375,6 @@ for (
     at_rule => {input => '@media print {body{margin: 1cm}}',
                 ast => {"media_list" => ["media_query" => ["media" => "print"]], "media_rules" => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "body"]]], "declarations" => ["declaration" => {"property" => {"ident" => "margin"}, "expr" => ["term" => {"length" => 1}]}]}], '@' => 'media'},
                 css1 => {skip_test => True},
-                # haven't managed to keep @media compatible
     },
     at_rule => {input => '@page :first { margin-right: 2cm }',
                 ast => {"page" => "first", "declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {"length" => 2}]}], '@' => 'page'},
@@ -419,7 +418,6 @@ for (
     my $css1 = %test<css1> // {};
     my $css2 = %test<css2> // {};
     my $css3 = %test<css3> // {};
-    my $css3p = %test{'css3+'} // {};
 
     # CSS1 Compat
     unless %$css1<skip_test> {
