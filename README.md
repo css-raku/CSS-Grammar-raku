@@ -58,10 +58,10 @@ for any unexpected input.
     my $actions =  CSS::Grammar::Actions.new;
     my $p = CSS::Grammar::CSS3.parse($css, :actions($actions));
     warn $_ for $actions.warnings;
-    say "selector: " ~ $p.ast[0]<ruleset><selectors>.perl;
+    say "H1: " ~ $p.ast[0]<ruleset><selectors>.perl;
     # output:
     # skipping term: gunk
-    # selector: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
+    # H1: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
 
 Extension Modules
 ------------------
@@ -75,7 +75,7 @@ This distribution includes the following optional CSS3 extension modules:
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page)
 
 To enable all extensions, use the `CSS::Grammar::CSS3::Extended` grammar
-and CSS::Grammar::CSS3::Extended::Actions` action class.
+and `CSS::Grammar::CSS3::Extended::Actions` action class.
 
 Enabling Specific CSS3 Extensions
 ---------------------------------
