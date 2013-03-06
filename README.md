@@ -1,8 +1,6 @@
 perl6-CSS-Grammar
 =================
 
-Perl 6 CSS related grammars (under construction)
-
 CSS::Grammar is a set of grammars for the W3C CSS family of standards.
 
 It aims to implement a reasonable portion of the standards; in particular:
@@ -37,11 +35,38 @@ Base Grammars
 - `CSS::Grammar::CSS1`  - CSS 1.0 compatible grammar
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
-- `CSS::Grammar::CSS3::Extended` - CSS3 plus all available extensions
-- `CSS::Grammar::Actions` - Parser actions for CSS1, CSS2 and CSS3 base grammars
 
-CSS3 Extension Modules
-----------------------
+The CSS 3.0 core grammar, `CSS::Grammar::CSS3`, is mostly feature-compatabile with CSS2.1. In particular, it understands:
+
+- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
+- basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
+- basic `@page` page description rules
+- basic css2.1 compatibile selectors.
+
+Parser Actions
+--------------
+`CSS::Grammar::Actions` can be used with in conjunction with the CSS1 CSS21 or
+CSS3 base grammars. It produces an abstract syntax tree (AST), plus warnings
+for any unexpected input.
+
+    use v6;
+    use CSS::Grammar::CSS3;
+    use CSS::Grammar::Actions;
+
+    my $css = 'H1 { color: blue; gunk }';
+
+    my $actions =  CSS::Grammar::Actions.new;
+    my $p = CSS::Grammar::CSS3.parse($css, :actions($actions));
+    warn $_ for $actions.warnings;
+    say "selector: " ~ $p.ast[0]<ruleset><selectors>.perl;
+    # output:
+    # skipping term: gunk
+    # selector: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
+
+Extension Modules
+------------------
+This distribution includes the following optional CSS3 extension modules:
+
 - `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors (@color-profile)
 - `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors
 - `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face)
@@ -49,22 +74,8 @@ CSS3 Extension Modules
 - `CSS::Grammar::CSS3::Module::Namespaces` - CSS 3.0 Namespace (@namespace)
 - `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page)
 
-CSS3 Core Grammar
------------------
-The CSS 3 core grammar, `CSS::Grammar::CSS3`, is mostly feature-compatabile with CSS2.1. In particular, it understands:
-
-- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
-- basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
-- basic `@page` page description rules
-- basic css2.1 compatibile selectors.
-
-CSS3 Extended Grammar
----------------------
-Grammar `CSS::Grammar::CSS3::Extended` and class
-CSS::Grammar::CSS3::Extended::Actions` are included for your convenience. They
-have all currently implemented extensions enabled.
-
-    use CSS::Grammar::CSS3::Extended;
+To enable all extensions, use the `CSS::Grammar::CSS3::Extended` grammar
+and CSS::Grammar::CSS3::Extended::Actions` action class.
 
 Enabling Specific CSS3 Extensions
 ---------------------------------
