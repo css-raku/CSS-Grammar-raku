@@ -81,7 +81,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule aterm:sym<color_rgb>  {<color_rgb>}
     rule aterm:sym<color_hex>  {<id>}
     rule aterm:sym<function>   {<function>}
-    rule aterm:sym<ident>      {<!before emx><ident>}
+    rule aterm:sym<ident>      {<ident>}
 
     rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 

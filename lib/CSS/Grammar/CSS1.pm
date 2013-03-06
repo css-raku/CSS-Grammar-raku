@@ -58,7 +58,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule aterm:sym<color_hex>  {<id>}
     rule aterm:sym<color_rgb>  {<color_rgb>}
     rule aterm:sym<url>        {<url>}
-    rule aterm:sym<ident>      {<!before emx><ident>}
+    rule aterm:sym<ident>      {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
