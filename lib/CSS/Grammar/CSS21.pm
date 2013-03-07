@@ -64,15 +64,14 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> | [<!before <[\!\)]>><skipped_term>] }
 
+    # units inherited from base grammar: length, percentage
+    token units:sym<angle>   {:i[deg|rad|grad]}
+    token units:sym<time>    {:i[m?s]}
+    token units:sym<freq>    {:i[k?Hz]}
+
     # pterm - able to be prefixed by a unary operator
     proto rule pterm {<...>}
-    rule pterm:sym<length>     {<length>}
-    rule pterm:sym<angle>      {<angle>}
-    rule pterm:sym<time>       {<time>}
-    rule pterm:sym<freq>       {<freq>}
-    rule pterm:sym<percentage> {<percentage>}
-    rule pterm:sym<dimension>  {<dimension>}
-    rule pterm:sym<num>        {<num>}
+    rule pterm:sym<quantity>   {<num>[<units>|<.dimension>]?}
     rule pterm:sym<emx>        {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {<...>}

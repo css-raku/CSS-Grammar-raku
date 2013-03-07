@@ -50,13 +50,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    token percentage     {<num>('%')}
-    token length         {<num>(:i[pt|mm|cm|pc|in|px|em|ex])}
-    token angle          {<num>(:i[deg|rad|grad])}  # css2+
-    token time           {<num>(:i[m?s])}  # css2+
-    token freq           {<num>(:i[k?Hz])} # css2+
+    proto token units {<...>}
+    token units:sym<length>  {:i[pt|mm|cm|pc|in|px|em|ex]}
+    token units:sym<percentage> {'%'}
+
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    token dimension      {<num>(<[a..zA..Z]>\w*)}
+    token dimension      {<[a..zA..Z]>\w*}
 
     token url_delim_char {\( | \) | "'" | '"' | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>}
@@ -69,10 +68,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule emx {:i e[m|x]}
 
+    rule color_arg{<num>(\%)?}
+
     rule color_rgb {:i'rgb('
-                   [<r=.percentage>|<r=.num>] ','
-                   [<g=.percentage>|<g=.num>] ','
-                   [<b=.percentage>|<b=.num>]
+                   <r=.color_arg> ','
+                   <g=.color_arg> ','
+                   <b=.color_arg>
                    [')' | <unclosed_paren>]
     }
 

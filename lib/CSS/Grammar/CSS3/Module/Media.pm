@@ -20,18 +20,18 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
     rule media_list {<media_query> [',' <media_query>]*}
     rule media_query {[<media_op>? <media>|<media_expr>]
                       [:i'and' <media_expr>]*}
-    rule media_op    {[:i'only'|'not']}
-    rule media_expr  {'(' <media_feature> [ ':' [<expr=.resolution>|<expr>] ]? [')' | <unclosed_paren>]}
+    rule media_op    {:i['only'|'not']}
+    rule media_expr  {'(' <media_feature> [ ':' <expr> ]? [')' | <unclosed_paren>]}
     rule media_feature {<ident>}
 
-    token resolution {<num>(:i[dpi|dpcm])}
+    token units:sym<resolution> {:i[dpi|dpcm]}
 }
 
 class CSS::Grammar::CSS3::Module::Media::Actions {
 
-    # media_rules, media_list, media_query, Acmedia see core actions
-    method media_op($/)      { make $/.Str.lc }
-    method media_expr($/)    { make $.node($/) }
-    method resolution($/)    { make $._qty($/); }
-    method media_feature($/) { make $<ident>.ast }
+    # media_rules, media_list, media_query, media see core actions
+    method media_op($/)              { make $/.Str.lc }
+    method media_expr($/)            { make $.node($/) }
+    method units:sym<resolution>($/) { make (resolution => $/.Str.lc) }
+    method media_feature($/)         { make $<ident>.ast }
 }

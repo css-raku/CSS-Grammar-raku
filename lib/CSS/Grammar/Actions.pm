@@ -149,20 +149,6 @@ class CSS::Grammar::Actions {
         has Str $.units is rw;
     }
 
-    method _qty($/) {
-        my $qty = $<num>.ast
-            does _Units_Stub;
-        $qty.units = $0.Str;
-        return $qty;
-    }
-
-    method percentage($/) { make $._qty($/); }
-    method length($/)     { make $._qty($/); }
-    method angle($/)      { make $._qty($/); }
-    method time($/)       { make $._qty($/); }
-    method freq($/)       { make $._qty($/); }
-    method dimension($/)  { make $._qty($/); }
-
     method url_char($/) {
         my $cap = $<escape> || $<nonascii>;
         make $cap ?? $cap.ast !! $/.Str
@@ -173,6 +159,14 @@ class CSS::Grammar::Actions {
             !! $.leaf( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/)  { make $<url_string>.ast }
+    method color_arg($/) {
+        my $arg = $<num>.ast;
+        if $0.Str {
+            $arg does _Units_Stub;
+            $arg.units = $0.Str.lc;
+        }
+        make $arg;
+    }
     method color_rgb($/)  { make $.node($/) }
     method prio($/) { make $0.Str.lc if $0}
 
@@ -232,16 +226,31 @@ class CSS::Grammar::Actions {
         $.warning("incomplete declaration");
     }
 
-    method pterm:sym<length>($/)        { make $.node($/) }
-    method pterm:sym<angle>($/)         { make $.node($/) }
-    method pterm:sym<time>($/)          { make $.node($/) }
-    method pterm:sym<freq>($/)          { make $.node($/) }
-    method pterm:sym<percentage>($/)    { make $.node($/) }
-    method pterm:sym<dimension>($/)     {
-        $.warning('unknown dimensioned quantity', $/.Str);
-        make $.node($/, :skip(True));
+    method pterm:sym<quantity>($/) {
+        my ($num, $units_cap) = $/.caps;
+        my $qty = $num.value.ast;
+        my %node;
+
+        my $type = 'num';
+
+        if $units_cap && (my $units_ast = $units_cap.value.ast) {
+            ($type, my $unit) = $units_ast.kv;
+            $qty does _Units_Stub;
+            $qty.units = $unit.Str.lc;
+        }
+
+        %node{$type} = $qty;
+        make %node;
     }
-    method pterm:sym<num>($/)           { make $.node($/) }
+
+    method units:sym<length>($/)     { make (length => $/.Str.lc) }
+    method units:sym<angle>($/)      { make (angle => $/.Str.lc) }
+    method units:sym<time>($/)       { make (time => $/.Str.lc) }
+    method units:sym<freq>($/)       { make (freq => $/.Str.lc) }
+    method units:sym<percentage>($/) { make (percentage => $/.Str.lc) }
+    method dimension($/)     {
+        $.warning('unknown dimensioned quantity', $/.Str);
+    }
     method pterm:sym<emx>($/)           { make $.node($/) }
 
     method aterm:sym<string>($/)        { make $.node($/) }

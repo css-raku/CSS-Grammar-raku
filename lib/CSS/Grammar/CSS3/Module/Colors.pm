@@ -12,25 +12,25 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
     # color_rgb and color_hex are defined in CSS core grammar
 
     rule color_rgba {:i'rgba('
-                   [<r=.percentage>|<r=.num>] ','
-                   [<g=.percentage>|<g=.num>] ','
-                   [<b=.percentage>|<b=.num>] ','
-                   [<a=.percentage>|<a=.num>]
+                   <r=.color_arg> ','
+                   <g=.color_arg> ','
+                   <b=.color_arg> ','
+                   <a=.color_arg>
                    [')' | <unclosed_paren>]
     }
 
     rule color_hsl {:i'hsl('
-                   [<h=.percentage>|<h=.num>] ','
-                   [<s=.percentage>|<s=.num>] ','
-                   [<l=.percentage>|<l=.num>]
+                   <h=.color_arg> ','
+                   <s=.color_arg> ','
+                   <l=.color_arg>
                    [')' | <unclosed_paren>]
     }
 
     rule color_hsla {:i'hsla('
-                   [<h=.percentage>|<h=.num>] ','
-                   [<s=.percentage>|<s=.num>] ','
-                   [<l=.percentage>|<l=.num>] ','
-                   [<a=.percentage>|<a=.num>]
+                   <h=.color_arg> ','
+                   <s=.color_arg> ','
+                   <l=.color_arg> ','
+                   <a=.color_arg>
                    [')' | <unclosed_paren>]
     }
 

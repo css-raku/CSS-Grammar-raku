@@ -49,9 +49,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule term { <unary_operator>? [ <term=.pterm> | <term=.aterm> | <!before <[\!]>><skipped_term> ] }
 
     proto rule pterm {<...>}
-    rule pterm:sym<length>     {<length>}
-    rule pterm:sym<percentage> {<percentage>}
-    rule pterm:sym<num>        {<num>}
+    rule pterm:sym<quantity>   {<num><units>?}
     rule pterm:sym<emx>        {<emx>}
     proto rule aterm {<...>}
     rule aterm:sym<string>     {<string>}

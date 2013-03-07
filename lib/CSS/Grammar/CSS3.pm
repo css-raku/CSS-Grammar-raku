@@ -16,7 +16,7 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
                       [<at_rule=.at_decl>    | <unexpected>]*
                       [<at_rule> | <ruleset> | <unexpected2> | <unknown>]* }
 
-    # <at_decl> - at rules preceding main css body - aka @namespace
+    # <at_decl> - at rules preceding main body - aka @namespace extensions
     proto rule at_decl {<...>}
 
     # to detect out of order directives
