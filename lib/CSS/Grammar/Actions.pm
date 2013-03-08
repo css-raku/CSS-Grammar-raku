@@ -4,6 +4,7 @@ use v6;
 
 class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Info;
+    use CSS::Grammar::AST::Token;
 
     has Int $.line_no is rw = 1;
     # variable encoding - not yet supported
@@ -12,15 +13,14 @@ class CSS::Grammar::Actions {
     # accumulated warnings
     has @.warnings;
 
-    method leaf(Mu $ast, :$skip, :$type, ) {
-        # make a leaf element (token)
+    method token(Mu $ast, :$skip, :$type, :$units) {
         $ast
-            does CSS::Grammar::AST::Info
-            unless $ast.can('css_type');
+            does CSS::Grammar::AST::Token
+            unless $ast.can('type');
 
-        $ast.line_no = $.line_no;
         $ast.skip = $skip // False;
-        $ast.css_type = $type if defined $type;
+        $ast.type = $type if defined $type;
+        $ast.units = $units if defined $units;
 
         return $ast;
     }
@@ -136,18 +136,11 @@ class CSS::Grammar::Actions {
             $skip = True;
         }
         my $string = $<stringchar>.map({ $_.ast }).join('');
-        make $.leaf($string, :type('string'), :skip($skip) );
+        make $.token($string, :type('string'), :skip($skip) );
     }
 
     method id($/) { make $<name>.ast }
     method class($/) { make $<name>.ast }
-
-    role _Units_Stub {
-        # interim units role; just until there's more appropriate modules
-        # available. A role-based port of Math::Units or similar, might be
-        # in order
-        has Str $.units is rw;
-    }
 
     method url_char($/) {
         my $cap = $<escape> || $<nonascii>;
@@ -156,16 +149,11 @@ class CSS::Grammar::Actions {
     method url_string($/) {
         make $<string>
             ?? $<string>.ast
-            !! $.leaf( $<url_char>.map({$_.ast}).join('') );
+            !! $.token( $<url_char>.map({$_.ast}).join('') );
     }
     method url($/)  { make $<url_string>.ast }
     method color_arg($/) {
-        my $arg = $<num>.ast;
-        if $0.Str {
-            $arg does _Units_Stub;
-            $arg.units = $0.Str.lc;
-        }
-        make $arg;
+        make $.token($<num>.ast, :units($0.Str.lc));
     }
     method color_rgb($/)  { make $.node($/) }
     method prio($/) { make $0.Str.lc if $0}
@@ -185,7 +173,7 @@ class CSS::Grammar::Actions {
         $.warning('ignoring out of sequence directive', $/.Str)
     }
 
-    method operator($/) { make $.leaf($/.Str) }
+    method operator($/) { make $.token($/.Str, :type('operator')) }
 
     # pseudos
     method pseudo:sym<element>($/) { my %node; # :first-line
@@ -198,10 +186,10 @@ class CSS::Grammar::Actions {
     method pseudo:sym<class>($/)    { make $.node($/) }
 
     # combinators
-    method combinator:sym<adjacent>($/) { make $.leaf($/.Str) } # '+'
-    method combinator:sym<child>($/)    { make $.leaf($/.Str) } # '>'
-    method combinator:sym<not>($/)      { make $.leaf($/.Str) } # '-' css2.1
-    method combinator:sym<sibling>($/)  { make $.leaf($/.Str) } # '~'
+    method combinator:sym<adjacent>($/) { make $.token($/.Str) } # '+'
+    method combinator:sym<child>($/)    { make $.token($/.Str) } # '>'
+    method combinator:sym<not>($/)      { make $.token($/.Str) } # '-' css2.1
+    method combinator:sym<sibling>($/)  { make $.token($/.Str) } # '~'
 
     # css2/css3 core - media support
     method at_rule:sym<media>($/) { make $.at_rule($/) }
@@ -218,7 +206,7 @@ class CSS::Grammar::Actions {
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $.list($/) }
     method declaration($/)        { make $.node($/) }
-    method property($/)           { make $.node($/) }
+    method property($/)           { make $<ident>.ast }
 
     method expr($/) { make $.list($/) }
 
@@ -232,15 +220,14 @@ class CSS::Grammar::Actions {
         my %node;
 
         my $type = 'num';
+        my $units;
 
         if $units_cap && (my $units_ast = $units_cap.value.ast) {
-            ($type, my $unit) = $units_ast.kv;
-            $qty does _Units_Stub;
-            $qty.units = $unit.Str.lc;
+            ($type, $units) = $units_ast.kv;
+            $units = $units.lc;
         }
 
-        %node{$type} = $qty;
-        make %node;
+        make $.token($qty, :type($type), :units($units));
     }
 
     method units:sym<length>($/)     { make (length => $/.Str.lc) }
@@ -251,20 +238,21 @@ class CSS::Grammar::Actions {
     method dimension($/)     {
         $.warning('unknown dimensioned quantity', $/.Str);
     }
-    method pterm:sym<emx>($/)           { make $.node($/) }
+    # treat floating 'ex' or 'ex' as a length 1 unit quantity
+    method pterm:sym<emx>($/)           { make $.token(1, :units($/.Str.lc), :type('length')) }
 
-    method aterm:sym<string>($/)        { make $.node($/) }
-    method aterm:sym<url>($/)           { make $.node($/) }
-    method aterm:sym<color_hex>($/)     { make $.node($/) }
-    method aterm:sym<color_rgb>($/)     { make $.node($/) }
-    method aterm:sym<function>($/)      { make $.node($/) }
-    method aterm:sym<ident>($/)         { make $.node($/) }
+    method aterm:sym<string>($/)        { make $.token($<string>.ast, :type('string')) }
+    method aterm:sym<url>($/)           { make $.token($<url>.ast, :type('url')) }
+    method aterm:sym<color_hex>($/)     { make $.token($<id>.ast, :type('color'), :units('hex')) }
+    method aterm:sym<color_rgb>($/)     { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
+    method aterm:sym<function>($/)      { make $.token($<function>.ast, :type('function')) }
+    method aterm:sym<ident>($/)         { make $.token($<ident>.ast, :type('ident')) }
 
     method emx($/) { make $/.Str.lc }
 
     method term($/) {
         if $<term> && defined (my $term_ast = $<term>.ast) {
-            $term_ast does CSS::Grammar::AST::Info
+            $term_ast does CSS::Grammar::AST::Token
                 unless $term_ast.can('unary_operator');
             $term_ast.unary_operator = $<unary_operator>.Str
                 if $<unary_operator>;
@@ -278,7 +266,7 @@ class CSS::Grammar::Actions {
     method selector($/)         { make $.list($/) }
     method simple_selector($/)  { make $.list($/) }
     method attrib($/)           { make $.node($/) }
-    method function($/)     { make $.node($/) }
+    method function($/)         { make $.node($/) }
 
     method attribute_selector:sym<equals>($/)    { make $/.Str }
     method attribute_selector:sym<includes>($/)  { make $/.Str }

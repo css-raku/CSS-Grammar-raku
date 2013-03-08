@@ -32,22 +32,20 @@ my $top_center = '
 }';
 
 my $top_center_ast = {
-    "declarations" => ["declaration" => {"property" => {"ident" => "color"},
-                                         "expr" => ["term" => {"ident" => "red"}]},
+    "declarations" => ["declaration" => {"property" => "color",
+                                         "expr" => ["term" => "red"]},
                        "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                                        "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "},
-                                                                                                                              "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]
-                       }
-        ],
-    '@' => 'page',
-};
+                                        "declarations" => ["declaration" => {"property" => "content",
+                                                                             "expr" => ["term" => "Page ",
+                                                                                        "term" => {"ident" => "counter", "expr" => ["term" => "page"]}]}]}],
+    "\@" => "page"};
 
 for (
     at_rule   => {input => '@page :left { margin-left: 4cm; }',
-                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => {"ident" => "margin-left"}, "expr" => ["term" => {length => 4}]}], '@' => "page"},
+                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => "margin-left", "expr" => ["term" => 4]}], '@' => "page"},
     },
     at_rule   => {input => '@page :junk { margin-right: 2cm }',
-                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "margin-right"}, "expr" => ["term" => {length => 2}]}], '@' => "page"},
+                  ast => {"declarations" => ["declaration" => {"property" => "margin-right", "expr" => ["term" => 2]}], '@' => "page"},
                   warnings => 'ignoring page pseudo: junk',
     },
     at_rule   => {input => '@page : { margin-right: 2cm }',
@@ -61,11 +59,11 @@ for (
     margin_box => {input => 'bottom-right', ast => {hpos => 'right', vpos => 'bottom'}},
     page_rules => {input => '@bottom-right {color:blue}',
                  ast => {"margin_box" => {"hpos" => "right", "vpos" => "bottom"},
-                         "declarations" => ["declaration" => {"property" => {"ident" => "color"}, "expr" => ["term" => {"ident" => "blue"}]}]},
+                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]},
     },
     page_rules => {input => '@top-center {content: "Page " counter(page);}',
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                         "declarations" => ["declaration" => {"property" => {"ident" => "content"}, "expr" => ["term" => {"string" => "Page "}, "term" => {"function" => {"ident" => "counter", "expr" => ["term" => {"ident" => "page"}]}}]}]},
+                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ", "term" => {"ident" => "counter", "expr" => ["term" => "page"]}]}]},
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
     ) {

@@ -29,8 +29,8 @@ for (
                                 font-family: Gentium;
                                 src: url(http://example.com/fonts/Gentium.ttf);
                             };',
-                  ast => {"declarations" => ["declaration" => {"property" => {"ident" => "font-family"}, "expr" => ["term" => {ident => "Gentium"}]},
-                                             "declaration" => {"property" => {"ident" => "src"}, "expr" => ["term" => {url => "http://example.com/fonts/Gentium.ttf"}]}], '@' => "font-face"}
+                  ast => {"declarations" => ["declaration" => {"property" => "font-family", "expr" => ["term" => "Gentium"]},
+                                             "declaration" => {"property" => "src", "expr" => ["term" => "http://example.com/fonts/Gentium.ttf"]}], '@' => "font-face"}
     },
     ) {
     my $rule = $_.key;

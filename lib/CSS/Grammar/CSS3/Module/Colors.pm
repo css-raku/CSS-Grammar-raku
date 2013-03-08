@@ -50,9 +50,8 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
     method color_hsl($/)  { make $.node($/) }
     method color_hsla($/) { make $.node($/) }
 
-    method aterm:sym<color_rgb>($/)  { make $.node($/) }
-    method aterm:sym<color_rgba>($/) { make $.node($/) }
-    method aterm:sym<color_hsl>($/)  { make $.node($/) }
-    method aterm:sym<color_hsla>($/) { make $.node($/) }
+    method aterm:sym<color_rgba>($/) { make $.token($<color_rgba>.ast, :type('color'), :units('rgba')) }
+    method aterm:sym<color_hsl>($/)  { make $.token($<color_hsl>.ast, :type('color'), :units('hsl')) }
+    method aterm:sym<color_hsla>($/) { make $.token($<color_hsla>.ast, :type('color'), :units('hsla')) }
 }
 
