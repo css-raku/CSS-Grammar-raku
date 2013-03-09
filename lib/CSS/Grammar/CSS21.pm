@@ -30,7 +30,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule at_rule:sym<page>    { \@(:i'page')  <page=.page_pseudo>? <declarations> }
     rule page_pseudo {':'<ident>}
 
-    rule unary_operator {'-'}
+    rule unary_operator {"+"|'-'}
     rule operator {'/'|','}
 
     # inherited combinators: '+' (adjacent)

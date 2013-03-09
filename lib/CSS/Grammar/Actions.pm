@@ -153,7 +153,9 @@ class CSS::Grammar::Actions {
     }
     method url($/)  { make $<url_string>.ast }
     method color_arg($/) {
-        make $.token($<num>.ast, :units($0.Str.lc));
+        my $units = $<percentage>.Str;
+        my $type = 'percentage' if $<percentage>; 
+        make $.token($<num>.ast, :type($type), :units($units));
     }
     method color_rgb($/)  { make $.node($/) }
     method prio($/) { make $0.Str.lc if $0}
@@ -239,14 +241,25 @@ class CSS::Grammar::Actions {
         $.warning('unknown dimensioned quantity', $/.Str);
     }
     # treat 'ex' as '1ex'; 'em' as '1em'
-    method pterm:sym<emx>($/)           { make $.token(1, :units($/.Str.lc), :type('length')) }
+    method pterm:sym<emx>($/)         { make $.token(1, :units($/.Str.lc), :type('length')) }
 
-    method aterm:sym<string>($/)        { make $.token($<string>.ast, :type('string')) }
-    method aterm:sym<url>($/)           { make $.token($<url>.ast, :type('url')) }
-    method aterm:sym<color_hex>($/)     { make $.token($<id>.ast, :type('color'), :units('hex')) }
-    method aterm:sym<color_rgb>($/)     { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
-    method aterm:sym<function>($/)      { make $.token($<function>.ast, :type('function')) }
-    method aterm:sym<ident>($/)         { make $.token($<ident>.ast, :type('ident')) }
+    method aterm:sym<string>($/)      { make $.token($<string>.ast, :type('string')) }
+    method aterm:sym<url>($/)         { make $.token($<url>.ast, :type('url')) }
+    method aterm:sym<color_hex>($/)   {
+        my $id = $<id>.ast;
+        my $chars = $id.chars;
+        unless $id.match(/^<xdigit>+$/)
+            && ($chars == 3 || $chars == 6) {
+                $.warning("bad hex color", $/.Str);
+                return;
+        }
+        my $hex_value = $._from_hex($id);
+        my $units = $chars == 3 ?? '4-bit' !! '8-bit';
+        make $.token($hex_value, :type('color-rgb'), :units($units))
+    }
+    method aterm:sym<color_rgb>($/)   { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
+    method aterm:sym<function>($/)    { make $.token($<function>.ast, :type('function')) }
+    method aterm:sym<ident>($/)       { make $.token($<ident>.ast, :type('ident')) }
 
     method emx($/) { make $/.Str.lc }
 
@@ -285,9 +298,9 @@ class CSS::Grammar::Actions {
     }
 
     # todo: warnings can get a bit too verbose here
-    method unknown:sym<string>($/) {$.warning('skipping', $/.Str)}
-    method unknown:sym<name>($/) {$.warning('skipping', $/.Str)}
-    method unknown:sym<nonascii>($/) {$.warning('skipping', $/.Str)}
+    method unknown:sym<string>($/)      {$.warning('skipping', $/.Str)}
+    method unknown:sym<name>($/)        {$.warning('skipping', $/.Str)}
+    method unknown:sym<nonascii>($/)    {$.warning('skipping', $/.Str)}
     method unknown:sym<stringchars>($/) {$.warning('skipping', $/.Str)}
 
     # utiltity methods / subs
