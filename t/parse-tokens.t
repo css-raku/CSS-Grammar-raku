@@ -2,8 +2,6 @@
 
 use Test;
 
-use CSS::Grammar::CSS1;
-use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use lib '.';
@@ -23,9 +21,30 @@ for (
              warnings => ["missing closing ')'"],
              ast => {r => 17, g => 33, b => 70},
     },
-    term => {input => '1cm', ast => 1, token => {type => 'length', units => 'cm'}},
-    term => {input => 'em', ast => 1, token => {type => 'length', units => 'em'}},
-    term => {input => '-01.10', ast => 1.1, token => {type => 'num', unary_operator => '-'}},
+    term => {input => '1cm', ast => 1,
+             token => {type => 'length', units => 'cm'}},
+    term => {input => '-em', ast => -1, token => {type => 'length', units => 'em'}},
+    term => {input => '-01.10', ast => -1.1,
+             token => {type => 'num'}},
+    term => {input => q{"Hello World"},
+             ast => q{Hello World},
+             token => {type => 'string', skip => False},
+    },
+    term => {input => q{"Hello 'Black H},
+             ast => q{Hello 'Black H},
+             token => {type => 'string', skip => True},
+             warnings => ['unterminated string'],
+    },
+    term => {input => q{url(http://example.com)},
+             ast => 'http://example.com',
+             token => {type => 'url'},
+    },
+    term => {input => q{url("http://example.com/2/"},
+             ast => 'http://example.com/2/',
+             token => {type => 'url'},
+             skip=> False,
+             warnings => "missing closing ')'",
+    },
     # function without arguments, e.g. jquery-ui-themeroller.css
     term => {input => 'mask()',
              ast => {"ident" => "mask"},

@@ -5,5 +5,4 @@ role CSS::Grammar::AST::Token {
 
     has $.type is rw;
     has $.units is rw;
-    has $.unary_operator is rw;
 }

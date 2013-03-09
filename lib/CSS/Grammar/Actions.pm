@@ -18,7 +18,7 @@ class CSS::Grammar::Actions {
             does CSS::Grammar::AST::Token
             unless $ast.can('type');
 
-        $ast.skip = $skip // False;
+        $ast.skip = $skip if defined $skip;
         $ast.type = $type if defined $type;
         $ast.units = $units if defined $units;
 
@@ -238,7 +238,7 @@ class CSS::Grammar::Actions {
     method dimension($/)     {
         $.warning('unknown dimensioned quantity', $/.Str);
     }
-    # treat floating 'ex' or 'ex' as a length 1 unit quantity
+    # treat 'ex' as '1ex'; 'em' as '1em'
     method pterm:sym<emx>($/)           { make $.token(1, :units($/.Str.lc), :type('length')) }
 
     method aterm:sym<string>($/)        { make $.token($<string>.ast, :type('string')) }
@@ -251,15 +251,14 @@ class CSS::Grammar::Actions {
     method emx($/) { make $/.Str.lc }
 
     method term($/) {
-        if $<term> && defined (my $term_ast = $<term>.ast) {
-            $term_ast does CSS::Grammar::AST::Token
-                unless $term_ast.can('unary_operator');
-            $term_ast.unary_operator = $<unary_operator>.Str
-                if $<unary_operator>;
+        if $<term> {
+            my $term_ast = $<term>.ast;
+            if $<unary_operator> && $<unary_operator>.Str eq '-' {
+                $term_ast = $.token( - $term_ast,
+                                     :units($<term>.ast.units),
+                                     :type($<term>.ast.type) );
+            }
             make $term_ast;
-        }
-        else {
-            ##make (skipped => $<skipped_term>.ast);
         }
     }
 

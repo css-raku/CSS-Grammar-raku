@@ -37,16 +37,13 @@ module t::CSS {
         if defined (my $token = %expected<token>) {
             if ok($parse.ast.can('units'), "{$compat} is a token") {
                 if my $units = %$token<units> {
-                    is($parse.ast.units, $units, "{$compat} - units")
-                        or diag $parse.ast.units
+                    is($parse.ast.units, $units, "{$compat} - units: " ~$units);
                 }
                 if my $type = %$token<type> {
-                    is($parse.ast.type, $type, "{$compat} - type")
-                        or diag $parse.ast.type
+                    is($parse.ast.type, $type, "{$compat} - type: " ~$type);
                 }
-                if my $unary_operator = %$token<unary_operator> {
-                    is($parse.ast.unary_operator, $unary_operator, "{$compat} - unary_operator")
-                        or diag $parse.ast.unary_operator
+                if (my $skip = %$token<skip>).defined {
+                    is($parse.ast.skip // False, $skip, "{$compat} - skip: " ~ $skip);
                 }
             }
         }

@@ -46,7 +46,9 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
 
     rule expr_missing {''}
 
-    rule term { <unary_operator>? [ <term=.pterm> | <term=.aterm> | <!before <[\!]>><skipped_term> ] }
+    rule term { <unary_operator>? <term=.pterm>
+              | <.unary_operator>? <term=.aterm> # useless unary operator
+              | <!before <[\!]>><skipped_term> }
 
     proto rule pterm {<...>}
     rule pterm:sym<quantity>   {<num><units>?}
