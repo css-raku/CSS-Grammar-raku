@@ -153,9 +153,22 @@ class CSS::Grammar::Actions {
     }
     method url($/)  { make $<url_string>.ast }
     method color_arg($/) {
-        my $units = $<percentage>.Str;
-        my $type = 'percentage' if $<percentage>; 
-        make $.token($<num>.ast, :type($type), :units($units));
+        my $arg = %<num>.ast;
+        $arg = ($arg * 2.55).round
+            if $<percentage>.Str;
+        make $.token($arg, :type('num'), :units('4bit'));
+    }
+    method color_angle($/) {
+        my $angle = %<num>.ast;
+        $angle = ($angle * 3.6).round
+            if $<percentage>.Str;
+        make $.token($angle, :type('num'), :units('degrees'));
+    }
+    method color_alpha($/) {
+        my $alpha = %<num>.ast;
+        $alpha = ($alpha / 100)
+            if $<percentage>.Str;
+        make $.token($alpha, :type('num'), :units('alpha'));
     }
     method color_rgb($/)  { make $.node($/) }
     method prio($/) { make $0.Str.lc if $0}
@@ -253,9 +266,13 @@ class CSS::Grammar::Actions {
                 $.warning("bad hex color", $/.Str);
                 return;
         }
-        my $hex_value = $._from_hex($id);
-        my $units = $chars == 3 ?? 'rgb-4bit' !! 'rgb-8bit';
-        make $.token($hex_value, :type('color'), :units($units))
+
+        my @rgb = $chars == 3
+            ?? $id.comb(/./).map({$_ ~ $_})
+            !! $id.comb(/../);
+        my %rgb;
+        %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
+        make $.token(%rgb, :type('color'), :units('rgb'))
     }
     method aterm:sym<color_rgb>($/)   { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
     method aterm:sym<function>($/)    { make $.token($<function>.ast, :type('function')) }

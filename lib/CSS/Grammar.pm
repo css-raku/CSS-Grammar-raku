@@ -69,6 +69,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule emx {:i e[m|x]}
 
     rule color_arg{<num>$<percentage>=[\%]?}
+    rule color_angle{<num>$<percentage>=[\%]?}
+    rule color_alpha{<num>$<percentage>=[\%]?}
 
     rule color_rgb {:i'rgb('
                    <r=.color_arg> ','
