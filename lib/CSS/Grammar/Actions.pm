@@ -151,26 +151,18 @@ class CSS::Grammar::Actions {
             ?? $<string>.ast
             !! $.token( $<url_char>.map({$_.ast}).join('') );
     }
+
     method url($/)  { make $<url_string>.ast }
+
     method color_arg($/) {
         my $arg = %<num>.ast;
         $arg = ($arg * 2.55).round
             if $<percentage>.Str;
         make $.token($arg, :type('num'), :units('4bit'));
     }
-    method color_angle($/) {
-        my $angle = %<num>.ast;
-        $angle = ($angle * 3.6).round
-            if $<percentage>.Str;
-        make $.token($angle, :type('num'), :units('degrees'));
-    }
-    method color_alpha($/) {
-        my $alpha = %<num>.ast;
-        $alpha = ($alpha / 100)
-            if $<percentage>.Str;
-        make $.token($alpha, :type('num'), :units('alpha'));
-    }
+
     method color_rgb($/)  { make $.node($/) }
+
     method prio($/) { make $0.Str.lc if $0}
 
     # from the TOP (CSS1 + CSS21)

@@ -10,6 +10,8 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
     rule at_rule:sym<color_profile> { \@(:i'color-profile') <declarations> }
 
     # color_rgb and color_hex are defined in CSS core grammar
+    rule color_angle{<num>$<percentage>=[\%]?}
+    rule color_alpha{<num>$<percentage>=[\%]?}
 
     rule color_rgba {:i'rgba('
                    <r=.color_arg> ','
@@ -49,6 +51,20 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
     method color_rgba($/) { make $.node($/) }
     method color_hsl($/)  { make $.node($/) }
     method color_hsla($/) { make $.node($/) }
+
+    method color_angle($/) {
+        my $angle = %<num>.ast;
+        $angle = ($angle * 3.6).round
+            if $<percentage>.Str;
+        make $.token($angle, :type('num'), :units('degrees'));
+    }
+
+    method color_alpha($/) {
+        my $alpha = %<num>.ast;
+        $alpha = ($alpha / 100)
+            if $<percentage>.Str;
+        make $.token($alpha, :type('num'), :units('alpha'));
+    }
 
     method aterm:sym<color_rgba>($/) { make $.token($<color_rgba>.ast, :type('color'), :units('rgba')) }
     method aterm:sym<color_hsl>($/)  { make $.token($<color_hsl>.ast, :type('color'), :units('hsl')) }
