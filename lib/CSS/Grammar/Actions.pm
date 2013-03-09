@@ -254,8 +254,8 @@ class CSS::Grammar::Actions {
                 return;
         }
         my $hex_value = $._from_hex($id);
-        my $units = $chars == 3 ?? '4-bit' !! '8-bit';
-        make $.token($hex_value, :type('color-rgb'), :units($units))
+        my $units = $chars == 3 ?? 'rgb-4bit' !! 'rgb-8bit';
+        make $.token($hex_value, :type('color'), :units($units))
     }
     method aterm:sym<color_rgb>($/)   { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
     method aterm:sym<function>($/)    { make $.token($<function>.ast, :type('function')) }
