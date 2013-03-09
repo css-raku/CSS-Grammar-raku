@@ -10,22 +10,22 @@ use CSS::Grammar::CSS3::Module::Media;
 
 # prepare our own composite class with paged media extensions
 
-grammar t::CSS3::MediaGrammar
+grammar t::AST3::MediaGrammar
     is CSS::Grammar::CSS3::Module::PagedMedia  # for nested @page
     is CSS::Grammar::CSS3::Module::Media
     is CSS::Grammar::CSS3
 {};
 
-class t::CSS3::MediaActions
+class t::AST3::MediaActions
     is CSS::Grammar::CSS3::Module::PagedMedia::Actions
     is CSS::Grammar::CSS3::Module::Media::Actions
     is CSS::Grammar::Actions
 {};
 
 use lib '.';
-use t::CSS;
+use t::AST;
 
-my $css_actions = t::CSS3::MediaActions.new;
+my $css_actions = t::AST3::MediaActions.new;
 
 my $embedded_page = '@media print and (width: 21cm) and (height: 29.7cm) {
       @page { margin: 3cm; }
@@ -61,8 +61,8 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::CSS3::MediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3 @media'),
+    my $p3 = t::AST3::MediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 @media'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

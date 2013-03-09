@@ -5,7 +5,7 @@ use Test;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use lib '.';
-use t::CSS;
+use t::AST;
 
 my $css_actions = CSS::Grammar::Actions.new;
 
@@ -50,6 +50,10 @@ for (
              token => {type => 'string', skip => True},
              warnings => ['unterminated string'],
     },
+    term => {input => "'\\\nto \\\n\\\nbe \\\ncontinued\\\n'",
+               ast => 'to be continued',
+             token => {type => 'string'},
+    },
     term => {input => q{url(http://example.com)},
              ast => 'http://example.com',
              token => {type => 'url'},
@@ -77,7 +81,7 @@ for (
 
     $css_actions.warnings = ();
      my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3'),
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

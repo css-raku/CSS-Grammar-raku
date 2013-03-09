@@ -8,20 +8,20 @@ use CSS::Grammar::Actions;
 
 # prepare our own composite class with paged selector extensions
 
-grammar t::CSS3::SelectorsGrammar
+grammar t::AST3::SelectorsGrammar
     is CSS::Grammar::CSS3::Module::Selectors
     is CSS::Grammar::CSS3
     {};
 
-class t::CSS3::SelectorsActions
+class t::AST3::SelectorsActions
     is CSS::Grammar::CSS3::Module::Selectors::Actions
     is CSS::Grammar::Actions
     {};
 
 use lib '.';
-use t::CSS;
+use t::AST;
 
-my $css_actions = t::CSS3::SelectorsActions.new;
+my $css_actions = t::AST3::SelectorsActions.new;
 
 for (
     unicode_range => {input => 'U+416', ast => [0x416, 0x416]},
@@ -68,8 +68,8 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::CSS3::SelectorsGrammar.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3-selector'),
+    my $p3 = t::AST3::SelectorsGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-selector'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }

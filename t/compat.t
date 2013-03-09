@@ -16,7 +16,7 @@ use CSS::Grammar::CSS3::Extended; # all extensions enabled
 use CSS::Grammar::Actions;
 
 use lib '.';
-use t::CSS;
+use t::AST;
 
 my $css_actions = CSS::Grammar::Actions.new;
 my $css_extended_actions = CSS::Grammar::CSS3::Extended::Actions.new;
@@ -394,7 +394,7 @@ for (
     unless %$css1<skip_test> {
         $css_actions.warnings = ();
         my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-        t::CSS::parse_tests($input, $p1, :rule($rule), :compat('css1'),
+        t::AST::parse_tests($input, $p1, :rule($rule), :suite('css1'),
                             :warnings($css_actions.warnings),
                             :expected( %(%test, %$css1)) );
     }
@@ -402,7 +402,7 @@ for (
     # CSS21 Compat
     $css_actions.warnings = ();
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p2, :rule($rule), :compat('css2'),
+    t::AST::parse_tests($input, $p2, :rule($rule), :suite('css2'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css2)) );
 
@@ -410,14 +410,14 @@ for (
     # -- css3 core only
     $css_actions.warnings = ();
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3'),
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css3)) );
 
     # -- css3 with all extensions enabled
     $css_extended_actions.warnings = ();
     my $p3ext = CSS::Grammar::CSS3::Extended.parse( $input, :rule($rule), :actions($css_extended_actions));
-    t::CSS::parse_tests($input, $p3ext, :rule($rule), :compat('css3-ext'),
+    t::AST::parse_tests($input, $p3ext, :rule($rule), :suite('css3-ext'),
                         :warnings($css_extended_actions.warnings),
                         :expected( %(%test, %$css3)) );
 }

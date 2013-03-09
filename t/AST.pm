@@ -1,27 +1,27 @@
 # CSS Testing - utility functions
 
-module t::CSS {
+module t::AST {
 
     use Test;
 
     our sub parse_tests($input, $parse,
-                         :$rule, :$compat, :%expected, :@warnings) {
+                         :$rule, :$suite, :%expected, :@warnings) {
 
         my $parsed = %expected<parse> // $input;
 
         if (defined $input) {
-            is($parse.Str, $parsed, "{$compat}: " ~ $rule ~ " parse: " ~ $input)
+            is($parse.Str, $parsed, "{$suite}: " ~ $rule ~ " parse: " ~ $input)
         }
         else {
-            ok($parse.Str, "{$compat}: " ~ $rule ~ " parsed")
+            ok($parse.Str, "{$suite}: " ~ $rule ~ " parsed")
         }
 
         my @expected_warnings = %expected<warnings> // ();
         is(@warnings, @expected_warnings,
-           @expected_warnings ?? "{$compat} warnings" !! "{$compat} no warnings");
+           @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
 
         if defined (my $ast = %expected<ast>) {
-            is($parse.ast, $ast, "{$compat} - ast")
+            is($parse.ast, $ast, "{$suite} - ast")
                 or diag $parse.ast.perl;
         }
         else {
@@ -30,27 +30,27 @@ module t::CSS {
                     unless %expected.exists('ast');
             }
             else {
-                diag "no {$compat} ast: " ~ ($input // '');
+                diag "no {$suite} ast: " ~ ($input // '');
             }
         }
 
         if defined (my $token = %expected<token>) {
-            if ok($parse.ast.can('units'), "{$compat} is a token") {
+            if ok($parse.ast.can('units'), "{$suite} is a token") {
                 if my $units = %$token<units> {
-                    is($parse.ast.units, $units, "{$compat} - units: " ~$units);
+                    is($parse.ast.units, $units, "{$suite} - units: " ~$units);
                 }
                 if my $type = %$token<type> {
-                    is($parse.ast.type, $type, "{$compat} - type: " ~$type);
+                    is($parse.ast.type, $type, "{$suite} - type: " ~$type);
                 }
                 if (my $skip = %$token<skip>).defined {
-                    is($parse.ast.skip // False, $skip, "{$compat} - skip: " ~ $skip);
+                    is($parse.ast.skip // False, $skip, "{$suite} - skip: " ~ $skip);
                 }
             }
         }
 
         if defined (my $skip = %expected<skip>) {
-            if ok($parse.ast.can('skip'), "{$compat} does skip") {
-                is($parse.ast.skip, $skip, "{$compat} - skip is " ~ $skip);
+            if ok($parse.ast.can('skip'), "{$suite} does skip") {
+                is($parse.ast.skip, $skip, "{$suite} - skip is " ~ $skip);
             }
         }
     }

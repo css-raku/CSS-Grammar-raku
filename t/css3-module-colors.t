@@ -9,18 +9,18 @@ use CSS::Grammar::CSS3::Module::Colors;
 
 # prepare our own composite class with color extensions
 
-grammar t::CSS3::ColorGrammar
+grammar t::AST3::ColorGrammar
       is CSS::Grammar::CSS3
       is CSS::Grammar::CSS3::Module::Colors {};
 
-class t::CSS3::ColorActions
+class t::AST3::ColorActions
     is CSS::Grammar::Actions
     is CSS::Grammar::CSS3::Module::Colors::Actions {};
 
 use lib '.';
-use t::CSS;
+use t::AST;
 
-my $css_actions = t::CSS3::ColorActions.new;
+my $css_actions = t::AST3::ColorActions.new;
 
 for (
     term   => {input => 'rgb(70%, 50%, 10%)',
@@ -52,8 +52,8 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::CSS3::ColorGrammar.parse( $input, :rule($rule), :actions($css_actions));
-    t::CSS::parse_tests($input, $p3, :rule($rule), :compat('css3-color-composite'),
+    my $p3 = t::AST3::ColorGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-color-composite'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 }
