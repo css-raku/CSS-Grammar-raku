@@ -24,8 +24,7 @@ use t::AST;
 
 my $css_actions = t::AST3::PagedMediaActions.new;
 
-my $top_center = '
-@page { color: red;
+my $top_center = 'page { color: red;
         @top-center {
            content: "Page " counter(page);
        }
@@ -41,14 +40,14 @@ my $top_center_ast = {
     "\@" => "page"};
 
 for (
-    at_rule   => {input => '@page :left { margin-left: 4cm; }',
+    at_rule   => {input => 'page :left { margin-left: 4cm; }',
                   ast => {"page" => "left", "declarations" => ["declaration" => {"property" => "margin-left", "expr" => ["term" => 4]}], '@' => "page"},
     },
-    at_rule   => {input => '@page :junk { margin-right: 2cm }',
+    at_rule   => {input => 'page :junk { margin-right: 2cm }',
                   ast => {"declarations" => ["declaration" => {"property" => "margin-right", "expr" => ["term" => 2]}], '@' => "page"},
                   warnings => 'ignoring page pseudo: junk',
     },
-    at_rule   => {input => '@page : { margin-right: 2cm }',
+    at_rule   => {input => 'page : { margin-right: 2cm }',
                   ast => Mu,
                   warnings => "':' should be followed by one of: left right first",
     },

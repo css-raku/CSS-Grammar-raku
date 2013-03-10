@@ -25,7 +25,7 @@ use t::AST;
 my $css_actions = t::AST3::FontActions.new;
 
 for (
-    at_rule   => {input => '@font-face {
+    at_rule   => {input => 'font-face {
                                 font-family: Gentium;
                                 src: url(http://example.com/fonts/Gentium.ttf);
                             };',

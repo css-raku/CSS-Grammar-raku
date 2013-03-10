@@ -5,7 +5,7 @@ use v6;
 #
 
 grammar CSS::Grammar::CSS3::Module::Namespaces:ver<20110929.000> {
-    rule at_decl:sym<namespace> { \@(:i'namespace') <prefix=.ident>? [<url=.string>|<url>] ';' }
+    rule at_decl:sym<namespace> {(:i'namespace') <prefix=.ident>? [<url=.string>|<url>] ';' }
 }
 
 class CSS::Grammar::CSS3::Module::Namespaces::Actions {

@@ -39,7 +39,7 @@ for (
                ast => {h => 180, 's' => 1, 'l' => .5, 'a' => .75},
                token => {type => 'color', units => 'hsla'},
     },
-    at_rule => {input => '@color-profile { name: acme_cmyk; src: url(http://printers.example.com/acmecorp/model1234); }',
+    at_rule => {input => 'color-profile { name: acme_cmyk; src: url(http://printers.example.com/acmecorp/model1234); }',
                 ast => {"declarations" => ["declaration" => {"property" => "name",
                                                              "expr" => ["term" => "acme_cmyk"]},
                                            "declaration" => {"property" => "src",

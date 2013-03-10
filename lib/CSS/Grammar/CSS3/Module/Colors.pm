@@ -7,7 +7,7 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
 # extensions and at rules for CSS3 Color Module
 
-    rule at_rule:sym<color_profile> { \@(:i'color-profile') <declarations> }
+    rule at_rule:sym<color_profile> {(:i'color-profile') <declarations> }
 
     # color_rgb and color_hex are defined in CSS core grammar
     rule color_angle{<num>$<percentage>=[\%]?}

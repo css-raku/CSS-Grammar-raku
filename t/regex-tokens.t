@@ -97,8 +97,8 @@ for ('{ }', $media_rules) {
     ok($_ ~~ /^<CSS::Grammar::CSS3::media_rules>$/, "css3 media_rules: $_");
 }
 
-my $at_rule_page = '@page :left { margin: 3cm };';
-my $at_rule_print = '@media print ' ~ $media_rules;
+my $at_rule_page = 'page :left { margin: 3cm };';
+my $at_rule_print = 'media print ' ~ $media_rules;
 
 for ($at_rule_page, $at_rule_print) { 
     ok($_ ~~ /^<CSS::Grammar::CSS21::at_rule>$/, "css21 at_rule: $_");

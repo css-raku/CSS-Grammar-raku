@@ -7,7 +7,7 @@ use v6;
 # is the proposed at-rule @font-feature-values
 
 grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
-    rule at_rule:sym<font_face> { \@(:i'font-face') <declarations> }
+    rule at_rule:sym<font_face> {(:i'font-face') <declarations> }
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
