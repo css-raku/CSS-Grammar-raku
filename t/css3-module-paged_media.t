@@ -9,12 +9,12 @@ use CSS::Grammar::CSS3::Module::PagedMedia;
 
 # prepare our own composite class with paged media extensions
 
-grammar t::AST3::PagedMediaGrammar
+grammar t::CSS3::PagedMediaGrammar
     is CSS::Grammar::CSS3::Module::PagedMedia
     is CSS::Grammar::CSS3
     {};
 
-class t::AST3::PagedMediaActions
+class t::CSS3::PagedMediaActions
     is CSS::Grammar::CSS3::Module::PagedMedia::Actions
     is CSS::Grammar::Actions
     {};
@@ -22,7 +22,7 @@ class t::AST3::PagedMediaActions
 use lib '.';
 use t::AST;
 
-my $css_actions = t::AST3::PagedMediaActions.new;
+my $css_actions = t::CSS3::PagedMediaActions.new;
 
 my $top_center = 'page { color: red;
         @top-center {
@@ -71,7 +71,7 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::AST3::PagedMediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = t::CSS3::PagedMediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 @page'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );

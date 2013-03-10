@@ -9,12 +9,12 @@ use CSS::Grammar::CSS3::Module::Namespaces;
 
 # prepare our own composite class with namespace extensions
 
-grammar t::AST3::NamespaceGrammar
+grammar t::CSS3::NamespaceGrammar
       is CSS::Grammar::CSS3::Module::Namespaces
       is CSS::Grammar::CSS3
       {};
 
-class t::AST3::NamespaceActions
+class t::CSS3::NamespaceActions
     is CSS::Grammar::CSS3::Module::Namespaces::Actions
     is CSS::Grammar::Actions
 {};
@@ -22,7 +22,7 @@ class t::AST3::NamespaceActions
 use lib '.';
 use t::AST;
 
-my $css_actions = t::AST3::NamespaceActions.new;
+my $css_actions = t::CSS3::NamespaceActions.new;
 
 for (
     at_decl => {input => 'namespace empty "";',
@@ -46,7 +46,7 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::AST3::NamespaceGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = t::CSS3::NamespaceGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-namespace'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );

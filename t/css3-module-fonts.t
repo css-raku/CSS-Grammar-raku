@@ -9,12 +9,12 @@ use CSS::Grammar::CSS3::Module::Fonts;
 
 # prepare our own composite class with font extensions
 
-grammar t::AST3::FontGrammar
+grammar t::CSS3::FontGrammar
       is CSS::Grammar::CSS3::Module::Fonts
       is CSS::Grammar::CSS3
       {};
 
-class t::AST3::FontActions
+class t::CSS3::FontActions
     is CSS::Grammar::CSS3::Module::Fonts::Actions
     is CSS::Grammar::Actions
 {};
@@ -22,7 +22,7 @@ class t::AST3::FontActions
 use lib '.';
 use t::AST;
 
-my $css_actions = t::AST3::FontActions.new;
+my $css_actions = t::CSS3::FontActions.new;
 
 for (
     at_rule   => {input => 'font-face {
@@ -38,7 +38,7 @@ for (
     my $input = %test<input>;
 
     $css_actions.warnings = ();
-    my $p3 = t::AST3::FontGrammar.parse( $input, :rule($rule), :actions($css_actions));
+    my $p3 = t::CSS3::FontGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-font-composite'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
