@@ -120,6 +120,7 @@ class CSS::Grammar::Actions {
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
+    method int($/) { make $/.Int }
 
     method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }

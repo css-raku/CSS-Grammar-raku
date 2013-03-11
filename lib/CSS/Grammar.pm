@@ -34,6 +34,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
     token num            {[\d* \.]? \d+}
+    token int            {['+'|'-']?\d+}
 
     proto token stringchar {<...>}
     token stringchar:sym<cont>      {\\<nl>}
@@ -51,7 +52,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token element_name   {<ident>}
 
     proto token units {<...>}
-    token units:sym<length>  {:i[pt|mm|cm|pc|in|px|em|ex]}
+    token units:sym<length>     {:i[pt|mm|cm|pc|in|px|em|ex]}
     token units:sym<percentage> {'%'}
 
     # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
@@ -91,7 +92,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Combinators - introduced with css2.1
     proto token combinator {<...>}
     token combinator:sym<adjacent> {'+'}
-    token combinator:sym<child>   {'>'}
+    token combinator:sym<child>    {'>'}
 
     # error recovery
     # - make sure they trigger <nl> - for accurate line counting

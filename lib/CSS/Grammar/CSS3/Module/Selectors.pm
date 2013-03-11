@@ -37,17 +37,28 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
     # pseudo:sym<element> inherited from base 
     rule pseudo:sym<negation> {<negation>}
+    token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
+    # to compute a.n + b
+    proto token nth_expr {<...>}
+    token nth_expr:sym<odd> {:i'odd'}
+    token nth_expr:sym<even> {:i'even'}
+    token nth_expr:sym<expr> {:i
+        $<a_sign>=<[\+\-]>?<a=.int>? $<n>=<[Nn]> $<b_sign>=<[\+\-]>?<b=.int>
+        | <b=.int>
+    }
+    token nth_function {<ident=.nth_functor> '(' <expr=.nth_expr> [')' | <unclosed_paren>]} 
+
+    rule pseudo:sym<nth_child>{':' <nth_function> }
     rule pseudo:sym<function> {':' <function> }
     rule pseudo:sym<class>    {':' <class=.ident> }
     rule pseudo:sym<element2> {'::' <element=.ident> }
  
-    rule aterm:sym<unicode_range> {<unicode_range>}
+    rule aterm:sym<unicode_range> {'U+'<unicode_range>}
     rule aterm:sym<ident>         {<!before emx><ident>}
 
-    rule unicode_range {:i'U+'<range>}
-    proto rule range { <...> }
-    rule range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
-    rule range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
+    proto rule unicode_range { <...> }
+    rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
+    rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
     token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ [')' | <unclosed_paren>]}
 }
@@ -66,13 +77,11 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
     method aterm:sym<unicode_range>($/) { make $.node($/) }
-    method unicode_range($/) { make $<range>.ast }
-    method range:sym<from_to>($/) {
+    method unicode_range:sym<from_to>($/) {
         # don't produce actual hex chars; could be out of range
         make [ $._from_hex($<from>.Str), $._from_hex($<to>.Str) ];
     }
-
-    method range:sym<masked>($/) {
+    method unicode_range:sym<masked>($/) {
         my $mask = $/.Str;
         my $lo = $mask.subst('?', '0'):g;
         my $hi = $mask.subst('?', 'F'):g;
@@ -80,6 +89,26 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
         # don't produce actual hex chars; could be out of range
         make [ $._from_hex($lo), $._from_hex($hi) ];
     }
+
+    method nth_expr:sym<odd>($/)     { make 'odd' }
+    method nth_expr:sym<even>($/)    { make 'even' }
+    method nth_expr:sym<expr>($/)    {
+        my %node = $.node($/);
+
+        if $<n> && $<n>.Str {
+            # expression of form <a>n + <b>
+            %node<a> //= 1;
+            %node<a> = - %node<a>
+                if $<a_sign> && $<a_sign>.Str eq '-';
+        }
+        %node<b> = - %node<b>
+                if $<b_sign> && $<b_sign>.Str eq '-';
+
+        make %node;
+    }
+    method nth_functor($/)           { make $/.Str.lc }
+    method nth_function($/)          { make  $.node($/) }
+    method pseudo:sym<nth_child>($/) { make $.node($/) }
 
     method negation($/)     { make $.list($/) }
 }
