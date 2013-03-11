@@ -40,10 +40,10 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
     # to compute a.n + b
     proto token nth_expr {<...>}
-    token nth_expr:sym<odd> {:i'odd'}
+    token nth_expr:sym<odd>  {:i'odd'}
     token nth_expr:sym<even> {:i'even'}
     token nth_expr:sym<expr> {:i
-        $<a_sign>=<[\+\-]>?<a=.int>? $<n>=<[Nn]> $<b_sign>=<[\+\-]>?<b=.int>
+        $<a_sign>=<[\+\-]>?<a=.int>? $<n>=<[Nn]> <b=.int>?
         | <b=.int>
     }
     token nth_function {<ident=.nth_functor> '(' <expr=.nth_expr> [')' | <unclosed_paren>]} 
@@ -90,8 +90,8 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
         make [ $._from_hex($lo), $._from_hex($hi) ];
     }
 
-    method nth_expr:sym<odd>($/)     { make 'odd' }
-    method nth_expr:sym<even>($/)    { make 'even' }
+    method nth_expr:sym<odd>($/)     { make {a => 2, b=> 1} }
+    method nth_expr:sym<even>($/)    { make {a => 2 } }
     method nth_expr:sym<expr>($/)    {
         my %node = $.node($/);
 
@@ -101,13 +101,11 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
             %node<a> = - %node<a>
                 if $<a_sign> && $<a_sign>.Str eq '-';
         }
-        %node<b> = - %node<b>
-                if $<b_sign> && $<b_sign>.Str eq '-';
 
         make %node;
     }
     method nth_functor($/)           { make $/.Str.lc }
-    method nth_function($/)          { make  $.node($/) }
+    method nth_function($/)          { make $.node($/) }
     method pseudo:sym<nth_child>($/) { make $.node($/) }
 
     method negation($/)     { make $.list($/) }

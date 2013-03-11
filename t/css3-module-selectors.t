@@ -102,7 +102,7 @@ for (
     selector => {input => 'bar:nth-last-child(odd)',
                  ast => ["simple_selector" => ["element_name" => "bar",
                                                "pseudo" => {"nth_function" => {"ident" => "nth-last-child",
-                                                                               "expr" => 'odd'}}]],
+                                                                               "expr" => {"a" => 2, "b" => 1}}}]],
     },
     selector => {input => 'tr:nth-last-child(-n+2)',
                  ast => ["simple_selector" => ["element_name" => "tr", "pseudo" => {"nth_function" => {"ident" => "nth-last-child", "expr" => {"b" => 2, "a" => -1}}}]],
@@ -111,6 +111,9 @@ for (
                  ast => ["simple_selector" => ["element_name" => "td",
                                                "pseudo" => {"nth_function" => {"ident" => "nth-child",
                                                                                "expr" => {"b" => 3}}}]],
+    },
+    selector => {input => 'tr:nth-last-child(2n)',
+                 ast => ["simple_selector" => ["element_name" => "tr", "pseudo" => {"nth_function" => {"ident" => "nth-last-child", "expr" => {"a" => 2}}}]],
     },
     ) {
     my $rule = $_.key;
