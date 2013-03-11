@@ -43,8 +43,8 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     token nth_expr:sym<odd>  {:i'odd'}
     token nth_expr:sym<even> {:i'even'}
     token nth_expr:sym<expr> {:i
-        $<a_sign>=<[\+\-]>?<a=.int>? $<n>=<[Nn]> <b=.int>?
-        | <b=.int>
+        [<a=.int>|$<a_sign>=<[\+\-]>]? $<n>=<[Nn]> [<?before <[\+\-]>><b=.int>]?
+        |<b=.int>
     }
     token nth_function {<ident=.nth_functor> '(' <expr=.nth_expr> [')' | <unclosed_paren>]} 
 
@@ -95,11 +95,8 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method nth_expr:sym<expr>($/)    {
         my %node = $.node($/);
 
-        if $<n> && $<n>.Str {
-            # expression of form <a>n + <b>
-            %node<a> //= 1;
-            %node<a> = - %node<a>
-                if $<a_sign> && $<a_sign>.Str eq '-';
+        if $<a_sign> {
+            %node<a> = $<a_sign>.Str eq '-' ?? -1 !! 1;
         }
 
         make %node;
