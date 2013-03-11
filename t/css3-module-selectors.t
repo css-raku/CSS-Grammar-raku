@@ -31,7 +31,6 @@ for (
     pseudo => {input => '::my-elem',
                ast => {element => 'my-elem'},
     },
-    selector   => {input => '*', ast => ["simple_selector" => ["wildcard" => "*"]],},
     # thanks to: http://kilianvalkhof.com/2008/css-xhtml/the-css3-not-selector/
     negation   => {input => ':not(p)',
                    ast => {"type_selector" => {"element_name" => "p"}},
@@ -61,6 +60,34 @@ for (
     },
     selector =>   {input => 'h2:not(:first-of-type):not(:last-of-type)',
                    ast => ["simple_selector" => ["element_name" => "h2", "negation" => ["pseudo" => {"class" => "first-of-type"}], "negation" => ["pseudo" => {"class" => "last-of-type"}]]],
+    },
+    # namespaces and wildcards
+    selector   => {input => '*', ast => ["simple_selector" => ["wildcard" => "*"]],},
+    selector => {input => 'foo|h1',
+                 ast => ["simple_selector" => ["namespace_prefix" => {"ident" => "foo"}, "element_name" => "h1"]],
+    },
+    selector => {input => 'foo|*',
+                 ast => ["simple_selector" => ["namespace_prefix" => {"ident" => "foo"},
+                                               "wildcard" => "*"]],
+    },
+    selector => {input => '|h1',
+                 ast => ["simple_selector" => ["namespace_prefix" => {},
+                                               "element_name" => "h1"]],
+    },
+    selector => {input => '*|h1',
+                 ast => ["simple_selector" => ["namespace_prefix" => {"wildcard" => "*"},
+                                               "element_name" => "h1"]],
+                 
+    },
+    # attributes
+    selector => {input => 'span[hello="Cleveland"][goodbye="Columbus"]',
+                 ast => ["simple_selector" => ["element_name" => "span",
+                                               "attrib" => {"ident" => "hello", "attribute_selector" => "=", "string" => "Cleveland"},
+                                               "attrib" => {"ident" => "goodbye", "attribute_selector" => "=", "string" => "Columbus"}]],
+    },
+    selector => {input => 'object[type^="image/"]',
+                 ast => ["simple_selector" => ["element_name" => "object",
+                                              "attrib" => {"ident" => "type", "attribute_selector" => "^=", "string" => "image/"}]],
     },
     ) {
     my $rule = $_.key;
