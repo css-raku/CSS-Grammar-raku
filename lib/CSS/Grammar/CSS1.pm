@@ -30,8 +30,13 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     }
 
     rule declarations {
-        '{' <declaration> [';' <declaration> ]* ';'? <end_block>
+        '{' <declaration_list> <.end_block>
     }
+
+    # this rule is suitable for parsing style attributes in HTML documents.
+    # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
+    #
+    rule declaration_list {<declaration> [';' <declaration> ]* ';'?}
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 

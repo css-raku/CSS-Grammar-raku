@@ -1,13 +1,16 @@
 perl6-CSS-Grammar
 =================
 
-CSS::Grammar is a set of grammars for the W3C CSS family of standards.
+CSS::Grammar is an experimental set of grammars for the W3C CSS family of
+standards.
 
-It aims to implement a reasonable portion of the standards; in particular:
+It aims to implement a reasonable portion of the grammars and extension
+modules, with emphasis on:
 
-- rules for forward compatibility, scanning and error recovery
-- CSS3 / CSS4 modules and the ability to define grammar subsets
-- Mechanisms for custom CSS extensions
+- support for CSS1, CSS2.1 and CSS3 base grammars
+- support for common CSS3 extensions modules
+- forward compatibility rules, scanning and error recovery
+- mechanisms for custom CSS extensions
 
 Installation (Rakudo Star)
 --------------------------
@@ -126,3 +129,4 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS Namespaces Module - http://www.w3.org/TR/2011/REC-css3-namespace-20110929/
 - CSS3 Media Query Extensions - http://www.w3.org/TR/2012/REC-css3-mediaqueries-20120619/
 - CSS3 Module: Paged Media - http://www.w3.org/TR/2006/WD-css3-page-20061010/
+- CSS Style Attributes - http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax

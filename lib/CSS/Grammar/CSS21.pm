@@ -24,7 +24,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule media_list {<media_query> [',' <media_query>]*}
     rule media_query {<media>}
     rule media {<ident>}
-    rule media_rules {'{' <ruleset>* <end_block>}
+    rule media_rules {'{' <ruleset>* <.end_block>}
 
     rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
     rule page_pseudo {':'<ident>}
@@ -41,8 +41,13 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     }
 
     rule declarations {
-        '{' <declaration> [';' <declaration> ]* ';'? <end_block>
+        '{' <declaration_list> <.end_block>
     }
+
+    # this rule is suitable for parsing style attributes in HTML documents.
+    # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
+    #
+    rule declaration_list {<declaration>? [';' <declaration> ]* ';'?}
 
     rule selectors {
         <selector> [',' <selector>]*

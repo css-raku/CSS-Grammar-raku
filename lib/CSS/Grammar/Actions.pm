@@ -212,7 +212,8 @@ class CSS::Grammar::Actions {
 
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
-    method declarations($/)       { make $.list($/) }
+    method declarations($/)       { make $<declaration_list>.ast }
+    method declaration_list($/)   { make $.list($/) }
     method declaration($/)        { make $.node($/) }
     method property($/)           { make $<ident>.ast }
 

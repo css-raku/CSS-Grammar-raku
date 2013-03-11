@@ -14,7 +14,7 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
     rule at_rule:sym<media> {(:i'media') <media_list> <media_rules> }
 
     rule media_rules {
-        '{' ['@'<?before [:i'page']><at_rule>|<ruleset>]* <end_block>
+        '{' ['@'<?before [:i'page']><at_rule>|<ruleset>]* <.end_block>
     }
 
     rule media_list {<media_query> [',' <media_query>]*}
