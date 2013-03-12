@@ -6,7 +6,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 use lib '.';
-use t::CSS;
+use t::AST;
 
 my $test_css = %*ENV<TEST_CSS>;
 if ($test_css) {
@@ -38,6 +38,6 @@ note $p.ast.perl;
 
 my %expected = {ast => Mu};
 
-t::CSS::parse_tests(Any, $p, :compat('css3 file'), :rule('TOP'), :expected(%expected));
+t::AST::parse_tests(Any, $p, :suite('css3 file'), :rule('TOP'), :expected(%expected));
 
 done;
