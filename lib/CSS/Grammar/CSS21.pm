@@ -21,19 +21,19 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     proto rule at_rule { <...> }
 
     rule at_rule:sym<media>   {(:i'media') <media_list> <media_rules> }
-    rule media_list {<media_query> [',' <media_query>]*}
-    rule media_query {<media>}
-    rule media {<ident>}
-    rule media_rules {'{' <ruleset>* <.end_block>}
+    rule media_list           {<media_query> [',' <media_query>]*}
+    rule media_query          {<media>}
+    rule media                {<ident>}
+    rule media_rules          {'{' <ruleset>* <.end_block>}
 
     rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
-    rule page_pseudo {':'<ident>}
+    rule page_pseudo          {':'<ident>}
 
-    rule unary_operator {"+"|'-'}
-    rule operator {'/'|','}
+    rule unary_operator       {'+'|'-'}
+    rule operator             {'/'|','}
 
     # inherited combinators: '+' (adjacent)
-    token combinator:sym<not>   {'-'}
+    token combinator:sym<not> {'-'}
 
     rule ruleset {
         <!after \@> # not an "@" rule
@@ -69,29 +69,29 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> | [<!before <[\!\)]>><skipped_term>] }
 
     # units inherited from base grammar: length, percentage
-    token units:sym<angle>   {:i[deg|rad|grad]}
-    token units:sym<time>    {:i[m?s]}
-    token units:sym<freq>    {:i[k?Hz]}
+    token units:sym<angle>    {:i[deg|rad|grad]}
+    token units:sym<time>     {:i[m?s]}
+    token units:sym<freq>     {:i[k?Hz]}
 
     # pterm - able to be prefixed by a unary operator
     proto rule pterm {<...>}
-    rule pterm:sym<quantity>   {<num>[<units>|<.dimension>]?}
-    rule pterm:sym<emx>        {<emx>}
+    rule pterm:sym<quantity>  {<num>[<units>|<.dimension>]?}
+    rule pterm:sym<emx>       {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {<...>}
-    rule aterm:sym<string>     {<string>}
-    rule aterm:sym<url>        {<url>}
-    rule aterm:sym<color_rgb>  {<color_rgb>}
-    rule aterm:sym<color_hex>  {<id>}
-    rule aterm:sym<function>   {<function>}
-    rule aterm:sym<ident>      {<ident>}
+    rule aterm:sym<string>    {<string>}
+    rule aterm:sym<url>       {<url>}
+    rule aterm:sym<color_rgb> {<color_rgb>}
+    rule aterm:sym<color_hex> {<id>}
+    rule aterm:sym<function>  {<function>}
+    rule aterm:sym<ident>     {<ident>}
 
-    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
+    rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
     token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib        {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
+    rule attrib  {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
     # pseudo:sym<elem> inherited from base 
     rule pseudo:sym<function> {':' <function> }
@@ -102,5 +102,5 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters
-    token nonascii       {<[\o240..\o377]>}
+    token nonascii            {<[\o240..\o377]>}
 }
