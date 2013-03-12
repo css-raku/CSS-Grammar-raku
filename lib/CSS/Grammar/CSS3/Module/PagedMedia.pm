@@ -6,7 +6,7 @@ use v6;
 
 grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
 
-    proto rule page_pseudo {<...>}
+    proto rule page_pseudo {*}
     rule page_pseudo:sym<left>    {:i'left'}
     rule page_pseudo:sym<right>   {:i'right'}
     rule page_pseudo:sym<first>   {:i'first'}
@@ -20,7 +20,7 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
     }
 
     # protoregex for future expansion
-    proto rule page_rules {<...>} 
+    proto rule page_rules {*} 
     rule page_rules:sym<margin_box> {
         '@'<margin_box> <declarations>
     }

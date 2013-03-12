@@ -39,7 +39,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule pseudo:sym<negation> {<negation>}
     token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
     # to compute a.n + b
-    proto token nth_expr {<...>}
+    proto token nth_expr {*}
     token nth_expr:sym<odd>  {:i'odd'}
     token nth_expr:sym<even> {:i'even'}
     token nth_expr:sym<expr> {:i
@@ -56,7 +56,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule aterm:sym<unicode_range> {'U+'<unicode_range>}
     rule aterm:sym<ident>         {<!before emx><ident>}
 
-    proto rule unicode_range { <...> }
+    proto rule unicode_range {*}
     rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 

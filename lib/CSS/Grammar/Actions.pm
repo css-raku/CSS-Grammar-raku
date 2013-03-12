@@ -72,7 +72,7 @@ class CSS::Grammar::Actions {
             );
 
         $str.split('').map({
-            my $c = %unesc{$_} // (
+            %unesc{$_} // (
                $_ ~~ /<[\t\o40 \!..\~]>/ ?? $_ !! sprintf "\\x[%x]", $_.ord
             )
        }).join('');
@@ -226,7 +226,6 @@ class CSS::Grammar::Actions {
     method pterm:sym<quantity>($/) {
         my ($num, $units_cap) = $/.caps;
         my $qty = $num.value.ast;
-        my %node;
 
         my $type = 'num';
         my $units;

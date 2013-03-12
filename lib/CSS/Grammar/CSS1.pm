@@ -55,10 +55,10 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
               | <.unary_operator>? <term=.aterm> # useless unary operator
               | <!before <[\!]>><skipped_term> }
 
-    proto rule pterm {<...>}
+    proto rule pterm {*}
     rule pterm:sym<quantity>   {<num><units>?}
     rule pterm:sym<emx>        {<emx>}
-    proto rule aterm {<...>}
+    proto rule aterm {*}
     rule aterm:sym<string>     {<string>}
     rule aterm:sym<color_hex>  {<id>}
     rule aterm:sym<color_rgb>  {<color_rgb>}

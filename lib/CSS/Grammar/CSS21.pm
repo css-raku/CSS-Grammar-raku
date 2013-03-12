@@ -18,7 +18,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     # to detect out of order directives
     rule unexpected {<charset>|<import>}
 
-    proto rule at_rule { <...> }
+    proto rule at_rule {*}
 
     rule at_rule:sym<media>   {(:i'media') <media_list> <media_rules> }
     rule media_list           {<media_query> [',' <media_query>]*}
@@ -74,11 +74,11 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     token units:sym<freq>     {:i[k?Hz]}
 
     # pterm - able to be prefixed by a unary operator
-    proto rule pterm {<...>}
+    proto rule pterm {*}
     rule pterm:sym<quantity>  {<num>[<units>|<.dimension>]?}
     rule pterm:sym<emx>       {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
-    proto rule aterm {<...>}
+    proto rule aterm {*}
     rule aterm:sym<string>    {<string>}
     rule aterm:sym<url>       {<url>}
     rule aterm:sym<color_rgb> {<color_rgb>}

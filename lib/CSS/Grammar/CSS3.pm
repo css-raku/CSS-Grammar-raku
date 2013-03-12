@@ -17,7 +17,7 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
                       ['@'<at_rule> | <ruleset> | <unexpected2> | <unknown>]* }
 
     # <at_decl> - at rules preceding main body - aka @namespace extensions
-    proto rule at_decl {<...>}
+    proto rule at_decl {*}
 
     # to detect out of order directives
     rule unexpected2 {<charset>|<import>|'@'<at_decl>}

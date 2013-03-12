@@ -11,13 +11,13 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token nl {"\n"|"\r\n"|"\r"|"\f"}
 
-    token unclosed_comment {$}
     # comments: nb trigger <nl> for accurate line counting
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
                   |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
+    token unclosed_comment {$}
 
     token wc {<nl> | "\t"  | " "}
-
+    token ww {<?after \w><?before \w>}
     token ws {<!ww>[<wc>|<comment>]*}
 
     # "lexer"com
@@ -36,7 +36,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token num            {[\d* \.]? \d+}
     token int            {['+'|'-']?\d+}
 
-    proto token stringchar {<...>}
+    proto token stringchar {*}
     token stringchar:sym<cont>      {\\<nl>}
     token stringchar:sym<escape>    {<escape>}
     token stringchar:sym<nonascii>  {<nonascii>}
@@ -51,7 +51,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    proto token units {<...>}
+    proto token units {*}
     token units:sym<length>     {:i[pt|mm|cm|pc|in|px|em|ex]}
     token units:sym<percentage> {'%'}
 
@@ -77,20 +77,20 @@ grammar CSS::Grammar:ver<0.0.1> {
                    [')' | <unclosed_paren>]
     }
 
-    token prio {'!'[:i('important')|<skipped_term>]}
+    token prio {:i'!' [('important')|<skipped_term>]}
 
     # pseudos
-    proto rule pseudo {<...>}
+    proto rule pseudo {*}
     rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]|before|after]}
 
     # Attribute selector - core set introduced with css2.1
-    proto token attribute_selector {<...>}
+    proto token attribute_selector {*}
     rule attribute_selector:sym<equals>    {'='}
     rule attribute_selector:sym<includes>  {'~='}
     rule attribute_selector:sym<dash>      {'|='}
 
     # Combinators - introduced with css2.1
-    proto token combinator {<...>}
+    proto token combinator {*}
     token combinator:sym<adjacent> {'+'}
     token combinator:sym<child>    {'>'}
 
@@ -98,7 +98,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # - make sure they trigger <nl> - for accurate line counting
     token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}
 
-    proto token unknown {<...>}
+    proto token unknown {*}
     token unknown:sym<string>      {<string>}
     token unknown:sym<name>        {<name>}
     token unknown:sym<nonascii>    {<nonascii>+}
