@@ -370,7 +370,7 @@ for (
                 ast => [charset => "bazinga"],
             },
             css1 => {
-                warnings => [q{skipping: @charset }, q{skipping: 'bazinga'}, q{skipping: ;} ]
+                warnings => [q{skipping: @charset 'bazinga';}]
             },
     },
     TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
@@ -385,7 +385,7 @@ for (
                 ],
                 css1 => {
                     warnings => [
-                        q{skipping: @charset }, q{skipping: 'bazinga'}, q{skipping: ;},
+                        q{skipping: @charset 'bazinga';},
                         q{ignoring out of sequence directive: @import 'too-late';},
                         ],
             },
@@ -431,6 +431,15 @@ for (
     t::AST::parse_tests($input, $p3ext, :rule($rule), :suite('css3-ext'),
                         :warnings($css_extended_actions.warnings),
                         :expected( %(%test, %$css3)) );
+
+    # try 
+
+    if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selector|selectors|declaration|property)$/
+        && ! $css_extended_actions.warnings) {
+        my $p_any = CSS::Grammar::Any.parse( $input, :rule($rule) );
+        t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),
+                            :expected({ast => Mu}) );
+    }
 }
 
 done;
