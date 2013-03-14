@@ -308,13 +308,11 @@ class CSS::Grammar::Actions {
     }
 
     # todo: warnings can get a bit too verbose here
-    method unknown:sym<statement>($/)   {$.warning('skipping', $/.Str)}
-    method unknown:sym<any>($/)         {$.warning('skipping', $/.Str)}
-    method unknown:sym<unused>($/)      {$.warning('skipping', $/.Str)}
-    method unknown:sym<nonascii>($/)    {$.warning('skipping', $/.Str)}
-    method unknown:sym<stringchars>($/) {$.warning('skipping', $/.Str)}
-    method unknown:sym<punc>($/)        {$.warning('skipping', $/.Str)}
-    method unknown:sym<char>($/)        {$.warning('skipping', $/.Str)}
+    method unknown:sym<statement>($/) {$.warning('skipping', $/.Str)}
+    method unknown:sym<value>($/)     {$.warning('skipping', $/.Str)}
+    method unknown:sym<nonascii>($/)  {$.warning('skipping', $/.Str)}
+    method unknown:sym<punct>($/)     {$.warning('skipping', $/.Str)}
+    method unknown:sym<char>($/)      {$.warning('skipping', $/.Str)}
 
     method any($/) {}
 

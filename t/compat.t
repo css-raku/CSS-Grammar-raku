@@ -218,7 +218,7 @@ for (
                                      "operator" => ",",
                                      "term" => "t3"]}
                  ],
-             css1 => {warnings => ['skipping term: (top, t2, t3)'],
+             css1 => {parse => '-moz-linear-gradient',
                       ast => ["term" => "moz-linear-gradient"],
              },
     },
@@ -432,9 +432,9 @@ for (
                         :warnings($css_extended_actions.warnings),
                         :expected( %(%test, %$css3)) );
 
-    # try 
+    # try a general scan
 
-    if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selector|selectors|declaration|property)$/
+    if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selector|selectors|declaration[s|_list]?|property)$/
         && ! $css_extended_actions.warnings) {
         my $p_any = CSS::Grammar::Scan.parse( $input, :rule($rule) );
         t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),

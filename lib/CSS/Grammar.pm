@@ -96,32 +96,31 @@ grammar CSS::Grammar:ver<0.0.1> {
     token combinator:sym<adjacent> {'+'}
     token combinator:sym<child>    {'>'}
 
-    # Uncode ranges - used by selector modules + any rules
+    # Unicode ranges - used by selector modules + scan rules
     proto rule unicode_range {*}
     rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
     # Error Recovery
     # --------------
-    # - make sure they trigger <nl> - for accurate line counting
-    token skipped_term  {[<wc>|<comment>|<CSS::Grammar::Scan::value>|<-[;}]>]+}
+    # term recovery - from within a declaration. skip to the next term,
+    #                 or to the end of the block
+    rule skipped_term  {[<CSS::Grammar::Scan::value>|<-[{;}\[\]\(\)]>]+}
 
-    # - forward compatible scanning and recovery
+    # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
 
-    # try to skip complete statments
+    # - try to skip whole statements or at-rules
     token unknown:sym<statement>   {<CSS::Grammar::Scan::statement>}
 
-    # if that failed, start skipping intermediate tokens
-    token unknown:sym<any>         {<CSS::Grammar::Scan::any>}
-    token unknown:sym<unused>      {<CSS::Grammar::Scan::unused>}
+    # - if that failed, start skipping intermediate tokens
+    token unknown:sym<value>         {<CSS::Grammar::Scan::value>}
 
-    # nah? skip punctuaton and low level chars
+    # - nah? skip punctuaton and low level chars
     token unknown:sym<nonascii>    {<nonascii>+}
-    token unknown:sym<stringchars> {<stringchar>+}
     token unknown:sym<punct>       {<punct>}
 
-    # last resort - just throw out a character and try again
+    # - last resort - just throw out a character and try again
     token unknown:sym<char>        {<[.]>}
 }
 
@@ -134,41 +133,45 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # It is a scanning grammar that is only used to implement term flushing
     # for forward compatiblity and/or unknown constructs
 
-    # It's needed a little more structure to ensure parsing of valid stylesheets
-    # - added <prio> to declarations
-    # - added <combinator> plus level 3 attrbute selectors
-    # - added <selectors> rule. handle ',' + combinators
-    # - added <punctation> for various operators and extensions
+    # It's been extended to handle the rule dropping requirements outlined
+    # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
+    # e.g this should be complety dropped: h3, h4 & h5 {color: red }
+    # - there are a few more intermediate terms such as <declarations>
+    #   and <declaration_list>
+    # - added <op> for general purpose operator detection
 
-    rule TOP         {^ <stylesheet> $}
-    rule stylesheet  {<statement>*}
-    rule statement   {<ruleset> | '@'<at_rule>}
+    rule TOP          {^ <stylesheet> $}
+    rule stylesheet   {<statement>*}
+    rule statement    {<ruleset> | '@'<at_rule>}
 
-    token at_keyword {\@<ident>}
-    rule at_rule     {(<ident>) <any>* [<block> | ';']}
-    rule block       {'{' [<any> | <block> | <at_keyword> | ';']* <end_block>}
-    rule end_block   {[$<closing_paren>='}' ';'?]?}
+    token at_keyword  {\@<ident>}
+    rule at_rule      {(<ident>) <any>* [<block> | ';']}
+    token block       { '{' [<.ws>?[<any> | <block> | <at_keyword> | ';']<.ws>?]* '}' ? }
 
-    rule ruleset     { <selectors>  '{' <declaration>? [';' <declaration>? ]* ';'? <end_block> }
-    rule selectors   { <selector> [',' <selector>]* }
-    rule selector    {<any>[[<.ws>?<combinator><.ws>?]? <any>]*}
-    rule declaration {<property> ':' <value> <prio>?}
-    rule property    {<ident>}
-    rule value       {[<any> | <block> | <at_keyword>]+}
+    rule ruleset      { <selectors> <declarations> }
+    rule declarations { '{' <declaration_list>   '}' ';'?}
+    rule declaration_list { <declaration>? [';' <declaration>? ]* ';'? }
+    rule selectors    { <selector> [',' <selector>]* }
+    rule selector     {<any>[[<.ws>?<op><.ws>?]? <any>]*}
+    rule declaration  {<property> ':' <value>}
+    rule property     {<ident>}
+    rule value        {[<any> | <block> | <at_keyword>]+}
 
-    # inherit some level 2 & level 3 extensions
-    token attribute_selector:sym<ext> {'^='|'$='|'*='}
-    token combinator:sym<ext> {'-'|'~'}
+    token delim  {<[\(\)\{\}\;\.\#]>}
+    token op     {[<!before <delim>><punct>]+}
+
+    token dim      {<[a..zA..Z]>\w*}
 
     proto token any {<...>}
     token any:sym<string> { <string> }
-    token any:sym<num>    { <num>[<units>|<dimension>]? }
+    token any:sym<num>    { <num>['%'|<dim>]? }
     token any:sym<urange> { <unicode_range> }
     token any:sym<ident>  { <ident> }
+    token any:sym<pseudo> { <pseudo> }
     token any:sym<id>     { <id> }
     token any:sym<class>  { <class> }
     token any:sym<attsel> { <attribute_selector> }
-    token any:sym<punc>   { ':' | '+' | '-' | '/' | ','}
+    token any:sym<op>     { <op> }
     token any:sym<attrib> { '[' [<any>|<unused>] ']' }
     token any:sym<args>   { '(' [<any>|<unused>] ')' }
 
