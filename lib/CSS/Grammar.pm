@@ -132,7 +132,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # This grammar is based on the syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement the forward
-    # compatiblity rules and for skipping of unknown constructs
+    # compatiblity rules for skipping of unknown constructs
 
     # It's needed a little more structure to ensure parsing of valid stylesheets
     # - added <prio> to declarations
