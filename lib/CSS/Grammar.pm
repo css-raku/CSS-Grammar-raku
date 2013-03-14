@@ -1,6 +1,6 @@
 use v6;
 
-grammar CSS::Grammar::Any{...}
+grammar CSS::Grammar::Scan{...}
 
 grammar CSS::Grammar:ver<0.0.1> {
 
@@ -106,14 +106,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     # - make sure they trigger <nl> - for accurate line counting
     token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}
 
+    # - forward compatible scanning and recovery
     proto token unknown {*}
 
     # try to skip complete statments
-    token unknown:sym<statement>   {<CSS::Grammar::Any::statement>}
+    token unknown:sym<statement>   {<CSS::Grammar::Scan::statement>}
 
     # if that failed, start skipping intermediate tokens
-    token unknown:sym<any>         {<CSS::Grammar::Any::any>}
-    token unknown:sym<unused>      {<CSS::Grammar::Any::unused>}
+    token unknown:sym<any>         {<CSS::Grammar::Scan::any>}
+    token unknown:sym<unused>      {<CSS::Grammar::Scan::unused>}
 
     # nah? skip punctuaton and low level chars
     token unknown:sym<nonascii>    {<nonascii>+}
@@ -125,18 +126,19 @@ grammar CSS::Grammar:ver<0.0.1> {
 }
 
 
-grammar CSS::Grammar::Any is CSS::Grammar {
+grammar CSS::Grammar::Scan is CSS::Grammar {
 
     # Fallback Grammar Only!!
-    # this grammar is based on the grammar described in
+    # This grammar is based on the syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement the forward
     # compatiblity rules and for skipping of unknown constructs
 
     # It's needed a little more structure to ensure parsing of valid stylesheets
     # - added <prio> to declarations
-    # - added <combinator> and <prio>, plus level 3 selectors
+    # - added <combinator> plus level 3 attrbute selectors
     # - added <selectors> rule. handle ',' + combinators
+    # - added <punctation> for various operators and extensions
 
     rule TOP         {^ <stylesheet> $}
     rule stylesheet  {<statement>*}
@@ -154,6 +156,10 @@ grammar CSS::Grammar::Any is CSS::Grammar {
     rule property    {<ident>}
     rule value       {[<any> | <block> | <at_keyword>]+}
 
+    # inherit some level 2 & level 3 extensions
+    token attribute_selector:sym<ext> {'^='|'$='|'*='}
+    token combinator:sym<ext> {'-'|'~'}
+
     proto token any {<...>}
     token any:sym<string> { <string> }
     token any:sym<num>    { <num>[<units>|<dimension>]? }
@@ -161,8 +167,8 @@ grammar CSS::Grammar::Any is CSS::Grammar {
     token any:sym<ident>  { <ident> }
     token any:sym<id>     { <id> }
     token any:sym<class>  { <class> }
-    token any:sym<attsel> { <attribute_selector>|'^='|'$='|'*=' }
-    token any:sym<punc>   { ':' }
+    token any:sym<attsel> { <attribute_selector> }
+    token any:sym<punc>   { ':' | '+' | '-' | '/' | ','}
     token any:sym<attrib> { '[' [<any>|<unused>] ']' }
     token any:sym<args>   { '(' [<any>|<unused>] ')' }
 
