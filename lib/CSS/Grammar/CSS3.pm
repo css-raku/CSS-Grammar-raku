@@ -12,15 +12,15 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
 
     # productions
     rule stylesheet { <charset>?
-                      [<import>                 | <unexpected>]*
-                      ['@'<at_rule=.at_decl>    | <unexpected>]*
-                      ['@'<at_rule> | <ruleset> | <unexpected2> | <unknown>]* }
+                      [<import>                 | <misplaced>]*
+                      ['@'<at_rule=.at_decl>    | <misplaced>]*
+                      ['@'<at_rule> | <ruleset> | <misplaced2> | <unknown>]* }
 
     # <at_decl> - at rules preceding main body - aka @namespace extensions
     proto rule at_decl {*}
 
     # to detect out of order directives
-    rule unexpected2 {<charset>|<import>|'@'<at_decl>}
+    rule misplaced2 {<charset>|<import>|'@'<at_decl>}
 
     # 'lexer' css3 exceptions
    token nonascii       {<- [\x0..\x7F]>}

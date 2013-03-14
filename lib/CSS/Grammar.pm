@@ -104,7 +104,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Error Recovery
     # --------------
     # - make sure they trigger <nl> - for accurate line counting
-    token skipped_term  {[<wc>|<comment>|<string>|<-[;}]>]+}
+    token skipped_term  {[<wc>|<comment>|<CSS::Grammar::Scan::value>|<-[;}]>]+}
 
     # - forward compatible scanning and recovery
     proto token unknown {*}
@@ -131,8 +131,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # Fallback Grammar Only!!
     # This grammar is based on the syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
-    # It is a scanning grammar that is only used to implement the forward
-    # compatiblity rules for skipping of unknown constructs
+    # It is a scanning grammar that is only used to implement term flushing
+    # for forward compatiblity and/or unknown constructs
 
     # It's needed a little more structure to ensure parsing of valid stylesheets
     # - added <prio> to declarations

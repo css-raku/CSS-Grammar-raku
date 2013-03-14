@@ -9,14 +9,14 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # productions
     rule stylesheet { <charset>?
-                      [<import> | <unexpected>]*
-                      ['@'<at_rule> | <ruleset> | <unexpected> | <unknown>]* }
+                      [<import> | <misplaced>]*
+                      ['@'<at_rule> | <ruleset> | <misplaced> | <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] ';' }
 
     # to detect out of order directives
-    rule unexpected {<charset>|<import>}
+    rule misplaced {<charset>|<import>}
 
     proto rule at_rule {*}
 

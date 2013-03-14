@@ -10,11 +10,11 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
 
     # productions
 
-    rule stylesheet { <import>* [<ruleset> | <unexpected> | <unknown>]* }
+    rule stylesheet { <import>* [<ruleset> | <misplaced> | <unknown>]* }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
-    rule unexpected {<import>}
+    rule misplaced {<import>}
 
     rule unary_operator {'-'|'+'}
 

@@ -174,10 +174,10 @@ class CSS::Grammar::Actions {
     method import($/)    { make $.node($/) }
     method namespace($/) { make $.node($/) }
 
-    method unexpected($/) {
+    method misplaced($/) {
         $.warning('ignoring out of sequence directive', $/.Str)
     }
-    method unexpected2($/) {
+    method misplaced2($/) {
         $.warning('ignoring out of sequence directive', $/.Str)
     }
 
