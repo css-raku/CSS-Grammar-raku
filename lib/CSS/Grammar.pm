@@ -136,13 +136,15 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # - there are a few more intermediate terms such as <declarations>
     #   and <declaration_list>
     # - added <op> for general purpose operator detection
+    # - replaced <any> with <selector> in <at_rule>. e.g. for parsing:
+    #   @import url("bluish.css") projection, tv;
 
     rule TOP          {^ <stylesheet> $}
     rule stylesheet   {<statement>*}
     rule statement    {<ruleset> | '@'<at_rule>}
 
     token at_keyword  {\@<ident>}
-    rule at_rule      {(<ident>) <any>* [<block> | ';']}
+    rule at_rule      {(<ident>) <selector>* [<block> | ';']}
     token block       { '{' [<.ws>?[<any> | <block> | <at_keyword> | ';']<.ws>?]* '}' ? }
 
     rule ruleset      { <selectors> <declarations> }

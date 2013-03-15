@@ -89,6 +89,17 @@ for (
                ast => {url => 'file:///etc/passwd'}},
     import => {input => "@IMPORT '/etc/group';",
                ast => {string => '/etc/group'}},
+    # imports can be assigned to media types. See:
+    # http://www.w3.org/TR/2011/REC-CSS2-20110607/cascade.html#at-import
+    import => {input => '@import url("bluish.css") projection, tv;',
+               ast => {url => "bluish.css",
+                       "media_list" => ["media_query" => ["media" => "projection"],
+                                        "media_query" => ["media" => "tv"]]},
+               css1 => {
+                   parse => '',
+                   ast => Mu,
+               },
+    },
     class => {input => '.class', ast => 'class'},
     simple_selector => {input => 'BODY',
                         ast => {element_name => 'BODY'},},
