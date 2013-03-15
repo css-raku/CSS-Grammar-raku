@@ -132,11 +132,11 @@ class CSS::Grammar::Actions {
 
     method string($/) {
         my Bool $skip = False;
+        my $string = $<stringchar>.map({ $_.ast }).join('');
         unless ($<closing_quote>.Str) {
-            $.warning('unterminated string');
+            $.warning('unterminated string', $string);
             $skip = True;
         }
-        my $string = $<stringchar>.map({ $_.ast }).join('');
         make $.token($string, :type('string'), :skip($skip) );
     }
 

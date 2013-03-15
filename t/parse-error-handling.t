@@ -77,6 +77,13 @@ h6 {color: black }',
                    ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
                                          "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]}],
     },
+    # try a few extended terms
+    stylesheet => {input => '@media print and (width: 21cm)  @page { margin: 3cm;  @top-center { content: "Page " counter(page); }}',
+                   ast => [], warnings => 'skipping: @media print and (width: 21cm)  @page { margin: 3cm;  @top-center { content: "Page " counter(page); }}',
+    },
+    stylesheet => {input => '* foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
+                   ast => [], warnings => 'skipping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
+    },
     ) {
     my $rule = $_.key;
     my %test = $_.value;

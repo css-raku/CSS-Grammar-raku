@@ -40,7 +40,7 @@ for (
     },
     string => {input => q{"Hello 'Black H},
                ast => q{Hello 'Black H},
-               warnings => ['unterminated string'],
+               warnings => ["unterminated string: Hello 'Black H"],
     },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
@@ -73,7 +73,7 @@ for (
     },
     url => {input => 'URL("http://www.bg.com/pinkish.gif',
             ast => 'http://www.bg.com/pinkish.gif',
-            warnings => ['unterminated string', "missing closing ')'"],
+            warnings => ['unterminated string: http://www.bg.com/pinkish.gif', "missing closing ')'"],
     },
     color_rgb => {input => 'Rgb(10, 20, 30)',
                   ast => {r => 10, g => 20, b => 30}},
@@ -229,8 +229,9 @@ for (
                                      "operator" => ",",
                                      "term" => "t3"]}
                  ],
-             css1 => {parse => '-moz-linear-gradient',
-                      ast => ["term" => "moz-linear-gradient"],
+             css1 => {
+                 ast => ["term" => "moz-linear-gradient"],
+                 warnings => 'skipping term: (top, t2, t3)',
              },
     },
     expr => {input => '12px/20px',
@@ -358,7 +359,7 @@ for (
 
     ruleset => {input => 'H2 { test: "this is not closed',
                 warnings => [
-                    'unterminated string',
+                    'unterminated string: this is not closed',
                     "no closing '}'",
                     ],
                 ast => Mu,

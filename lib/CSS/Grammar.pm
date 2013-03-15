@@ -130,25 +130,23 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # - there are a few more intermediate terms such as <declarations>
     #   and <declaration_list>
     # - added <op> for general purpose operator detection
-    # - replaced <any> with <selector> in <at_rule>. e.g. for parsing:
-    #   @import url("bluish.css") projection, tv;
 
     rule TOP          {^ <stylesheet> $}
     rule stylesheet   {<statement>*}
     rule statement    {<ruleset> | '@'<at_rule>}
 
     token at_keyword  {\@<ident>}
-    rule at_rule      {(<ident>) <selectors>? [<block> | ';']}
+    rule at_rule      {(<ident>) <any>* [<block> | ';']}
     token block       { '{' [<.ws>?[<any> | <block> | <at_keyword> | ';']<.ws>?]* '}' ? }
 
     rule ruleset      { <selectors> <declarations> }
-    rule declarations { '{' <declaration_list>   '}' ';'?}
+    rule declarations { '{' <declaration_list> '}' ';'?}
     rule declaration_list { <declaration>? [';' <declaration>? ]* ';'? }
-    rule selectors    {<any>[[<.ws>?<op><.ws>?]? <any>]*}
+    rule selectors    {<any> [<op>? <any>]*}
     rule declaration  {<property=.ident> ':' <value>}
     rule value        {[<any> | <block> | <at_keyword>]+}
 
-    token delim       {<[\(\)\{\}\;]>}
+    token delim       {<[\( \) \{ \} \; \" \' \\]>}
     token op          {[<punct><!after <delim>>]+}
 
     token dim         {<[a..zA..Z]>\w*}
@@ -162,8 +160,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token any:sym<id>     { <id> }
     token any:sym<class>  { <class> }
     token any:sym<op>     { <op> }
-    token any:sym<attrib> { '[' [<any>|<unused>] ']' }
-    token any:sym<args>   { '(' [<any>|<unused>] ')' }
+    token any:sym<attrib> { '[' [<.ws>?[<any>|<unused>]<.ws>?]* ']' }
+    token any:sym<args>   { '(' [<.ws>?[<any>|<unused>]<.ws>?]* ')' }
 
     rule unused {<block> | <at_keyword> | ';'}
 }
