@@ -40,10 +40,8 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
-    rule property {<ident>}
-
     rule declaration {
-        <property> ':' [ <expr> <prio>? | <expr_missing> ]
+        <property=.ident> ':' [ <expr> <prio>? | <expr_missing> ]
         | <skipped_term>
     }
 

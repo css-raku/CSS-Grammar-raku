@@ -204,7 +204,6 @@ class CSS::Grammar::Actions {
     method media_rules($/)        { make $.list($/) }
     method media_list($/)         { make $.list($/) }
     method media_query($/)        { make $.list($/) }
-    method media($/)              { make $<ident>.ast }
 
     # css2/css3 core - page support
     method at_rule:sym<page>($/)  { make $.at_rule($/) }
@@ -214,8 +213,16 @@ class CSS::Grammar::Actions {
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method declaration($/)        { make $.node($/) }
-    method property($/)           { make $<ident>.ast }
+    method declaration($/)        {
+        my %decl = $.node($/);
+        if @(%decl<expr>) {
+            make %decl;
+        }
+        else {
+            $.warning('dropping declaration', %decl<property>)
+                if %decl<property>;
+        }
+    }
 
     method expr($/) { make $.list($/) }
 
@@ -267,9 +274,9 @@ class CSS::Grammar::Actions {
         %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
         make $.token(%rgb, :type('color'), :units('rgb'))
     }
-    method aterm:sym<color_rgb>($/)   { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
-    method aterm:sym<function>($/)    { make $.token($<function>.ast, :type('function')) }
-    method aterm:sym<ident>($/)       { make $.token($<ident>.ast, :type('ident')) }
+    method aterm:sym<color_rgb>($/) { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
+    method aterm:sym<function>($/)  { make $.token($<function>.ast, :type('function')) }
+    method aterm:sym<ident>($/)     { make $.token($<ident>.ast, :type('ident')) }
 
     method emx($/) { make $/.Str.lc }
 

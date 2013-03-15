@@ -22,8 +22,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule at_rule:sym<media>   {(:i'media') <media_list> <media_rules> }
     rule media_list           {<media_query> [',' <media_query>]*}
-    rule media_query          {<media>}
-    rule media                {<ident>}
+    rule media_query          {<media=.ident>}
     rule media_rules          {'{' <ruleset>* <.end_block>}
 
     rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
@@ -58,7 +57,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule property {<ident>}
 
     rule declaration {
-         <property> ':' [ <expr> <prio>? | <expr_missing> ]
+         <property=.ident> ':' [ <expr> <prio>? | <expr_missing> ]
          | <skipped_term>
     }
 
@@ -75,7 +74,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # pterm - able to be prefixed by a unary operator
     proto rule pterm {*}
-    rule pterm:sym<quantity>  {<num>[<units>|<.dimension>]?}
+    rule pterm:sym<quantity>  {<num><units>?}
     rule pterm:sym<emx>       {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {*}

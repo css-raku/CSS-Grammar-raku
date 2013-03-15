@@ -16,8 +16,9 @@ my $css_actions = CSS::Grammar::Actions.new;
 
 for (
     ruleset =>  {input => 'h1 { color: red; rotation: 70minutes }',
-                 ast => Mu,
-                 warnings => 'unknown dimensioned quantity: minutes',
+                 warnings => ['skipping term: 70minutes ', 'dropping declaration: rotation'],
+                 ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
+                 "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]}]},
     },
     ruleset => {input => 'p { color:green; color }',                # malformed declaration missing ':', value
                 ast => Mu,

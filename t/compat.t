@@ -300,11 +300,12 @@ for (
     },
     ruleset => {input => 'H2 { color: green; rotation: 70deg; }',
                 ast => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
-                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}, "declaration" => {"property" => "rotation", "expr" => ["term" => 70]}]},
+                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']},
+                                           "declaration" => {"property" => "rotation", "expr" => ["term" => 70]}]},
                 css1 => {
-                    warnings => ['skipping term: 70deg'],
+                    warnings => ['skipping term: 70deg', 'dropping declaration: rotation'],
                     ast => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
-                            "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}, "declaration" => {"property" => "rotation", "expr" => []}]},
+                            "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}]},
                 },
     },
     ruleset => {input => 'H1 { color }',
@@ -334,6 +335,7 @@ for (
                 ast => Mu,
                 css1 => {
                     warnings => ['skipping term: 70deg',
+                                 'dropping declaration: rotation',
                                  "no closing '}'",
                         ]
                 }

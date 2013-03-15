@@ -57,9 +57,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     token units:sym<length>     {:i[pt|mm|cm|pc|in|px|em|ex]}
     token units:sym<percentage> {'%'}
 
-    # see discussion in http://www.w3.org/TR/CSS21/grammar.html G.3
-    token dimension      {<[a..zA..Z]>\w*}
-
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
     token url_string     {<string>|<url_char>*}
@@ -131,7 +128,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # This grammar is based on the syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement term flushing
-    # for forward compatiblity and/or unknown constructs
+    # for forward compatiblity and/or ignoring unknown constructs
 
     # It's been extended to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
@@ -153,14 +150,13 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule declaration_list { <declaration>? [';' <declaration>? ]* ';'? }
     rule selectors    { <selector> [',' <selector>]* }
     rule selector     {<any>[[<.ws>?<op><.ws>?]? <any>]*}
-    rule declaration  {<property> ':' <value>}
-    rule property     {<ident>}
+    rule declaration  {<property=.ident> ':' <value>}
     rule value        {[<any> | <block> | <at_keyword>]+}
 
-    token delim  {<[\(\)\{\}\;\.\#]>}
-    token op     {[<!before <delim>><punct>]+}
+    token delim       {<[\(\)\{\}\;]>}
+    token op          {[<punct><!after <delim>>]+}
 
-    token dim      {<[a..zA..Z]>\w*}
+    token dim         {<[a..zA..Z]>\w*}
 
     proto token any {<...>}
     token any:sym<string> { <string> }
