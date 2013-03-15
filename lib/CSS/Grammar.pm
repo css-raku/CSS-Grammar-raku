@@ -82,12 +82,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto rule pseudo {*}
     rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]|before|after]}
 
-    # Attribute selector - core set introduced with css2.1
-    proto token attribute_selector {*}
-    token attribute_selector:sym<equals>    {'='}
-    token attribute_selector:sym<includes>  {'~='}
-    token attribute_selector:sym<dash>      {'|='}
-
     # Combinators - introduced with css2.1
     proto token combinator {*}
     token combinator:sym<adjacent> {'+'}
@@ -144,14 +138,13 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule statement    {<ruleset> | '@'<at_rule>}
 
     token at_keyword  {\@<ident>}
-    rule at_rule      {(<ident>) <selector>* [<block> | ';']}
+    rule at_rule      {(<ident>) <selectors>? [<block> | ';']}
     token block       { '{' [<.ws>?[<any> | <block> | <at_keyword> | ';']<.ws>?]* '}' ? }
 
     rule ruleset      { <selectors> <declarations> }
     rule declarations { '{' <declaration_list>   '}' ';'?}
     rule declaration_list { <declaration>? [';' <declaration>? ]* ';'? }
-    rule selectors    { <selector> [',' <selector>]* }
-    rule selector     {<any>[[<.ws>?<op><.ws>?]? <any>]*}
+    rule selectors    {<any>[[<.ws>?<op><.ws>?]? <any>]*}
     rule declaration  {<property=.ident> ':' <value>}
     rule value        {[<any> | <block> | <at_keyword>]+}
 
@@ -168,7 +161,6 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token any:sym<pseudo> { <pseudo> }
     token any:sym<id>     { <id> }
     token any:sym<class>  { <class> }
-    token any:sym<attsel> { <attribute_selector> }
     token any:sym<op>     { <op> }
     token any:sym<attrib> { '[' [<any>|<unused>] ']' }
     token any:sym<args>   { '(' [<any>|<unused>] ')' }

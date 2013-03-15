@@ -92,6 +92,11 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule attrib  {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
 
+    proto token attribute_selector {*}
+    token attribute_selector:sym<equals>   {'='}
+    token attribute_selector:sym<includes> {'~='}
+    token attribute_selector:sym<dash>     {'|='}
+
     # pseudo:sym<elem> inherited from base 
     rule pseudo:sym<function> {':' <function> }
     rule pseudo:sym<lang>     {:i':lang(' <lang=.ident> [')' | <unclosed_paren>]}

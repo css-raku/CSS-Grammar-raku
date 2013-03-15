@@ -447,7 +447,7 @@ for (
 
     # try a general scan
 
-    if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selector|selectors|declaration[s|_list]?|property)$/
+    if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selectors|declaration[s|_list]?|property)$/
         && ! $css_extended_actions.warnings) {
         my $p_any = CSS::Grammar::Scan.parse( $input, :rule($rule) );
         t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),
