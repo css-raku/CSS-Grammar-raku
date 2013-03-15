@@ -124,7 +124,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # It is a scanning grammar that is only used to implement term flushing
     # for forward compatiblity and/or ignoring unknown constructs
 
-    # It's been extended to handle the rule dropping requirements outlined
+    # It's been generalized to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # e.g this should be complety dropped: h3, h4 & h5 {color: red }
     # - there are a few more intermediate terms such as <declarations>
@@ -135,14 +135,14 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule stylesheet   {<statement>*}
     rule statement    {<ruleset> | '@'<at_rule>}
 
-    token at_keyword  {\@<ident>}
+    rule at_keyword   {\@<ident>}
     rule at_rule      {(<ident>) <any>* [<block> | ';']}
-    token block       { '{' [<.ws>?[<any> | <block> | <at_keyword> | ';']<.ws>?]* '}' ? }
+    rule block        {'{' [ <any> | <block> | <at_keyword> | ';' ]* '}'?}
 
     rule ruleset      { <selectors> <declarations> }
-    rule declarations { '{' <declaration_list> '}' ';'?}
-    rule declaration_list { <declaration>? [';' <declaration>? ]* ';'? }
-    rule selectors    {<any> [<op>? <any>]*}
+    rule declarations {'{' <declaration_list> '}' ';'?}
+    rule declaration_list {<declaration>? [';' <declaration>? ]* ';'?}
+    rule selectors    {<any>+}
     rule declaration  {<property=.ident> ':' <value>}
     rule value        {[<any> | <block> | <at_keyword>]+}
 
@@ -151,17 +151,17 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     token dim         {<[a..zA..Z]>\w*}
 
-    proto token any {<...>}
-    token any:sym<string> { <string> }
-    token any:sym<num>    { <num>['%'|<dim>]? }
-    token any:sym<urange> { <unicode_range> }
-    token any:sym<ident>  { <ident> }
-    token any:sym<pseudo> { <pseudo> }
-    token any:sym<id>     { <id> }
-    token any:sym<class>  { <class> }
-    token any:sym<op>     { <op> }
-    token any:sym<attrib> { '[' [<.ws>?[<any>|<unused>]<.ws>?]* ']' }
-    token any:sym<args>   { '(' [<.ws>?[<any>|<unused>]<.ws>?]* ')' }
+    proto rule any { <...> }
+    rule any:sym<string> { <string> }
+    rule any:sym<num>    { <num>['%'|<dim>]? }
+    rule any:sym<urange> { <unicode_range> }
+    rule any:sym<ident>  { <ident> }
+    rule any:sym<pseudo> { <pseudo> }
+    rule any:sym<id>     { <id> }
+    rule any:sym<class>  { <class> }
+    rule any:sym<op>     { <op> }
+    rule any:sym<attrib> { '[' [<any>|<unused>]* ']' }
+    rule any:sym<args>   { '(' [<any>|<unused>]* ')' }
 
     rule unused {<block> | <at_keyword> | ';'}
 }
