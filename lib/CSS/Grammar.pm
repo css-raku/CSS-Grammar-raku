@@ -19,7 +19,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     token unclosed_comment {$}
 
     token wc {<nl> | "\t"  | " "}
-    token ww {<?after \w><?before \w>}
     token ws {<!ww>[<wc>|<comment>]*}
 
     # "lexer"com
@@ -139,10 +138,10 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule at_rule      {(<ident>) <any>* [<block> | ';']}
     rule block        {'{' [ <any> | <block> | <at_keyword> | ';' ]* '}'?}
 
-    rule ruleset      { <selectors> <declarations> }
+    rule ruleset      {<selectors>? <declarations>}
+    rule selectors    {<any>+}
     rule declarations {'{' <declaration_list> '}' ';'?}
     rule declaration_list {<declaration>? [';' <declaration>? ]* ';'?}
-    rule selectors    {<any>+}
     rule declaration  {<property=.ident> ':' <value>}
     rule value        {[<any> | <block> | <at_keyword>]+}
 
