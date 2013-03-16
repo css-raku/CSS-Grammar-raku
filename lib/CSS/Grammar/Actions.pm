@@ -8,7 +8,7 @@ class CSS::Grammar::Actions {
 
     has Int $.line_no is rw = 1;
     # variable encoding - not yet supported
-    has $.encoding = 'UTF-8';
+    has $.encoding is rw = 'UTF-8';
 
     # accumulated warnings
     has @.warnings;
