@@ -95,7 +95,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # --------------
     # term recovery - from within a declaration. skip to the next term,
     #                 or to the end of the block
-    rule skipped_term  {[<CSS::Grammar::Scan::value>|<-[{;}\[\]\(\)]>]+}
+    rule skipped_term  {<CSS::Grammar::Scan::value>+}
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
@@ -159,8 +159,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule any:sym<id>     { <id> }
     rule any:sym<class>  { <class> }
     rule any:sym<op>     { <op> }
-    rule any:sym<attrib> { '[' [<any>|<unused>]* ']' }
-    rule any:sym<args>   { '(' [<any>|<unused>]* ')' }
+    rule any:sym<attrib> { '[' [<any>|<unused>]* ']'? }
+    rule any:sym<args>   { '(' [<any>|<unused>]* ')'? }
 
     rule unused {<block> | <at_keyword> | ';'}
 }
