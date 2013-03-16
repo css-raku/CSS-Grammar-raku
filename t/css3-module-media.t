@@ -54,6 +54,12 @@ for (
     at_rule => {input => 'media ONLY all And (none) { }',
                 ast => {"media_list" => ["media_query" => ["media_op" => "only", "media" => "all", "media_expr" => {"media_feature" => "none"}]], "media_rules" => [], '@' => "media"},
     },
+    # we should also have extended the import at-rule
+    import => {input => '@import url(example.css) screen and (color), projection and (color);',
+               ast => {"url" => "example.css",
+                       "media_list" => ["media_query" => ["media" => "screen", "media_expr" => {"media_feature" => "color"}],
+                                        "media_query" => ["media" => "projection", "media_expr" => {"media_feature" => "color"}]]},
+    },
     at_rule => {input => $embedded_page, ast => $embedded_page_ast},
     ) {
     my $rule = $_.key;
