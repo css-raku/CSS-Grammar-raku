@@ -142,11 +142,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token delim       {<[\( \) \{ \} \; \" \' \\]>}
     token op          {[<punct><!after <delim>>]+}
 
-    token dim         {<[a..zA..Z]>\w*}
-
     proto rule any { <...> }
     rule any:sym<string> { <string> }
-    rule any:sym<num>    { <num>['%'|<dim>]? }
+    rule any:sym<num>    { <num>['%'|<dimension=.ident>]? }
     rule any:sym<urange> { <unicode_range> }
     rule any:sym<ident>  { <ident> }
     rule any:sym<pseudo> { <pseudo> }
