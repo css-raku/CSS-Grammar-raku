@@ -45,6 +45,8 @@ for ('¡', "\o250", 'ÿ') {
     ok($_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_");
+    ok($_ ~~ /^<CSS::Grammar::Scan::nonascii>$/, "non-ascii scan: $_");
+    ok($_ ~~ /^<CSS::Grammar::Scan::ident>$/, "non-ascii ident: $_");
 }
 
 # css1 and css21 only recognise latin chars as non-ascii (\o240-\o377)
@@ -79,13 +81,15 @@ for ('8') {
 }
 
 for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, q{"Hello},  q{"},) {
-    ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_")
-        or diag $_;
+    ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_");
 }
 
 for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
-    nok($_ ~~ /^<CSS::Grammar::string>$/, "not string: $_")
-        or diag $_;
+    nok($_ ~~ /^<CSS::Grammar::string>$/, "not string: $_");
+}
+
+for ('*', ',', '+', '>', '|=', '~=') {
+    ok($_ ~~ /^<CSS::Grammar::Scan::op>$/, "scan op: $_");
 }
 
 my $media_rules = '{
@@ -97,11 +101,11 @@ for ('{ }', $media_rules) {
     ok($_ ~~ /^<CSS::Grammar::CSS3::media_rules>$/, "css3 media_rules: $_");
 }
 
-my $at_rule_page = 'page :left { margin: 3cm };';
-my $at_rule_print = 'media print ' ~ $media_rules;
+my $at_rule_page = '@page :left { margin: 3cm };';
+my $at_rule_print = '@media print ' ~ $media_rules;
 
 for ($at_rule_page, $at_rule_print) { 
-    ok($_ ~~ /^<CSS::Grammar::CSS21::at_rule>$/, "css21 at_rule: $_");
+    ok($_ ~~ /^\@<CSS::Grammar::CSS21::at_rule>$/, "css21 at_rule: $_");
 }
 
 done;

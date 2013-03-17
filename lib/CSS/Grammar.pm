@@ -30,8 +30,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nonascii       {<- [\x0..\x7F]>}
     token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
-    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
     token nmchar         {<nmreg>|<nonascii>|<escape>}
+    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
     token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
     token num            {[\d* \.]? \d+}
@@ -99,18 +99,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
-
     # - try to skip whole statements or at-rules
     token unknown:sym<statement>   {<CSS::Grammar::Scan::statement>}
-
     # - if that failed, start skipping intermediate tokens
-    token unknown:sym<value>         {<CSS::Grammar::Scan::value>}
-
-    # - nah? skip punctuaton and low level chars
-    token unknown:sym<nonascii>    {<nonascii>+}
+    token unknown:sym<value>       {<CSS::Grammar::Scan::value>}
     token unknown:sym<punct>       {<punct>}
-
-    # - last resort - just throw out a character and try again
+    # - last resort skip a character; let parser try again
     token unknown:sym<char>        {<[.]>}
 }
 
