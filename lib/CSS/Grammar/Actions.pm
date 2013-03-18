@@ -162,7 +162,23 @@ class CSS::Grammar::Actions {
         make $.token($arg, :type('num'), :units('4bit'));
     }
 
-    method color_rgb($/)  { make $.node($/) }
+    method color:sym<rgb>($/)  { make (rgb => $.node($/)) }
+    method color:sym<hex>($/)   {
+        my $id = $<id>.ast;
+        my $chars = $id.chars;
+        unless $id.match(/^<xdigit>+$/)
+            && ($chars == 3 || $chars == 6) {
+                $.warning("bad hex color", $/.Str);
+                return;
+        }
+
+        my @rgb = $chars == 3
+            ?? $id.comb(/./).map({$_ ~ $_})
+            !! $id.comb(/../);
+        my %rgb;
+        %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
+        make (rgb => %rgb);
+    }
 
     method prio($/) { make $0.Str.lc if $0}
 
@@ -254,29 +270,17 @@ class CSS::Grammar::Actions {
         $.warning('unknown dimensioned quantity', $/.Str);
     }
     # treat 'ex' as '1ex'; 'em' as '1em'
-    method pterm:sym<emx>($/)         { make $.token(1, :units($/.Str.lc), :type('length')) }
+    method pterm:sym<emx>($/)        { make $.token(1, :units($/.Str.lc), :type('length')) }
 
-    method aterm:sym<string>($/)      { make $.token($<string>.ast, :type('string')) }
-    method aterm:sym<url>($/)         { make $.token($<url>.ast, :type('url')) }
-    method aterm:sym<color_hex>($/)   {
-        my $id = $<id>.ast;
-        my $chars = $id.chars;
-        unless $id.match(/^<xdigit>+$/)
-            && ($chars == 3 || $chars == 6) {
-                $.warning("bad hex color", $/.Str);
-                return;
-        }
-
-        my @rgb = $chars == 3
-            ?? $id.comb(/./).map({$_ ~ $_})
-            !! $id.comb(/../);
-        my %rgb;
-        %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
-        make $.token(%rgb, :type('color'), :units('rgb'))
+    method aterm:sym<string>($/)     { make $.token($<string>.ast, :type('string')) }
+    method aterm:sym<url>($/)        { make $.token($<url>.ast, :type('url')) }
+    method aterm:sym<color>($/)      {
+        my ($units, $ast) = $<color>.ast.kv;
+        make $.token($ast, :type('color'), :units($units))
+            if $ast;
     }
-    method aterm:sym<color_rgb>($/) { make $.token($<color_rgb>.ast, :type('color'), :units('rgb')) }
-    method aterm:sym<function>($/)  { make $.token($<function>.ast, :type('function')) }
-    method aterm:sym<ident>($/)     { make $.token($<ident>.ast, :type('ident')) }
+    method aterm:sym<function>($/)   { make $.token($<function>.ast, :type('function')) }
+    method aterm:sym<ident>($/)      { make $.token($<ident>.ast, :type('ident')) }
 
     method emx($/) { make $/.Str.lc }
 
@@ -351,5 +355,4 @@ class CSS::Grammar::Actions {
         }
         return $result;
     }
-
 }

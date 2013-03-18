@@ -58,8 +58,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule pterm:sym<emx>        {<emx>}
     proto rule aterm {*}
     rule aterm:sym<string>     {<string>}
-    rule aterm:sym<color_hex>  {<id>}
-    rule aterm:sym<color_rgb>  {<color_rgb>}
+    rule aterm:sym<color>      {<color>}
     rule aterm:sym<url>        {<url>}
     rule aterm:sym<ident>      {<ident>}
 

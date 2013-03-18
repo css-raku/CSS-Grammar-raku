@@ -13,7 +13,7 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
     rule color_angle{<num>$<percentage>=[\%]?}
     rule color_alpha{<num>$<percentage>=[\%]?}
 
-    rule color_rgba {:i'rgba('
+    rule color:sym<rgba> {:i'rgba('
                    <r=.color_arg> ','
                    <g=.color_arg> ','
                    <b=.color_arg> ','
@@ -21,36 +21,25 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
                    [')' | <unclosed_paren>]
     }
 
-    rule color_hsl {:i'hsl('
+    rule color:sym<hsl> {:i'hsl('
                    <h=.color_angle> ','
                    <s=.color_alpha> ','
                    <l=.color_alpha>
                    [')' | <unclosed_paren>]
     }
 
-    rule color_hsla {:i'hsla('
+    rule color:sym<hsla> {:i'hsla('
                    <h=.color_angle> ','
                    <s=.color_alpha> ','
                    <l=.color_alpha> ','
                    <a=.color_alpha>
                    [')' | <unclosed_paren>]
     }
-
-    rule aterm:sym<color_rgb>     {<color_rgb>}
-    rule aterm:sym<color_hex>     {<id>}
-    rule aterm:sym<color_rgba>    {<color_rgba>}
-    rule aterm:sym<color_hsl>     {<color_hsl>}
-    rule aterm:sym<color_hsla>    {<color_hsla>}
 }
 
 class CSS::Grammar::CSS3::Module::Colors::Actions {
 
     method at_rule:sym<color_profile>($/) { make $.at_rule($/) }
-
-    # color_rgb is defined in core actions
-    method color_rgba($/) { make $.node($/) }
-    method color_hsl($/)  { make $.node($/) }
-    method color_hsla($/) { make $.node($/) }
 
     method color_angle($/) {
         my $angle = %<num>.ast;
@@ -66,8 +55,8 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
         make $.token($alpha, :type('num'), :units('alpha'));
     }
 
-    method aterm:sym<color_rgba>($/) { make $.token($<color_rgba>.ast, :type('color'), :units('rgba')) }
-    method aterm:sym<color_hsl>($/)  { make $.token($<color_hsl>.ast, :type('color'), :units('hsl')) }
-    method aterm:sym<color_hsla>($/) { make $.token($<color_hsla>.ast, :type('color'), :units('hsla')) }
+    method color:sym<rgba>($/) { make (rgba => $.node($/)) }
+    method color:sym<hsl>($/)  { make (hsl  => $.node($/)) }
+    method color:sym<hsla>($/) { make (hsla => $.node($/)) }
 }
 

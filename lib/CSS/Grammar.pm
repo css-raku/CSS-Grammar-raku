@@ -68,12 +68,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule emx {:i e[m|x]}
 
     rule color_arg{<num>$<percentage>=[\%]?}
-    rule color_rgb {:i'rgb('
+
+    proto rule color    {*}
+    rule color:sym<rgb> {:i'rgb('
                    <r=.color_arg> ','
                    <g=.color_arg> ','
                    <b=.color_arg>
                    [')' | <unclosed_paren>]
     }
+    rule color:sym<hex> {<id>}
 
     token prio {:i'!' [('important')|<skipped_term>]}
 

@@ -80,8 +80,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     proto rule aterm {*}
     rule aterm:sym<string>    {<string>}
     rule aterm:sym<url>       {<url>}
-    rule aterm:sym<color_rgb> {<color_rgb>}
-    rule aterm:sym<color_hex> {<id>}
+    rule aterm:sym<color>     {<color>}
     rule aterm:sym<function>  {<function>}
     rule aterm:sym<ident>     {<ident>}
 
