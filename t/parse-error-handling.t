@@ -16,49 +16,59 @@ my $css_actions = CSS::Grammar::Actions.new;
 
 for (
     ruleset =>  {input => 'h1 { color: red; rotation: 70minutes }',
-                 warnings => ['skipping term: 70minutes ', 'dropping declaration: rotation'],
+                 warnings => ['dropping term: 70minutes',
+                              'dropping declaration: rotation'],
                  ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
                  "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]}]},
     },
+    # unclosed string. scanner should discard first line
+    ruleset => {input => 'h2 {bad: dropme "http://unclosed-string.org; color:blue;
+                              background-color:#ccc;}',
+                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]], "declarations" => ["declaration" => {"property" => "background-color", "expr" => ["term" => {"r" => 204, "g" => 204, "b" => 204}]}]},
+                warnings => [
+                    'unterminated string: "http://unclosed-string.org; color:blue;',
+                    'dropping declaration: bad',
+                    ],
+    },                        
     ruleset => {input => 'p { color:green; color }',                # malformed declaration missing ':', value
                 ast => Mu,
-                warnings => 'skipping term: color ',
+                warnings => 'dropping term: color',
     },
-    ruleset => {input => 'p { color:red;   color; color:green }',   # same with expected recovery
+    ruleset => {input => 'p { color:red; color; color:green }',   # same with expected recovery
                 ast => Mu,
-                warnings => 'skipping term: color',
+                warnings => 'dropping term: color',
     },
     ruleset => {input => 'p { color:green; color: }',               # malformed declaration missing value
                 ast => Mu,
-                warnings => 'incomplete declaration',
+                warnings => 'dropping declaration: color',
     },
-    ruleset => {input => 'p { color:red;   color:; color:green }',  # same with expected recovery
-                 ast => Mu, warnings => 'incomplete declaration',
+    ruleset => {input => 'p { color:red; color:; color:green }',  # same with expected recovery
+                 ast => Mu, warnings => 'dropping declaration: color',
     },
     ruleset => {input => 'p { color:green; color{;color:maroon} }', # unexpected tokens { }
-                 ast => Mu, warnings => 'skipping term: color{;color:maroon} ',
+                 ast => Mu, warnings => 'dropping term: color{;color:maroon}',
     },
     ruleset => {input => 'p { color:red;   color{;color:maroon}; color:green }',  # same with recovery
                 ast => Mu, warnings => Mu,
-                warnings => 'skipping term: color{;color:maroon}',
+                warnings => 'dropping term: color{;color:maroon}',
     },
     stylesheet => {input => 'p @here {color: red}',  # ruleset with unexpected at-keyword "@here"
-                ast => Mu, warnings => 'skipping: p @here {color: red}',
+                ast => Mu, warnings => 'dropping: p @here {color: red}',
     },
     stylesheet => {input => '@foo @bar;',            # at-rule with unexpected at-keyword "@bar"
                    ast => Mu, warnings => Mu,
-                   warnings => 'skipping: @foo @bar;',
+                   warnings => 'dropping: @foo @bar;',
     },
     stylesheet => {input => '}} {{ - }}',
                    ast => Mu,
-                   warnings => ['skipping: }', 'skipping: }', 'skipping: {{ - }}'],
+                   warnings => ['dropping: }', 'dropping: }', 'dropping: {{ - }}'],
     },
     # example from http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # the middle rule is invalid and should be skipped
     stylesheet => {input => 'h1, h2 {color: green }
 h3, h4 & h5 {color: red }
 h6 {color: black }',
-            warnings => 'skipping: h3, h4 & h5 {color: red }',
+            warnings => 'dropping: h3, h4 & h5 {color: red }',
             ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]],
                                                   "selector" => ["simple_selector" => ["element_name" => "h2"]]],
                                   "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "green"]}]},
@@ -73,16 +83,18 @@ h6 {color: black }',
       h1 { color: red }
     }
     h1 { color: blue }',
-                   warnings => 'skipping: @three-dee {\n      @background-lighting {\n        azimuth: 30deg;\n        elevation: 190deg;\n      }\n      h1 { color: red }\n    }\n    ',
+                   warnings => 'dropping: @three-dee { @background-lighting { azimuth: 30deg; elevation: 190deg; } h1 { color: red } }',
                    ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
                                          "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]}],
     },
     # try a few extended terms
-    stylesheet => {input => '@media print and (width: 21cm)  @page { margin: 3cm;  @top-center { content: "Page " counter(page); }}',
-                   ast => [], warnings => 'skipping: @media print and (width: 21cm)  @page { margin: 3cm;  @top-center { content: "Page " counter(page); }}',
+    stylesheet => {input => '@media print and (width: 21cm)  @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',
+                   ast => [],
+                   warnings => 'dropping: @media print and (width: 21cm) @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',
     },
     stylesheet => {input => '* foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
-                   ast => [], warnings => 'skipping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
+                   ast => [],
+                   warnings => 'dropping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
     },
     ) {
     my $rule = $_.key;
@@ -90,6 +102,7 @@ h6 {color: black }',
     my $input = %test<input>;
 
     $css_actions.warnings = ();
+    diag $input;
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 errors'),
                          :warnings($css_actions.warnings),

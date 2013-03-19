@@ -80,8 +80,13 @@ for ('8') {
     nok($_ ~~ /^<CSS::Grammar::ident>$/, "not ident: $_");
 }
 
-for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, q{"Hello},  q{"},) {
+for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
     ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_");
+}
+
+for ( q{"Unclosed},  q{"}) {
+    nok($_ ~~ /^<CSS::Grammar::string>$/, "not string: $_");
+    ok($_ ~~ /^<CSS::Grammar::badstring>$/, "badstring: $_");
 }
 
 for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
@@ -89,7 +94,7 @@ for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
 }
 
 for ('*', ',', '+', '>', '|=', '~=') {
-    ok($_ ~~ /^<CSS::Grammar::Scan::op>$/, "scan op: $_");
+    ok($_ ~~ /^<CSS::Grammar::Scan::_op>$/, "scan op: $_");
 }
 
 my $media_rules = '{

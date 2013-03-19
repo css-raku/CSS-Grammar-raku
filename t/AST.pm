@@ -47,11 +47,5 @@ module t::AST {
                 }
             }
         }
-
-        if defined (my $skip = %expected<skip>) {
-            if ok($parse.ast.can('skip'), "{$suite} does skip") {
-                is($parse.ast.skip, $skip, "{$suite} - skip is " ~ $skip);
-            }
-        }
     }
 }

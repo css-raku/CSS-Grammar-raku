@@ -14,7 +14,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
-
     # to detect out of order directives
     rule misplaced {<charset>|<import>}
 
@@ -42,30 +41,22 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule declarations {
         '{' <declaration_list> <.end_block>
     }
+    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list {<declaration>? [';' <declaration> ]* ';'?}
+    rule declaration_list {[ <declaration> | <dropped_decl> ]*}
 
     rule selectors {
         <selector> [',' <selector>]*
     }
 
-    rule end_block {[$<closing_paren>='}' ';'?]?}
-
-    rule property {<ident>}
-
-    rule declaration {
-         <property=.ident> ':' [ <expr> <prio>? | <expr_missing> ]
-         | <skipped_term>
-    }
-
-    rule expr_missing {''}
+    rule declaration   {<property> <expr> <prio>? <end_decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule term { <unary_operator>? <term=.pterm> | <term=aterm> | [<!before <[\!\)]>><skipped_term>] }
+    rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
     # units inherited from base grammar: length, percentage
     token units:sym<angle>    {:i[deg|rad|grad]}

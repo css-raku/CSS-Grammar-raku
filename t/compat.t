@@ -35,30 +35,16 @@ for (
     unicode => {input => '\\021',
                 ast => '!',
     },
-    string => {input => q{"'Hello World\\021\\""},
-               ast => q{'Hello World!"},
+    url_string => {input => q{"'Hello World\\021\\""},
+                   ast => q{'Hello World!"},
     },
-    string => {input => q{"Hello 'Black H},
-               ast => q{Hello 'Black H},
-               warnings => ["unterminated string: Hello 'Black H"],
+    url_string => {input => q{"Hello 'Black H},
+                   ast => Mu,
+                   warnings => [q{unterminated string: "Hello 'Black H}],
     },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
     # number, percent, length, emx, emx, angle, time, freq
-    expr => {input => '42 7% 12.5cm -1em 2 ex 45deg 10s 50Hz "ZZ"',
-             ast => [term => 42, term => 7,
-                     term => 12.5, term => -1,
-                     term => 2, term => 1,
-                     term => 45,
-                     term => 10, term => 50,
-                     term => 'ZZ'],
-             css1 => {
-                 warnings => 'skipping term: 45deg 10s 50Hz "ZZ"',
-                 ast => [term => 42, term => 7,
-                         term => 12.5, term => -1,
-                         term => 2, term => 1],
-             },
-    },
     class => {input => '.zippy', ast => 'zippy'},
     class => {input => '.\55ft', ast => "\x[55f]t"},
     url => {input => 'url("http://www.bg.com/pinkish.gif")',
@@ -72,8 +58,8 @@ for (
             warnings => ["missing closing ')'"],
     },
     url => {input => 'URL("http://www.bg.com/pinkish.gif',
-            ast => 'http://www.bg.com/pinkish.gif',
-            warnings => ['unterminated string: http://www.bg.com/pinkish.gif', "missing closing ')'"],
+            ast => Mu,
+            warnings => [q{unterminated string: "http://www.bg.com/pinkish.gif}, "missing closing ')'"],
     },
     color => {input => 'Rgb(10, 20, 30)',
               ast => (rgb => {r => 10, g => 20, b => 30})},
@@ -230,12 +216,28 @@ for (
                                      "term" => "t3"]}
                  ],
              css1 => {
-                 ast => ["term" => "moz-linear-gradient"],
-                 warnings => 'skipping term: (top, t2, t3)',
+                 ast => Mu,
+                 parse => '-moz-linear-gradient',
              },
     },
     expr => {input => '12px/20px',
              ast => ["term" => 12, "operator" => "/", "term" => 20],
+    },
+    declaration_list => {input => 'terms: 42 7% 12.5cm -1em 2 ex 45deg 10s 50Hz "ZZ"',
+                         ast => [declaration => {
+                             property => 'terms',
+                             expr => [term => 42, term => 7,
+                                      term => 12.5, term => -1,
+                                      term => 2, term => 1,
+                                      term => 45,
+                                      term => 10, term => 50,
+                                      term => 'ZZ']
+                                 }],
+                         css1 => {
+                             warnings => ['dropping term: 45deg 10s 50Hz "ZZ"',
+                                          'dropping declaration: terms',],
+                             ast => Mu,
+                     },
     },
     declaration => {input => 'line-height: 1.1px !important',
                     ast => {"property" => "line-height",
@@ -243,7 +245,7 @@ for (
                             "prio" => "important"},
     },
     declaration => {input => 'line-height: 1.5px !vital',
-                    warnings => ['skipping term: vital'],
+                    warnings => ['dropping term: !vital'],
                     ast => {"property" => "line-height",
                             "expr" => ["term" => 1.5]},
     },
@@ -302,8 +304,9 @@ for (
     # \255 is not recognised by css1 or css2.1 as non-ascii chars
     ruleset => {input => ".TB	\{mso-special-format:nobullet\x[95];\}",
                 ast => {"selectors" => ["selector" => ["simple_selector" => {"class" => "TB"}]],
-                        "declarations" => ["declaration" => {"property" => "mso-special-format", "expr" => ["term" => "nobullet"]}]},
-                warnings => 'skipping term: \\x[95]',
+                        "declarations" => []},
+                warnings => ['dropping term: \\x[95]',
+                             'dropping declaration: mso-special-format'],
                 css3 => {
                     warnings => Mu,
                     ast => {"selectors" => ["selector" => ["simple_selector" => {"class" => "TB"}]],
@@ -315,29 +318,29 @@ for (
                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']},
                                            "declaration" => {"property" => "rotation", "expr" => ["term" => 70]}]},
                 css1 => {
-                    warnings => ['skipping term: 70deg', 'dropping declaration: rotation'],
+                    warnings => ['dropping term: 70deg', 'dropping declaration: rotation'],
                     ast => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
                             "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}]},
                 },
     },
     ruleset => {input => 'H1 { color }',
-                warnings => ['skipping term: color '],
+                warnings => ['dropping term: color'],
                 ast => Mu,
     },
     ruleset => {input => 'H1 { color; }',
-                warnings => ['skipping term: color'],
-                ast => Mu,
-    },
-    ruleset => {input => 'H1 { color: }',
-                warnings => ['incomplete declaration'],
+                warnings => ['dropping term: color'],
                 ast => Mu,
     },
     ruleset => {input => 'H1 { : blue }',
-                warnings => ['skipping term: : blue '],
+                warnings => ['dropping term: : blue'],
                 ast => Mu,
     },
     ruleset => {input => 'H1 { color blue }',
-                warnings => ['skipping term: color blue '],
+                warnings => ['dropping term: color blue'],
+                ast => Mu,
+    },
+    ruleset => {input => 'H1 { color: }',
+                warnings => ['dropping declaration: color'],
                 ast => Mu,
     },
 
@@ -346,20 +349,22 @@ for (
                 warnings => ["no closing '}'"],
                 ast => Mu,
                 css1 => {
-                    warnings => ['skipping term: 70deg',
-                                 'dropping declaration: rotation',
-                                 "no closing '}'",
+                    # doesn't understand angles
+                    warnings => [
+                        'dropping term: 70deg',
+                        'dropping declaration: rotation',
+                        "no closing '}'",
                         ]
                 }
     },
     ruleset => {input => 'H2 { color: green; rotation: }',
-                warnings => "incomplete declaration",
+                warnings => "dropping declaration: rotation",
                 ast => Mu,
     },
-
     ruleset => {input => 'H2 { test: "this is not closed',
                 warnings => [
-                    'unterminated string: this is not closed',
+                    q{unterminated string: "this is not closed},
+                    'dropping declaration: test',
                     "no closing '}'",
                     ],
                 ast => Mu,
@@ -378,31 +383,31 @@ for (
     },
 
     # from the top
-    TOP => {input => "@charset 'bazinga';\n",
-            ast => Mu,
-            css2 => {
-                ast => [charset => "bazinga"],
-            },
-            css1 => {
-                warnings => [q{skipping: @charset 'bazinga';}]
-            },
+    stylesheet => {input => "@charset 'bazinga';\n",
+                   ast => Mu,
+                   css2 => {
+                       ast => [charset => "bazinga"],
+                   },
+                   css1 => {
+                       warnings => [q{dropping: @charset 'bazinga';}]
+                   },
     },
-    TOP => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
-            ast => ["import" => {"string" => "foo"},
-                    "ruleset" => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H1"}]],
-                                  "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'blue']}]},
-                    "ruleset" => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
-                                  "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}]}],
-            warnings => [
-                q{ignoring out of sequence directive: @charset 'bazinga';},
-                q{ignoring out of sequence directive: @import 'too-late';},
-                ],
-                css1 => {
-                    warnings => [
-                        q{skipping: @charset 'bazinga';},
-                        q{ignoring out of sequence directive: @import 'too-late';},
-                        ],
-            },
+    stylesheet => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
+                   ast => ["import" => {"string" => "foo"},
+                           "ruleset" => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H1"}]],
+                                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'blue']}]},
+                           "ruleset" => {"selectors" => ["selector" => ["simple_selector" => {"element_name" => "H2"}]],
+                                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => 'green']}]}],
+                   warnings => [
+                       q{ignoring out of sequence directive: @charset 'bazinga';},
+                       q{ignoring out of sequence directive: @import 'too-late';},
+                       ],
+                       css1 => {
+                           warnings => [
+                               q{dropping: @charset 'bazinga';},
+                               q{ignoring out of sequence directive: @import 'too-late';},
+                               ],
+                   },
     },
     ) {
 
@@ -450,7 +455,7 @@ for (
 
     if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selectors|declaration[s|_list]?|property)$/
         && ! $css_extended_actions.warnings) {
-        my $p_any = CSS::Grammar::Scan.parse( $input, :rule($rule) );
+        my $p_any = CSS::Grammar::Scan.parse( $input, :rule('_'~$rule) );
         t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),
                             :expected({ast => Mu}) );
     }

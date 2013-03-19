@@ -45,8 +45,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token single_quote   {\'}
     token double_quote   {\"}
-    token string         {\"[<stringchar>|<stringchar=.single_quote>]*$<closing_quote>=\"?
-                         |\'[<stringchar>|<stringchar=.double_quote>]*$<closing_quote>=\'?}
+    token string         {\"[<stringchar>|<stringchar=.single_quote>]*\"
+                         |\'[<stringchar>|<stringchar=.double_quote>]*\'
+    }
+    token badstring     {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
+                         |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]
+                         }
 
     token id             {'#'<name>}
     token class          {'.'<name>}
@@ -58,7 +62,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
-    token url_string     {<string>|<url_char>*}
+    token url_string     {<string>|<badstring>|<url_char>*}
 
     # productions
 
@@ -78,7 +82,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     }
     rule color:sym<hex> {<id>}
 
-    token prio {:i'!' [('important')|<skipped_term>]}
+    token prio {:i'!' [('important')|<any>] }
 
     # pseudos
     proto rule pseudo {*}
@@ -94,18 +98,33 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
+    rule property {<property=.ident> ':'}
+    rule end_decl { ';' | <?before '}'> | $ }
+
     # Error Recovery
     # --------------
-    # term recovery - from within a declaration. skip to the next term,
-    #                 or to the end of the block
-    rule skipped_term  {<CSS::Grammar::Scan::value>+}
+    # skipped - for bad function arguments etc
+    rule any  { <CSS::Grammar::Scan::_value>}
+    rule _decl_flush {<any>|<wc>|<nl>|<comment><- [\;\}]>}
+
+    # partial declaration parse - how well formulated was it?
+    proto rule dropped_decl { <...> }
+    # - parsed a property; terms are unknown
+    rule dropped_decl:sym<unknown_terms> { <property> <expr>? (<_decl_flush>)* <end_decl> }
+    # - couldn't get a property, but terms well formed
+    rule dropped_decl:sym<stray_terms>   { (<any>+) <end_decl> }
+    # - unterminated string. might consume ';' '}' and other constructs
+    rule dropped_decl:sym<badstring>     { <property>? (<_decl_flush>)*?<.badstring><end_decl>? }
+    # - flush to the end of the declaration
+    rule dropped_decl:sym<flushed>       { (<_decl_flush>)+ <end_decl> }
+
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
     # - try to skip whole statements or at-rules
-    token unknown:sym<statement>   {<CSS::Grammar::Scan::statement>}
+    token unknown:sym<statement>   {<CSS::Grammar::Scan::_statement>}
     # - if that failed, start skipping intermediate tokens
-    token unknown:sym<value>       {<CSS::Grammar::Scan::value>}
+    token unknown:sym<value>       {<CSS::Grammar::Scan::_value>}
     token unknown:sym<punct>       {<punct>}
     # - last resort skip a character; let parser try again
     token unknown:sym<char>        {<[.]>}
@@ -115,7 +134,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 grammar CSS::Grammar::Scan is CSS::Grammar {
 
     # Fallback Grammar Only!!
-    # This grammar is based on the syntax described in
+    # This grammar is based on the universal grammar syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement term flushing
     # for forward compatiblity and/or ignoring unknown constructs
@@ -123,39 +142,41 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # It's been generalized to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # e.g this should be complety dropped: h3, h4 & h5 {color: red }
+    # Errata:
     # - there are a few more intermediate terms such as <declarations>
     #   and <declaration_list>
     # - added <op> for general purpose operator detection
+    # - may assume closing parenthesis in nested values and blocks
 
-    rule TOP          {^ <stylesheet> $}
-    rule stylesheet   {<statement>*}
-    rule statement    {<ruleset> | '@'<at_rule>}
+    rule TOP           {^ <_stylesheet> $}
+    rule _stylesheet   {<_statement>*}
+    rule _statement    {<_ruleset> | '@'<_at_rule>}
 
-    rule at_keyword   {\@<ident>}
-    rule at_rule      {(<ident>) <any>* [<block> | ';']}
-    rule block        {'{' [ <any> | <block> | <at_keyword> | ';' ]* '}'?}
+    rule _at_keyword   {\@<ident>}
+    rule _at_rule      {(<ident>) <_any>* [<_block> | ';']}
+    rule _block        {'{' [ <_any> | <_block> | <_at_keyword> | ';' ]* '}'?}
 
-    rule ruleset      {<selectors>? <declarations>}
-    rule selectors    {<any>+}
-    rule declarations {'{' <declaration_list> '}' ';'?}
-    rule declaration_list {<declaration>? [';' <declaration>? ]* ';'?}
-    rule declaration  {<property=.ident> ':' <value>}
-    rule value        {[<any> | <block> | <at_keyword>]+}
+    rule _ruleset      { <_selectors>? <_declarations> }
+    rule _selectors    { <_any>+ }
+    rule _declarations {'{' <_declaration_list> '}' ';'?}
+    rule _declaration_list {<_declaration>? [';' <_declaration>? ]* ';'?}
+    rule _declaration  {<property=.ident> ':' <_value>}
+    rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
-    token delim       {<[\( \) \{ \} \; \" \' \\]>}
-    token op          {[<punct><!after <delim>>]+}
+    token _delim       {<[\( \) \{ \} \; \" \' \\ \;]>}
+    token _op          {[<punct><!after <_delim>>]+}
 
-    proto rule any { <...> }
-    rule any:sym<string> { <string> }
-    rule any:sym<num>    { <num>['%'|<dimension=.ident>]? }
-    rule any:sym<urange> { <unicode_range> }
-    rule any:sym<ident>  { <ident> }
-    rule any:sym<pseudo> { <pseudo> }
-    rule any:sym<id>     { <id> }
-    rule any:sym<class>  { <class> }
-    rule any:sym<op>     { <op> }
-    rule any:sym<attrib> { '[' [<any>|<unused>]* ']'? }
-    rule any:sym<args>   { '(' [<any>|<unused>]* ')'? }
+    proto rule _any { <...> }
+    rule _any:sym<string> { <string> }
+    rule _any:sym<num>    { <num>['%'|<dimension=.ident>]? }
+    rule _any:sym<urange> { 'U+'<unicode_range> }
+    rule _any:sym<ident>  { <ident> }
+    rule _any:sym<pseudo> { <pseudo> }
+    rule _any:sym<id>     { <id> }
+    rule _any:sym<class>  { <class> }
+    rule _any:sym<op>     { <_op> }
+    rule _any:sym<attrib> { '[' [<_any>|<_unused>]* ']'? }
+    rule _any:sym<args>   { '(' [<_any>|<_unused>]* ')'? }
 
-    rule unused {<block> | <at_keyword> | ';'}
+    rule _unused { <_block> | <_at_keyword> | ';' }
 }

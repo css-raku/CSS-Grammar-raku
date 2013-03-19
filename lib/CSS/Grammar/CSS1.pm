@@ -32,26 +32,21 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule declarations {
         '{' <declaration_list> <.end_block>
     }
+    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list {<declaration> [';' <declaration> ]* ';'?}
+    rule declaration_list {[ <declaration> | <dropped_decl> ]*}
+    # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule end_block {[$<closing_paren>='}' ';'?]?}
-
-    rule declaration {
-        <property=.ident> ':' [ <expr> <prio>? | <expr_missing> ]
-        | <skipped_term>
-    }
+    rule declaration      { <property> <expr> <prio>? <end_decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
-    rule expr_missing {''}
-
     rule term { <unary_operator>? <term=.pterm>
               | <.unary_operator>? <term=.aterm> # useless unary operator
-              | <!before <[\!]>><skipped_term> }
+              }
 
     proto rule pterm {*}
     rule pterm:sym<quantity>   {<num><units>?}

@@ -32,7 +32,7 @@ class CSS::Grammar::Actions {
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
             $value = $value.ast;
-            next unless defined $value;
+            next unless $value.defined;
             die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
                 if %terms.exists($key);
 
@@ -55,14 +55,17 @@ class CSS::Grammar::Actions {
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
             $value = $value.ast;
-            next unless defined $value;
+            next unless $value.defined;
             push @terms, ($key => $value);
         }
 
         return @terms;
     }
 
-    sub _display_string($str) {
+    sub _display_string($_str) {
+
+        my $str = $_str.chomp.subst(/^<ws>/,'').subst(/<ws>$/,'');
+        $str = $str.subst(/[\s|\t|\n|\r]+/, ' '):g;
 
         my %unesc = (
             "\n" => '\n',
@@ -80,8 +83,8 @@ class CSS::Grammar::Actions {
 
     method warning ($message, $str?) {
         my $warning = $message;
-        $warning ~= ': ' ~ _display_string( $str.chomp )
-            if defined $str;
+        $warning ~= ': ' ~ _display_string( $str )
+            if $str.defined && $str ne '';
         $warning does CSS::Grammar::AST::Info;
         $warning.line_no = $.line_no;
         push @.warnings, $warning;
@@ -91,8 +94,30 @@ class CSS::Grammar::Actions {
 
     method element_name($/) {make $<ident>.ast}
 
-    method skipped_term($/) {
-        $.warning('skipping term', $/.Str);
+    method any($/) {}
+
+    method dropped_decl:sym<unknown_terms>($/) {
+        $.warning('dropping term', $0.Str)
+            if $0.Str.chars;
+        $.warning('dropping declaration', $<property>.ast);
+    }
+
+    method dropped_decl:sym<stray_terms>($/) {
+        $.warning('dropping term', $0.Str);
+    }
+
+    method dropped_decl:sym<badstring>($/) {
+        my ($prop) = $<property>.list;
+        if $prop {
+            $.warning('dropping declaration', $prop.ast);
+        }
+        elsif $0.Str.chars {
+            $.warning('dropping term', $0.Str)
+        }
+    }
+
+    method dropped_decl:sym<flushed>($/) {
+        $.warning('dropping term', $0.Str);
     }
 
     method _to_unicode($str) {
@@ -131,13 +156,12 @@ class CSS::Grammar::Actions {
     method double_quote($/) {make '"'}
 
     method string($/) {
-        my Bool $skip = False;
         my $string = $<stringchar>.map({ $_.ast }).join('');
-        unless ($<closing_quote>.Str) {
-            $.warning('unterminated string', $string);
-            $skip = True;
-        }
-        make $.token($string, :type('string'), :skip($skip) );
+        make $.token($string, :type('string'));
+    }
+
+    method badstring($/) {
+        $.warning('unterminated string', $/.Str);
     }
 
     method id($/) { make $<name>.ast }
@@ -148,8 +172,9 @@ class CSS::Grammar::Actions {
         make $cap ?? $cap.ast !! $/.Str
     }
     method url_string($/) {
-        make $<string>
-            ?? $<string>.ast
+        my $string = $<string> || $<badstring>;
+        make $string
+            ?? $string.ast
             !! $.token( $<url_char>.map({$_.ast}).join('') );
     }
 
@@ -180,7 +205,15 @@ class CSS::Grammar::Actions {
         make (rgb => %rgb);
     }
 
-    method prio($/) { make $0.Str.lc if $0}
+    method prio($/) {
+        my ($any) = $<any>.list;
+        if $any || !$0 {
+            $.warning("dropping term", $/.Str);
+            return;
+        }
+
+        make $0.Str.lc
+    }
 
     # from the TOP (CSS1 + CSS21)
     method TOP($/) { make $<stylesheet>.ast }
@@ -225,40 +258,35 @@ class CSS::Grammar::Actions {
     method at_rule:sym<page>($/)  { make $.at_rule($/) }
     method page_pseudo($/)        { make $<ident>.ast }
 
+    method property($/)           { make $<property>.ast }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method declaration($/)        {
+    method declaration($/)        { 
         my %decl = $.node($/);
-        if @(%decl<expr>) {
-            make %decl;
+
+        unless @(%decl<expr>) {
+            $.warning('dropping declaration', %decl<property>);
+            return;
         }
-        else {
-            $.warning('dropping declaration', %decl<property>)
-                if %decl<property>;
-        }
+
+        make %decl;
     }
 
-    method expr($/) { make $.list($/) }
-
-    method expr_missing($/) {
-        $.warning("incomplete declaration");
-    }
+    method expr($/) { make $.list($/, :keep_undef(True)) }
 
     method pterm:sym<quantity>($/) {
-        my ($num, $units_cap) = $/.caps;
-        my $qty = $num.value.ast;
-
         my $type = 'num';
         my $units;
 
-        if $units_cap && (my $units_ast = $units_cap.value.ast) {
-            ($type, $units) = $units_ast.kv;
+        my ($units_cap) = $<units>.list;
+        if $units_cap {
+            ($type, $units) = $units_cap.ast.kv;
             $units = $units.lc;
         }
 
-        make $.token($qty, :type($type), :units($units));
+        make $.token($<num>.ast, :type($type), :units($units));
     }
 
     method units:sym<length>($/)     { make (length => $/.Str.lc) }
@@ -319,12 +347,10 @@ class CSS::Grammar::Actions {
     }
 
     # todo: warnings can get a bit too verbose here
-    method unknown:sym<statement>($/) {$.warning('skipping', $/.Str)}
-    method unknown:sym<value>($/)     {$.warning('skipping', $/.Str)}
-    method unknown:sym<punct>($/)     {$.warning('skipping', $/.Str)}
-    method unknown:sym<char>($/)      {$.warning('skipping', $/.Str)}
-
-    method any($/) {}
+    method unknown:sym<statement>($/) {$.warning('dropping', $/.Str)}
+    method unknown:sym<value>($/)     {$.warning('dropping', $/.Str)}
+    method unknown:sym<punct>($/)     {$.warning('dropping', $/.Str)}
+    method unknown:sym<char>($/)      {$.warning('dropping', $/.Str)}
 
     # utiltity methods / subs
 

@@ -9,10 +9,10 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
     rule at_rule:sym<color_profile> {(:i'color-profile') <declarations> }
 
-    # color_rgb and color_hex are defined in CSS core grammar
     rule color_angle{<num>$<percentage>=[\%]?}
     rule color_alpha{<num>$<percentage>=[\%]?}
 
+    # <rgb> and <hex> are defined in CSS core grammar
     rule color:sym<rgba> {:i'rgba('
                    <r=.color_arg> ','
                    <g=.color_arg> ','
