@@ -58,14 +58,17 @@ for (
              token => {type => 'url', skip => False},
              warnings => "missing closing ')'",
     },
+    term => {input => 'foo(bar baz( 42 ) )',
+             token => {type => 'function'},
+             ast => {"ident" => "foo",
+                     "args" => ["term" => "bar",
+                                "term" => {"ident" => "baz", "args" => ["term" => 42]}]
+             },
+    },
     # function without arguments, e.g. jquery-ui-themeroller.css
     term => {input => 'mask()',
              ast => {"ident" => "mask"},
              token => {type => 'function'},
-             css1 => {
-                 parse => 'mask',
-                 ast => {ident => 'mask'},
-             },
     },
     ) {
 

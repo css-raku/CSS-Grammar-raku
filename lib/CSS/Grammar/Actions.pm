@@ -339,10 +339,10 @@ class CSS::Grammar::Actions {
         }
     }
 
-    method selector($/)         { make $.list($/) }
-    method simple_selector($/)  { make $.list($/) }
-    method attrib($/)           { make $.node($/) }
-    method function($/)         { make $.node($/) }
+    method selector($/)                          { make $.list($/) }
+    method simple_selector($/)                   { make $.list($/) }
+    method attrib($/)                            { make $.node($/) }
+    method function:sym<generic>($/)             { make $.node($/) }
 
     method attribute_selector:sym<equals>($/)    { make $/.Str }
     method attribute_selector:sym<includes>($/)  { make $/.Str }

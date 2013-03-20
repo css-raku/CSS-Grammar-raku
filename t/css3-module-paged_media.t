@@ -36,7 +36,7 @@ my $top_center_ast = {
                        "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                                         "declarations" => ["declaration" => {"property" => "content",
                                                                              "expr" => ["term" => "Page ",
-                                                                                        "term" => {"ident" => "counter", "expr" => ["term" => "page"]}]}]}],
+                                                                                        "term" => {"ident" => "counter", "args" => ["term" => "page"]}]}]}],
     "\@" => "page"};
 
 for (
@@ -62,7 +62,7 @@ for (
     },
     page_rules => {input => '@Top-CENTER {content: "Page " counter(page);}',
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ", "term" => {"ident" => "counter", "expr" => ["term" => "page"]}]}]},
+                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ", "term" => {"ident" => "counter", "args" => ["term" => "page"]}]}]},
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
     ) {

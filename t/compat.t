@@ -209,7 +209,7 @@ for (
     expr => {input => '-moz-linear-gradient(top, t2, t3)',
              ast =>  ["term"
                       => {"ident" => "-moz-linear-gradient",
-                          "expr" => ["term" => "top",
+                          "args" => ["term" => "top",
                                      "operator" => ",",
                                      "term" => "t2",
                                      "operator" => ",",

@@ -39,16 +39,16 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule pseudo:sym<negation> {<negation>}
     token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
     # to compute a.n + b
-    proto token nth_expr {*}
-    token nth_expr:sym<odd>  {:i'odd'}
-    token nth_expr:sym<even> {:i'even'}
-    token nth_expr:sym<expr> {:i
+    proto token nth_args {*}
+    token nth_args:sym<odd>  {:i'odd'}
+    token nth_args:sym<even> {:i'even'}
+    token nth_args:sym<expr> {:i
         [<a=.int>|$<a_sign>=<[\+\-]>]? $<n>=<[Nn]> [<?before <[\+\-]>><b=.int>]?
         |<b=.int>
     }
-    token nth_function {<ident=.nth_functor> '(' <expr=.nth_expr> [')' | <unclosed_paren>]} 
 
-    rule pseudo:sym<nth_child>{':' <nth_function> }
+    token function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> [')' | <unclosed_paren>]} 
+
     rule pseudo:sym<function> {':' <function> }
     rule pseudo:sym<class>    {':' <class=.ident> }
     rule pseudo:sym<element2> {'::' <element=.ident> }
@@ -86,9 +86,9 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
         make [ $._from_hex($lo), $._from_hex($hi) ];
     }
 
-    method nth_expr:sym<odd>($/)     { make {a => 2, b=> 1} }
-    method nth_expr:sym<even>($/)    { make {a => 2 } }
-    method nth_expr:sym<expr>($/)    {
+    method nth_args:sym<odd>($/)     { make {a => 2, b=> 1} }
+    method nth_args:sym<even>($/)    { make {a => 2 } }
+    method nth_args:sym<expr>($/)    {
         my %node = $.node($/);
 
         if $<a_sign> {
@@ -97,9 +97,9 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
 
         make %node;
     }
-    method nth_functor($/)           { make $/.Str.lc }
-    method nth_function($/)          { make $.node($/) }
-    method pseudo:sym<nth_child>($/) { make $.node($/) }
+    method nth_functor($/)                 { make $/.Str.lc }
+    method function:sym<nth_selector>($/)  { make $.node($/) }
+    method pseudo:sym<nth_child>($/)       { make $.node($/) }
 
     method negation($/)     { make $.list($/) }
 }
