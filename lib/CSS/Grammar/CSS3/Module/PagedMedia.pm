@@ -16,7 +16,7 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
     rule at_rule:sym<page>  {(:i'page') [\:<page=.page_pseudo>]? <declarations=.page_declarations> }
 
     rule page_declarations {
-        '{' [ <page_rules> | <declaration> ]* <.end_block>
+        '{' [ <page_rules> | <declaration> | <dropped_decl> ]* <.end_block>
     }
 
     # protoregex for future expansion
@@ -25,8 +25,8 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
         '@'<margin_box> <declarations>
     }
 
-    token margin_box {<hpos>'-'[<vpos>'-corner'?|<center>]
-                     |<vpos>'-'[<hpos>'-corner'?|<center>]}
+    token margin_box {<hpos>'-'[<vpos>[:i'-corner']?|<center>]
+                     |<vpos>'-'[<hpos>[:i'-corner']?|<center>]}
 
     token hpos   {:i[left|right]}
     token vpos   {:i[top|bottom]}

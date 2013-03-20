@@ -348,7 +348,7 @@ class CSS::Grammar::Actions {
 
     # todo: warnings can get a bit too verbose here
     method unknown:sym<statement>($/) {$.warning('dropping', $/.Str)}
-    method unknown:sym<value>($/)     {$.warning('dropping', $/.Str)}
+    method unknown:sym<flush>($/)     {$.warning('dropping', $/.Str)}
     method unknown:sym<punct>($/)     {$.warning('dropping', $/.Str)}
     method unknown:sym<char>($/)      {$.warning('dropping', $/.Str)}
 

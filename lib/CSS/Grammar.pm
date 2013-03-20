@@ -103,20 +103,20 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Error Recovery
     # --------------
-    # skipped - for bad function arguments etc
+    # <any> - for bad function arguments etc
     rule any  { <CSS::Grammar::Scan::_value>}
-    rule _decl_flush {<any>|<wc>|<nl>|<comment><- [\;\}]>}
+    rule _flush {<any>|<wc>|<nl>|<comment><- [\;\}]>}
 
-    # partial declaration parse - how well formulated was it?
+    # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
-    # - parsed a property; terms are unknown
-    rule dropped_decl:sym<unknown_terms> { <property> <expr>? (<_decl_flush>)* <end_decl> }
+    # - parsed a property; some terms are unknown
+    rule dropped_decl:sym<unknown_terms> { <property> [<expr>|(<_flush>)]* <end_decl> }
     # - couldn't get a property, but terms well formed
     rule dropped_decl:sym<stray_terms>   { (<any>+) <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs
-    rule dropped_decl:sym<badstring>     { <property>? (<_decl_flush>)*?<.badstring><end_decl>? }
-    # - flush to the end of the declaration
-    rule dropped_decl:sym<flushed>       { (<_decl_flush>)+ <end_decl> }
+    rule dropped_decl:sym<badstring>     { <property>? (<_flush>)*? <.badstring><end_decl>? }
+    # - unable to parse it at all; throw it out
+    rule dropped_decl:sym<flushed>       { (<_flush>)+ <end_decl> }
 
 
     # forward compatible scanning and recovery - from the stylesheet top level
@@ -124,7 +124,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # - try to skip whole statements or at-rules
     token unknown:sym<statement>   {<CSS::Grammar::Scan::_statement>}
     # - if that failed, start skipping intermediate tokens
-    token unknown:sym<value>       {<CSS::Grammar::Scan::_value>}
+    token unknown:sym<flush>       {<_flush>+}
     token unknown:sym<punct>       {<punct>}
     # - last resort skip a character; let parser try again
     token unknown:sym<char>        {<[.]>}
@@ -175,8 +175,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<id>     { <id> }
     rule _any:sym<class>  { <class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' [<_any>|<_unused>]* ']'? }
-    rule _any:sym<args>   { '(' [<_any>|<_unused>]* ')'? }
+    rule _any:sym<attrib> { '[' [ <_any> | <_unused> ]* ']'? }
+    rule _any:sym<args>   { '(' [ <_any> | <_unused> ]* ')'? }
 
     rule _unused { <_block> | <_at_keyword> | ';' }
 }
