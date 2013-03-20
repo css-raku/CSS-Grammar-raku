@@ -7,11 +7,18 @@ class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Token;
 
     has Int $.line_no is rw = 1;
+    has Int $!nl_highwater is rw = 1;
     # variable encoding - not yet supported
     has $.encoding is rw = 'UTF-8';
 
     # accumulated warnings
     has @.warnings;
+
+    method reset {
+        @.warnings = ();
+        $.line_no = 1;
+        $!nl_highwater = 1;
+    }
 
     method token(Mu $ast, :$skip, :$type, :$units) {
         $ast
@@ -90,7 +97,15 @@ class CSS::Grammar::Actions {
         push @.warnings, $warning;
     }
 
-    method nl($/) {$.line_no++;}
+    method nl($/) {
+        my $pos = $/.from;
+
+        return
+            if my $_backtracking = $!nl_highwater <= $pos;
+
+        $!nl_highwater = $pos;
+        $.line_no++;
+    }
 
     method element_name($/) {make $<ident>.ast}
 
@@ -107,9 +122,9 @@ class CSS::Grammar::Actions {
     }
 
     method dropped_decl:sym<badstring>($/) {
-        my ($prop) = $<property>.list;
+        my $prop = $<property>>>.ast;
         if $prop {
-            $.warning('dropping declaration', $prop.ast);
+            $.warning('dropping declaration', $prop);
         }
         elsif $0.Str.chars {
             $.warning('dropping term', $0.Str)

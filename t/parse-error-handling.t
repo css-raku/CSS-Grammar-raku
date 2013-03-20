@@ -101,8 +101,7 @@ h6 {color: black }',
     my %test = $_.value;
     my $input = %test<input>;
 
-    $css_actions.warnings = ();
-    diag $input;
+    $css_actions.reset;
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 errors'),
                          :warnings($css_actions.warnings),

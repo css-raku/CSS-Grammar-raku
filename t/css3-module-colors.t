@@ -51,7 +51,7 @@ for (
     my %test = $_.value;
     my $input = %test<input>;
 
-    $css_actions.warnings = ();
+    $css_actions.reset;
     my $p3 = t::CSS3::ColorGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-color'),
                          :warnings($css_actions.warnings),

@@ -45,7 +45,7 @@ for (
     my %test = $_.value;
     my $input = %test<input>;
 
-    $css_actions.warnings = ();
+    $css_actions.reset;
     my $p3 = t::CSS3::NamespaceGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3-namespace'),
                          :warnings($css_actions.warnings),

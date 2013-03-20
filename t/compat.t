@@ -415,14 +415,14 @@ for (
     my %test = $_.value;
     my $input = %test<input>;
 
-    $css_actions.warnings = ();
+    $css_actions.reset;
     my $css1 = %test<css1> // {};
     my $css2 = %test<css2> // {};
     my $css3 = %test<css3> // {};
 
     # CSS1 Compat
     unless %$css1<skip_test> {
-        $css_actions.warnings = ();
+        $css_actions.reset;
         my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
         t::AST::parse_tests($input, $p1, :rule($rule), :suite('css1'),
                             :warnings($css_actions.warnings),
@@ -430,7 +430,7 @@ for (
     }
         
     # CSS21 Compat
-    $css_actions.warnings = ();
+    $css_actions.reset;
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p2, :rule($rule), :suite('css2'),
                          :warnings($css_actions.warnings),
@@ -438,14 +438,14 @@ for (
 
     # CSS3 Compat
     # -- css3 core only
-    $css_actions.warnings = ();
+    $css_actions.reset;
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css3)) );
 
     # -- css3 with all extensions enabled
-    $css_extended_actions.warnings = ();
+    $css_extended_actions.reset;
     my $p3ext = CSS::Grammar::CSS3::Extended.parse( $input, :rule($rule), :actions($css_extended_actions));
     t::AST::parse_tests($input, $p3ext, :rule($rule), :suite('css3-ext'),
                         :warnings($css_extended_actions.warnings),
