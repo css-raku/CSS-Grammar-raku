@@ -105,27 +105,27 @@ grammar CSS::Grammar:ver<0.0.1> {
     # --------------
     # <any> - for bad function arguments etc
     rule any  { <CSS::Grammar::Scan::_value>}
-    rule _flush {<any>|<wc>|<nl>|<comment><- [\;\}]>}
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
     # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<unknown_terms> { <property> [<expr>|(<_flush>)]* <end_decl> }
+    rule dropped_decl:sym<unknown_terms> { <property> [<expr>|(<any>)]* <end_decl> }
     # - couldn't get a property, but terms well formed
     rule dropped_decl:sym<stray_terms>   { (<any>+) <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs
-    rule dropped_decl:sym<badstring>     { <property>? (<_flush>)*? <.badstring><end_decl>? }
+    rule dropped_decl:sym<badstring>     { <property>? (<any>)*? <.badstring> <end_decl>? }
     # - unable to parse it at all; throw it out
-    rule dropped_decl:sym<flushed>       { (<_flush>)+ <end_decl> }
+    rule dropped_decl:sym<flushed>       { ( <any> | <- [\;\}]> )+ <end_decl> }
 
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
     # - try to skip whole statements or at-rules
-    token unknown:sym<statement>   {<CSS::Grammar::Scan::_statement>}
+    token unknown:sym<statement>   { <CSS::Grammar::Scan::_statement> }
     # - if that failed, start skipping intermediate tokens
-    token unknown:sym<flush>       {<_flush>+}
-    token unknown:sym<punct>       {<punct>}
+    token unknown:sym<flushed>     { <any>+ }
+    token unknown:sym<badstring>   { <badstring> } 
+    token unknown:sym<punct>       { <punct> }
     # - last resort skip a character; let parser try again
     token unknown:sym<char>        {<[.]>}
 }
