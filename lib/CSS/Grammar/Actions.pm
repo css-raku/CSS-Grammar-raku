@@ -7,7 +7,7 @@ class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Token;
 
     has Int $.line_no is rw = 1;
-    has Int $!nl_highwater is rw = 1;
+    has Int $!nl_highwater = 0;
     # variable encoding - not yet supported
     has $.encoding is rw = 'UTF-8';
 
@@ -17,7 +17,7 @@ class CSS::Grammar::Actions {
     method reset {
         @.warnings = ();
         $.line_no = 1;
-        $!nl_highwater = 1;
+        $!nl_highwater = 0;
     }
 
     method token(Mu $ast, :$skip, :$type, :$units) {
@@ -101,7 +101,7 @@ class CSS::Grammar::Actions {
         my $pos = $/.from;
 
         return
-            if my $_backtracking = $!nl_highwater <= $pos;
+            if my $_backtracking = $pos <= $!nl_highwater;
 
         $!nl_highwater = $pos;
         $.line_no++;

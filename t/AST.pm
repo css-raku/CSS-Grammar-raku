@@ -21,7 +21,7 @@ module t::AST {
            @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
 
         if defined (my $ast = %expected<ast>) {
-            is($parse.ast, $ast, "{$suite} - ast")
+            is($parse.ast, $ast, "{$suite} - aspart")
                 or diag $parse.ast.perl;
         }
         else {
