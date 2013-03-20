@@ -25,12 +25,21 @@ use t::AST;
 my $css_actions = t::CSS3::FontActions.new;
 
 for (
-    at_rule   => {input => 'font-face {
+    at_rule   => {input => q:to 'END_INPUT',
+                            font-face {
                                 font-family: Gentium;
-                                src: url(http://example.com/fonts/Gentium.ttf);
-                            };',
+                                src: url("Fonts/Gentium.eot");
+                                src: url(http://example.com/fonts/Gentium.ttf) format("truetype"),
+                                     url(http://example.com/fonts/Gentium.wof) format("woff");
+                                font-weight: normal;
+                              };
+                            END_INPUT
                   ast => {"declarations" => ["declaration" => {"property" => "font-family", "expr" => ["term" => "Gentium"]},
-                                             "declaration" => {"property" => "src", "expr" => ["term" => "http://example.com/fonts/Gentium.ttf"]}], '@' => "font-face"}
+                                             "declaration" => {"property" => "src", "expr" => ["term" => "Fonts/Gentium.eot"]},
+                                             "declaration" => {"property" => "src", "expr" => ["term" => "http://example.com/fonts/Gentium.ttf", "term" => {"ident" => "format", "expr" => ["term" => "truetype"]},
+                                                                                               "operator" => ",",
+                                                                                               "term" => "http://example.com/fonts/Gentium.wof", "term" => {"ident" => "format", "expr" => ["term" => "woff"]}]},
+                                             "declaration" => {"property" => "font-weight", "expr" => ["term" => "normal"]}], "\@" => "font-face"},
     },
     ) {
     my $rule = $_.key;
