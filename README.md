@@ -1,11 +1,11 @@
 perl6-CSS-Grammar
 =================
 
-CSS::Grammar is an experimental set of grammars for the W3C CSS family of
-standards.
+CSS::Grammar is an experimental set of Perl 6 grammars for the W3C CSS family
+of standards.
 
-It aims to implement a reasonable portion of the grammars and extension
-modules, with emphasis on:
+It aims to implement a reasonable portion of the grammars and common extension
+modules, with an emphasis on:
 
 - support for CSS1, CSS2.1 and CSS3 base grammars
 - support for common CSS3 extensions modules
