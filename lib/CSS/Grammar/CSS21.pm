@@ -48,9 +48,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     #
     rule declaration_list {[ <declaration> | <dropped_decl> ]*}
 
-    rule selectors {
-        <selector> [',' <selector>]*
-    }
+    rule selectors { <selector> [',' <selector>]* }
 
     rule declaration   {<property> <expr> <prio>? <end_decl> }
 
@@ -89,12 +87,15 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # pseudo:sym<elem> inherited from base 
     rule pseudo:sym<function> {':' <function> }
-    rule pseudo:sym<lang>     {:i':lang(' <lang=.ident> [')' | <unclosed_paren>]}
+    rule function:sym<lang>   {$<ident>=[:i'lang'] '(' <args=.ident> [')' | <unclosed_paren>]}
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
 
     proto token function { <...> }
-    token function:sym<generic>   {<ident> '(' <args=.expr>? [')' | <unclosed_paren>]}
+    # catch all for unknown function names and arguments. individual
+    # declarations should ideally try bad argument lists and give
+    # friendlier messages
+    token function:sym<unknown>   {<ident> '(' [<args=.expr>|<args=.any>]* [')' | <unclosed_paren>]}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

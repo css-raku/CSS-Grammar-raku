@@ -21,6 +21,9 @@ class CSS::Grammar::Actions {
     }
 
     method token(Mu $ast, :$skip, :$type, :$units) {
+
+        return unless $ast.defined;
+
         $ast
             does CSS::Grammar::AST::Token
             unless $ast.can('type');
@@ -88,10 +91,12 @@ class CSS::Grammar::Actions {
        }).join('');
     }
 
-    method warning ($message, $str?) {
+    method warning ($message, $str?, $explanation?) {
         my $warning = $message;
         $warning ~= ': ' ~ _display_string( $str )
             if $str.defined && $str ne '';
+        $warning ~= ' - ' ~ $explanation
+            if $explanation;
         $warning does CSS::Grammar::AST::Info;
         $warning.line_no = $.line_no;
         push @.warnings, $warning;
@@ -160,7 +165,7 @@ class CSS::Grammar::Actions {
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
-    method int($/) { make $/.Int }
+    method posint($/) { make $/.Int }
 
     method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
@@ -253,7 +258,6 @@ class CSS::Grammar::Actions {
                                      make %node;
     }
     method pseudo:sym<element2>($/) { make $.node($/) }
-    method pseudo:sym<lang>($/)     { make $.node($/) }
     method pseudo:sym<function>($/) { make $.node($/) }
     method pseudo:sym<class>($/)    { make $.node($/) }
 
@@ -342,7 +346,13 @@ class CSS::Grammar::Actions {
     method selector($/)                          { make $.list($/) }
     method simple_selector($/)                   { make $.list($/) }
     method attrib($/)                            { make $.node($/) }
-    method function:sym<generic>($/)             { make $.node($/) }
+    method function:sym<lang>($/)             {
+        make {ident => 'lang', args => $<args>.ast}
+    }
+    method function:sym<unknown>($/)             {
+        $.warning('unknown function', $<ident>.ast);
+        make $.node($/);
+    }
 
     method attribute_selector:sym<equals>($/)    { make $/.Str }
     method attribute_selector:sym<includes>($/)  { make $/.Str }

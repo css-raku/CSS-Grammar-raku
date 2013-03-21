@@ -34,12 +34,18 @@ for (
                                 font-weight: normal;
                               };
                             END_INPUT
-                  ast => {"declarations" => ["declaration" => {"property" => "font-family", "expr" => ["term" => "Gentium"]},
-                                             "declaration" => {"property" => "src", "expr" => ["term" => "Fonts/Gentium.eot"]},
-                                             "declaration" => {"property" => "src", "expr" => ["term" => "http://example.com/fonts/Gentium.ttf", "term" => {"ident" => "format", "args" => ["term" => "truetype"]},
-                                                                                               "operator" => ",",
-                                                                                               "term" => "http://example.com/fonts/Gentium.wof", "term" => {"ident" => "format", "args" => ["term" => "woff"]}]},
-                                             "declaration" => {"property" => "font-weight", "expr" => ["term" => "normal"]}], "\@" => "font-face"},
+                  ast => {"declarations" =>
+                              ["declaration" => {"property" => "font-family",
+                                                 "expr" => ["term" => "Gentium"]},
+                               "declaration" => {"property" => "src",
+                                                 "expr" => ["term" => "Fonts/Gentium.eot"]},
+                               "declaration" => {"property" => "src",
+                                                 "expr" => ["term" => "http://example.com/fonts/Gentium.ttf",
+                                                            "term" => {"ident" => "format", "args" => "truetype"},
+                                                            "operator" => ",",
+                                                            "term" => "http://example.com/fonts/Gentium.wof",
+                                                            "term" => {"ident" => "format", "args" => "woff"}]},
+                               "declaration" => {"property" => "font-weight", "expr" => ["term" => "normal"]}], "\@" => "font-face"},
     },
     ) {
     my $rule = $_.key;

@@ -65,7 +65,7 @@ for (
               ast => (rgb => {r => 10, g => 20, b => 30})},
     pseudo => {input => ':visited', ast => {class => 'visited'}},
     pseudo => {input => ':Lang(fr-ca)',
-               ast => {lang => 'fr-ca'},
+               ast => {"function" => {"ident" => "lang", "args" => "fr-ca"}},
                css1 => {  # not understood by css1
                    parse => ':Lang',
                    ast => {class => 'Lang'},
@@ -215,9 +215,12 @@ for (
                                      "operator" => ",",
                                      "term" => "t3"]}
                  ],
+             warnings => 'unknown function: -moz-linear-gradient',
+
              css1 => {
                  ast => Mu,
                  parse => '-moz-linear-gradient',
+                 warnings => Mu,
              },
     },
     expr => {input => '12px/20px',

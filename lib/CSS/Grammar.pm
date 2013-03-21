@@ -35,7 +35,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
     token num            {[\d* \.]? \d+}
-    token int            {['+'|'-']?\d+}
+    token posint         {\d+}
 
     proto token stringchar {*}
     token stringchar:sym<cont>      {\\<nl>}

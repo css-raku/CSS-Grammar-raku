@@ -25,9 +25,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
         <selectors> <declarations>
     }
 
-    rule selectors {
-        <selector> [',' <selector>]*
-    }
+    rule selectors { <selector> [',' <selector>]* }
 
     rule declarations {
         '{' <declaration_list> <.end_block>

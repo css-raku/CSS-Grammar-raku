@@ -8,9 +8,22 @@ use v6;
 
 grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
     rule at_rule:sym<font_face> {(:i'font-face') <declarations> }
+
+    # functions
+    # ---------
+    token function:sym<format> {:i'format' '(' [<args=.string> | <any>*] ')' }
+
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
     method at_rule:sym<font_face>($/) { make $.at_rule($/) }
+
+    method function:sym<format>($/) {
+        return $.warning('usage: format(<string>)')
+            unless $<args>;
+
+        make {ident => 'format', args => $<args>.ast}
+    }
+
 }
 

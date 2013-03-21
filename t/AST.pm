@@ -26,7 +26,7 @@ module t::AST {
         }
         else {
             if defined $parse.ast {
-                note {untested_ast =>  $parse.ast}.perl
+                note 'untested_ast: ' ~ $parse.ast.perl
                     unless %expected.exists('ast');
             }
             else {
