@@ -116,7 +116,7 @@ class CSS::Grammar::Actions {
 
     method any($/) {}
 
-    method dropped_decl:sym<unknown_terms>($/) {
+    method dropped_decl:sym<forward_compat>($/) {
         $.warning('dropping term', $0.Str)
             if $0.Str.chars;
         $.warning('dropping declaration', $<property>.ast);
@@ -351,6 +351,8 @@ class CSS::Grammar::Actions {
     method simple_selector($/)                   { make $.list($/) }
     method attrib($/)                            { make $.node($/) }
     method function:sym<lang>($/)             {
+        return $.warning('usage: lang(indent)')
+            unless $<args>;
         make {ident => 'lang', args => $<args>.ast}
     }
     method function:sym<unknown>($/)             {

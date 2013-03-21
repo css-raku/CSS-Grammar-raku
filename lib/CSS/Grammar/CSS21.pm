@@ -92,7 +92,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule pseudo:sym<class>    {':' <class=.ident> }
 
     proto token function { <...> }
-    token function:sym<lang>   {$<ident>=[:i'lang'] '(' <args=.ident> ')'}
+    token function:sym<lang>   {$<ident>=[:i'lang'] '(' [<args=.ident> | <any>* ]')'}
     # catch all for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages

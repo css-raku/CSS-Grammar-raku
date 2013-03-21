@@ -48,10 +48,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     token string         {\"[<stringchar>|<stringchar=.single_quote>]*\"
                          |\'[<stringchar>|<stringchar=.double_quote>]*\'
     }
-    token badstring     {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
-                         |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]
-                         }
-
     token id             {'#'<name>}
     token class          {'.'<name>}
     token element_name   {<ident>}
@@ -104,18 +100,19 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Error Recovery
     # --------------
     # <any> - for bad function arguments etc
-    rule any  { <CSS::Grammar::Scan::_value>}
+    rule any       { <CSS::Grammar::Scan::_value>}
+    rule badstring {<CSS::Grammar::Scan::_badstring>}
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
     # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<unknown_terms> { <property> [<expr>|(<any>)]* <end_decl> }
+    rule dropped_decl:sym<forward_compat> { <property> [<expr>|(<any>)]* <end_decl> }
     # - couldn't get a property, but terms well formed
-    rule dropped_decl:sym<stray_terms>   { (<any>+) <end_decl> }
+    rule dropped_decl:sym<stray_terms>    { (<any>+) <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs
-    rule dropped_decl:sym<badstring>     { <property>? (<any>)*? <.badstring> <end_decl>? }
+    rule dropped_decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end_decl>? }
     # - unable to parse it at all; throw it out
-    rule dropped_decl:sym<flushed>       { ( <any> | <- [\;\}]> )+ <end_decl> }
+    rule dropped_decl:sym<flushed>        { ( <any> | <- [\;\}]> )+ <end_decl> }
 
 
     # forward compatible scanning and recovery - from the stylesheet top level
@@ -143,8 +140,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # e.g this should be complety dropped: h3, h4 & h5 {color: red }
     # Errata:
-    # - there are a few more intermediate terms such as <declarations>
-    #   and <declaration_list>
+    # - declarations are less structured - optimized for robsutness
     # - added <op> for general purpose operator detection
     # - may assume closing parenthesis in nested values and blocks
 
@@ -153,18 +149,20 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _statement    {<_ruleset> | '@'<_at_rule>}
 
     rule _at_keyword   {\@<ident>}
-    rule _at_rule      {(<ident>) <_any>* [<_block> | ';']}
-    rule _block        {'{' [ <_any> | <_block> | <_at_keyword> | ';' ]* '}'?}
+    rule _at_rule      {(<ident>) <_any>* [<_block> | <_badstring> | ';']}
+    rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <_selectors>? <_declarations> }
-    rule _selectors    { <_any>+ }
+    rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration_list> '}' ';'?}
-    rule _declaration_list {<_declaration>? [';' <_declaration>? ]* ';'?}
-    rule _declaration  {<property=.ident> ':' <_value>}
+    rule _declaration_list {[<property> | <_value> | <_badstring> |';']*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
-    token _delim       {<[\( \) \{ \} \; \" \' \\ \;]>}
+    token _delim       {<[\( \) \{ \} \; \" \' \\]>}
     token _op          {[<punct><!after <_delim>>]+}
+
+    token _badstring   {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
+                       |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
