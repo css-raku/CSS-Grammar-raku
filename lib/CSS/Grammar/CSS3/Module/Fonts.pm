@@ -22,7 +22,7 @@ class CSS::Grammar::CSS3::Module::Fonts::Actions {
         return $.warning('usage: format(<string>)')
             unless $<string>;
 
-        make {ident => 'format', args => $.node($/)}
+        make {ident => 'format', args => $.list($/)}
     }
 
 }

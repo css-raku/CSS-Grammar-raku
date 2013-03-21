@@ -356,12 +356,12 @@ class CSS::Grammar::Actions {
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
             unless $<ident>;
-        make {ident => 'counter', args => $.node($/)}
+        make {ident => 'counter', args => $.list($/)}
     }
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')
             unless $<ident>;
-        make {ident => 'lang', args => $.node($/)}
+        make {ident => 'lang', args => $.list($/)}
     }
     method unknown_function($/)             {
         $.warning('unknown function', $<ident>.ast);
