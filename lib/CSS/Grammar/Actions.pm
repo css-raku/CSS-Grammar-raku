@@ -330,7 +330,10 @@ class CSS::Grammar::Actions {
         make $.token($ast, :type('color'), :units($units))
             if $ast;
     }
-    method aterm:sym<function>($/)   { make $.token($<function>.ast, :type('function')) }
+    method aterm:sym<function>($/)   {
+        make $.token($<function>.ast, :type('function'))
+            if $<function>;
+    }
     method aterm:sym<ident>($/)      { make $.token($<ident>.ast, :type('ident')) }
 
     method emx($/) { make $/.Str.lc }
@@ -350,14 +353,16 @@ class CSS::Grammar::Actions {
     method selector($/)                          { make $.list($/) }
     method simple_selector($/)                   { make $.list($/) }
     method attrib($/)                            { make $.node($/) }
-    method function:sym<lang>($/)             {
+    method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(indent)')
             unless $<args>;
         make {ident => 'lang', args => $<args>.ast}
     }
-    method function:sym<unknown>($/)             {
+    method unknown_function($/)             {
         $.warning('unknown function', $<ident>.ast);
-        make $.node($/);
+    }
+    method unknown_pseudo_func($/)             {
+        $.warning('unknown pseudo-function', $<ident>.ast);
     }
 
     method attribute_selector:sym<equals>($/)    { make $/.Str }

@@ -65,6 +65,11 @@ for (
                 warnings => ['usage: rgb(c,c,c) where c is 0..255 or 0%-100%',
                              'dropping declaration: color'],
     },
+    ruleset => {input => 'p:foo(42) { color:bar(); }',
+                ast => Mu,
+                warnings => ['unknown pseudo-function: foo',
+                             'unknown function: bar dropping declaration: color'],
+    },
     ruleset => {input => 'p { color }',                # malformed declaration missing ':', value
                 ast => Mu,
                 warnings => 'dropping term: color',

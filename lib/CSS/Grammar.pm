@@ -176,5 +176,5 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<attrib> { '[' [ <_any> | <_unused> ]* [']' | <unclosed_paren>] }
     rule _any:sym<args>   { '(' [ <_any> | <_unused> ]* [')' | <unclosed_paren>] }
 
-    rule _unused { <_block> | <_at_keyword> }
+    rule _unused { <_block> | <_at_keyword> | <_badstring> }
 }

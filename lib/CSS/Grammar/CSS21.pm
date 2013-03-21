@@ -70,7 +70,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule aterm:sym<string>    {<string>}
     rule aterm:sym<url>       {<url>}
     rule aterm:sym<color>     {<color>}
-    rule aterm:sym<function>  {<function>}
+    rule aterm:sym<function>  {<function>|<unknown_function>}
     rule aterm:sym<ident>     {<ident>}
 
     rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
@@ -86,17 +86,21 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     token attribute_selector:sym<dash>     {'|='}
 
     # pseudo:sym<elem> inherited from base 
-    rule pseudo:sym<function> {':' <function> }
+    rule pseudo:sym<function> {':' [<function=.pseudo_function>|<unknown_pseudo_func>] }
 
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
 
+    # distinguish regular functions from psuedo_functions
     proto token function { <...> }
-    token function:sym<lang>   {$<ident>=[:i'lang'] '(' [<args=.ident> | <any>* ]')'}
+    proto token pseudo_function { <...> }
+
+    token pseudo_function:sym<lang>   {$<ident>=[:i'lang'] '(' [<args=.ident> | <any>* ]')'}
     # catch all for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
-    token function:sym<unknown>   {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
+    token unknown_pseudo_func {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
+    token unknown_function    {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

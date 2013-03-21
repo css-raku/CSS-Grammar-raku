@@ -10,19 +10,19 @@ use v6;
 
 grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
+    # extensions:
+    # ----------
     # inherited combinators: '+' (adjacent), '>' (child)
     token combinator:sym<sibling> {'~'}
 
-    rule selectors {
-        <selector> [',' <selector>]*
-    }
-
-    rule selector {<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
+    # allow '::' selectors
+    rule pseudo:sym<element2> {'::' <element=.ident> }
+ 
     rule namespace_prefix {[<ident>|<wildcard>]? '|'}
     rule wildcard {'*'}
 
-    token simple_selector { <namespace_prefix>? [<element_name>|<wildcard>] [<negation> | <id> | <class> | <attrib> | <pseudo>]*
-                          | [<negation> | <id> | <class> | <attrib> | <pseudo>]+ }
+    token simple_selector { <namespace_prefix>? [<element_name>|<wildcard>] [<id> | <class> | <attrib> | <pseudo>]*
+                          | [<id> | <class> | <attrib> | <pseudo>]+ }
 
     rule type_selector {<namespace_prefix>? <element_name>}
     
@@ -30,13 +30,14 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
     rule universal      {<namespace_prefix>? <wildcard>}
 
+    rule aterm:sym<unicode_range> {'U+'<unicode_range>}
+    rule aterm:sym<ident>         {<!before emx><ident>}
+
     # inherited from base: = ~= |=
     rule attribute_selector:sym<prefix>    {'^='}
     rule attribute_selector:sym<suffix>    {'$='}
     rule attribute_selector:sym<substring> {'*='}
 
-    # pseudo:sym<element> inherited from base 
-    rule pseudo:sym<negation> {<negation>}
     token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
     # to compute a.n + b
     proto token nth_args {*}
@@ -50,16 +51,10 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     }
     rule nth_args:sym<any> { <any>* }
 
-    token function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> ')'} 
+    token pseudo_function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> ')'} 
+    token selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
+    token pseudo_function:sym<negation>   {<selector_negation>}
 
-    rule pseudo:sym<function> {':' <function> }
-    rule pseudo:sym<class>    {':' <class=.ident> }
-    rule pseudo:sym<element2> {'::' <element=.ident> }
- 
-    rule aterm:sym<unicode_range> {'U+'<unicode_range>}
-    rule aterm:sym<ident>         {<!before emx><ident>}
-
-    token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {
@@ -69,7 +64,6 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method type_selector($/)    { make $.node($/) }
     method universal($/)        { make $.node($/) }
 
-    method pseudo:sym<negation>($/) {$.warning('unexpected negation', $/.Str)}
 
     method attribute_selector:sym<prefix>($/)    { make $/.Str }
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
@@ -88,6 +82,8 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
         # don't produce actual hex chars; could be out of range
         make [ $._from_hex($lo), $._from_hex($hi) ];
     }
+
+    method pseudo_function:sym<nth_selector>($/)  { make $.node($/) }
 
     method nth_args:sym<odd>($/)     { make {a => 2, b=> 1} }
     method nth_args:sym<even>($/)    { make {a => 2 } }
@@ -109,10 +105,16 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method nth_args:sym<any>($/) {
         $.warning('invalid nth child selection', $/.Str);
     }
-    method nth_functor($/)                 { make $/.Str.lc }
-    method function:sym<nth_selector>($/)  { make $.node($/) }
-    method pseudo:sym<nth_child>($/)       { make $.node($/) }
+    method nth_functor($/)                   { make $/.Str.lc  }
+    method pseudo:sym<nth_child>($/)         { make $.node($/) }
 
-    method negation($/)     { make $.list($/) }
+    method selector_negation($/) {
+        return $.warning('illegal nested negation', $<nested>.Str)
+            if $<nested>;
+        make $.list($/);
+    }
+
+    method pseudo_function:sym<negation>($/) {
+        make {ident => 'not', args => $<selector_negation>.ast} }
 }
 

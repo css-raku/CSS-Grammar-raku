@@ -189,14 +189,7 @@ for (
     },
     # css2 understands some functions
     expr => {input => '-moz-linear-gradient(top, t2, t3)',
-             ast =>  ["term"
-                      => {"ident" => "-moz-linear-gradient",
-                          "args" => ["term" => "top",
-                                     "operator" => ",",
-                                     "term" => "t2",
-                                     "operator" => ",",
-                                     "term" => "t3"]}
-                 ],
+             ast => Mu,
              warnings => 'unknown function: -moz-linear-gradient',
 
              css1 => {

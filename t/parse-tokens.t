@@ -50,19 +50,14 @@ for (
              token => {type => 'url'},
     },
     term => {input => 'foo(bar baz( 42 ) )',
-             token => {type => 'function'},
-             ast => {"ident" => "foo",
-                     "args" => ["term" => "bar",
-                                "term" => {"ident" => "baz", "args" => ["term" => 42]}],
-             },
+             ast => Mu,
              warnings => ['unknown function: baz',
                           'unknown function: foo'
                  ],
     },
     # function without arguments, e.g. jquery-ui-themeroller.css
     term => {input => 'mask()',
-             ast => {"ident" => "mask"},
-             token => {type => 'function'},
+             ast => Mu,
              warnings => 'unknown function: mask',
     },
     ) {
