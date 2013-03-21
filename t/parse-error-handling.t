@@ -58,7 +58,12 @@ for (
                     'dropping declaration: bad',
                     ],
     },                        
-    ruleset => {input => 'p { color:green; color }',                # malformed declaration missing ':', value
+    ruleset => {input => 'p { color:rgb(10,17); }',
+                ast => Mu,
+                warnings => ['usage: rgb(c,c,c) where c is 0..255 or 0%-100%',
+                             'dropping declaration: color'],
+    },
+    ruleset => {input => 'p { color }',                # malformed declaration missing ':', value
                 ast => Mu,
                 warnings => 'dropping term: color',
     },

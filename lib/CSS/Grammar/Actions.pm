@@ -207,7 +207,11 @@ class CSS::Grammar::Actions {
         make $.token($arg, :type('num'), :units('4bit'));
     }
 
-    method color:sym<rgb>($/)  { make (rgb => $.node($/)) }
+    method color:sym<rgb>($/)  {
+        return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
+            unless $<ok>;
+        make (rgb => $.node($/))
+    }
     method color:sym<hex>($/)   {
         my $id = $<id>.ast;
         my $chars = $id.chars;

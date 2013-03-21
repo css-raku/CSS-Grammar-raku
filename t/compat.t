@@ -38,10 +38,6 @@ for (
     url_string => {input => q{"'Hello World\\021\\""},
                    ast => q{'Hello World!"},
     },
-    url_string => {input => q{"Hello 'Black H},
-                   ast => Mu,
-                   warnings => [q{unterminated string: "Hello 'Black H}],
-    },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
     # number, percent, length, emx, emx, angle, time, freq

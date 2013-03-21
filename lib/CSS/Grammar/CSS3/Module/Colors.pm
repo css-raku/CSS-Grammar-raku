@@ -14,25 +14,25 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
     # <rgb> and <hex> are defined in CSS core grammar
     rule color:sym<rgba> {:i'rgba('
-                   <r=.color_arg> ','
+                   [$<ok>=[<r=.color_arg> ','
                    <g=.color_arg> ','
                    <b=.color_arg> ','
-                   <a=.color_alpha>
+                   <a=.color_alpha>] | <any>*]
                    ')'
     }
 
     rule color:sym<hsl> {:i'hsl('
-                   <h=.color_angle> ','
+                   [$<ok>=[<h=.color_angle> ','
                    <s=.color_alpha> ','
-                   <l=.color_alpha>
+                   <l=.color_alpha>] | <any>*]
                    ')'
     }
 
     rule color:sym<hsla> {:i'hsla('
-                   <h=.color_angle> ','
+                   [$<ok>=[<h=.color_angle> ','
                    <s=.color_alpha> ','
                    <l=.color_alpha> ','
-                   <a=.color_alpha>
+                   <a=.color_alpha>] | <any>*]
                    ')'
     }
 }
@@ -55,8 +55,20 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
         make $.token($alpha, :type('num'), :units('alpha'));
     }
 
-    method color:sym<rgba>($/) { make (rgba => $.node($/)) }
-    method color:sym<hsl>($/)  { make (hsl  => $.node($/)) }
-    method color:sym<hsla>($/) { make (hsla => $.node($/)) }
+    method color:sym<rgba>($/) {
+        return $.warning('usage: rgba(c,c,c,a) where c is 0..255 or 0%-100% and a is 0-1 or 0%-100%')
+            unless $<ok>;
+         make (rgba => $.node($/))
+    }
+    method color:sym<hsl>($/)  {
+        return $.warning('usage: hsl(h,s,l) where h is 0..360  and s,l are 0-1 or 0%-100%')
+            unless $<ok>;
+         make (hsl  => $.node($/))
+    }
+    method color:sym<hsla>($/) {
+        return $.warning('usage: hsla(h,s,l,a) where h is 0..360  and s,l,a are 0-1 or 0%-100%')
+            unless $<ok>;
+        make (hsla => $.node($/))
+    }
 }
 

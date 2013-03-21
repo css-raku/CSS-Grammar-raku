@@ -75,9 +75,9 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     proto rule color    {*}
     rule color:sym<rgb> {:i'rgb('
-                   <r=.color_arg> ','
-                   <g=.color_arg> ','
-                   <b=.color_arg>
+                   [$<ok>=[<r=.color_arg> ','
+                          <g=.color_arg> ','
+                          <b=.color_arg>] | <any>*]
                    ')'
     }
     rule color:sym<hex> {<id>}
