@@ -91,17 +91,19 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule pseudo:sym<class>    {':' <class=.ident> }
 
     # distinguish regular functions from psuedo_functions
-    proto token function { <...> }
-    proto token pseudo_function { <...> }
 
+    proto token function { <...> }
     # I haven't found a good list of css2.1 functions; there's probably more
-    token function:sym<counters> {:i counters '(' [<counter=.ident> [',' <string>]? | <any>*] ')' }
-    token pseudo_function:sym<lang>   {$<ident>=[:i'lang'] '(' [<args=.ident> | <any>* ]')'}
+    token function:sym<counters>    {:i counters '(' [<ident> [',' <string>]? | <any>*] ')' }
     # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
-    token unknown_pseudo_func {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
     token unknown_function    {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
+
+    proto token pseudo_function { <...> }
+    token pseudo_function:sym<lang> {:i lang '(' [ <ident> | <any>* ] ')'}
+    # pseudo function catch-all
+    token unknown_pseudo_func {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

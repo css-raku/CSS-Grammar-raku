@@ -355,13 +355,13 @@ class CSS::Grammar::Actions {
     method attrib($/)                            { make $.node($/) }
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
-            unless $<counter>;
+            unless $<ident>;
         make {ident => 'counter', args => $.node($/)}
     }
     method pseudo_function:sym<lang>($/)             {
-        return $.warning('usage: lang(indent)')
-            unless $<args>;
-        make {ident => 'lang', args => $<args>.ast}
+        return $.warning('usage: lang(ident)')
+            unless $<ident>;
+        make {ident => 'lang', args => $.node($/)}
     }
     method unknown_function($/)             {
         $.warning('unknown function', $<ident>.ast);

@@ -95,7 +95,7 @@ for (
     selector => {input => 'foo:lang(en)',
                  ast => ["simple_selector" => ["element_name" => "foo",
                                                "pseudo" => {"function" => {"ident" => "lang",
-                                                                           "args" => 'en'}}]],
+                                                                           "args" => {ident => 'en'}}}]],
     },
     # nth-... selectors
     selector => {input => 'bar:nth-child(3n+1)',

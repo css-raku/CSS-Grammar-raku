@@ -15,7 +15,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     # inherited combinators: '+' (adjacent), '>' (child)
     token combinator:sym<sibling> {'~'}
 
-    # allow '::' selectors
+    # allow '::' element selectors
     rule pseudo:sym<element2> {'::' <element=.ident> }
  
     rule namespace_prefix {[<ident>|<wildcard>]? '|'}

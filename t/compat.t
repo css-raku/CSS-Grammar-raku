@@ -47,7 +47,7 @@ for (
               ast => (rgb => {r => 10, g => 20, b => 30})},
     pseudo => {input => ':visited', ast => {class => 'visited'}},
     pseudo => {input => ':Lang(fr-ca)',
-               ast => {"function" => {"ident" => "lang", "args" => "fr-ca"}},
+               ast => {"function" => {"ident" => "lang", "args" => {ident => "fr-ca"}}},
                css1 => {  # not understood by css1
                    parse => ':Lang',
                    ast => {class => 'Lang'},

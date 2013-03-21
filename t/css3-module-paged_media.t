@@ -34,7 +34,7 @@ my $top_center_ast = {"declarations" => ["declaration" => {"property" => "color"
                                          "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                                                           "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
                                                                                                                                    "term" => {"ident" => "counter",
-                                                                                                                                              "args" => {"counter" => "page", "string" => "."}}]}]}
+                                                                                                                                              "args" => {"ident" => "page", "string" => "."}}]}]}
                           ],
                       '@' => "page"};
 
@@ -63,7 +63,7 @@ for (
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                          "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
                                                                                                   "term" => {"ident" => "counter",
-                                                                                                             "args" => {"counter" => "page"}}]}]
+                                                                                                             "args" => {"ident" => "page"}}]}]
                  },
     },
     at_rule => {input => $top_center, ast => $top_center_ast},

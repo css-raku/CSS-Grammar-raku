@@ -41,10 +41,10 @@ for (
                                                  "expr" => ["term" => "Fonts/Gentium.eot"]},
                                "declaration" => {"property" => "src",
                                                  "expr" => ["term" => "http://example.com/fonts/Gentium.ttf",
-                                                            "term" => {"ident" => "format", "args" => "truetype"},
+                                                            "term" => {"ident" => "format", "args" => {string => "truetype"}},
                                                             "operator" => ",",
                                                             "term" => "http://example.com/fonts/Gentium.wof",
-                                                            "term" => {"ident" => "format", "args" => "woff"}]},
+                                                            "term" => {"ident" => "format", "args" => {string => "woff"}}]},
                                "declaration" => {"property" => "font-weight", "expr" => ["term" => "normal"]}], "\@" => "font-face"},
     },
     ) {
