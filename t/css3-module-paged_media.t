@@ -26,18 +26,17 @@ my $css_actions = t::CSS3::PagedMediaActions.new;
 
 my $top_center = 'page { color: red;
         @top-center {
-           content: "Page " counter(page);
+           content: "Page " counters(page,".");
        }
 }';
 
-my $top_center_ast = {
-    "declarations" => ["declaration" => {"property" => "color",
-                                         "expr" => ["term" => "red"]},
-                       "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                                        "declarations" => ["declaration" => {"property" => "content",
-                                                                             "expr" => ["term" => "Page ",
-                                                                                        "term" => {"ident" => "counter", "args" => ["term" => "page"]}]}]}],
-    "\@" => "page"};
+my $top_center_ast = {"declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]},
+                                         "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
+                                                          "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
+                                                                                                                                   "term" => {"ident" => "counter",
+                                                                                                                                              "args" => {"counter" => "page", "string" => "."}}]}]}
+                          ],
+                      '@' => "page"};
 
 for (
     at_rule   => {input => 'page :left { margin-left: 4cm; }',
@@ -60,9 +59,12 @@ for (
                  ast => {"margin_box" => {"hpos" => "right", "vpos" => "bottom"},
                          "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]},
     },
-    page_rules => {input => '@Top-CENTER {content: "Page " counter(page);}',
+    page_rules => {input => '@Top-CENTER {content: "Page " counters(page);}',
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ", "term" => {"ident" => "counter", "args" => ["term" => "page"]}]}]},
+                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
+                                                                                                  "term" => {"ident" => "counter",
+                                                                                                             "args" => {"counter" => "page"}}]}]
+                 },
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
     ) {

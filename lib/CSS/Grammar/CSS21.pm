@@ -41,7 +41,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule declarations {
         '{' <declaration_list> <.end_block>
     }
-    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
@@ -95,8 +94,10 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     proto token function { <...> }
     proto token pseudo_function { <...> }
 
+    # I haven't found a good list of css2.1 functions; there's probably more
+    token function:sym<counters> {:i counters '(' [<counter=.ident> [',' <string>]? | <any>*] ')' }
     token pseudo_function:sym<lang>   {$<ident>=[:i'lang'] '(' [<args=.ident> | <any>* ]')'}
-    # catch all for unknown function names and arguments. individual
+    # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
     token unknown_pseudo_func {<ident> '(' [<args=.expr>|<args=.any>]* ')' }

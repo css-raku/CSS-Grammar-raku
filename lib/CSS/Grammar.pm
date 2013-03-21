@@ -114,6 +114,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # - unable to parse it at all; throw it out
     rule dropped_decl:sym<flushed>        { ( <any> | <- [\;\}]> )+ <end_decl> }
 
+    rule end_block {[$<closing_paren>='}' ';'?]?}
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
@@ -140,7 +141,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # e.g this should be complety dropped: h3, h4 & h5 {color: red }
     # Errata:
-    # - declarations are less structured - optimized for robsutness
+    # - declarations are less structured - optimized for robustness
     # - added <op> for general purpose operator detection
     # - may assume closing parenthesis in nested values and blocks
 

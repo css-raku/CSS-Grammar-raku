@@ -25,10 +25,6 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
         '@'<margin_box> <declarations>
     }
 
-    # functions
-    # ---------
-    token function:sym<counter> {:i counter[s]? '(' <args=.expr> ')' }
-
     token margin_box {<hpos>'-'[<vpos>[:i'-corner']?|<center>]
                      |<vpos>'-'[<hpos>[:i'-corner']?|<center>]}
 
@@ -44,8 +40,6 @@ class CSS::Grammar::CSS3::Module::PagedMedia::Actions {
     method page_pseudo:sym<first>($/) {make 'first'}
     method page_pseudo:sym<other>($/) {$.warning('ignoring page pseudo', $/.Str)}
     method page_pseudo:sym<missing>($/) {$.warning("':' should be followed by one of: left right first")}
-
-    method function:sym<counter>($/) {make {ident => 'counter', args => $<args>.ast}}
 
     method page_rules:sym<margin_box>($/) { make $.node($/) }
     method page_declarations($/) { make $.list($/) }

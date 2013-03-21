@@ -353,6 +353,11 @@ class CSS::Grammar::Actions {
     method selector($/)                          { make $.list($/) }
     method simple_selector($/)                   { make $.list($/) }
     method attrib($/)                            { make $.node($/) }
+    method function:sym<counters>($/) {
+        return $.warning('usage: counters(ident [, "string"])')
+            unless $<counter>;
+        make {ident => 'counter', args => $.node($/)}
+    }
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(indent)')
             unless $<args>;
