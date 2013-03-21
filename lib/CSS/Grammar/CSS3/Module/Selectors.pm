@@ -50,7 +50,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     }
     rule nth_args:sym<any> { <any>* }
 
-    token function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> [')' | <unclosed_paren>]} 
+    token function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> ')'} 
 
     rule pseudo:sym<function> {':' <function> }
     rule pseudo:sym<class>    {':' <class=.ident> }
@@ -59,7 +59,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule aterm:sym<unicode_range> {'U+'<unicode_range>}
     rule aterm:sym<ident>         {<!before emx><ident>}
 
-    token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ [')' | <unclosed_paren>]}
+    token negation     {:i':not(' [<type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {

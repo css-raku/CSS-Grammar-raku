@@ -87,15 +87,16 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # pseudo:sym<elem> inherited from base 
     rule pseudo:sym<function> {':' <function> }
-    rule function:sym<lang>   {$<ident>=[:i'lang'] '(' <args=.ident> [')' | <unclosed_paren>]}
+
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
 
     proto token function { <...> }
+    token function:sym<lang>   {$<ident>=[:i'lang'] '(' <args=.ident> ')'}
     # catch all for unknown function names and arguments. individual
-    # declarations should ideally try bad argument lists and give
-    # friendlier messages
-    token function:sym<unknown>   {<ident> '(' [<args=.expr>|<args=.any>]* [')' | <unclosed_paren>]}
+    # declarations should ideally catch bad argument lists and give
+    # friendlier function-specific messages
+    token function:sym<unknown>   {<ident> '(' [<args=.expr>|<args=.any>]* ')' }
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

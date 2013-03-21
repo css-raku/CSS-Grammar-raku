@@ -17,11 +17,11 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
         '{' ['@'<?before [:i'page']><at_rule>|<ruleset>]* <.end_block>
     }
 
-    rule media_list {<media_query> [',' <media_query>]*}
+    rule media_list  {<media_query> [',' <media_query>]*}
     rule media_query {[<media_op>? <media=.ident>|<media_expr>]
                       [:i'and' <media_expr>]*}
     rule media_op    {:i['only'|'not']}
-    rule media_expr  {'(' <media_feature=.ident> [ ':' <expr> ]? [')' | <unclosed_paren>]}
+    rule media_expr  { '(' <media_feature=.ident> [ ':' <expr> ]? ')' }
 
     token units:sym<resolution> {:i[dpi|dpcm]}
 }

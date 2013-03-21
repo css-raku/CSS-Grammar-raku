@@ -62,11 +62,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
-    token url_string     {<string>|<badstring>|<url_char>*}
+    token url_string     {<string>|<url_char>*}
 
     # productions
 
-    rule url  {:i'url(' <url_string> [')' | <unclosed_paren>] }
+    rule url  {:i'url(' <url_string> ')' }
     token unclosed_paren {''}
 
     rule emx {:i e[m|x]}
@@ -78,7 +78,7 @@ grammar CSS::Grammar:ver<0.0.1> {
                    <r=.color_arg> ','
                    <g=.color_arg> ','
                    <b=.color_arg>
-                   [')' | <unclosed_paren>]
+                   ')'
     }
     rule color:sym<hex> {<id>}
 
@@ -175,8 +175,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<id>     { <id> }
     rule _any:sym<class>  { <class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' [ <_any> | <_unused> ]* ']'? }
-    rule _any:sym<args>   { '(' [ <_any> | <_unused> ]* ')'? }
+    rule _any:sym<attrib> { '[' [ <_any> | <_unused> ]* [']' | <unclosed_paren>] }
+    rule _any:sym<args>   { '(' [ <_any> | <_unused> ]* [')' | <unclosed_paren>] }
 
-    rule _unused { <_block> | <_at_keyword> | ';' }
+    rule _unused { <_block> | <_at_keyword> }
 }

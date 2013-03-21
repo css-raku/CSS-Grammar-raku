@@ -18,14 +18,14 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
                    <g=.color_arg> ','
                    <b=.color_arg> ','
                    <a=.color_alpha>
-                   [')' | <unclosed_paren>]
+                   ')'
     }
 
     rule color:sym<hsl> {:i'hsl('
                    <h=.color_angle> ','
                    <s=.color_alpha> ','
                    <l=.color_alpha>
-                   [')' | <unclosed_paren>]
+                   ')'
     }
 
     rule color:sym<hsla> {:i'hsla('
@@ -33,7 +33,7 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
                    <s=.color_alpha> ','
                    <l=.color_alpha> ','
                    <a=.color_alpha>
-                   [')' | <unclosed_paren>]
+                   ')'
     }
 }
 
