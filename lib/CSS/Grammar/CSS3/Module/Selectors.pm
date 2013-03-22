@@ -49,10 +49,9 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     }
     rule nth_args:sym<any> { <any>* }
 
-    token pseudo_function:sym<nth_selector> {<ident=.nth_functor> '(' <args=.nth_args> ')'} 
-    token selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
+    token pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' <args=.nth_args> ')'} 
+    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
     token pseudo_function:sym<negation>   {<selector_negation>}
-
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {

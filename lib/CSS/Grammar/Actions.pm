@@ -350,13 +350,19 @@ class CSS::Grammar::Actions {
         }
     }
 
-    method selector($/)                          { make $.list($/) }
-    method simple_selector($/)                   { make $.list($/) }
-    method attrib($/)                            { make $.node($/) }
+    method selector($/)          { make $.list($/) }
+    method simple_selector($/)   { make $.list($/) }
+    method attrib($/)            { make $.node($/) }
+
+    method function:sym<attr>($/)             {
+        return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')
+            unless $<attribute_name>;
+        make {ident => 'attr', args => $.list($/)}
+    }
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
             unless $<ident>;
-        make {ident => 'counter', args => $.list($/)}
+        make {ident => 'counters', args => $.list($/)}
     }
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')

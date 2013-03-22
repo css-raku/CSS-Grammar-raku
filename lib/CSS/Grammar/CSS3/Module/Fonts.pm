@@ -11,8 +11,7 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
 
     # functions
     # ---------
-    token function:sym<format> {:i'format' '(' [<string> | <any>*] ')' }
-
+    token function:sym<format> {:i 'format(' [ <string> | <any>* ] ')' }
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
