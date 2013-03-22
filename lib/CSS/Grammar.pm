@@ -100,8 +100,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Error Recovery
     # --------------
     # <any> - for bad function arguments etc
-    rule any       { <CSS::Grammar::Scan::_value> }
-    rule badstring { <CSS::Grammar::Scan::_badstring> }
+    rule any       {<CSS::Grammar::Scan::_value>}
+    rule any_arg   {<CSS::Grammar::Scan::_arg>}
+    rule badstring {<CSS::Grammar::Scan::_badstring>}
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
@@ -174,8 +175,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<id>     { <id> }
     rule _any:sym<class>  { <class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' [ <_any> | <_unused> ]* [']' | <unclosed_paren>] }
-    rule _any:sym<args>   { '(' [ <_any> | <_unused> ]* [')' | <unclosed_paren>] }
+    rule _any:sym<attrib> { '[' <_arg>* [']' | <unclosed_paren>] }
+    rule _any:sym<args>   { '(' <_arg>* [')' | <unclosed_paren>] }
 
+    rule _arg { [ <_any> | <_unused> ] }
     rule _unused { <_block> | <_at_keyword> | <_badstring> }
 }

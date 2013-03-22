@@ -359,6 +359,11 @@ class CSS::Grammar::Actions {
             unless $<attribute_name>;
         make {ident => 'attr', args => $.list($/)}
     }
+    method function:sym<counter>($/) {
+        return $.warning('usage: counter(ident [, ident [,...] ])')
+            unless $<ident>;
+        make {ident => 'counter', args => $.list($/)}
+    }
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
             unless $<ident>;

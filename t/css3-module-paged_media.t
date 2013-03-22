@@ -33,7 +33,7 @@ my $top_center = 'page { color: red;
 my $top_center_ast = {"declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]},
                                          "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                                                           "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
-                                                                                                                                   "term" => {"ident" => "counter",
+                                                                                                                                   "term" => {"ident" => "counters",
                                                                                                                                               "args" => ["ident" => "page", "string" => "."]}]}]}
                           ],
                       '@' => "page"};
@@ -62,7 +62,7 @@ for (
     page_rules => {input => '@Top-CENTER {content: "Page " counters(page);}',
                  ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
                          "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
-                                                                                                  "term" => {"ident" => "counter",
+                                                                                                  "term" => {"ident" => "counters",
                                                                                                              "args" => ["ident" => "page"]}]}]
                  },
     },

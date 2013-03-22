@@ -36,22 +36,22 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule attribute_selector:sym<suffix>    {'$='}
     rule attribute_selector:sym<substring> {'*='}
 
-    token nth_functor {:i [nth|first|last|'nth-last']'-'['child'|'of-type']}
+    token nth_functor {:i[nth|first|last|'nth-last']'-'['child'|'of-type']}
     # to compute a.n + b
     proto token nth_args {*}
-    rule nth_args:sym<odd>   {:i 'odd' }
-    rule nth_args:sym<even>  {:i 'even' }
+    token nth_args:sym<odd>   {:i 'odd' }
+    token nth_args:sym<even>  {:i 'even' }
     token nth_args:sym<expr> {
         <ws>?
         [$<a_sign>=[\+|\-]? <a=.posint>? $<n>=<[Nn]> <ws>? [$<b_sign>=[\+|\-] <ws>? <b=.posint>]?
         |<b=.posint>
         ]<ws>?
     }
-    rule nth_args:sym<any> { <any>* }
+    token nth_args:sym<any> { <any_arg>* }
 
-    token pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' <args=.nth_args> ')'} 
-    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo>]+ ')'}
-    token pseudo_function:sym<negation>   {<selector_negation>}
+    rule pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' <args=.nth_args> ')'} 
+    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo> | <any_arg> ]+ ')'}
+    rule pseudo_function:sym<negation>   {<selector_negation>}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {
@@ -60,7 +60,6 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method wildcard($/)         { make $/.Str }
     method type_selector($/)    { make $.node($/) }
     method universal($/)        { make $.node($/) }
-
 
     method attribute_selector:sym<prefix>($/)    { make $/.Str }
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
@@ -108,6 +107,8 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method selector_negation($/) {
         return $.warning('illegal nested negation', $<nested>.Str)
             if $<nested>;
+        return $.warning('illegal argument', $<any_arg>.Str)
+            if $<any_arg>;
         make $.list($/);
     }
 

@@ -201,7 +201,7 @@ for (
     expr => {input => '12px/20px',
              ast => ["term" => 12, "operator" => "/", "term" => 20],
     },
-    declaration_list => {input => 'terms: 42 7% 12.5cm -1em 2 ex 45deg 10s 50Hz "ZZ" counters(p) attr(data-foo)',
+    declaration_list => {input => 'terms: 42 7% 12.5cm -1em 2 ex 45deg 10s 50Hz "ZZ" counter(a,b) counters(p,"s") attr(data-foo)',
                          ast => [declaration => {
                              property => 'terms',
                              expr => [term => 42, term => 7,
@@ -210,12 +210,13 @@ for (
                                       term => 45,
                                       term => 10, term => 50,
                                       term => 'ZZ',
-                                      term => {"ident" => "counters", "args" => ["ident" => "p"]},
+                                      term => {"ident" => "counter", "args" => ["ident" => "a", ident => "b"]},
+                                      term => {"ident" => "counters", "args" => ["ident" => "p", string => "s"]},
                                       term => {"ident" => "attr", "args" => ["attribute_name" => "data-foo"]},
                                  ]
                                  }],
                          css1 => {
-                             warnings => ['dropping term: 45deg 10s 50Hz "ZZ" counters(p) attr(data-foo)',
+                             warnings => ['dropping term: 45deg 10s 50Hz "ZZ" counter(a,b) counters(p,"s") attr(data-foo)',
                                           'dropping declaration: terms',],
                              ast => Mu,
                      },

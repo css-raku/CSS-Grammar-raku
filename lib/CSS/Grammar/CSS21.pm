@@ -92,19 +92,20 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     # distinguish regular functions from psuedo_functions
 
-    proto token function { <...> }
+    proto rule function { <...> }
     # I haven't found a good list of css2.1 functions; there's probably more
-    token function:sym<attr>     {:i 'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? | <any>* ] ')' }
-    token function:sym<counters> {:i 'counters(' [ <ident> [ ',' <string> ]? | <any>* ] ')' }
+    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? ')' | <any_arg>* ')' ] }
+    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* ')' | <any_arg>* ')'] }
+    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? ')' | <any_arg>* ')' ] }
     # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
-    token unknown_function      {<ident>'(' <ws>? [<args=.expr>|<args=.any>]*  <ws>? ')' }
+    token unknown_function      {<ident>'(' [<args=.expr>|<args=.any_arg>]*  ')' }
 
-    proto token pseudo_function { <...> }
-    token pseudo_function:sym<lang> {:i 'lang(' [ <ident> | <any>* ] ')'}
+    proto rule pseudo_function { <...> }
+    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> ')' | <any_arg>* ')']}
     # pseudo function catch-all
-    token unknown_pseudo_func       {<ident>'(' <ws>? [<args=.expr>|<args=.any>]* <ws>? ')'}
+    rule unknown_pseudo_func       {<ident>'(' [<args=.expr>|<args=.any_arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters
