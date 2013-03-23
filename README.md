@@ -116,6 +116,10 @@ core CSS3 language, plus Fonts and Paged Media extensions
 
 For a working example, see t/parse-css3-module-fonts.t.
 
+See Also
+========
+[CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
+
 References
 ==========
 These grammars have been built from the W3C CSS Specifications. In particular:
