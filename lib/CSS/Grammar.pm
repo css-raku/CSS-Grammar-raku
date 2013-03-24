@@ -81,7 +81,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token prio {:i'!' [('important')|<any>] }
 
     # pseudos
-    proto rule pseudo {*}
+    proto rule pseudo {<...>}
     rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]|before|after]}
 
     # Combinators - introduced with css2.1
@@ -99,9 +99,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Error Recovery
     # --------------
-    # <any> - for bad function arguments etc
+    # - <any>        - for unknown terms etc
     rule any       {<CSS::Grammar::Scan::_value>}
-    rule any_arg   {<CSS::Grammar::Scan::_arg>}
+    # - <bad_arg>    - for incorrect function args
+    rule bad_arg   {<CSS::Grammar::Scan::_arg>}
+    # - <badstring>  - for detection of unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
 
     # failed declaration parse - how well formulated is it?
@@ -151,20 +153,20 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _statement    {<_ruleset> | '@'<_at_rule>}
 
     rule _at_keyword   {\@<ident>}
-    rule _at_rule      {(<ident>) <_any>* [<_block> | <_badstring> | ';']}
+    rule _at_rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration_list> '}' ';'?}
-    rule _declaration_list {[<property> | <_value> | <_badstring> |';']*}
+    rule _declaration_list {[ <property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
     rule _delim        {<[\( \) \{ \} \; \" \' \\]>}
     rule _op           {[<punct><!after <_delim>>]+}
 
     rule _badstring   {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
-                       |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
+                      |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
@@ -178,6 +180,5 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<attrib> { '[' <_arg>* [']' | <unclosed_paren>] }
     rule _any:sym<args>   { '(' <_arg>* [')' | <unclosed_paren>] }
 
-    rule _arg { [ <_any> | <_unused> ] }
-    rule _unused { <_block> | <_at_keyword> | <_badstring> }
+    rule _arg {[ <_any> | <_block> | <_at_keyword> | <_badstring> ]}
 }

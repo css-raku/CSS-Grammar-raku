@@ -47,10 +47,10 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
         |<b=.posint>
         ]<ws>?
     }
-    token nth_args:sym<any> { <any_arg>* }
+    token nth_args:sym<bad> { <bad_arg>* }
 
     rule pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' <args=.nth_args> ')'} 
-    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo> | <any_arg> ]+ ')'}
+    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo> | <bad_arg> ]+ ')'}
     rule pseudo_function:sym<negation>   {<selector_negation>}
 }
 
@@ -85,7 +85,7 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
 
         make %node;
     }
-    method nth_args:sym<any>($/) {
+    method nth_args:sym<bad>($/) {
         $.warning('invalid nth child selection', $/.Str);
     }
     method nth_functor($/)                   { make $/.Str.lc  }
@@ -94,8 +94,8 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method selector_negation($/) {
         return $.warning('illegal nested negation', $<nested>.Str)
             if $<nested>;
-        return $.warning('illegal argument', $<any_arg>.Str)
-            if $<any_arg>;
+        return $.warning('illegal argument', $<bad_arg>.Str)
+            if $<bad_arg>;
         make $.list($/);
     }
 

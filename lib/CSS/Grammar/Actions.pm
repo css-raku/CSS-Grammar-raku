@@ -370,17 +370,17 @@ class CSS::Grammar::Actions {
 
     method function:sym<attr>($/)             {
         return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')
-            unless $<attribute_name>;
+            if $<bad_arg>;
         make {ident => 'attr', args => $.list($/)}
     }
     method function:sym<counter>($/) {
         return $.warning('usage: counter(ident [, ident [,...] ])')
-            unless $<ident>;
+            if $<bad_arg>;
         make {ident => 'counter', args => $.list($/)}
     }
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
-            unless $<ident>;
+            if $<bad_arg>;
         make {ident => 'counters', args => $.list($/)}
     }
     method pseudo_function:sym<lang>($/)             {
