@@ -116,6 +116,15 @@ core CSS3 language, plus Fonts and Paged Media extensions
 
 For a working example, see t/parse-css3-module-fonts.t.
 
+To Do
+=====
+The follow classes are coming soon. These will, in particular, validate properties and property values:
+- `CSS::Grammar::CSS1::Actions` - based on http://129.69.59.141/css1pqre.htm ?
+- `CSS::Grammar:CCS21::Actions` based on http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
+- `CSS::Grammar:CCS3::Actions` - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
+
+(*) I intend to round out CSS3 by adding add property validation to each of the css3 extension modules
+
 See Also
 ========
 [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
