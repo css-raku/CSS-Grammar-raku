@@ -50,6 +50,21 @@ for (
                 ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
                         "declarations" => ["declaration" => {"property" => "kept", "expr" => ["term" => 1]},
                                            "declaration" => {"property" => "kept", "expr" => ["term" => 2]}]},
+                
+    },
+    ruleset => {input => 'h1 {color:red; content:"Section" counter(42)}',
+                warnings => ['usage: counter(ident [, ident [,...] ])',
+                             'dropping declaration: content',
+                    ],
+                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
+                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]}]},                
+    },
+    ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
+                warnings => ['usage: counter(ident [, ident [,...] ])',
+                             'dropping declaration: content',
+                    ],
+                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]],
+                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]},
     },
     # unclosed string. scanner should discard first line
     ruleset => {input => 'h2 {bad: dropme "http://unclosed-string.org; color:blue;
@@ -127,7 +142,7 @@ h6 {color: black }',
                    ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
                                          "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]}],
     },
-    # try a few extended terms
+    # try a few extended terms. we don't have the media extensions loaded
     stylesheet => {input => '@media print and (width: 21cm)  @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',
                    ast => [],
                    warnings => 'dropping: @media print and (width: 21cm) @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',

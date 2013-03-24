@@ -99,11 +99,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Error Recovery
     # --------------
-    # - <any>        - for unknown terms etc
+    # - <any>                    - for unknown terms etc
     rule any       {<CSS::Grammar::Scan::_value>}
-    # - <bad_arg>    - for incorrect function args
+    # - <bad_arg>, <bad_args>    - for incorrect function args
     rule bad_arg   {<CSS::Grammar::Scan::_arg>}
-    # - <badstring>  - for detection of unclosed strings
+    rule bad_args  {<bad_arg>*}
+    # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
 
     # failed declaration parse - how well formulated is it?

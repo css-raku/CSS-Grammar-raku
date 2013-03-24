@@ -301,14 +301,13 @@ class CSS::Grammar::Actions {
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
     method declaration($/)        { 
-        my %decl = $.node($/);
 
-        unless @(%decl<expr>) {
-            $.warning('dropping declaration', %decl<property>);
+        if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
+            $.warning('dropping declaration', $<property>.ast);
             return;
         }
 
-        make %decl;
+        make $.node($/);
     }
 
     method expr($/) { make $.list($/, :keep_undef(True)) }
@@ -370,22 +369,22 @@ class CSS::Grammar::Actions {
 
     method function:sym<attr>($/)             {
         return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')
-            if $<bad_arg>;
+            if $<bad_args>;
         make {ident => 'attr', args => $.list($/)}
     }
     method function:sym<counter>($/) {
         return $.warning('usage: counter(ident [, ident [,...] ])')
-            if $<bad_arg>;
+            if $<bad_args>;
         make {ident => 'counter', args => $.list($/)}
     }
     method function:sym<counters>($/) {
         return $.warning('usage: counters(ident [, "string"])')
-            if $<bad_arg>;
+            if $<bad_args>;
         make {ident => 'counters', args => $.list($/)}
     }
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')
-            unless $<ident>;
+            if $<bad_args>;
         make {ident => 'lang', args => $.list($/)}
     }
     method unknown_function($/)             {

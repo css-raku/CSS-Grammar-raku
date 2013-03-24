@@ -135,7 +135,7 @@ for (
     },
     # white-space - invalid
     selector => {input => 'tr:nth-child(+ 2n)',
-                 warnings => 'invalid nth child selection: + 2n',
+                 warnings => 'usage nth-child(an+b) e.g "4" "3n+1"',
                  ast => Mu,
     },
     ) {

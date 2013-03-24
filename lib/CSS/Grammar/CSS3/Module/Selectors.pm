@@ -47,11 +47,10 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
         |<b=.posint>
         ]<ws>?
     }
-    token nth_args:sym<bad> { <bad_arg>* }
 
-    rule pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' <args=.nth_args> ')'} 
-    rule selector_negation {:i'not(' [$<nested>= [':'<.selector_negation>] | <type_selector> | <universal> | <id> | <class> | <attrib> | <pseudo> | <bad_arg> ]+ ')'}
-    rule pseudo_function:sym<negation>   {<selector_negation>}
+    rule pseudo_function:sym<nth_selector> {<ident=.nth_functor>'(' [<args=.nth_args> ')'| <bad_args> ')']} 
+    rule negation_args {[<type_selector> | <universal> | <id> | <class> | <attrib> | $<nested>=[<?before [:i':not(']><pseudo>] | <pseudo> | <bad_arg> ]+}
+    rule pseudo_function:sym<negation>  {:i'not(' [ <negation_args> ')'| <bad_args> ')']}
 }
 
 class CSS::Grammar::CSS3::Module::Selectors::Actions {
@@ -66,7 +65,11 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
     method aterm:sym<unicode_range>($/) { make $.node($/) }
-    method pseudo_function:sym<nth_selector>($/)  { make $.node($/) }
+    method pseudo_function:sym<nth_selector>($/)  {
+        return $.warning('usage '~$<ident>~'(an+b) e.g "4" "3n+1"')
+            if $<bad_args>;
+        make $.node($/)
+    }
 
     method nth_args:sym<odd>($/)     { make {a => 2, b=> 1} }
     method nth_args:sym<even>($/)    { make {a => 2 } }
@@ -85,21 +88,22 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
 
         make %node;
     }
-    method nth_args:sym<bad>($/) {
-        $.warning('invalid nth child selection', $/.Str);
-    }
     method nth_functor($/)                   { make $/.Str.lc  }
     method pseudo:sym<nth_child>($/)         { make $.node($/) }
 
-    method selector_negation($/) {
+    method negation_args($/) {
+        return $.warning('bad :not() argument', $<bad_arg>.Str)
+            if $<bad_arg>;
         return $.warning('illegal nested negation', $<nested>.Str)
             if $<nested>;
-        return $.warning('illegal argument', $<bad_arg>.Str)
-            if $<bad_arg>;
         make $.list($/);
     }
 
     method pseudo_function:sym<negation>($/) {
-        make {ident => 'not', args => $<selector_negation>.ast} }
+        return $.warning('missing/incorrect arguments to :not()', $<bad_args>.Str)
+            if $<bad_args>;
+        return unless $<negation_args>.ast;
+        make {ident => 'not', args => $<negation_args>.ast}
+    }
 }
 

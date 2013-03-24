@@ -11,7 +11,7 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
 
     # functions
     # ---------
-    rule function:sym<format> {:i'format(' [ <string> ')' | <bad_arg>* ')' ] }
+    rule function:sym<format> {:i'format(' [ <string> ')'| <bad_args> ')']}
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
@@ -19,7 +19,7 @@ class CSS::Grammar::CSS3::Module::Fonts::Actions {
 
     method function:sym<format>($/) {
         return $.warning('usage: format(<string>)')
-            if $<bad_arg>;
+            if $<bad_args>;
 
         make {ident => 'format', args => $.list($/)}
     }

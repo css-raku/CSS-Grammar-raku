@@ -94,16 +94,16 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     proto rule function { <...> }
     # I haven't found a good list of css2.1 functions; there's probably more
-    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? ')' | <bad_arg>* ')' ] }
-    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* ')' | <bad_arg>* ')'] }
-    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? ')' | <bad_arg>* ')' ] }
+    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? ')'| <bad_args> ')']}
+    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* ')'| <bad_args> ')'] }
+    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? ')'| <bad_args> ')'] }
     # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
-    token unknown_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]*  ')' }
+    token unknown_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
-    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> ')' | <bad_arg>* ')']}
+    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> ')'| <bad_args> ')']}
     # pseudo function catch-all
     rule unknown_pseudo_func       {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
