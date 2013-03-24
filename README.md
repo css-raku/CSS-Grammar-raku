@@ -120,8 +120,8 @@ To Do
 =====
 The follow classes are coming soon. These will, in particular, validate properties and property values:
 - `CSS::Grammar::CSS1::Actions` - based on http://129.69.59.141/css1pqre.htm ?
-- `CSS::Grammar:CSS21::Actions` - based on http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
-- `CSS::Grammar:CSS3::Actions` - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
+- `CSS::Grammar::CSS21::Actions` - based on http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
+- `CSS::Grammar::CSS3::Actions` - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
 
 (*) I intend to round out CSS3 by adding add property validation to each of the css3 extension modules
 
