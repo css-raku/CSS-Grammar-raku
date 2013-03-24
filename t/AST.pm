@@ -16,9 +16,15 @@ module t::AST {
             ok($parse.Str, "{$suite}: " ~ $rule ~ " parsed")
         }
 
-        my @expected_warnings = %expected<warnings> // ();
-        is(@warnings, @expected_warnings,
-           @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
+        if  %expected.exists('warnings') && ! %expected<warnings>.defined {
+            diag "untested warnings: " ~ @warnings
+                if @warnings;
+        }
+        else {
+            my @expected_warnings = %expected<warnings> // ();
+            is(@warnings, @expected_warnings,
+               @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
+        }
 
         if defined (my $ast = %expected<ast>) {
             is($parse.ast, $ast, "{$suite} - ast")

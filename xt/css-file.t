@@ -2,19 +2,30 @@
 use v6;
 use Test;
 
-use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS3::Extended;
 use CSS::Grammar::Actions;
 
 use lib '.';
 use t::AST;
 
-my $test_css = %*ENV<TEST_CSS>;
+# can't find alplha(..) or mask(..) in specs or w3c css validator test suite
+
+my %expected = {ast => Mu,
+                warnings => [
+                    'unknown function: alpha', 'dropping declaration: filter',
+                    'unknown function: mask',  'dropping declaration: filter',
+                    'unknown function: alpha', 'dropping declaration: filter',
+                    ],
+};
+
+my $test_css = %*ENV<CSS_TEST>;
 if ($test_css) {
     diag "loading $test_css";
+    %expected<warnings> = Mu;
 }
 else {
     $test_css = 't/jquery-ui-themeroller.css';
-    diag "loading $test_css (set \$TEST_CSS to override)";
+    diag "loading $test_css (set \$CSS_TEST to override)";
 }
 
 my $fh = open $test_css
@@ -23,21 +34,20 @@ my $fh = open $test_css
 my $css_body = join("\n", $fh.lines);
 $fh.close;
 
-my $actions = CSS::Grammar::Actions.new;
+my $actions = CSS::Grammar::CSS3::Extended::Actions.new;
 
 diag "...parsing...";
 
-my $p = CSS::Grammar::CSS3.parsefile($test_css, :actions($actions) );
+my $p = CSS::Grammar::CSS3::Extended.parsefile($test_css, :actions($actions) );
 
 ok($p, "parsed css content ($test_css)")
     or die "parse failed - can't continue";
 
+t::AST::parse_tests(Any, $p, :suite('css3 file'), :rule('TOP'),
+                    :warnings($actions.warnings),
+                    :expected(%expected));
+
 diag "...dumping...";
-
 note $p.ast.perl;
-
-my %expected = {ast => Mu};
-
-t::AST::parse_tests(Any, $p, :suite('css3 file'), :rule('TOP'), :expected(%expected));
 
 done;

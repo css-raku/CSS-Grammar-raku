@@ -388,10 +388,10 @@ class CSS::Grammar::Actions {
         make {ident => 'lang', args => $.list($/)}
     }
     method unknown_function($/)             {
-        $.warning('unknown function', $<ident>.ast);
+        $.warning('unknown function', $<ident>.ast.lc);
     }
     method unknown_pseudo_func($/)             {
-        $.warning('unknown pseudo-function', $<ident>.ast);
+        $.warning('unknown pseudo-function', $<ident>.ast.lc);
     }
 
     method attribute_selector:sym<equals>($/)    { make $/.Str }
