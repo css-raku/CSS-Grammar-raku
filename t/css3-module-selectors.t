@@ -24,9 +24,6 @@ use t::AST;
 my $css_actions = t::CSS3::SelectorsActions.new;
 
 for (
-    unicode_range => {input => '416', ast => [0x416, 0x416]},
-    unicode_range => {input => '400-4FF', ast => [0x400, 0x4FF]},
-    unicode_range => {input => '4??', ast => [0x400, 0x4FF]},
     term => {input => 'U+2??a', ast => {unicode_range => [0x200A, 0x2FFA]}},
     pseudo => {input => '::my-elem',
                ast => {element => 'my-elem'},
@@ -49,16 +46,16 @@ for (
                    ast => ["simple_selector" => ["element_name" => "input", "pseudo" => {"function" => {"ident" => "not", "args" => ["attrib" => {"ident" => "type", "attribute_selector" => "=", "string" => "file"}]}}]],
     },
 # rakudo a bit shakey on this test
-##    selector   => {input => 'li:not(.pingback) .comment-content p:first-child:first-line',
-##                   ast => ["simple_selector" => [
-##                               "element_name" => "li",
-##                               "pseudo" => {"function" => {"ident" => "not",
-##                                                           "args" => ["class" => "pingback"]}}],
-##                           "simple_selector" => ["class" => "comment-content"],
-##                           "simple_selector" => ["element_name" => "p",
-##                                                 "pseudo" => {"class" => "first-child"},
-##                                                 "pseudo" => {"class" => "first-line"}]],
-##    },
+    selector   => {input => 'li:not(.pingback) .comment-content p:first-child:first-line',
+                   ast => ["simple_selector" => [
+                               "element_name" => "li",
+                               "pseudo" => {"function" => {"ident" => "not",
+                                                           "args" => ["class" => "pingback"]}}],
+                           "simple_selector" => ["class" => "comment-content"],
+                           "simple_selector" => ["element_name" => "p",
+                                                 "pseudo" => {"class" => "first-child"},
+                                                 "pseudo" => {"class" => "first-line"}]],
+    },
     selector   => {input => 'body:not(.home) h2 + p:first-letter',
                    ast => ["simple_selector" => ["element_name" => "body", "pseudo" => {"function" => {"ident" => "not", "args" => ["class" => "home"]}}],
                            "simple_selector" => ["element_name" => "h2"],

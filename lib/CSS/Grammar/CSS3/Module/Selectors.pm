@@ -14,9 +14,9 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     token combinator:sym<sibling> {'~'}
 
     # allow '::' element selectors
-    rule pseudo:sym<element2> {'::' <element=.ident> }
+    rule pseudo:sym<element2> {'::'<element=.ident>}
  
-    rule namespace_prefix {[<ident>|<wildcard>]? '|'}
+    rule namespace_prefix {[<ident>|<wildcard>]?'|'}
     rule wildcard {'*'}
 
     token simple_selector { <namespace_prefix>? [<element_name>|<wildcard>] [<id> | <class> | <attrib> | <pseudo>]*
@@ -66,19 +66,6 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
     method aterm:sym<unicode_range>($/) { make $.node($/) }
-    method unicode_range:sym<from_to>($/) {
-        # don't produce actual hex chars; could be out of range
-        make [ $._from_hex($<from>.Str), $._from_hex($<to>.Str) ];
-    }
-    method unicode_range:sym<masked>($/) {
-        my $mask = $/.Str;
-        my $lo = $mask.subst('?', '0'):g;
-        my $hi = $mask.subst('?', 'F'):g;
-
-        # don't produce actual hex chars; could be out of range
-        make [ $._from_hex($lo), $._from_hex($hi) ];
-    }
-
     method pseudo_function:sym<nth_selector>($/)  { make $.node($/) }
 
     method nth_args:sym<odd>($/)     { make {a => 2, b=> 1} }
