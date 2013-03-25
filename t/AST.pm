@@ -7,10 +7,13 @@ module t::AST {
     our sub parse_tests($input, $parse,
                          :$rule, :$suite, :%expected, :@warnings) {
 
-        my $parsed = %expected<parse> // $input;
+        my $expected_parse = %expected<parse> // $input;
 
         if (defined $input) {
-            is($parse.Str, $parsed, "{$suite}: " ~ $rule ~ " parse: " ~ $input)
+            my $input_display = $input.chars > 300 ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50) !! $input;
+            my $got = $parse.Str.subst(/^\s*/,'').subst(/\s*$/,'');
+            my $expected = $expected_parse.subst(/^\s*/,'').subst(/\s*$/,'');
+            is($got, $expected, "{$suite}: " ~ $rule ~ " parse: " ~ $input_display)
         }
         else {
             ok($parse.Str, "{$suite}: " ~ $rule ~ " parsed")
