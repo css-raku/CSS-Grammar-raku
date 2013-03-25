@@ -5,7 +5,7 @@
 # -- css3 without extensions should be largley css2.1 compatibile
 # -- css3 with extensions enabled should be able to parse css2.1
 #    input and produce compatible ASTs (to ensures a smooth transition
-#    when installing extension modules).
+#    when enabling extension modules).
 
 use Test;
 

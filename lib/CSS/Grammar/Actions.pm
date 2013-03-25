@@ -74,20 +74,11 @@ class CSS::Grammar::Actions {
 
     sub _display_string($_str) {
 
-        my $str = $_str.chomp.subst(/^<ws>/,'').subst(/<ws>$/,'');
-        $str = $str.subst(/[\s|\t|\n|\r]+/, ' '):g;
-
-        my %unesc = (
-            "\n" => '\n',
-            "\r" => '\t',
-            "\f" => '\f',
-            "\\"  => '\\',
-            );
+        my $str = $_str.chomp.trim;
+        $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
         $str.split('').map({
-            %unesc{$_} // (
-               $_ ~~ /<[\t\o40 \!..\~]>/ ?? $_ !! sprintf "\\x[%x]", $_.ord
-            )
+            $_ ~~ /<[\t\o40 \!..\~]>/ ?? $_ !! $_.ord.fmt("\\x[%x]")
        }).join('');
     }
 

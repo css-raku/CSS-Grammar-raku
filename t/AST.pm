@@ -11,8 +11,8 @@ module t::AST {
 
         if (defined $input) {
             my $input_display = $input.chars > 300 ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50) !! $input;
-            my $got = $parse.Str.subst(/^\s*/,'').subst(/\s*$/,'');
-            my $expected = $expected_parse.subst(/^\s*/,'').subst(/\s*$/,'');
+            my $got = $parse.trim;
+            my $expected = $expected_parse.trim;
             is($got, $expected, "{$suite}: " ~ $rule ~ " parse: " ~ $input_display)
         }
         else {
