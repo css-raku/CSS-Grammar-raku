@@ -292,39 +292,21 @@ class CSS::Grammar::Actions {
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method declaration($/)        { 
-
-        if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
-            $.warning('dropping declaration', $<property>.ast);
-            return;
-        }
-
-        make $.node($/);
+    method unknown_property($/)        { 
+        $.warning('unknown property', $<property>.ast, 'dropping declaration');
     }
 
     method expr($/) { make $.list($/, :keep_undef(True)) }
 
-    method pterm:sym<quantity>($/) {
-        my $type = 'num';
-        my $units;
+    method pterm:sym<num>($/) { make $.token($<num>.ast, :type('num')); }
+    method pterm:sym<qty>($/) { make $<q>.ast }
 
-        my ($units_cap) = $<units>.list;
-        if $units_cap {
-            ($type, $units) = $units_cap.ast.kv;
-            $units = $units.lc;
-        }
+    method length($/)     { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method angle($/)      { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method time($/)       { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method freq($/)       { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
+    method percentage($/) { make $.token($<num>.ast, :units('%'), :type('percentage')) }
 
-        make $.token($<num>.ast, :type($type), :units($units));
-    }
-
-    method units:sym<length>($/)     { make (length => $/.Str.lc) }
-    method units:sym<angle>($/)      { make (angle => $/.Str.lc) }
-    method units:sym<time>($/)       { make (time => $/.Str.lc) }
-    method units:sym<freq>($/)       { make (freq => $/.Str.lc) }
-    method units:sym<percentage>($/) { make (percentage => $/.Str.lc) }
-    method dimension($/)     {
-        $.warning('unknown dimensioned quantity', $/.Str);
-    }
     # treat 'ex' as '1ex'; 'em' as '1em'
     method pterm:sym<emx>($/)        { make $.token(1, :units($/.Str.lc), :type('length')) }
 
@@ -347,9 +329,9 @@ class CSS::Grammar::Actions {
         if $<term> {
             my $term_ast = $<term>.ast;
             if $<unary_operator> && $<unary_operator>.Str eq '-' {
-                $term_ast = $.token( - $term_ast,
-                                     :units($<term>.ast.units),
-                                     :type($<term>.ast.type) );
+                my $units = $term_ast.can('units') && $term_ast.units;
+                my $type = $term_ast.can('type') && $term_ast.type;
+                $term_ast = $.token( - $term_ast, :units($units), :type($type) );
             }
             make $term_ast;
         }
@@ -358,6 +340,9 @@ class CSS::Grammar::Actions {
     method selector($/)          { make $.list($/) }
     method simple_selector($/)   { make $.list($/) }
     method attrib($/)            { make $.node($/) }
+
+    method prop:sym<azimuth>($/) {warn "tba: ".$<property>.ast }
+    method prop:sym<background-attachment>($/) {warn "tba: ".$<property>.ast }
 
     method function:sym<attr>($/)             {
         return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')

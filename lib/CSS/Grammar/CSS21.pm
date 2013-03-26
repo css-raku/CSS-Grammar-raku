@@ -49,20 +49,28 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
 
     rule selectors { <selector> [',' <selector>]* }
 
-    rule declaration   {<property> <expr> <prio>? <end_decl> }
+    rule declaration   {$<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
+    proto rule prop { <...> }
+    # just starting work on implmentation of the property table
+    rule prop:sym<azimuth> {:i azimuth ':' $<ok>=[[<angle> | [[ left\-side | far\-left | left | center\-left | center | center\-right | right | far\-right | right\-side ] | behind ] | leftwards | rightwards | inherit ] | <expr> ] }
+    rule prop:sym<background-attachment> {:i background\-attachment ':' $<ok>=[[scroll | fixed | inherit] | <expr> ] }
+
+    rule unknown_property {<property> <expr>}
 
     rule expr { <term> [ <operator>? <term> ]* }
 
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
     # units inherited from base grammar: length, percentage
-    token units:sym<angle>    {:i[deg|rad|grad]}
-    token units:sym<time>     {:i[m?s]}
-    token units:sym<freq>     {:i[k?Hz]}
+    token angle    {:i<num>(deg|rad|grad)}
+    token time     {:i<num>(m?s)}
+    token freq     {:i<num>(k?Hz)}
 
     # pterm - able to be prefixed by a unary operator
     proto rule pterm {*}
-    rule pterm:sym<quantity>  {<num><units>?}
+    rule pterm:sym<qty>       {<q=.length>|<q=.percentage>|<q=.angle>
+                              |<q=.time>|<q=.freq>}
+    rule pterm:sym<num>       {<num>}
     rule pterm:sym<emx>       {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {*}

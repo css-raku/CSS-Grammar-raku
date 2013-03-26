@@ -52,9 +52,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    proto token units {*}
-    token units:sym<length>     {:i[pt|mm|cm|pc|in|px|em|ex]}
-    token units:sym<percentage> {'%'}
+    token length         {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token percentage     {<num>'%'}
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}

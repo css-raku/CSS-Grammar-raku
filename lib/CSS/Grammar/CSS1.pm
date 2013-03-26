@@ -37,7 +37,12 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     rule declaration_list {[ <declaration> | <dropped_decl> ]*}
     # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule declaration      { <property> <expr> <prio>? <end_decl> }
+    rule declaration      { $<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
+
+    proto rule prop { <...> }
+    # just starting work on implmentation of the property table
+
+    rule unknown_property {<property> <expr>}
 
     rule expr { <term> [ <operator>? <term> ]* }
 
@@ -46,13 +51,14 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
               }
 
     proto rule pterm {*}
-    rule pterm:sym<quantity>   {<num><units>?}
-    rule pterm:sym<emx>        {<emx>}
+    rule pterm:sym<qty>       {<q=.length>|<q=.percentage>}
+    rule pterm:sym<num>       {<num>}
+    rule pterm:sym<emx>       {<emx>}
     proto rule aterm {*}
-    rule aterm:sym<string>     {<string>}
-    rule aterm:sym<color>      {<color>}
-    rule aterm:sym<url>        {<url>}
-    rule aterm:sym<ident>      {<ident>}
+    rule aterm:sym<string>    {<string>}
+    rule aterm:sym<color>     {<color>}
+    rule aterm:sym<url>       {<url>}
+    rule aterm:sym<ident>     {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
