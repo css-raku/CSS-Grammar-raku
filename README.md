@@ -117,12 +117,12 @@ For a working example, see t/parse-css3-module-fonts.t.
 
 To Do
 =====
-I'm just beginning to work through the property specific grammars:
+I'm working on the css-properties branch to implement property specific grammars:
 - CSS1 - http://129.69.59.141/css1pqre.htm ?
 - CSS21 - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
 - CSS3 - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
 
-Each of the above grammars will be somewhat refactored and considerably fleshed out over the coming weeks.
+ASTs and grammars are being refactored. Hoping to merge this back tby early/mid April.
 
 See Also
 ========
