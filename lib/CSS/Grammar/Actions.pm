@@ -208,11 +208,10 @@ class CSS::Grammar::Actions {
     method color:sym<hex>($/)   {
         my $id = $<id>.ast;
         my $chars = $id.chars;
-        unless $id.match(/^<xdigit>+$/)
-            && ($chars == 3 || $chars == 6) {
-                $.warning("bad hex color", $/.Str);
-                return;
-        }
+
+        return $.warning("bad hex color", $/.Str)
+            unless $id.match(/^<xdigit>+$/)
+            && ($chars == 3 || $chars == 6);
 
         my @rgb = $chars == 3
             ?? $id.comb(/./).map({$_ ~ $_})
@@ -421,7 +420,7 @@ class CSS::Grammar::Actions {
             my $hex_digit;
 
             if ($_ ge '0' && $_ le '9') {
-                $hex_digit = $_;
+                $hex_digit = $_.Int;
             }
             elsif ($_ ge 'A' && $_ le 'F') {
                 $hex_digit = ord($_) - ord('A') + 10;
