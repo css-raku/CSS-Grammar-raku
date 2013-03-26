@@ -10,9 +10,6 @@ use t::AST;
 my $css_actions = CSS::Grammar::Actions.new;
 
 for (
-    unicode_range => {input => '416', ast => [0x416, 0x416]},
-    unicode_range => {input => '400-4FF', ast => [0x400, 0x4FF]},
-    unicode_range => {input => '4??', ast => [0x400, 0x4FF]},
     term => {input => '42%', ast => 42,
              token => {type => 'percentage'},
     },
@@ -63,6 +60,9 @@ for (
              ast => Mu,
              warnings => 'unknown function: mask',
     },
+    unicode_range => {input => '416', ast => [0x416, 0x416]},
+    unicode_range => {input => '400-4FF', ast => [0x400, 0x4FF]},
+    unicode_range => {input => '4??', ast => [0x400, 0x4FF]},
     ) {
 
     my $rule = $_.key;

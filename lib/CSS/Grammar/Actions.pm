@@ -78,7 +78,9 @@ class CSS::Grammar::Actions {
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
         $str.split('').map({
-            $_ ~~ /<[\t\o40 \!..\~]>/ ?? $_ !! $_.ord.fmt("\\x[%x]")
+            $_ eq "\\"               ?? '\\'
+            !! /<[\t\o40 \!..\~]>/   ?? $_   
+            !! $_.ord.fmt("\\x[%x]")
        }).join('');
     }
 

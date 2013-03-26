@@ -45,7 +45,7 @@ for (
     selector   => {input => 'input:not([type="file"])',
                    ast => ["simple_selector" => ["element_name" => "input", "pseudo" => {"function" => {"ident" => "not", "args" => ["attrib" => {"ident" => "type", "attribute_selector" => "=", "string" => "file"}]}}]],
     },
-# rakudo a bit shakey on this test
+# :first-child is a pseudo-class, :first-line is a pseudo-element
     selector   => {input => 'li:not(.pingback) .comment-content p:first-child:first-line',
                    ast => ["simple_selector" => [
                                "element_name" => "li",
@@ -54,13 +54,13 @@ for (
                            "simple_selector" => ["class" => "comment-content"],
                            "simple_selector" => ["element_name" => "p",
                                                  "pseudo" => {"class" => "first-child"},
-                                                 "pseudo" => {"class" => "first-line"}]],
+                                                 "pseudo" => {"element" => "first-line"}]],
     },
     selector   => {input => 'body:not(.home) h2 + p:first-letter',
                    ast => ["simple_selector" => ["element_name" => "body", "pseudo" => {"function" => {"ident" => "not", "args" => ["class" => "home"]}}],
                            "simple_selector" => ["element_name" => "h2"],
                            "combinator" => "+",
-                           "simple_selector" => ["element_name" => "p", "pseudo" => {"class" => "first-letter"}]],
+                           "simple_selector" => ["element_name" => "p", "pseudo" => {"element" => "first-letter"}]],
     },
     selector =>   {input => 'h2:not(:first-of-type):not(:last-of-type)',
                    ast => ["simple_selector" => ["element_name" => "h2",

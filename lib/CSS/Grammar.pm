@@ -82,7 +82,6 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # pseudos
     proto rule pseudo {<...>}
-    rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]|before|after]}
 
     # Combinators - introduced with css2.1
     proto token combinator {*}

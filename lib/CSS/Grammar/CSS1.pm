@@ -61,7 +61,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
                           | <class> <pseudo>?
                           | <pseudo> }
 
-    rule pseudo:sym<element> {':' $<element>=[:i'first-'[line|letter]]}
+    rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]]}
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 

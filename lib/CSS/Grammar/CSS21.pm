@@ -84,11 +84,10 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     token attribute_selector:sym<includes> {'~='}
     token attribute_selector:sym<dash>     {'|='}
 
-    # inherited from base: pseudo:sym<element>
+    rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
     rule pseudo:sym<function> {':'[<function=.pseudo_function>|<unknown_pseudo_func>]}
-
     # assume anything else is a class
-    rule pseudo:sym<class>    {':'<class=.ident>}
+    rule pseudo:sym<class>     {':' <class=.ident> }
 
     # distinguish regular functions from psuedo_functions
 
