@@ -15,7 +15,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # productions
     rule stylesheet { <charset>?
                       [<import> | <misplaced>]*
-                      ['@'<at_rule> | <ruleset> | <misplaced> | <unknown>]* }
+                      ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
@@ -54,7 +54,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule selectors { <selector> [',' <selector>]* }
 
-    rule declaration   {$<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
+    rule declaration   {$<property>=[<prop>||<unknown_property>] <prio>? <end_decl> }
     rule unknown_property {<property> <expr>}
 
     rule expr { <term> [ <operator>? <term> ]* }
@@ -101,18 +101,18 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     proto rule function { <...> }
     # I haven't found a good list of css2.1 functions; there's probably more
-    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? ')'| <bad_args> ')']}
-    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* ')'| <bad_args> ')'] }
-    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? ')'| <bad_args> ')'] }
+    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? || <bad_args>] ')'}
+    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* || <bad_args> ] ')'}
+    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? || <bad_args> ] ')' }
     # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
     token unknown_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
-    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> ')'| <bad_args> ')']}
+    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <bad_args> ] ')'}
     # pseudo function catch-all
-    rule unknown_pseudo_func       {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
+    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

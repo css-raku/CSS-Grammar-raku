@@ -4,7 +4,7 @@ use v6;
 
 grammar CSS::Grammar::CSS1::Properties {
 
- rule prop:sym<font\-style> {:i (font\-style) ':' [$<props>=[normal|bold|oblique] | <any>* ] }
+ rule prop:sym<font\-style> {:i (font\-style) ':' [$<props>=[normal|bold|oblique] || <any>* ] }
 
 }
 

@@ -12,9 +12,9 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
 
     # productions
     rule stylesheet { <charset>?
-                      [<import>                 | <misplaced>]*
-                      ['@'<at_rule=.at_decl>    | <misplaced>]*
-                      ['@'<at_rule> | <ruleset> | <misplaced2> | <unknown>]* }
+                      [<import>                 || <misplaced>]*
+                      ['@'<at_rule=.at_decl>    || <misplaced>]*
+                      ['@'<at_rule> | <ruleset> || <misplaced2> || <unknown>]* }
 
     # <at_decl> - at rules preceding main body - aka @namespace extensions
     proto rule at_decl {*}

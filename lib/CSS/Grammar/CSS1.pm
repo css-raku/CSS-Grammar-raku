@@ -1,18 +1,18 @@
 use v6;
 
 use CSS::Grammar;
-use CSS::Grammar::CSS21::Properties;
+use CSS::Grammar::CSS1::Properties;
 # specification: http://www.w3.org/TR/2008/REC-CSS1-20080411/
 
 grammar CSS::Grammar::CSS1:ver<20080411.000>
-    is CSS::Grammar::CSS21::Properties
+    is CSS::Grammar::CSS1::Properties
     is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
     # productions
 
-    rule stylesheet { <import>* [<ruleset> | <misplaced> | <unknown>]* }
+    rule stylesheet { <import>* [<ruleset> || <misplaced> || <unknown>]* }
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
@@ -39,7 +39,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     rule declaration_list {[ <declaration> | <dropped_decl> ]*}
     # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule declaration      { $<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
+    rule declaration      { $<property>=[<prop>||<unknown_property>] <prio>? <end_decl> }
 
     rule unknown_property {<property> <expr>}
 

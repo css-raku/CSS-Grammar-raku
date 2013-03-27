@@ -11,7 +11,7 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
 
     # functions
     # ---------
-    rule function:sym<format> {:i'format(' [ <string> ')'| <bad_args> ')']}
+    rule function:sym<format> {:i'format(' [ <string> || <bad_args> ] ')'}
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
