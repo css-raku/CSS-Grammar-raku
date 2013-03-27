@@ -1,9 +1,14 @@
 use v6;
 
 use CSS::Grammar;
+use CSS::Grammar::CSS1::Properties;
+use CSS::Grammar::CSS21::Properties;
 # specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
 
-grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
+grammar CSS::Grammar::CSS21:ver<20110607.001>
+    is CSS::Grammar::CSS1::Properties
+    is CSS::Grammar::CSS21::Properties
+    is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
@@ -50,11 +55,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule selectors { <selector> [',' <selector>]* }
 
     rule declaration   {$<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
-    proto rule prop { <...> }
-    # just starting work on implmentation of the property table
-    rule prop:sym<azimuth> {:i azimuth ':' $<ok>=[[<angle> | [[ left\-side | far\-left | left | center\-left | center | center\-right | right | far\-right | right\-side ] | behind ] | leftwards | rightwards | inherit ] | <expr> ] }
-    rule prop:sym<background-attachment> {:i background\-attachment ':' $<ok>=[[scroll | fixed | inherit] | <expr> ] }
-
     rule unknown_property {<property> <expr>}
 
     rule expr { <term> [ <operator>? <term> ]* }

@@ -1,8 +1,12 @@
 use v6;
 
 # rules for constructing ASTs for CSS::Grammar
+use CSS::Grammar::CSS1::Properties;
+use CSS::Grammar::CSS21::Properties;
 
-class CSS::Grammar::Actions {
+class CSS::Grammar::Actions 
+    is CSS::Grammar::CSS1::Properties::Actions
+    is CSS::Grammar::CSS21::Properties::Actions {
     use CSS::Grammar::AST::Info;
     use CSS::Grammar::AST::Token;
 
@@ -340,9 +344,6 @@ class CSS::Grammar::Actions {
     method selector($/)          { make $.list($/) }
     method simple_selector($/)   { make $.list($/) }
     method attrib($/)            { make $.node($/) }
-
-    method prop:sym<azimuth>($/) {warn "tba: ".$<property>.ast }
-    method prop:sym<background-attachment>($/) {warn "tba: ".$<property>.ast }
 
     method function:sym<attr>($/)             {
         return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')

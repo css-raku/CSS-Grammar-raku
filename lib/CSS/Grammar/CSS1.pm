@@ -1,10 +1,12 @@
 use v6;
 
 use CSS::Grammar;
-
+use CSS::Grammar::CSS21::Properties;
 # specification: http://www.w3.org/TR/2008/REC-CSS1-20080411/
 
-grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
+grammar CSS::Grammar::CSS1:ver<20080411.000>
+    is CSS::Grammar::CSS21::Properties
+    is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
@@ -38,9 +40,6 @@ grammar CSS::Grammar::CSS1:ver<20080411.000> is CSS::Grammar {
     # an unterminated string might have run to end-of-line and consumed ';'
 
     rule declaration      { $<property>=[<prop>|<unknown_property>] <prio>? <end_decl> }
-
-    proto rule prop { <...> }
-    # just starting work on implmentation of the property table
 
     rule unknown_property {<property> <expr>}
 

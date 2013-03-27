@@ -93,6 +93,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
     rule property {<property=.ident> ':'}
+
+    proto rule prop { <...> }
+
     rule end_decl { ';' | <?before '}'> | $ }
 
     # Error Recovery
