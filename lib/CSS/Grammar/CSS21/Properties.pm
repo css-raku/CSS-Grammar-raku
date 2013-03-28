@@ -7,33 +7,54 @@ grammar CSS::Grammar::CSS21::Properties:ver<20110607.000> {
     token inherit {:i inherit}
 
     rule prop:sym<azimuth> {:i (azimuth) ':' [
-                                 $<ok>=[<angle>
-                                        | [[$<lr>=[ left\-side | far\-left | left | center\-left | center | center\-right | right | far\-right | right\-side ] $<bh>='behind'? | $<bh>=behind ]]
-                                        | $<delta>=[$<dl>=leftwards | $<dr>=rightwards]
-                                        | <inherit> ]
-                                 || <any>* ] }
+                                 <angle>
+                                 | [[$<lr>=[ left\-side | far\-left | left | center\-left | center | center\-right | right | far\-right | right\-side ] $<bh>='behind'? | $<bh>=behind ]]
+                                 | $<delta>=[$<dl>=leftwards | $<dr>=rightwards]
+                                 | <inherit> || <bad_args> ]}
 
     rule prop:sym<elevation> {:i (elevation) ':' [
-                                 $<ok>=[ <angle>
-                                         | $<tilt>=[below | level | above]
-                                         | $<delta>=[ $<dh>=higher | $<dl>=lower ]
-                                         | <inherit> ]
-                                 || <any>* ] }
+                                   <angle>
+                                   | $<tilt>=[below | level | above]
+                                   | $<delta>=[ $<dh>=higher | $<dl>=lower ]
+                                   | <inherit> || <bad_args> ]}
 
     rule prop:sym<background-attachment> {:i (background\-attachment) ':' [
-                                               $<ok>=[scroll | fixed | inherit]
-                                               || <any>* ] }
+                                               [ scroll | fixed ] & <ident>
+                                               | <inherit> || <bad_args> ]}
+
+    rule prop:sym<background-color> {:i (background\-color) ':' [
+                                          <color>
+                                          | [ fixed & <ident> ]
+                                          | <inherit> || <bad_args> ]}
+
+    rule prop:sym<background-image> {:i (background\-image) ':' [
+                                          <uri>
+                                          | [ fixed & <ident> ]
+                                          | <inherit> || <bad_args> ]}
     #...
     # font-style - inherited from css1    
 }
 
 class CSS::Grammar::CSS21::Properties::Actions {
 
+    method inherit($/) {make True }
+
+    method _make_prop($/, $synopsis) {
+        my $property = $0.Str.trim.lc;
+
+        return $.warning('usage ' ~ $property ~ ': ' ~ $synopsis)
+            if $<bad_args>;
+
+        my @ast = $.list($/);
+
+        make ($property => @ast);
+     }
+
     method prop:sym<azimuth>($/) {
         # see http://www.w3.org/TR/2011/REC-CSS2-20110607/aural.html
 
         return $.warning('usage azimuth: <angle> | [[ left-side | far-left | left | center-left | center | center-right | right | far-right | right-side ] || behind ] | leftwards | rightwards | inherit')
-            unless $<ok>;
+            if $<bad_args>;
 
         my %ast;
 
@@ -68,14 +89,15 @@ class CSS::Grammar::CSS21::Properties::Actions {
             %ast<inherit> = True;
         }
 
-        make %ast;
+        my $property = $0.Str.trim.lc;
+        make ($property => %ast);
     }
 
     method prop:sym<elevation>($/) {
         # see http://www.w3.org/TR/2011/REC-CSS2-20110607/aural.html
 
         return $.warning('usage elevation: <angle> | below | level | above | higher | lower | inherit')
-            unless $<ok>;
+            if $<bad_args>;
 
         my %ast;
 
@@ -101,12 +123,19 @@ class CSS::Grammar::CSS21::Properties::Actions {
             %ast<inherit> = True;
         }
 
-        make %ast;
+        my $property = $0.Str.trim.lc;
+        make ($property => %ast);
     }
 
     method prop:sym<background-attachment>($/) {
-        return $.warning('usage background-attachment: scroll | fixed | inherit')
-            unless $<ok>;
-        make $<ok>.Str.trim.lc
+        $._make_prop($/, 'scroll | fixed | inherit');
+    };
+
+    method prop:sym<background-color>($/) {
+        $._make_prop($/, '<color> | transparent | inherit')
+    };
+
+    method prop:sym<background-image>($/) {
+        $._make_prop($/, '<uri> | none | inherit')
     };
 }

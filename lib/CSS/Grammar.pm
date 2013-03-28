@@ -62,6 +62,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # productions
 
     rule url  {:i'url(' <url_string> ')' }
+    rule uri  {<url>}
     token unclosed_paren {''}
 
     rule emx {:i e[m|x]}

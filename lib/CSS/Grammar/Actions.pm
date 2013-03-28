@@ -155,7 +155,8 @@ class CSS::Grammar::Actions
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        make $pfx ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        make $pfx ~ $ident.lc;
     }
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');
@@ -196,6 +197,7 @@ class CSS::Grammar::Actions
     }
 
     method url($/)  { make $<url_string>.ast }
+    method uri($/)  { make $<url>.ast }
 
     method color_arg($/) {
         my $arg = %<num>.ast;

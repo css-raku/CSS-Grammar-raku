@@ -18,7 +18,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
                       ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
-    rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
+    rule import  { \@(:i'import')  [<string>|<uri>] <media_list>? ';' }
     # to detect out of order directives
     rule misplaced {<charset>|<import>}
 
