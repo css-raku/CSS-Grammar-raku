@@ -27,7 +27,7 @@ my $css_actions = t::CSS3::FontActions.new;
 for (
     at_rule   => {input => q:to 'END_INPUT',
                             font-face {
-                                font-family: Gentium;
+                                font-family: 'Gentium';
                                 src: url("Fonts/Gentium.eot");
                                 src: url(http://example.com/fonts/Gentium.ttf) format("truetype"),
                                      url(http://example.com/fonts/Gentium.wof) format("woff");

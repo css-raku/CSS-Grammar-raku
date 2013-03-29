@@ -151,7 +151,8 @@ class CSS::Grammar::Actions {
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        make $pfx ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        make $pfx ~ $ident.lc;
     }
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');
@@ -192,6 +193,7 @@ class CSS::Grammar::Actions {
     }
 
     method url($/)  { make $<url_string>.ast }
+    method uri($/)  { make $<url>.ast }
 
     method color_arg($/) {
         my $arg = %<num>.ast;
@@ -250,7 +252,7 @@ class CSS::Grammar::Actions {
 
     # pseudos
     method pseudo:sym<element>($/) { my %node; # :first-line
-                                     %node<element> = $<element>.Str;
+                                     %node<element> = $<element>.Str.lc;
                                      make %node;
     }
     method pseudo:sym<element2>($/) { make $.node($/) }
@@ -288,12 +290,12 @@ class CSS::Grammar::Actions {
     method page_pseudo($/)        { make $<ident>.ast }
 
     method property($/)           { make $<property>.ast }
+    method inherit($/)            { make True }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method declaration($/)        { 
-
+    method declaration:sym<raw>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
             return;
@@ -302,29 +304,27 @@ class CSS::Grammar::Actions {
         make $.node($/);
     }
 
-    method expr($/) { make $.list($/, :keep_undef(True)) }
+    method expr($/) { make $.list($/) }
 
-    method pterm:sym<quantity>($/) {
-        my $type = 'num';
-        my $units;
+    method pterm:sym<num>($/) { make $.token($<num>.ast, :type('num')); }
+    method pterm:sym<qty>($/) { make $<quantity>.ast }
 
-        my ($units_cap) = $<units>.list;
-        if $units_cap {
-            ($type, $units) = $units_cap.ast.kv;
-            $units = $units.lc;
-        }
+    method length($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method quantity:sym<length>($/)     { make $<length>.ast }
 
-        make $.token($<num>.ast, :type($type), :units($units));
-    }
+    method angle($/)                    { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method quantity:sym<angle>($/)      { make $<angle>.ast }
 
-    method units:sym<length>($/)     { make (length => $/.Str.lc) }
-    method units:sym<angle>($/)      { make (angle => $/.Str.lc) }
-    method units:sym<time>($/)       { make (time => $/.Str.lc) }
-    method units:sym<freq>($/)       { make (freq => $/.Str.lc) }
-    method units:sym<percentage>($/) { make (percentage => $/.Str.lc) }
-    method dimension($/)     {
-        $.warning('unknown dimensioned quantity', $/.Str);
-    }
+    method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method quantity:sym<time>($/)       { make $<time>.ast }
+
+    method freq($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
+    method quantity:sym<freq>($/)       { make $<freq>.ast }
+
+    method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method quantity:sym<percentage>($/) { make $<percentage>.ast }
+
+
     # treat 'ex' as '1ex'; 'em' as '1em'
     method pterm:sym<emx>($/)        { make $.token(1, :units($/.Str.lc), :type('length')) }
 
@@ -347,9 +347,9 @@ class CSS::Grammar::Actions {
         if $<term> {
             my $term_ast = $<term>.ast;
             if $<unary_operator> && $<unary_operator>.Str eq '-' {
-                $term_ast = $.token( - $term_ast,
-                                     :units($<term>.ast.units),
-                                     :type($<term>.ast.type) );
+                my $units = $term_ast.can('units') && $term_ast.units;
+                my $type = $term_ast.can('type') && $term_ast.type;
+                $term_ast = $.token( - $term_ast, :units($units), :type($type) );
             }
             make $term_ast;
         }

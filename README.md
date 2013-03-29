@@ -115,18 +115,10 @@ core CSS3 language, plus Fonts and Paged Media extensions
 
 For a working example, see t/parse-css3-module-fonts.t.
 
-To Do
-=====
-I'm working on the css-properties branch to implement property specific grammars:
-- CSS1 - http://129.69.59.141/css1pqre.htm ?
-- CSS21 - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
-- CSS3 - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
-
-ASTs and grammars are being refactored. Hoping to merge this back tby early/mid April.
-
 See Also
 ========
-[CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a general purpose CSS validation and parsing suite.
+- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
 ==========

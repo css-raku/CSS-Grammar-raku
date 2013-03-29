@@ -3,14 +3,15 @@ use v6;
 use CSS::Grammar;
 # specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
 
-grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
+grammar CSS::Grammar::CSS21:ver<20110607.001>
+    is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
     # productions
     rule stylesheet { <charset>?
                       [<import> | <misplaced>]*
-                      ['@'<at_rule> | <ruleset> | <misplaced> | <unknown>]* }
+                      ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
@@ -27,9 +28,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
     rule page_pseudo          {':'<ident>}
 
-    rule unary_operator       {'+'|'-'}
-    rule operator             {'/'|','}
-
     # inherited combinators: '+' (adjacent)
     token combinator:sym<not> {'-'}
 
@@ -38,6 +36,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
         <selectors> <declarations>
     }
 
+    rule selectors { <selector> [',' <selector>]* }
+
     rule declarations {
         '{' <declaration_list> <.end_block>
     }
@@ -45,32 +45,27 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list {[ <declaration> | <dropped_decl> ]*}
+    rule declaration_list { [ <declaration> | <dropped_decl> ]* }
+    # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule selectors { <selector> [',' <selector>]* }
-
-    rule declaration   {<property> <expr> <prio>? <end_decl> }
+    rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
+    rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
-
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
-    # units inherited from base grammar: length, percentage
-    token units:sym<angle>    {:i[deg|rad|grad]}
-    token units:sym<time>     {:i[m?s]}
-    token units:sym<freq>     {:i[k?Hz]}
+    # quantity inherited from base grammar: length, percentage
+    token angle               {:i<num>(deg|rad|grad)}
+    token quantity:sym<angle> {<angle>}
 
-    # pterm - able to be prefixed by a unary operator
-    proto rule pterm {*}
-    rule pterm:sym<quantity>  {<num><units>?}
-    rule pterm:sym<emx>       {<emx>}
+    token time                {:i<num>(m?s)}
+    token quantity:sym<time>  {<time>}
+
+    token freq                {:i<num>(k?Hz)}
+    token quantity:sym<freq>  {<freq>}
+
     # aterm - atomic; these can't be prefixed by a unary operator
-    proto rule aterm {*}
-    rule aterm:sym<string>    {<string>}
-    rule aterm:sym<url>       {<url>}
-    rule aterm:sym<color>     {<color>}
     rule aterm:sym<function>  {<function>|<unknown_function>}
-    rule aterm:sym<ident>     {<ident>}
 
     rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
@@ -92,21 +87,21 @@ grammar CSS::Grammar::CSS21:ver<20110607.000> is CSS::Grammar {
     # distinguish regular functions from psuedo_functions
 
     proto rule function { <...> }
-    # I haven't found a good list of css2.1 functions; there's probably more
-    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? ')'| <bad_args> ')']}
-    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* ')'| <bad_args> ')'] }
-    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? ')'| <bad_args> ')'] }
+    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? || <bad_args>] ')'}
+    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* || <bad_args> ] ')'}
+    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? || <bad_args> ] ')' }
     # catch alls for unknown function names and arguments. individual
     # declarations should ideally catch bad argument lists and give
     # friendlier function-specific messages
     token unknown_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
-    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> ')'| <bad_args> ')']}
+    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <bad_args> ] ')'}
     # pseudo function catch-all
-    rule unknown_pseudo_func       {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
+    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters
     token nonascii            {<[\o240..\o377]>}
 }
+
