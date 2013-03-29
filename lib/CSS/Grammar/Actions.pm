@@ -1,12 +1,8 @@
 use v6;
 
 # rules for constructing ASTs for CSS::Grammar
-use CSS::Grammar::CSS1::Properties;
-use CSS::Grammar::CSS21::Properties;
 
-class CSS::Grammar::Actions 
-    is CSS::Grammar::CSS1::Properties::Actions
-    is CSS::Grammar::CSS21::Properties::Actions {
+class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Info;
     use CSS::Grammar::AST::Token;
 
@@ -256,7 +252,7 @@ class CSS::Grammar::Actions
 
     # pseudos
     method pseudo:sym<element>($/) { my %node; # :first-line
-                                     %node<element> = $<element>.Str;
+                                     %node<element> = $<element>.Str.lc;
                                      make %node;
     }
     method pseudo:sym<element2>($/) { make $.node($/) }
@@ -294,24 +290,40 @@ class CSS::Grammar::Actions
     method page_pseudo($/)        { make $<ident>.ast }
 
     method property($/)           { make $<property>.ast }
+    method inherit($/)            { make True }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method unknown_property($/)        { 
-        $.warning('unknown property', $<property>.ast, 'dropping declaration');
+    method declaration:sym<raw>($/)        {
+        if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
+            $.warning('dropping declaration', $<property>.ast);
+            return;
+        }
+
+        make $.node($/);
     }
 
-    method expr($/) { make $.list($/, :keep_undef(True)) }
+    method expr($/) { make $.list($/) }
 
     method pterm:sym<num>($/) { make $.token($<num>.ast, :type('num')); }
-    method pterm:sym<qty>($/) { make $<q>.ast }
+    method pterm:sym<qty>($/) { make $<units>.ast }
 
-    method length($/)     { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
-    method angle($/)      { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
-    method time($/)       { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
-    method freq($/)       { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
-    method percentage($/) { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method length($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method units:sym<length>($/)     { make $<length>.ast }
+
+    method angle($/)                 { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method units:sym<angle>($/)      { make $<angle>.ast }
+
+    method time($/)                  { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method units:sym<time>($/)       { make $<time>.ast }
+
+    method freq($/)                  { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
+    method units:sym<freq>($/)       { make $<freq>.ast }
+
+    method percentage($/)            { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method units:sym<percentage>($/) { make $<percentage>.ast }
+
 
     # treat 'ex' as '1ex'; 'em' as '1em'
     method pterm:sym<emx>($/)        { make $.token(1, :units($/.Str.lc), :type('length')) }

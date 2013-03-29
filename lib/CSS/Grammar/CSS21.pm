@@ -1,14 +1,10 @@
 use v6;
 
-use CSS::Grammar;
-use CSS::Grammar::CSS1::Properties;
-use CSS::Grammar::CSS21::Properties;
+use CSS::Grammar::CSS1;
 # specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
 
 grammar CSS::Grammar::CSS21:ver<20110607.001>
-    is CSS::Grammar::CSS1::Properties
-    is CSS::Grammar::CSS21::Properties
-    is CSS::Grammar {
+    is CSS::Grammar::CSS1 {
 
     rule TOP {^ <stylesheet> $}
 
@@ -18,7 +14,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
                       ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
-    rule import  { \@(:i'import')  [<string>|<uri>] <media_list>? ';' }
+    rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
     # to detect out of order directives
     rule misplaced {<charset>|<import>}
 
@@ -38,47 +34,20 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # inherited combinators: '+' (adjacent)
     token combinator:sym<not> {'-'}
 
-    rule ruleset {
-        <!after \@> # not an "@" rule
-        <selectors> <declarations>
-    }
-
-    rule declarations {
-        '{' <declaration_list> <.end_block>
-    }
-
-    # this rule is suitable for parsing style attributes in HTML documents.
-    # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
-    #
-    rule declaration_list {[ <declaration> | <dropped_decl> ]*}
-
-    rule selectors { <selector> [',' <selector>]* }
-
-    rule declaration   {$<property>=[<prop>||<unknown_property>] <prio>? <end_decl> }
-    rule unknown_property {<property> <expr>}
-
-    rule expr { <term> [ <operator>? <term> ]* }
-
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
     # units inherited from base grammar: length, percentage
-    token angle    {:i<num>(deg|rad|grad)}
-    token time     {:i<num>(m?s)}
-    token freq     {:i<num>(k?Hz)}
+    token angle            {:i<num>(deg|rad|grad)}
+    token units:sym<angle> {<angle>}
 
-    # pterm - able to be prefixed by a unary operator
-    proto rule pterm {*}
-    rule pterm:sym<qty>       {<q=.length>|<q=.percentage>|<q=.angle>
-                              |<q=.time>|<q=.freq>}
-    rule pterm:sym<num>       {<num>}
-    rule pterm:sym<emx>       {<emx>}
+    token time             {:i<num>(m?s)}
+    token units:sym<time>  {<time>}
+
+    token freq             {:i<num>(k?Hz)}
+    token units:sym<freq>  {<freq>}
+
     # aterm - atomic; these can't be prefixed by a unary operator
-    proto rule aterm {*}
-    rule aterm:sym<string>    {<string>}
-    rule aterm:sym<url>       {<url>}
-    rule aterm:sym<color>     {<color>}
     rule aterm:sym<function>  {<function>|<unknown_function>}
-    rule aterm:sym<ident>     {<ident>}
 
     rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
@@ -114,7 +83,13 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # pseudo function catch-all
     rule unknown_pseudo_func   {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
-    # 'lexer' css2 exceptions
+    # core grammar extensions
     # non-ascii limited to single byte characters
+    # nonascii is ... anything but ascii
     token nonascii            {<[\o240..\o377]>}
+    # allow underscores in identifiers
+    token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
+    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
+    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
+    token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
 }

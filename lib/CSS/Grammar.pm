@@ -52,8 +52,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    token length         {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
-    token percentage     {<num>'%'}
+    proto token units {<...>}
+    token length                {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token units:sym<length>     {<length>}
+
+    token percentage            {<num>'%'}
+    token units:sym<percentage> {<percentage>}
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
@@ -62,7 +66,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     # productions
 
     rule url  {:i'url(' <url_string> ')' }
-    rule uri  {<url>}
     token unclosed_paren {''}
 
     rule emx {:i e[m|x]}
@@ -94,9 +97,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
     rule property {<property=.ident> ':'}
-
-    proto rule prop { <...> }
-
+    token inherit {:i inherit}
     rule end_decl { ';' | <?before '}'> | $ }
 
     # Error Recovery

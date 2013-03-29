@@ -1,11 +1,9 @@
 use v6;
 
 use CSS::Grammar;
-use CSS::Grammar::CSS1::Properties;
 # specification: http://www.w3.org/TR/2008/REC-CSS1-20080411/
 
 grammar CSS::Grammar::CSS1:ver<20080411.000>
-    is CSS::Grammar::CSS1::Properties
     is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
@@ -36,12 +34,14 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list {[ <declaration> | <dropped_decl> ]*}
+    rule declaration_list { [ <declaration> | <dropped_decl> ]* }
     # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule declaration      { $<property>=[<prop>||<unknown_property>] <prio>? <end_decl> }
-
-    rule unknown_property {<property> <expr>}
+    # <decl> - extension point for CSS::Grammar::Validating suite
+    proto rule decl {<...>}
+    proto rule declaration {<...>}
+    rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
+    rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
@@ -50,7 +50,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
               }
 
     proto rule pterm {*}
-    rule pterm:sym<qty>       {<q=.length>|<q=.percentage>}
+    rule pterm:sym<qty>       {<units>}
     rule pterm:sym<num>       {<num>}
     rule pterm:sym<emx>       {<emx>}
     proto rule aterm {*}

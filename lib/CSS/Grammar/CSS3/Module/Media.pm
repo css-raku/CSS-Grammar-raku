@@ -23,7 +23,8 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
     rule media_op    {:i['only'|'not']}
     rule media_expr  { '(' <media_feature=.ident> [ ':' <expr> ]? ')' }
 
-    token units:sym<resolution> {:i[dpi|dpcm]}
+    token resolution {:i<num>(dpi|dpcm)}
+    token units:sym<resolution> {<resolution>}
 }
 
 class CSS::Grammar::CSS3::Module::Media::Actions {
@@ -31,5 +32,6 @@ class CSS::Grammar::CSS3::Module::Media::Actions {
     # media_rules, media_list, media_query, media see core actions
     method media_op($/)              { make $/.Str.lc }
     method media_expr($/)            { make $.node($/) }
-    method units:sym<resolution>($/) { make (resolution => $/.Str.lc) }
+    method resolution($/)            { make $.token($<num>.ast, :units($0.Str.lc), :type('resolution')) }
+    method units:sym<resolution>($/) { make $<resolution>.ast }
 }
