@@ -1,10 +1,10 @@
 use v6;
 
-use CSS::Grammar::CSS1;
+use CSS::Grammar;
 # specification: http://www.w3.org/TR/2011/REC-CSS2-20110607/
 
 grammar CSS::Grammar::CSS21:ver<20110607.001>
-    is CSS::Grammar::CSS1 {
+    is CSS::Grammar {
 
     rule TOP {^ <stylesheet> $}
 
@@ -28,23 +28,41 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
     rule page_pseudo          {':'<ident>}
 
-    rule unary_operator       {'+'|'-'}
-    rule operator             {'/'|','}
-
     # inherited combinators: '+' (adjacent)
     token combinator:sym<not> {'-'}
 
+    rule ruleset {
+        <!after \@> # not an "@" rule
+        <selectors> <declarations>
+    }
+
+    rule selectors { <selector> [',' <selector>]* }
+
+    rule declarations {
+        '{' <declaration_list> <.end_block>
+    }
+
+    # this rule is suitable for parsing style attributes in HTML documents.
+    # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
+    #
+    rule declaration_list { [ <declaration> | <dropped_decl> ]* }
+    # an unterminated string might have run to end-of-line and consumed ';'
+
+    rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
+    rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
+
+    rule expr { <term> [ <operator>? <term> ]* }
     rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
-    # units inherited from base grammar: length, percentage
-    token angle            {:i<num>(deg|rad|grad)}
-    token units:sym<angle> {<angle>}
+    # quantity inherited from base grammar: length, percentage
+    token angle               {:i<num>(deg|rad|grad)}
+    token quantity:sym<angle> {<angle>}
 
-    token time             {:i<num>(m?s)}
-    token units:sym<time>  {<time>}
+    token time                {:i<num>(m?s)}
+    token quantity:sym<time>  {<time>}
 
-    token freq             {:i<num>(k?Hz)}
-    token units:sym<freq>  {<freq>}
+    token freq                {:i<num>(k?Hz)}
+    token quantity:sym<freq>  {<freq>}
 
     # aterm - atomic; these can't be prefixed by a unary operator
     rule aterm:sym<function>  {<function>|<unknown_function>}
@@ -69,7 +87,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # distinguish regular functions from psuedo_functions
 
     proto rule function { <...> }
-    # I haven't found a good list of css2.1 functions; there's probably more
     rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? || <bad_args>] ')'}
     rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* || <bad_args> ] ')'}
     rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? || <bad_args> ] ')' }
@@ -83,13 +100,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # pseudo function catch-all
     rule unknown_pseudo_func   {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
-    # core grammar extensions
+    # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters
-    # nonascii is ... anything but ascii
     token nonascii            {<[\o240..\o377]>}
-    # allow underscores in identifiers
-    token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
-    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
-    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
-    token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
 }
+

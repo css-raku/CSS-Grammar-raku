@@ -307,22 +307,22 @@ class CSS::Grammar::Actions {
     method expr($/) { make $.list($/) }
 
     method pterm:sym<num>($/) { make $.token($<num>.ast, :type('num')); }
-    method pterm:sym<qty>($/) { make $<units>.ast }
+    method pterm:sym<qty>($/) { make $<quantity>.ast }
 
     method length($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
-    method units:sym<length>($/)     { make $<length>.ast }
+    method quantity:sym<length>($/)     { make $<length>.ast }
 
-    method angle($/)                 { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
-    method units:sym<angle>($/)      { make $<angle>.ast }
+    method angle($/)                    { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method quantity:sym<angle>($/)      { make $<angle>.ast }
 
-    method time($/)                  { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
-    method units:sym<time>($/)       { make $<time>.ast }
+    method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method quantity:sym<time>($/)       { make $<time>.ast }
 
-    method freq($/)                  { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
-    method units:sym<freq>($/)       { make $<freq>.ast }
+    method freq($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
+    method quantity:sym<freq>($/)       { make $<freq>.ast }
 
-    method percentage($/)            { make $.token($<num>.ast, :units('%'), :type('percentage')) }
-    method units:sym<percentage>($/) { make $<percentage>.ast }
+    method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method quantity:sym<percentage>($/) { make $<percentage>.ast }
 
 
     # treat 'ex' as '1ex'; 'em' as '1em'

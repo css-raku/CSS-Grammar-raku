@@ -24,7 +24,7 @@ grammar CSS::Grammar::CSS3::Module::Media:ver<20120619.000> {
     rule media_expr  { '(' <media_feature=.ident> [ ':' <expr> ]? ')' }
 
     token resolution {:i<num>(dpi|dpcm)}
-    token units:sym<resolution> {<resolution>}
+    token quantity:sym<resolution> {<resolution>}
 }
 
 class CSS::Grammar::CSS3::Module::Media::Actions {
@@ -33,5 +33,5 @@ class CSS::Grammar::CSS3::Module::Media::Actions {
     method media_op($/)              { make $/.Str.lc }
     method media_expr($/)            { make $.node($/) }
     method resolution($/)            { make $.token($<num>.ast, :units($0.Str.lc), :type('resolution')) }
-    method units:sym<resolution>($/) { make $<resolution>.ast }
+    method quantity:sym<resolution>($/) { make $<resolution>.ast }
 }

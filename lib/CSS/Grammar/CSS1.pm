@@ -14,11 +14,8 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
 
     rule import { \@(:i'import') [<string>|<url>] ';' }
 
+    # to detect out of order directives
     rule misplaced {<import>}
-
-    rule unary_operator {'-'|'+'}
-
-    rule operator {'/'|','}
 
     rule ruleset {
         <!after \@> # not an "@" rule
@@ -38,8 +35,6 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     # an unterminated string might have run to end-of-line and consumed ';'
 
     # <decl> - extension point for CSS::Grammar::Validating suite
-    proto rule decl {<...>}
-    proto rule declaration {<...>}
     rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
 
@@ -48,16 +43,6 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     rule term { <unary_operator>? <term=.pterm>
               | <.unary_operator>? <term=.aterm> # useless unary operator
               }
-
-    proto rule pterm {*}
-    rule pterm:sym<qty>       {<units>}
-    rule pterm:sym<num>       {<num>}
-    rule pterm:sym<emx>       {<emx>}
-    proto rule aterm {*}
-    rule aterm:sym<string>    {<string>}
-    rule aterm:sym<color>     {<color>}
-    rule aterm:sym<url>       {<url>}
-    rule aterm:sym<ident>     {<ident>}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
