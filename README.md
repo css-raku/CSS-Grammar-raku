@@ -1,8 +1,7 @@
 perl6-CSS-Grammar
 =================
 
-CSS::Grammar is an experimental set of Perl 6 grammars for the W3C CSS family
-of standards.
+CSS::Grammar is under construction as an experimental set of Perl 6 grammars for the W3C CSS family of standards.
 
 It aims to implement a reasonable portion of the grammars and common extension
 modules, with an emphasis on:
@@ -116,18 +115,10 @@ core CSS3 language, plus Fonts and Paged Media extensions
 
 For a working example, see t/parse-css3-module-fonts.t.
 
-To Do
-=====
-The follow classes are coming soon. These will, in particular, validate properties and property values:
-- `CSS::Grammar::CSS1::Actions` - based on http://129.69.59.141/css1pqre.htm ?
-- `CSS::Grammar::CSS21::Actions` - based on http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html
-- `CSS::Grammar::CSS3::Actions` - http://www.w3.org/TR/2011/REC-CSS2-20110607/propidx.html + extension modules (*)
-
-(*) I intend to round out CSS3 by adding add property validation to each of the css3 extension modules
-
 See Also
 ========
-[CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a general purpose CSS validation and parsing suite.
+- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
 ==========
