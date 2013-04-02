@@ -14,9 +14,9 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
     # <rgb> and <hex> are defined in CSS core grammar
     rule color:sym<rgba> {:i'rgba('
-                   [$<ok>=[<r=.color_arg> ','
-                   <g=.color_arg> ','
-                   <b=.color_arg> ','
+                   [$<ok>=[<r=.color-channel> ','
+                   <g=.color-channel> ','
+                   <b=.color-channel> ','
                    <a=.color_alpha>] | <any>*]
                    ')'
     }
@@ -58,17 +58,17 @@ class CSS::Grammar::CSS3::Module::Colors::Actions {
     method color:sym<rgba>($/) {
         return $.warning('usage: rgba(c,c,c,a) where c is 0..255 or 0%-100% and a is 0-1 or 0%-100%')
             unless $<ok>;
-         make (rgba => $.node($/))
+        make $.token($.node($/), :type<color>, :units<rgba>);
     }
     method color:sym<hsl>($/)  {
         return $.warning('usage: hsl(h,s,l) where h is 0..360  and s,l are 0-1 or 0%-100%')
             unless $<ok>;
-         make (hsl  => $.node($/))
+        make $.token($.node($/), :type<color>, :units<hsl>);
     }
     method color:sym<hsla>($/) {
         return $.warning('usage: hsla(h,s,l,a) where h is 0..360  and s,l,a are 0-1 or 0%-100%')
             unless $<ok>;
-        make (hsla => $.node($/))
+        make $.token($.node($/), :type<color>, :units<hsla>);
     }
 }
 

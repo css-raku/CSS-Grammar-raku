@@ -52,9 +52,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    proto token units {*}
-    token units:sym<length>     {:i[pt|mm|cm|pc|in|px|em|ex]}
-    token units:sym<percentage> {'%'}
+    proto token quantity {<...>}
+    token length                   {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token quantity:sym<length>     {<length>}
+
+    token percentage               {<num>'%'}
+    token quantity:sym<percentage> {<percentage>}
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
@@ -62,18 +65,25 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # productions
 
+    rule unary_operator       {'+'|'-'}
+    rule operator             {'/'|','}
+
+    rule property {<property=.ident> ':'}
+    token inherit {:i inherit}
+    rule end_decl { ';' | <?before '}'> | $ }
+
     rule url  {:i'url(' <url_string> ')' }
     token unclosed_paren {''}
 
     rule emx {:i e[m|x]}
 
-    rule color_arg{<num>$<percentage>=[\%]?}
+    rule color-channel{<num>$<percentage>=[\%]?}
 
     proto rule color    {*}
     rule color:sym<rgb> {:i'rgb('
-                   [$<ok>=[<r=.color_arg> ','
-                          <g=.color_arg> ','
-                          <b=.color_arg>] | <any>*]
+                   [$<ok>=[<r=.color-channel> ','
+                          <g=.color-channel> ','
+                          <b=.color-channel>] | <any>*]
                    ')'
     }
     rule color:sym<hex> {<id>}
@@ -88,13 +98,26 @@ grammar CSS::Grammar:ver<0.0.1> {
     token combinator:sym<adjacent> {'+'}
     token combinator:sym<child>    {'>'}
 
+    # pterm - able to be prefixed by a unary operator
+    proto rule pterm {*}
+    rule pterm:sym<qty>       {<quantity>}
+    rule pterm:sym<num>       {<num>}
+    rule pterm:sym<emx>       {<emx>}
+    # aterm - atomic; these can't be prefixed by a unary operator
+    proto rule aterm {*}
+    rule aterm:sym<string>    {<string>}
+    rule aterm:sym<color>     {<color>}
+    rule aterm:sym<url>       {<url>}
+    rule aterm:sym<ident>     {<ident>}
+
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode_range {*}
     rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
-    rule property {<property=.ident> ':'}
-    rule end_decl { ';' | <?before '}'> | $ }
+    # <decl> - extension point for CSS::Grammar::Validating suite
+    proto rule decl {<...>}
+    proto rule declaration {<...>}
 
     # Error Recovery
     # --------------

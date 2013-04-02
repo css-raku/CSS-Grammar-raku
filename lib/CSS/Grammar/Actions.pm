@@ -151,7 +151,8 @@ class CSS::Grammar::Actions {
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        make $pfx ~ $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        make $pfx ~ $ident.lc;
     }
     method name($/) {
         make $<nmchar>.map({$_.ast}).join('');
@@ -192,8 +193,9 @@ class CSS::Grammar::Actions {
     }
 
     method url($/)  { make $<url_string>.ast }
+    method uri($/)  { make $<url>.ast }
 
-    method color_arg($/) {
+    method color-channel($/) {
         my $arg = %<num>.ast;
         $arg = ($arg * 2.55).round
             if $<percentage>.Str;
@@ -203,23 +205,22 @@ class CSS::Grammar::Actions {
     method color:sym<rgb>($/)  {
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
             unless $<ok>;
-        make (rgb => $.node($/))
+        make $.token($.node($/), :type<color>, :units<rgb>);
     }
     method color:sym<hex>($/)   {
         my $id = $<id>.ast;
         my $chars = $id.chars;
-        unless $id.match(/^<xdigit>+$/)
-            && ($chars == 3 || $chars == 6) {
-                $.warning("bad hex color", $/.Str);
-                return;
-        }
+
+        return $.warning("bad hex color", $/.Str)
+            unless $id.match(/^<xdigit>+$/)
+            && ($chars == 3 || $chars == 6);
 
         my @rgb = $chars == 3
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
         my %rgb;
         %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
-        make (rgb => %rgb);
+        make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
     method prio($/) {
@@ -251,7 +252,7 @@ class CSS::Grammar::Actions {
 
     # pseudos
     method pseudo:sym<element>($/) { my %node; # :first-line
-                                     %node<element> = $<element>.Str;
+                                     %node<element> = $<element>.Str.lc;
                                      make %node;
     }
     method pseudo:sym<element2>($/) { make $.node($/) }
@@ -289,12 +290,12 @@ class CSS::Grammar::Actions {
     method page_pseudo($/)        { make $<ident>.ast }
 
     method property($/)           { make $<property>.ast }
+    method inherit($/)            { make True }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
     method declaration_list($/)   { make $.list($/) }
-    method declaration($/)        { 
-
+    method declaration:sym<raw>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
             return;
@@ -303,39 +304,33 @@ class CSS::Grammar::Actions {
         make $.node($/);
     }
 
-    method expr($/) { make $.list($/, :keep_undef(True)) }
+    method expr($/) { make $.list($/) }
 
-    method pterm:sym<quantity>($/) {
-        my $type = 'num';
-        my $units;
+    method pterm:sym<num>($/) { make $.token($<num>.ast, :type('num')); }
+    method pterm:sym<qty>($/) { make $<quantity>.ast }
 
-        my ($units_cap) = $<units>.list;
-        if $units_cap {
-            ($type, $units) = $units_cap.ast.kv;
-            $units = $units.lc;
-        }
+    method length($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method quantity:sym<length>($/)     { make $<length>.ast }
 
-        make $.token($<num>.ast, :type($type), :units($units));
-    }
+    method angle($/)                    { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method quantity:sym<angle>($/)      { make $<angle>.ast }
 
-    method units:sym<length>($/)     { make (length => $/.Str.lc) }
-    method units:sym<angle>($/)      { make (angle => $/.Str.lc) }
-    method units:sym<time>($/)       { make (time => $/.Str.lc) }
-    method units:sym<freq>($/)       { make (freq => $/.Str.lc) }
-    method units:sym<percentage>($/) { make (percentage => $/.Str.lc) }
-    method dimension($/)     {
-        $.warning('unknown dimensioned quantity', $/.Str);
-    }
+    method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method quantity:sym<time>($/)       { make $<time>.ast }
+
+    method freq($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
+    method quantity:sym<freq>($/)       { make $<freq>.ast }
+
+    method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method quantity:sym<percentage>($/) { make $<percentage>.ast }
+
+
     # treat 'ex' as '1ex'; 'em' as '1em'
     method pterm:sym<emx>($/)        { make $.token(1, :units($/.Str.lc), :type('length')) }
 
     method aterm:sym<string>($/)     { make $.token($<string>.ast, :type('string')) }
     method aterm:sym<url>($/)        { make $.token($<url>.ast, :type('url')) }
-    method aterm:sym<color>($/)      {
-        my ($units, $ast) = $<color>.ast.kv;
-        make $.token($ast, :type('color'), :units($units))
-            if $ast;
-    }
+    method aterm:sym<color>($/)      { make $<color>.ast; }
     method aterm:sym<function>($/)   {
         make $.token($<function>.ast, :type('function'))
             if $<function>;
@@ -348,9 +343,9 @@ class CSS::Grammar::Actions {
         if $<term> {
             my $term_ast = $<term>.ast;
             if $<unary_operator> && $<unary_operator>.Str eq '-' {
-                $term_ast = $.token( - $term_ast,
-                                     :units($<term>.ast.units),
-                                     :type($<term>.ast.type) );
+                my $units = $term_ast.can('units') && $term_ast.units;
+                my $type = $term_ast.can('type') && $term_ast.type;
+                $term_ast = $.token( - $term_ast, :units($units), :type($type) );
             }
             make $term_ast;
         }
@@ -421,7 +416,7 @@ class CSS::Grammar::Actions {
             my $hex_digit;
 
             if ($_ ge '0' && $_ le '9') {
-                $hex_digit = $_;
+                $hex_digit = $_.Int;
             }
             elsif ($_ ge 'A' && $_ le 'F') {
                 $hex_digit = ord($_) - ord('A') + 10;

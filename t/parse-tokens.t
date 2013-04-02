@@ -13,7 +13,7 @@ for (
     term => {input => '42%', ast => 42,
              token => {type => 'percentage'},
     },
-    color_arg => {input => '42%', ast => 107, # 42% of 255
+    'color-channel' => {input => '42%', ast => 107, # 42% of 255
              token => {type => 'num'},
     },
     term => {input => '#aa77Ff', ast => {r => 0xAA, g => 0x77, b => 0xFF},
