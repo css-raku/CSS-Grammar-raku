@@ -53,7 +53,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token element_name   {<ident>}
 
     proto token quantity {<...>}
-    token length                   {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    proto token length   {<...>}
+    token length:sym<num>          {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token length:sym<emx>          {:i e[m|x]}
     token quantity:sym<length>     {<length>}
 
     token percentage               {<num>'%'}
@@ -74,8 +76,6 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule url  {:i'url(' <url_string> ')' }
     token unclosed_paren {''}
-
-    rule emx {:i e[m|x]}
 
     rule color-range{<num>$<percentage>=[\%]?}
 
@@ -102,7 +102,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto rule pterm {*}
     rule pterm:sym<qty>       {<quantity>}
     rule pterm:sym<num>       {<num>}
-    rule pterm:sym<emx>       {<emx>}
     # aterm - atomic; these can't be prefixed by a unary operator
     proto rule aterm {*}
     rule aterm:sym<string>    {<string>}
