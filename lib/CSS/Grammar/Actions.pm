@@ -16,7 +16,7 @@ class CSS::Grammar::Actions {
 
     method reset {
         @.warnings = ();
-        $.line_no = 1;
+        $.line_no = 0;
         $!nl_highwater = 0;
     }
 
@@ -312,7 +312,6 @@ class CSS::Grammar::Actions {
                     // die "unable to find property in declaration";
 
                 if %declarations.exists($prop) {
-                    $.warning('duplicate declaration', $prop);
                     # drop the previous declaration unless it's !important
                     next if %declarations{$prop}<prio> && ! %decl<prio>;
                 }
