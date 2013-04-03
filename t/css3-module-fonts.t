@@ -32,7 +32,6 @@ for (
                                   src: local("Gentium"), url(gentium.ttf) format("truetype");  /* Overrides src definition */
                                 }
                            END_INPUT
-                  warnings => 'duplicate declaration: src',
                   ast => {"declarations" => {"font-family" => {"expr" => ["term" => "maintext"]},
                                              "src" => {"expr" => ["term" => {"ident" => "local", "args" => ["string" => "Gentium"]},
                                                                   "operator" => ",",

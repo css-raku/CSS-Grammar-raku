@@ -16,7 +16,7 @@ class CSS::Grammar::Actions {
 
     method reset {
         @.warnings = ();
-        $.line_no = 0;
+        $.line_no = 1;
         $!nl_highwater = 0;
     }
 
@@ -91,7 +91,7 @@ class CSS::Grammar::Actions {
         $warning ~= ' - ' ~ $explanation
             if $explanation;
         $warning does CSS::Grammar::AST::Info;
-        $warning.line_no = $.line_no;
+        $warning.line_no = $.line_no - 1;
         push @.warnings, $warning;
     }
 
@@ -337,7 +337,7 @@ class CSS::Grammar::Actions {
     method pterm:sym<num>($/)  { make $.token($<num>.ast, :type('num')); }
     method pterm:sym<qty>($/)  { make $<quantity>.ast }
 
-    method length:sym<num>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method length:sym<qty>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
     method quantity:sym<length>($/)     { make $<length>.ast }
     # treat 'ex' as '1ex'; 'em' as '1em'
     method length:sym<emx>($/)          { make $.token(1, :units($/.Str.lc), :type('length')) }

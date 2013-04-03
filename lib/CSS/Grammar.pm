@@ -52,10 +52,11 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    proto token quantity {<...>}
     proto token length   {<...>}
-    token length:sym<num>          {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token length:sym<qty>          {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
     token length:sym<emx>          {:i e[m|x]}
+
+    proto token quantity {<...>}
     token quantity:sym<length>     {<length>}
 
     token percentage               {<num>'%'}
