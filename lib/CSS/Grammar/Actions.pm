@@ -298,13 +298,16 @@ class CSS::Grammar::Actions {
         my %declarations;
 
         for @$.list($/) {
-            for @$_ {
-                my ($_decl, $declaration) = $_.kv;
+            my ($_decl, $decls) = $_.kv;
 
-                die "unexpected in declaration ast: " ~ $_decl.perl
-                    unless $_decl eq 'declaration';
+            die "unexpected in declaration ast: " ~ $_decl.perl
+                unless $_decl eq 'declaration';
 
-                my %decl = %$declaration;
+            my $props = %$decls.delete('property_list')
+                || [$decls];
+
+            for @$props {
+                my %decl = %$_;
                 my $prop = %decl.delete('property')
                     // die "unable to find property in declaration";
 
@@ -320,6 +323,7 @@ class CSS::Grammar::Actions {
 
         make %declarations;
     }
+
     method declaration:sym<raw>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
