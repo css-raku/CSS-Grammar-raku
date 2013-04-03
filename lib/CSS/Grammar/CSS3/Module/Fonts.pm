@@ -11,17 +11,18 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
 
     # functions
     # ---------
-    rule function:sym<format> {:i'format(' [ <string> || <bad_args> ] ')'}
+    rule function:sym<fmt-or-loc> {:i(format|local)'(' [ <string> || <bad_args> ] ')'}
 }
 
 class CSS::Grammar::CSS3::Module::Fonts::Actions {
     method at_rule:sym<font_face>($/) { make $.at_rule($/) }
 
-    method function:sym<format>($/) {
-        return $.warning('usage: format(<string>)')
+    method function:sym<fmt-or-loc>($/) {
+        my $func = $0.Str.lc;
+        return $.warning("usage: $func(<string>)")
             if $<bad_args>;
 
-        make {ident => 'format', args => $.list($/)}
+        make {ident => $func, args => $.list($/)}
     }
 
 }

@@ -195,11 +195,11 @@ class CSS::Grammar::Actions {
     method url($/)  { make $<url_string>.ast }
     method uri($/)  { make $<url>.ast }
 
-    method color-channel($/) {
+    method color-range($/) {
         my $arg = %<num>.ast;
         $arg = ($arg * 2.55).round
             if $<percentage>.Str;
-        make $.token($arg, :type('num'), :units('4bit'));
+        make $.token($arg, :type('num'), :units('8bit'));
     }
 
     method color:sym<rgb>($/)  {
@@ -294,7 +294,32 @@ class CSS::Grammar::Actions {
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration_list>.ast }
-    method declaration_list($/)   { make $.list($/) }
+    method declaration_list($/)   {
+        my %declarations;
+
+        for @$.list($/) {
+            for @$_ {
+                my ($_decl, $declaration) = $_.kv;
+
+                die "unexpected in declaration ast: " ~ $_decl.perl
+                    unless $_decl eq 'declaration';
+
+                my %decl = %$declaration;
+                my $prop = %decl.delete('property')
+                    // die "unable to find property in declaration";
+
+                if %declarations.exists($prop) {
+                    $.warning('duplicate declaration', $prop);
+                    # drop the previous declaration unless it's !important
+                    next if %declarations{$prop}<prio> && ! %decl<prio>;
+                }
+
+                %declarations{ $prop } = %decl;
+            }
+        }
+
+        make %declarations;
+    }
     method declaration:sym<raw>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);

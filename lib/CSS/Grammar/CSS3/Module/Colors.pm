@@ -14,9 +14,9 @@ grammar CSS::Grammar::CSS3::Module::Colors:ver<20110607.000> {
 
     # <rgb> and <hex> are defined in CSS core grammar
     rule color:sym<rgba> {:i'rgba('
-                   [$<ok>=[<r=.color-channel> ','
-                   <g=.color-channel> ','
-                   <b=.color-channel> ','
+                   [$<ok>=[<r=.color-range> ','
+                   <g=.color-range> ','
+                   <b=.color-range> ','
                    <a=.color_alpha>] | <any>*]
                    ')'
     }

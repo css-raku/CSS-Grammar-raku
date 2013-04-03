@@ -45,7 +45,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list { [ <declaration> | <dropped_decl> ]* }
+    rule declaration_list { [ <declaration> || <dropped_decl> ]* }
     # an unterminated string might have run to end-of-line and consumed ';'
 
     rule declaration:sym<validated> { <decl> <prio>? <end_decl> }

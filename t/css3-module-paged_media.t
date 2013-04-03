@@ -30,48 +30,38 @@ my $top_center = 'page { color: red;
        }
 }';
 
-my $top_center_ast = {"declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]},
-                                         "page_rules" => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                                                          "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
-                                                                                                                                   "term" => {"ident" => "counters",
-                                                                                                                                              "args" => ["ident" => "page", "string" => "."]}]}]}
-                          ],
-                      '@' => "page"};
+my $top_center_ast = {"declarations" => {"color" => {"expr" => ["term" => "red"]},
+                                         "\@top-center" => {"margin-box" => {"box-vpos" => "top",
+                                                                             "box-center" => "center"},
+                                                            "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["ident" => "page", "string" => "."]}]}}}}, "\@" => "page"};
 
 for (
     at_rule   => {input => 'page :left { margin-left: 4cm; }',
-                  ast => {"page" => "left", "declarations" => ["declaration" => {"property" => "margin-left", "expr" => ["term" => 4]}], '@' => "page"},
+                  ast => {"page" => "left", "declarations" => {"margin-left" => {"expr" => ["term" => 4e0]}}, "\@" => "page"},
     },
     at_rule   => {input => 'page :junk { margin-right: 2cm }',
-                  ast => {"declarations" => ["declaration" => {"property" => "margin-right", "expr" => ["term" => 2]}], '@' => "page"},
+                  ast => {"declarations" => {"margin-right" => {"expr" => ["term" => 2e0]}}, "\@" => "page"},
                   warnings => 'ignoring page pseudo: junk',
     },
     at_rule   => {input => 'page : { margin-right: 2cm }',
                   ast => Mu,
                   warnings => "':' should be followed by one of: left right first",
     },
-    margin_box => {input => 'top-left', ast => {hpos => 'left', vpos => 'top'}},
-    margin_box => {input => 'top-center', ast => {hpos => 'center', vpos => 'top'}},
-    margin_box => {input => 'RIGHT-TOP', ast => {hpos => 'right', vpos => 'top'}},
-    margin_box => {input => 'bottom-left-corner', ast => {hpos => 'left', vpos => 'bottom'}},
-    margin_box => {input => 'bottom-right', ast => {hpos => 'right', vpos => 'bottom'}},
-    page_rules => {input => '@bottom-right-CorNeR {color:blue}',
-                 ast => {"margin_box" => {"hpos" => "right", "vpos" => "bottom"},
-                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]},
+    'page-declarations' => {input => '{@bottom-right-CorNeR {color:blue}}',
+                 ast => {"\@bottom-right-corner" => {"margin-box" => {"box-vpos" => "bottom",
+                                                                      "box-hpos" => "right"},
+                                                     "declarations" => {"color" => {"expr" => ["term" => "blue"]}}}},
     },
-    page_rules => {input => '@Top-CENTER {content: "Page " counters(page);}',
-                 ast => {"margin_box" => {"hpos" => "center", "vpos" => "top"},
-                         "declarations" => ["declaration" => {"property" => "content", "expr" => ["term" => "Page ",
-                                                                                                  "term" => {"ident" => "counters",
-                                                                                                             "args" => ["ident" => "page"]}]}]
-                 },
+    'page-declarations' => {input => '{ @Top-CENTER {content: "Page " counters(page);} }',
+                 ast => {"\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
+                                           "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["ident" => "page"]}]}}}},
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
     ) {
     my $rule = $_.key;
     my %test = $_.value;
     my $input = %test<input>;
-
+note $input;
     $css_actions.reset;
     my $p3 = t::CSS3::PagedMediaGrammar.parse( $input, :rule($rule), :actions($css_actions));
     t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 @page'),

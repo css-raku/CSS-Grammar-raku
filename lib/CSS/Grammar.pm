@@ -77,13 +77,13 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule emx {:i e[m|x]}
 
-    rule color-channel{<num>$<percentage>=[\%]?}
+    rule color-range{<num>$<percentage>=[\%]?}
 
     proto rule color    {*}
     rule color:sym<rgb> {:i'rgb('
-                   [$<ok>=[<r=.color-channel> ','
-                          <g=.color-channel> ','
-                          <b=.color-channel>] | <any>*]
+                   [$<ok>=[<r=.color-range> ','
+                          <g=.color-range> ','
+                          <b=.color-range>] | <any>*]
                    ')'
     }
     rule color:sym<hex> {<id>}

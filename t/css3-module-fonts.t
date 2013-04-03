@@ -26,26 +26,19 @@ my $css_actions = t::CSS3::FontActions.new;
 
 for (
     at_rule   => {input => q:to 'END_INPUT',
-                            font-face {
-                                font-family: 'Gentium';
-                                src: url("Fonts/Gentium.eot");
-                                src: url(http://example.com/fonts/Gentium.ttf) format("truetype"),
-                                     url(http://example.com/fonts/Gentium.wof) format("woff");
-                                font-weight: normal;
-                              };
-                            END_INPUT
-                  ast => {"declarations" =>
-                              ["declaration" => {"property" => "font-family",
-                                                 "expr" => ["term" => "Gentium"]},
-                               "declaration" => {"property" => "src",
-                                                 "expr" => ["term" => "Fonts/Gentium.eot"]},
-                               "declaration" => {"property" => "src",
-                                                 "expr" => ["term" => "http://example.com/fonts/Gentium.ttf",
-                                                            "term" => {"ident" => "format", "args" => [string => "truetype"]},
-                                                            "operator" => ",",
-                                                            "term" => "http://example.com/fonts/Gentium.wof",
-                                                            "term" => {"ident" => "format", "args" => [string => "woff"]}]},
-                               "declaration" => {"property" => "font-weight", "expr" => ["term" => "normal"]}], "\@" => "font-face"},
+                           font-face {
+                                  font-family: MainText;
+                                  src: url(gentium.eot); /* for use with older non-conformant user agents */
+                                  src: local("Gentium"), url(gentium.ttf) format("truetype");  /* Overrides src definition */
+                                }
+                           END_INPUT
+                  warnings => 'duplicate declaration: src',
+                  ast => {"declarations" => {"font-family" => {"expr" => ["term" => "maintext"]},
+                                             "src" => {"expr" => ["term" => {"ident" => "local", "args" => ["string" => "Gentium"]},
+                                                                  "operator" => ",",
+                                                                  "term" => "gentium.ttf",
+                                                                  "term" => {"ident" => "format", "args" => ["string" => "truetype"]}]}},
+                          '@' => "font-face"},
     },
     ) {
     my $rule = $_.key;

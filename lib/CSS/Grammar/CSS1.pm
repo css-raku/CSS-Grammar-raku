@@ -31,7 +31,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list { [ <declaration> | <dropped_decl> ]* }
+    rule declaration_list { [ <declaration> || <dropped_decl> ]* }
     # an unterminated string might have run to end-of-line and consumed ';'
 
     # <decl> - extension point for CSS::Grammar::Validating suite

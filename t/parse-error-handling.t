@@ -16,13 +16,10 @@ my $css_actions = CSS::Grammar::Actions.new;
 
 for (
     declaration_list => {input => 'bg:url("http://www.bg.com/pinkish.gif")',
-            ast => ["declaration" => {"property" => "bg",
-                                      "expr" => ["term" => "http://www.bg.com/pinkish.gif"]}],
+            ast => {"bg" => "expr" => ["term" => "http://www.bg.com/pinkish.gif"]},
     },
     declaration_list => {input => 'bg:URL(http://www.bg.com/pinkish.gif)',
-            ast => 'http://www.bg.com/pinkish.gif',
-             ast => ["declaration" => {"property" => "bg",
-                                      "expr" => ["term" => "http://www.bg.com/pinkish.gif"]}],
+                         ast => {"bg" => {"expr" => ["term" => "http://www.bg.com/pinkish.gif"]}},
    },
     declaration_list => {input => 'bg:URL(http://www.bg.com/pinkish.gif',
                          ast => Mu,
@@ -40,16 +37,17 @@ for (
                  warnings => ['dropping term: 70minutes',
                               'dropping declaration: rotation'],
                  ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
-                 "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]}]},
+                 "declarations" => {"color" =>"expr" => ["term" => "red"]}},
     },
     # unclosed parens
-    ruleset => {input => 'h1 {kept:1; color: dropped1 rgb(10,20,30 dropped2; kept:2;}',
+    ruleset => {input => 'h1 {kept1:1; color: dropped1 rgb(10,20,30 dropped2; kept2:2;}',
                 warnings => ["missing closing ')'",
                              'dropping term: (10,20,30 dropped2',
                              'dropping declaration: color'],
                 ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
-                        "declarations" => ["declaration" => {"property" => "kept", "expr" => ["term" => 1]},
-                                           "declaration" => {"property" => "kept", "expr" => ["term" => 2]}]},
+                        "declarations" => {"kept1" => {"expr" => ["term" => 1]},
+                                           "kept2" => {"expr" => ["term" => 2]}}
+                        },
                 
     },
     ruleset => {input => 'h1 {color:red; content:"Section" counter(42)}',
@@ -57,24 +55,26 @@ for (
                              'dropping declaration: content',
                     ],
                 ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
-                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "red"]}]},                
+                        "declarations" => {"color" => {"expr" => ["term" => "red"]}},
+                },
     },
     ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
                 warnings => ['usage: counter(ident [, ident [,...] ])',
                              'dropping declaration: content',
                     ],
                 ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]],
-                        "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]},
+                        "declarations" => {"color" => {"expr" => ["term" => "blue"]}}},
     },
     # unclosed string. scanner should discard first line
     ruleset => {input => 'h2 {bad: dropme "http://unclosed-string.org; color:blue;
                               background-color:#ccc;}',
-                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]], "declarations" => ["declaration" => {"property" => "background-color", "expr" => ["term" => {"r" => 204, "g" => 204, "b" => 204}]}]},
+                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]],
+                        "declarations" => {"background-color" => {"expr" => ["term" => {"r" => 204, "g" => 204, "b" => 204}]}}},
                 warnings => [
                     'unterminated string: "http://unclosed-string.org; color:blue;',
                     'dropping declaration: bad',
                     ],
-    },                        
+    },
     ruleset => {input => 'p { color:rgb(10,17); }',
                 ast => Mu,
                 warnings => ['usage: rgb(c,c,c) where c is 0..255 or 0%-100%',
@@ -89,21 +89,21 @@ for (
                 ast => Mu,
                 warnings => 'dropping term: color',
     },
-    ruleset => {input => 'p { color:red; color; color:green }',   # same with expected recovery
+    ruleset => {input => 'p { term1:a; color; term2:b }',   # same with expected recovery
                 ast => Mu,
                 warnings => 'dropping term: color',
     },
-    ruleset => {input => 'p { color:green; color: }',               # malformed declaration missing value
+    ruleset => {input => 'p {term1:a; color: }',               # malformed declaration missing value
                 ast => Mu,
                 warnings => 'dropping declaration: color',
     },
-    ruleset => {input => 'p { color:red; color:; color:green }',  # same with expected recovery
+    ruleset => {input => 'p { term1:a; color:; term2:b }',  # same with expected recovery
                  ast => Mu, warnings => 'dropping declaration: color',
     },
-    ruleset => {input => 'p { color:green; color{;color:maroon} }', # unexpected tokens { }
+    ruleset => {input => 'p { term1:a; color{;color:maroon} }', # unexpected tokens { }
                  ast => Mu, warnings => 'dropping term: color{;color:maroon}',
     },
-    ruleset => {input => 'p { color:red;   color{;color:maroon}; color:green }',  # same with recovery
+    ruleset => {input => 'p { term1:a; color{;color:maroon}; color:green }',  # same with recovery
                 ast => Mu, warnings => Mu,
                 warnings => 'dropping term: color{;color:maroon}',
     },
@@ -124,11 +124,13 @@ for (
 h3, h4 & h5 {color: red }
 h6 {color: black }',
             warnings => 'dropping: h3, h4 & h5 {color: red }',
-            ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]],
-                                                  "selector" => ["simple_selector" => ["element_name" => "h2"]]],
-                                  "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "green"]}]},
-                    "ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h6"]]],
-                                  "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "black"]}]}]
+                   ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]],
+                                                         "selector" => ["simple_selector" => ["element_name" => "h2"]]],
+                                         "declarations" => {"color" => {"expr" => ["term" => "green"]}},
+                                         "ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h6"]]],
+                                                       "declarations" => {"color" => {"expr" => ["term" => "black"]}}}
+                           }
+                       ],
     },
     stylesheet => {input => '@three-dee {
       @background-lighting {
@@ -140,7 +142,7 @@ h6 {color: black }',
     h1 { color: blue }',
                    warnings => 'dropping: @three-dee { @background-lighting { azimuth: 30deg; elevation: 190deg; } h1 { color: red } }',
                    ast => ["ruleset" => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
-                                         "declarations" => ["declaration" => {"property" => "color", "expr" => ["term" => "blue"]}]}],
+                                         "declarations" => {"color" => {"expr" => ["term" => "blue"]}}}],
     },
     # try a few extended terms. we don't have the media extensions loaded
     stylesheet => {input => '@media print and (width: 21cm)  @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',
