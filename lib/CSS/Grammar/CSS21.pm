@@ -63,7 +63,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token freq                {:i<num>(k?Hz)}
     token quantity:sym<freq>  {<freq>}
 
-    rule term:sym<function>  {<function>|<unknown_function>}
+    rule term:sym<function>  {<function>|<function=.any_function>}
 
     rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 
@@ -82,16 +82,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
-    # distinguish regular functions from psuedo_functions
-
     proto rule function { <...> }
-    rule function:sym<attr>     {:i'attr(' [ <attribute_name=.ident> <type_or_unit=.ident>? [ ',' <fallback=.ident> ]? || <bad_args>] ')'}
-    rule function:sym<counter>  {:i'counter(' [ <ident> [ ',' <ident> ]* || <bad_args> ] ')'}
-    rule function:sym<counters> {:i'counters(' [ <ident> [ ',' <string> ]? || <bad_args> ] ')' }
-    # catch alls for unknown function names and arguments. individual
-    # declarations should ideally catch bad argument lists and give
-    # friendlier function-specific messages
-    token unknown_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
+    token any_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
     rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <bad_args> ] ')'}

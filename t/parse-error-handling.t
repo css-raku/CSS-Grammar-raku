@@ -51,19 +51,18 @@ for (
                 
     },
     ruleset => {input => 'h1 {color:red; content:"Section" counter(42)}',
-                warnings => ['usage: counter(ident [, ident [,...] ])',
-                             'dropping declaration: content',
-                    ],
-                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
-                        "declarations" => {"color" => {"expr" => ["term" => "red"]}},
+                ast => {
+                    "selectors" => ["selector" => ["simple_selector" => ["element_name" => "h1"]]],
+                    "declarations" => {"color" => {"expr" => ["term" => "red"]},
+                                       "content" => {"expr" => ["term" => "Section", "term" => {"ident" => "counter", "args" => ["term" => 42]}]}}
                 },
     },
     ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
-                warnings => ['usage: counter(ident [, ident [,...] ])',
-                             'dropping declaration: content',
-                    ],
-                ast => {"selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]],
-                        "declarations" => {"color" => {"expr" => ["term" => "blue"]}}},
+                ast => {
+                    "selectors" => ["selector" => ["simple_selector" => ["element_name" => "h2"]]],
+                    "declarations" => {"content" => {"expr" => ["term" => "Chapter", "term" => {"ident" => "counter", "args" => []}]},
+                                       "color" => {"expr" => ["term" => "blue"]}},
+                },
     },
     # unclosed string. scanner should discard first line
     ruleset => {input => 'h2 {bad: dropme "http://unclosed-string.org; color:blue;
@@ -82,8 +81,7 @@ for (
     },
     ruleset => {input => 'p:foo(42) { color:bar(); }',
                 ast => Mu,
-                warnings => ['unknown pseudo-function: foo',
-                             'unknown function: bar dropping declaration: color'],
+                warnings => ['unknown pseudo-function: foo'],
     },
     ruleset => {input => 'p { color }',                # malformed declaration missing ':', value
                 ast => Mu,

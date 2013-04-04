@@ -362,14 +362,13 @@ class CSS::Grammar::Actions {
     method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
     method quantity:sym<percentage>($/) { make $<percentage>.ast }
 
-    method term:sym<string>($/)     { make $.token($<string>.ast, :type('string')) }
-    method term:sym<url>($/)        { make $.token($<url>.ast, :type('url')) }
-    method term:sym<color>($/)      { make $<color>.ast; }
-    method term:sym<function>($/)   {
-        make $.token($<function>.ast, :type('function'))
-            if $<function>;
+    method term:sym<string>($/)   { make $.token($<string>.ast, :type('string')) }
+    method term:sym<url>($/)      { make $.token($<url>.ast, :type('url')) }
+    method term:sym<color>($/)    { make $<color>.ast; }
+    method term:sym<function>($/) {
+        make $.token($<function>.ast, :type('function'));
     }
-    method term:sym<ident>($/)      {
+    method term:sym<ident>($/)    {
         if $<emx> {
             # floating 'em' or 'ex'
             make $<emx>.ast;
@@ -378,33 +377,22 @@ class CSS::Grammar::Actions {
         make $.token($<ident>.ast, :type('ident'))
     }
 
-    method selector($/)          { make $.list($/) }
-    method simple_selector($/)   { make $.list($/) }
-    method attrib($/)            { make $.node($/) }
+    method selector($/)           { make $.list($/) }
+    method simple_selector($/)    { make $.list($/) }
+    method attrib($/)             { make $.node($/) }
 
-    method function:sym<attr>($/)             {
-        return $.warning('usage: attr( attribute-name <type-or-unit>? [, <fallback> ]? )')
-            if $<bad_args>;
-        make {ident => 'attr', args => $.list($/)}
+    method any_function($/)       {
+        my %ast = $.node($/);
+        %ast<args> //= []; # indicates an empty argument list
+        make $.token(%ast, :type('function'));
     }
-    method function:sym<counter>($/) {
-        return $.warning('usage: counter(ident [, ident [,...] ])')
-            if $<bad_args>;
-        make {ident => 'counter', args => $.list($/)}
-    }
-    method function:sym<counters>($/) {
-        return $.warning('usage: counters(ident [, "string"])')
-            if $<bad_args>;
-        make {ident => 'counters', args => $.list($/)}
-    }
+
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')
             if $<bad_args>;
         make {ident => 'lang', args => $.list($/)}
     }
-    method unknown_function($/)             {
-        $.warning('unknown function', $<ident>.ast.lc);
-    }
+
     method unknown_pseudo_func($/)             {
         $.warning('unknown pseudo-function', $<ident>.ast.lc);
     }

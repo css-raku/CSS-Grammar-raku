@@ -31,9 +31,14 @@ my $top_center = 'page { color: red;
 }';
 
 my $top_center_ast = {"declarations" => {"color" => {"expr" => ["term" => "red"]},
-                                         "\@top-center" => {"margin-box" => {"box-vpos" => "top",
-                                                                             "box-center" => "center"},
-                                                            "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["ident" => "page", "string" => "."]}]}}}}, "\@" => "page"};
+                                         "\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
+                                                            "declarations" => {"content" => {"expr" => ["term" => "Page ",
+                                                                                                        "term" => {"ident" => "counters", "args" => ["term" => "page",
+                                                                                                                                                     "operator" => ",",
+                                                                                                                                                     "term" => "."]}
+                                                                                                 ]}}}
+                      },
+                      '@' => "page"};
 
 for (
     at_rule   => {input => 'page :left { margin-left: 4cm; }',
@@ -54,7 +59,7 @@ for (
     },
     'page-declarations' => {input => '{ @Top-CENTER {content: "Page " counters(page);} }',
                  ast => {"\@top-center" => {"margin-box" => {"box-vpos" => "top", "box-center" => "center"},
-                                           "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["ident" => "page"]}]}}}},
+                                           "declarations" => {"content" => {"expr" => ["term" => "Page ", "term" => {"ident" => "counters", "args" => ["term" => "page"]}]}}}},
     },
     at_rule => {input => $top_center, ast => $top_center_ast},
     ) {

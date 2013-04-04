@@ -51,14 +51,10 @@ for (
     },
     term => {input => 'foo(bar baz( 42 ) )',
              ast => Mu,
-             warnings => ['unknown function: baz',
-                          'unknown function: foo'
-                 ],
     },
     # function without arguments, e.g. jquery-ui-themeroller.css
     term => {input => 'mask()',
              ast => Mu,
-             warnings => 'unknown function: mask',
     },
     unicode_range => {input => '416', ast => [0x416, 0x416]},
     unicode_range => {input => '400-4FF', ast => [0x400, 0x4FF]},

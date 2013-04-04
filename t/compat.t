@@ -208,7 +208,6 @@ for (
     # css2 understands some functions
     expr => {input => '-moz-linear-gradient(top, t2, t3)',
              ast => Mu,
-             warnings => 'unknown function: -moz-linear-gradient',
 
              css1 => {
                  ast => Mu,
@@ -228,9 +227,12 @@ for (
                                           term => 45,
                                           term => 10, term => 50,
                                           term => 'ZZ',
-                                          term => {"ident" => "counter", "args" => ["ident" => "a", ident => "b"]},
-                                          term => {"ident" => "counters", "args" => ["ident" => "p", string => "s"]},
-                                          term => {"ident" => "attr", "args" => ["attribute_name" => "data-foo"]},
+                                          term => {"ident" => "counter",
+                                                   "args" => [term => "a", operator => ",", term => "b"]},
+                                          term => {"ident" => "counters",
+                                                   "args" => [term => "p", operator => ",", term => "s"]},
+                                          term => {"ident" => "attr",
+                                                   "args" => [term => "data-foo"]},
                                      ]
                              }
                          },
