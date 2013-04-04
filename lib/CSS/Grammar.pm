@@ -34,7 +34,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmreg          {<[_ \- a..z A..Z 0..9]>+}
     token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
-    token num            {[\d* \.]? \d+}
+    token num            {[\+|\-]?[\d* \.]? \d+}
     token posint         {\d+}
 
     proto token stringchar {*}
@@ -54,7 +54,8 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     proto token length   {<...>}
     token length:sym<qty>          {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
-    token length:sym<emx>          {:i e[m|x]}
+    token length:sym<emx>          {<emx>}
+    token emx                     {:i(\+|\-)?(e[m|x])}
 
     proto token quantity {<...>}
     token quantity:sym<length>     {<length>}
@@ -68,7 +69,6 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # productions
 
-    rule unary_operator       {'+'|'-'}
     rule operator             {'/'|','}
 
     rule property {<property=.ident> ':'}
@@ -99,16 +99,13 @@ grammar CSS::Grammar:ver<0.0.1> {
     token combinator:sym<adjacent> {'+'}
     token combinator:sym<child>    {'>'}
 
-    # pterm - able to be prefixed by a unary operator
-    proto rule pterm {*}
-    rule pterm:sym<qty>       {<quantity>}
-    rule pterm:sym<num>       {<num>}
-    # aterm - atomic; these can't be prefixed by a unary operator
-    proto rule aterm {*}
-    rule aterm:sym<string>    {<string>}
-    rule aterm:sym<color>     {<color>}
-    rule aterm:sym<url>       {<url>}
-    rule aterm:sym<ident>     {<ident>}
+    proto rule term {*}
+    rule term:sym<qty>       {<quantity>}
+    rule term:sym<num>       {<num>}
+    rule term:sym<string>    {<string>}
+    rule term:sym<color>     {<color>}
+    rule term:sym<url>       {<url>}
+    rule term:sym<ident>     {<emx>|<ident>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode_range {*}

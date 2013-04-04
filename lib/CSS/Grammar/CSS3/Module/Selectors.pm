@@ -28,8 +28,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
 
     rule universal      {<namespace_prefix>? <wildcard>}
 
-    rule aterm:sym<unicode_range> {'U+'<unicode_range>}
-    rule aterm:sym<ident>         {<!before emx><ident>}
+    rule term:sym<unicode_range> {'U+'<unicode_range>}
 
     # inherited from base: = ~= |=
     rule attribute_selector:sym<prefix>    {'^='}
@@ -64,7 +63,7 @@ class CSS::Grammar::CSS3::Module::Selectors::Actions {
     method attribute_selector:sym<suffix>($/)    { make $/.Str }
     method attribute_selector:sym<substring>($/) { make $/.Str }
 
-    method aterm:sym<unicode_range>($/) { make $.node($/) }
+    method term:sym<unicode_range>($/) { make $.node($/) }
     method pseudo_function:sym<nth_selector>($/)  {
         return $.warning('usage '~$<ident>~'(an+b) e.g "4" "3n+1"')
             if $<bad_args>;

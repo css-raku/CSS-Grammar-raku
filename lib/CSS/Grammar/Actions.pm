@@ -62,11 +62,15 @@ class CSS::Grammar::Actions {
         # make a node that contains repeatable elements
         my @terms;
 
-        for $/.caps -> $cap {
-            my ($key, $value) = $cap.kv;
-            $value = $value.ast;
-            next unless $value.defined;
-            push @terms, ($key => $value);
+        my @l = $/.can('caps') ?? ($/) !! (@$/);
+
+        for @l {
+            for $_.caps -> $cap {
+                my ($key, $value) = $cap.kv;
+                $value = $value.ast;
+                next unless $value.defined;
+                push @terms, ($key => $value);
+            }
         }
 
         return @terms;
@@ -334,13 +338,17 @@ class CSS::Grammar::Actions {
 
     method expr($/) { make $.list($/) }
 
-    method pterm:sym<num>($/)  { make $.token($<num>.ast, :type('num')); }
-    method pterm:sym<qty>($/)  { make $<quantity>.ast }
+    method term:sym<num>($/)  { make $.token($<num>.ast, :type('num')); }
+    method term:sym<qty>($/)  { make $<quantity>.ast }
 
     method length:sym<qty>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
     method quantity:sym<length>($/)     { make $<length>.ast }
-    # treat 'ex' as '1ex'; 'em' as '1em'
-    method length:sym<emx>($/)          { make $.token(1, :units($/.Str.lc), :type('length')) }
+    # digit can be dropped, e.g. 'ex' => '1ex'; -em => '-1em'
+    method length:sym<emx>($/)          { make $<emx>.ast }
+    method emx($/) {
+        my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
+        make $.token($num, :units($1.Str.lc), :type('length'))
+    }
 
     method angle($/)                    { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
     method quantity:sym<angle>($/)      { make $<angle>.ast }
@@ -354,27 +362,20 @@ class CSS::Grammar::Actions {
     method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
     method quantity:sym<percentage>($/) { make $<percentage>.ast }
 
-    method aterm:sym<string>($/)     { make $.token($<string>.ast, :type('string')) }
-    method aterm:sym<url>($/)        { make $.token($<url>.ast, :type('url')) }
-    method aterm:sym<color>($/)      { make $<color>.ast; }
-    method aterm:sym<function>($/)   {
+    method term:sym<string>($/)     { make $.token($<string>.ast, :type('string')) }
+    method term:sym<url>($/)        { make $.token($<url>.ast, :type('url')) }
+    method term:sym<color>($/)      { make $<color>.ast; }
+    method term:sym<function>($/)   {
         make $.token($<function>.ast, :type('function'))
             if $<function>;
     }
-    method aterm:sym<ident>($/)      { make $.token($<ident>.ast, :type('ident')) }
-
-    method emx($/) { make $/.Str.lc }
-
-    method term($/) {
-        if $<term> {
-            my $term_ast = $<term>.ast;
-            if $<unary_operator> && $<unary_operator>.Str eq '-' {
-                my $units = $term_ast.can('units') && $term_ast.units;
-                my $type = $term_ast.can('type') && $term_ast.type;
-                $term_ast = $.token( - $term_ast, :units($units), :type($type) );
-            }
-            make $term_ast;
+    method term:sym<ident>($/)      {
+        if $<emx> {
+            # floating 'em' or 'ex'
+            make $<emx>.ast;
+            return;
         }
+        make $.token($<ident>.ast, :type('ident'))
     }
 
     method selector($/)          { make $.list($/) }

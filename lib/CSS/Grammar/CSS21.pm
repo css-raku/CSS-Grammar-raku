@@ -10,7 +10,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     # productions
     rule stylesheet { <charset>?
-                      [<import> | <misplaced>]*
+                      [<import> || <misplaced>]*
                       ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
@@ -52,7 +52,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
-    rule term { <unary_operator>? <term=.pterm> | <term=aterm> } 
 
     # quantity inherited from base grammar: length, percentage
     token angle               {:i<num>(deg|rad|grad)}
@@ -64,8 +63,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token freq                {:i<num>(k?Hz)}
     token quantity:sym<freq>  {<freq>}
 
-    # aterm - atomic; these can't be prefixed by a unary operator
-    rule aterm:sym<function>  {<function>|<unknown_function>}
+    rule term:sym<function>  {<function>|<unknown_function>}
 
     rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
 

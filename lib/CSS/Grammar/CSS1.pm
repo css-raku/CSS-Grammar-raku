@@ -32,17 +32,13 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
     rule declaration_list { [ <declaration> || <dropped_decl> ]* }
-    # an unterminated string might have run to end-of-line and consumed ';'
 
-    # <decl> - extension point for CSS::Grammar::Validating suite
+    # delcaration:sym<validated> - extension point for CSS::Language suite
     rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
-
-    rule expr { <term> [ <operator>? <term> ]* }
-
-    rule term { <unary_operator>? <term=.pterm>
-              | <.unary_operator>? <term=.aterm> # useless unary operator
-              }
+    rule expr { [<term>||<.unary_op><term>] [ <operator>? [<term>||<.unary_op><term>] ]* }
+    # css1 syntax allows a unary operator in front of all terms
+    rule unary_op       {'+'|'-'}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
 
