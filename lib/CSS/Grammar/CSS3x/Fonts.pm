@@ -6,7 +6,7 @@ use v6;
 # nb this standard is under revision (as of Feb 2013). Biggest change
 # is the proposed at-rule @font-feature-values
 
-grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
+grammar CSS::Grammar::CSS3x::Fonts:ver<20130212.000> {
     rule at_rule:sym<font_face> {(:i'font-face') <declarations> }
 
     # functions
@@ -14,7 +14,7 @@ grammar CSS::Grammar::CSS3::Module::Fonts:ver<20130212.000> {
     rule function:sym<fmt-or-loc> {:i(format|local)'(' [ <string> || <bad_args> ] ')'}
 }
 
-class CSS::Grammar::CSS3::Module::Fonts::Actions {
+class CSS::Grammar::CSS3x::Fonts::Actions {
     method at_rule:sym<font_face>($/) { make $.at_rule($/) }
 
     method function:sym<fmt-or-loc>($/) {

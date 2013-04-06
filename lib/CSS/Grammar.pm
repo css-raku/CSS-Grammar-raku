@@ -129,13 +129,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
     # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<forward_compat> { <property> [<expr>|(<any>)]* <end_decl> }
+    rule dropped_decl:sym<forward_compat> { <property> [<expr>|(<any>)]*? <end_decl> }
+    # - extra semicolon
+    rule dropped_decl:sym<empty>          { ';' }
     # - couldn't get a property, but terms well formed
-    rule dropped_decl:sym<stray_terms>    { (<any>+) <end_decl> }
+    rule dropped_decl:sym<stray_terms>    { (<any>)+? <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs
     rule dropped_decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end_decl>? }
     # - unable to parse it at all; throw it out
-    rule dropped_decl:sym<flushed>        { ( <any> | <- [\;\}]> )+ <end_decl> }
+    rule dropped_decl:sym<flushed>        { ( <any> | <- [\;\}]> )+? <end_decl> }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 

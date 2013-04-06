@@ -69,15 +69,15 @@ Extension Modules
 ------------------
 This distribution includes the following optional CSS3 extension modules:
 
-- `CSS::Grammar::CSS3::Module::Colors` - CSS 3.0 Colors (@color-profile)
-- `CSS::Grammar::CSS3::Module::Selectors` - CSS 3.0 Selectors
-- `CSS::Grammar::CSS3::Module::Fonts` - CSS 3.0 Fonts (@font-face)
-- `CSS::Grammar::CSS3::Module::Media` - CSS 3.0 Media (@media)
-- `CSS::Grammar::CSS3::Module::Namespaces` - CSS 3.0 Namespace (@namespace)
-- `CSS::Grammar::CSS3::Module::PagedMedia` - CSS 3.0 Paged Media (@page)
+- `CSS::Grammar::CSS3x::Colors`     - CSS 3.0 Colors (@color-profile)
+- `CSS::Grammar::CSS3x::Selectors`  - CSS 3.0 Selectors
+- `CSS::Grammar::CSS3x::Fonts`      - CSS 3.0 Fonts (@font-face)
+- `CSS::Grammar::CSS3x::Media`      - CSS 3.0 Media (@media)
+- `CSS::Grammar::CSS3x::Namespaces` - CSS 3.0 Namespace (@namespace)
+- `CSS::Grammar::CSS3x::PagedMedia` - CSS 3.0 Paged Media (@page)
 
-To enable all extensions, use the `CSS::Grammar::CSS3::Extended` grammar
-and `CSS::Grammar::CSS3::Extended::Actions` action class.
+To enable all the above extensions, use the `CSS::Grammar::CSS3x` grammar
+and `CSS::Grammar::CSS3x::Actions` action class.
 
 Enabling Specific CSS3 Extensions
 ---------------------------------
@@ -93,18 +93,18 @@ extension modules that you intend to support.
 E.g. to support the CSS3 Core grammar plus Paged Media and Fonts modules:
 
     use CSS::Grammar::CSS3;
-    use CSS::Grammar::CSS3::Module::Fonts;
-    use CSS::Grammar::CSS3::Module::PagedMedia;
+    use CSS::Grammar::CSS3x::Fonts;
+    use CSS::Grammar::CSS3x::PagedMedia;
     use CSS::Grammar::Actions;
 
     grammar My_CSS3_Grammar
-        is CSS::Grammar::CSS3::Module::Fonts
-        is CSS::Grammar::CSS3::Module::PagedMedia
+        is CSS::Grammar::CSS3x::Fonts
+        is CSS::Grammar::CSS3x::PagedMedia
         is CSS::Grammar::CSS3 {};
 
     class My_CSS3_Actions
-        is CSS::Grammar::CSS3::Module::Fonts::Actions
-        is CSS::Grammar::CSS3::Module::PagedMedia::Actions
+        is CSS::Grammar::CSS3x::Fonts::Actions
+        is CSS::Grammar::CSS3x::PagedMedia::Actions
         is CSS::Grammar::Actions {};
 
 This gives you a customised grammar and parser that understands the

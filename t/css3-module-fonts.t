@@ -5,17 +5,17 @@ use Test;
 use CSS::Grammar;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Grammar::CSS3::Module::Fonts;
+use CSS::Grammar::CSS3x::Fonts;
 
 # prepare our own composite class with font extensions
 
 grammar t::CSS3::FontGrammar
-      is CSS::Grammar::CSS3::Module::Fonts
+      is CSS::Grammar::CSS3x::Fonts
       is CSS::Grammar::CSS3
       {};
 
 class t::CSS3::FontActions
-    is CSS::Grammar::CSS3::Module::Fonts::Actions
+    is CSS::Grammar::CSS3x::Fonts::Actions
     is CSS::Grammar::Actions
 {};
 

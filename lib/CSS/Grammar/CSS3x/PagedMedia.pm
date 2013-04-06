@@ -4,7 +4,7 @@ use v6;
 # - reference: http://www.w3.org/TR/2006/WD-css3-page-20061010/
 #
 
-grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
+grammar CSS::Grammar::CSS3x::PagedMedia:ver<20061010.000> {
 
     proto rule page-pseudo {*}
     rule page-pseudo:sym<left>    {:i'left'}
@@ -28,7 +28,7 @@ grammar CSS::Grammar::CSS3::Module::PagedMedia:ver<20061010.000> {
 
 }
 
-class CSS::Grammar::CSS3::Module::PagedMedia::Actions {
+class CSS::Grammar::CSS3x::PagedMedia::Actions {
 
     method page-pseudo:sym<left>($/)  {make 'left'}
     method page-pseudo:sym<right>($/) {make 'right'}

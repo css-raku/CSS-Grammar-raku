@@ -5,17 +5,17 @@ use Test;
 use CSS::Grammar;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Grammar::CSS3::Module::Colors;
+use CSS::Grammar::CSS3x::Colors;
 
 # prepare our own composite class with color extensions
 
 grammar t::CSS3::ColorGrammar
       is CSS::Grammar::CSS3
-      is CSS::Grammar::CSS3::Module::Colors {};
+      is CSS::Grammar::CSS3x::Colors {};
 
 class t::CSS3::ColorActions
     is CSS::Grammar::Actions
-    is CSS::Grammar::CSS3::Module::Colors::Actions {};
+    is CSS::Grammar::CSS3x::Colors::Actions {};
 
 use lib '.';
 use t::AST;

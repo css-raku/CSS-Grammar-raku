@@ -6,7 +6,7 @@ use v6;
 # -- have relaxed negation rule to take a list of arguments - in common use
 #    and supported  by major browsers.
 
-grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
+grammar CSS::Grammar::CSS3x::Selectors:ver<20090929.000> {
 
     # extensions:
     # ----------
@@ -52,7 +52,7 @@ grammar CSS::Grammar::CSS3::Module::Selectors:ver<20090929.000> {
     rule pseudo_function:sym<negation>  {:i'not(' [ <negation_args> || <bad_args> ] ')'}
 }
 
-class CSS::Grammar::CSS3::Module::Selectors::Actions {
+class CSS::Grammar::CSS3x::Selectors::Actions {
 
     method namespace_prefix($/) { make $.node($/) }
     method wildcard($/)         { make $/.Str }

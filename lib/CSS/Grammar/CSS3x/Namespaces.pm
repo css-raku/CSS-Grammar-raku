@@ -4,11 +4,11 @@ use v6;
 # specification: http://www.w3.org/TR/2011/REC-css3-namespace-20110929/
 #
 
-grammar CSS::Grammar::CSS3::Module::Namespaces:ver<20110929.000> {
+grammar CSS::Grammar::CSS3x::Namespaces:ver<20110929.000> {
     rule at_decl:sym<namespace> {(:i'namespace') <prefix=.ident>? [<url=.string>|<url>] ';' }
 }
 
-class CSS::Grammar::CSS3::Module::Namespaces::Actions {
+class CSS::Grammar::CSS3x::Namespaces::Actions {
     method at_decl:sym<namespace>($/) { make $.at_rule($/) }
 }
 
