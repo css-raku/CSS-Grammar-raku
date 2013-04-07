@@ -3,23 +3,20 @@
 # general compatibility tests
 # -- css1 is a subset of css2.1 and sometimes parses differently
 # -- css3 without extensions should be largley css2.1 compatibile
-# -- css3 with extensions enabled should be able to parse css2.1
-#    input and produce compatible ASTs (to ensures a smooth transition
-#    when enabling extension modules).
+# -- our scanning grammar should parse identically to css21 and css3, when
+#    there are now warnings
 
 use Test;
 
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
-use CSS::Grammar::CSS3x; # all extensions enabled
 use CSS::Grammar::Actions;
 
 use lib '.';
 use t::AST;
 
 my $css_actions = CSS::Grammar::Actions.new;
-my $css_extended_actions = CSS::Grammar::CSS3x::Actions.new;
 
 for (
     ws => {input => ' '},
@@ -447,17 +444,10 @@ for (
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css3)) );
 
-    # -- css3 with all extensions enabled
-    $css_extended_actions.reset;
-    my $p3ext = CSS::Grammar::CSS3x.parse( $input, :rule($rule), :actions($css_extended_actions));
-    t::AST::parse_tests($input, $p3ext, :rule($rule), :suite('css3-ext'),
-                        :warnings($css_extended_actions.warnings),
-                        :expected( %(%test, %$css3)) );
-
     # try a general scan
 
     if ($rule ~~ /^(TOP|statement|at_rule|ruleset|selectors|declaration[s|_list]|property)$/
-        && ! $css_extended_actions.warnings) {
+    && !$css_actions.warnings) {
         my $p_any = CSS::Grammar::Scan.parse( $input, :rule('_'~$rule) );
         t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),
                             :expected({ast => Mu}) );

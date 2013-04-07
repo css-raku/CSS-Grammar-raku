@@ -65,56 +65,6 @@ for any unexpected input.
     # skipping term: gunk
     # H1: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
 
-Extension Modules
-------------------
-This distribution includes the following optional CSS3 extension modules:
-
-- `CSS::Grammar::CSS3x::Colors`     - CSS 3.0 Colors (@color-profile)
-- `CSS::Grammar::CSS3x::Selectors`  - CSS 3.0 Selectors
-- `CSS::Grammar::CSS3x::Fonts`      - CSS 3.0 Fonts (@font-face)
-- `CSS::Grammar::CSS3x::Media`      - CSS 3.0 Media (@media)
-- `CSS::Grammar::CSS3x::Namespaces` - CSS 3.0 Namespace (@namespace)
-- `CSS::Grammar::CSS3x::PagedMedia` - CSS 3.0 Paged Media (@page)
-
-To enable all the above extensions, use the `CSS::Grammar::CSS3x` grammar
-and `CSS::Grammar::CSS3x::Actions` action class.
-
-Enabling Specific CSS3 Extensions
----------------------------------
-CSS3 is evolving into a core grammar plus a comprehensive set of extension
-[modules](http://www.css3.info/modules/). Most are optional and may extend
-both the grammar and generated Abstract Syntax Tree (AST). This leads to a
-large number of possible grammar combinations.
-
-If you wish to use a subset of the available extensions, you'll need to
-construct a custom grammar and actions that include just the particular CSS3
-extension modules that you intend to support.
-
-E.g. to support the CSS3 Core grammar plus Paged Media and Fonts modules:
-
-    use CSS::Grammar::CSS3;
-    use CSS::Grammar::CSS3x::Fonts;
-    use CSS::Grammar::CSS3x::PagedMedia;
-    use CSS::Grammar::Actions;
-
-    grammar My_CSS3_Grammar
-        is CSS::Grammar::CSS3x::Fonts
-        is CSS::Grammar::CSS3x::PagedMedia
-        is CSS::Grammar::CSS3 {};
-
-    class My_CSS3_Actions
-        is CSS::Grammar::CSS3x::Fonts::Actions
-        is CSS::Grammar::CSS3x::PagedMedia::Actions
-        is CSS::Grammar::Actions {};
-
-This gives you a customised grammar and parser that understands the
-core CSS3 language, plus Fonts and Paged Media extensions
-
-    my $actions = My_CSS3_Actions.new;
-    my $parse = My_CSS3_Grammar.parse( $css_input, :actions($actions) );
-
-For a working example, see t/parse-css3-module-fonts.t.
-
 See Also
 ========
 - [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a general purpose CSS validation and parsing suite.
