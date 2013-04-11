@@ -120,9 +120,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     # --------------
     # - <any>                    - for unknown terms etc
     rule any       {<CSS::Grammar::Scan::_value>}
-    # - <bad_arg>, <bad_args>    - for incorrect function args
-    rule bad_arg   {<CSS::Grammar::Scan::_arg>}
-    rule bad_args  {<bad_arg>*}
+    # - <any_arg>, <any_args>    - for incorrect function args
+    rule any_arg   {<CSS::Grammar::Scan::_arg>}
+    rule any_args  {<any_arg>*}
     # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
 

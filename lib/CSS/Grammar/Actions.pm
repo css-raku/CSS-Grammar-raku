@@ -389,7 +389,7 @@ class CSS::Grammar::Actions {
 
     method pseudo_function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')
-            if $<bad_args>;
+            if $<any_args>;
         make {ident => 'lang', args => $.list($/)}
     }
 

@@ -83,12 +83,12 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule pseudo:sym<class>     {':' <class=.ident> }
 
     proto rule function { <...> }
-    token any_function      {<ident>'(' [<args=.expr>||<args=.bad_arg>]* ')'}
+    token any_function      {<ident>'(' [<args=.expr>||<args=.any_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
-    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <bad_args> ] ')'}
+    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <any_args> ] ')'}
     # pseudo function catch-all
-    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>||<args=.bad_arg>]* ')'}
+    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>||<args=.any_arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters
