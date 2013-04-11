@@ -20,13 +20,11 @@ Ensure that `perl6` and `panda` are available on your path, e.g. :
 
 You can then use `panda` to test and install `CSS::Grammar`:
 
-
     % panda install CSS::Grammar
 
 To try parsing some content:
 
     % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
-
 
 Contents
 ========
@@ -58,7 +56,7 @@ warnings for any unexpected input.
 
     my $actions =  CSS::Grammar::Actions.new;
     my $p = CSS::Grammar::CSS3.parse($css, :actions($actions));
-    warn $_ for $actions.warnings;
+    note $_ for $actions.warnings;
     say "H1: " ~ $p.ast[0]<ruleset><selectors>.perl;
     # output:
     # skipping term: gunk
@@ -66,7 +64,7 @@ warnings for any unexpected input.
 
 See Also
 ========
-- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as an extension of CSS::Grammar. It is able to perform property-specific validation for CSS1, CSS2.1 and CSS3, including common extension modules.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as an extension of CSS::Grammar. Its aim is to perform property-specific validation for CSS1, CSS2.1 and CSS3, and implement common CSS3 extension modules.
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
