@@ -1,15 +1,14 @@
 perl6-CSS-Grammar
 =================
 
-CSS::Grammar is under construction as an experimental set of Perl 6 grammars for the W3C CSS family of standards.
+CSS::Grammar is under construction as an experimental set of Perl 6 grammars for the W3C family of CSS standards.
 
-It aims to implement a reasonable portion of the grammars and common extension
-modules, with an emphasis on:
+It aims to implement a reasonable portion of the base grammars with an
+emphasis on:
 
-- support for CSS1, CSS2.1 and CSS3 base grammars
-- support for common CSS3 extensions modules
+- support for CSS1, CSS2.1 and CSS3
 - forward compatibility rules, scanning and error recovery
-- mechanisms for custom CSS extensions
+- mechanisms for CSS3 and custom extensions 
 
 Installation (Rakudo Star)
 --------------------------
@@ -40,16 +39,16 @@ Base Grammars
 
 The CSS 3.0 core grammar, `CSS::Grammar::CSS3`, is mostly feature-compatabile with CSS2.1. In particular, it understands:
 
-- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, or `hsla(...)`.
+- `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, `hsla(...)` or named colors.
 - basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
 - basic `@page` page description rules
 - basic css2.1 compatibile selectors.
 
 Parser Actions
 --------------
-`CSS::Grammar::Actions` can be used with in conjunction with the CSS1 CSS21 or
-CSS3 base grammars. It produces an abstract syntax tree (AST), plus warnings
-for any unexpected input.
+`CSS::Grammar::Actions` can be used with in conjunction with any of the CSS1
+CSS21 or CSS3 base grammars. It produces an abstract syntax tree (AST), plus
+warnings for any unexpected input.
 
     use v6;
     use CSS::Grammar::CSS3;
@@ -67,8 +66,8 @@ for any unexpected input.
 
 See Also
 ========
-- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a general purpose CSS validation and parsing suite.
-- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) which gives an introductory Perl 6 grammar for CSS 2.1.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as an extension of CSS::Grammar. It is able to perform property-specific validation for CSS1, CSS2.1 and CSS3, including common extension modules.
+- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
 ==========
@@ -77,10 +76,5 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
 - CSS 2.1 Grammar - http://www.w3.org/TR/CSS21/grammar.html
 - CSS3 module: Syntax - http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
-- CSS Selectors Module Level 3 - http://www.w3.org/TR/2011/REC-css3-selectors-20110929/
-- CSS Color Module Level 3 - http://www.w3.org/TR/2011/REC-css3-color-20110607/
-- CSS Fonts Module Level 3 - http://www.w3.org/TR/2013/WD-css3-fonts-20130212/
-- CSS Namespaces Module - http://www.w3.org/TR/2011/REC-css3-namespace-20110929/
-- CSS3 Media Query Extensions - http://www.w3.org/TR/2012/REC-css3-mediaqueries-20120619/
 - CSS3 Module: Paged Media - http://www.w3.org/TR/2006/WD-css3-page-20061010/
 - CSS Style Attributes - http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
