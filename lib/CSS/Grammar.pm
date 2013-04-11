@@ -84,12 +84,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule color:sym<rgb> {:i'rgb('
                    [$<ok>=[<r=.color-range> ','
                           <g=.color-range> ','
-                          <b=.color-range>] | <any>*]
+                          <b=.color-range>] || <any>*]
                    ')'
     }
     rule color:sym<hex> {<id>}
 
-    token prio {:i'!' [('important')|<any>] }
+    token prio {:i'!' [('important')||<any>] }
 
     # pseudos
     proto rule pseudo {<...>}
@@ -129,15 +129,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
     # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<forward_compat> { <property> [<expr>|(<any>)]*? <end_decl> }
-    # - extra semicolon
+    rule dropped_decl:sym<forward_compat> { <property> [<expr>||(<any>)]*? <end_decl> }
+    # - extra semicolon - just ignore
     rule dropped_decl:sym<empty>          { ';' }
     # - couldn't get a property, but terms well formed
     rule dropped_decl:sym<stray_terms>    { (<any>)+? <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs
     rule dropped_decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end_decl>? }
     # - unable to parse it at all; throw it out
-    rule dropped_decl:sym<flushed>        { ( <any> | <- [\;\}]> )+? <end_decl> }
+    rule dropped_decl:sym<flushed>        { ( <any> || <- [\;\}]> )+? <end_decl> }
 
     rule end_block {[$<closing_paren>='}' ';'?]?}
 
@@ -167,7 +167,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # e.g this should be complety dropped: h3, h4 & h5 {color: red }
     # Errata:
     # - declarations are less structured - optimized for robustness
-    # - added <op> for general purpose operator detection
+    # - added <_op> for general purpose operator detection
     # - may assume closing parenthesis in nested values and blocks
 
     rule TOP           {^ <_stylesheet> $}
@@ -184,11 +184,11 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _declaration_list {[ <property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
-    rule _delim        {<[\( \) \{ \} \; \" \' \\]>}
-    rule _op           {[<punct><!after <_delim>>]+}
+    token _delim       {<[\( \) \{ \} \; \" \' \\]>}
+    token _op          {[<punct> & <- _delim>]+}
 
-    rule _badstring   {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
-                      |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
+    rule _badstring    {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
+                       |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }

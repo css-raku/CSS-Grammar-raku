@@ -1,6 +1,5 @@
 use v6;
 
-use CSS::Grammar;
 use CSS::Grammar::CSS21;
 
 # specification: http://www.w3.org/TR/2003/WD-css3-syntax-20030813/

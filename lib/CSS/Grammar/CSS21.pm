@@ -78,17 +78,17 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token attribute_selector:sym<dash>     {'|='}
 
     rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
-    rule pseudo:sym<function> {':'[<function=.pseudo_function>|<unknown_pseudo_func>]}
+    rule pseudo:sym<function> {':'[<function=.pseudo_function>||<unknown_pseudo_func>]}
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
     proto rule function { <...> }
-    token any_function      {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
+    token any_function      {<ident>'(' [<args=.expr>||<args=.bad_arg>]* ')'}
 
     proto rule pseudo_function { <...> }
     rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <bad_args> ] ')'}
     # pseudo function catch-all
-    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>|<args=.bad_arg>]* ')'}
+    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>||<args=.bad_arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

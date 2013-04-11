@@ -36,8 +36,9 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     # delcaration:sym<validated> - extension point for CSS::Language suite
     rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
+    # css1 syntax allows a unary operator in front of all terms. Throw it
+    # out, if the term doesn't consume it.
     rule expr { [<term>||<.unary_op><term>] [ <operator>? [<term>||<.unary_op><term>] ]* }
-    # css1 syntax allows a unary operator in front of all terms
     rule unary_op       {'+'|'-'}
 
     token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
