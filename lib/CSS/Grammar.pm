@@ -82,9 +82,9 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     proto rule color    {*}
     rule color:sym<rgb> {:i'rgb('
-                   [$<ok>=[<r=.color-range> ','
-                          <g=.color-range> ','
-                          <b=.color-range>] || <any>*]
+                   [ <r=.color-range> ','
+                     <g=.color-range> ','
+                     <b=.color-range> || <any_args> ]
                    ')'
     }
     rule color:sym<hex> {<id>}
@@ -128,10 +128,10 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped_decl { <...> }
-    # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<forward_compat> { <property> [<expr>||(<any>)]*? <end_decl> }
     # - extra semicolon - just ignore
     rule dropped_decl:sym<empty>          { ';' }
+    # - parsed a property; some terms are unknown
+    rule dropped_decl:sym<forward_compat> { <property> [<expr>||(<any>)]*? <end_decl> }
     # - couldn't get a property, but terms well formed
     rule dropped_decl:sym<stray_terms>    { (<any>)+? <end_decl> }
     # - unterminated string. might consume ';' '}' and other constructs

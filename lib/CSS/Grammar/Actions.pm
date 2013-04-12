@@ -208,7 +208,7 @@ class CSS::Grammar::Actions {
 
     method color:sym<rgb>($/)  {
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
-            unless $<ok>;
+            if $<any_args>;
         make $.token($.node($/), :type<color>, :units<rgb>);
     }
     method color:sym<hex>($/)   {
