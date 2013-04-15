@@ -153,12 +153,13 @@ class CSS::Grammar::Actions {
     method nmchar($/){
         make $<nmreg> ?? $<nmreg>.Str !! ($<nonascii> || $<escape>).ast;
     }
-    method ident($/) {
+    method ident-cs($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
         my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
-        make $pfx ~ $ident.lc;
+        make $pfx ~ $ident;
     }
-    method name($/) {
+    method ident($/) { make $<ident-cs>.ast.lc }
+    method name($/)  {
         make $<nmchar>.map({$_.ast}).join('');
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }

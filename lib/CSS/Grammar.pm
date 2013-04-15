@@ -32,7 +32,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {<nmreg>|<nonascii>|<escape>}
     token nmreg          {<[_ \- a..z A..Z 0..9]>+}
-    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
+    # <ident-cs> :== case sensitive   <ident> :== case-insensistive
+    token ident-cs       {$<pfx>=['-']?<nmstrt><nmchar>*}
+    token ident          {<ident-cs>}
     token name           {<nmchar>+}
     token num            {[\+|\-]?[\d* \.]? \d+}
     token posint         {\d+}
@@ -52,10 +54,10 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element_name   {<ident>}
 
-    proto token length   {<...>}
-    token length:sym<qty>          {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
-    token length:sym<emx>          {<emx>}
-    token emx                     {:i(\+|\-)?(e[m|x])}
+    proto token length       {<...>}
+    token length:sym<qty>    {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
+    token length:sym<emx>    {<emx>}
+    token emx                {:i(\+|\-)?(e[m|x])}
 
     proto token quantity {<...>}
     token quantity:sym<length>     {<length>}
