@@ -56,9 +56,9 @@ for (
     term => {input => 'mask()',
              ast => Mu,
     },
-    unicode_range => {input => '416', ast => [0x416, 0x416]},
-    unicode_range => {input => '400-4FF', ast => [0x400, 0x4FF]},
-    unicode_range => {input => '4??', ast => [0x400, 0x4FF]},
+    unicode-range => {input => '416', ast => [0x416, 0x416]},
+    unicode-range => {input => '400-4FF', ast => [0x400, 0x4FF]},
+    unicode-range => {input => '4??', ast => [0x400, 0x4FF]},
     ) {
 
     my $rule = $_.key;

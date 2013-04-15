@@ -25,25 +25,25 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     rule selectors { <selector> [',' <selector>]* }
 
     rule declarations {
-        '{' <declaration_list> <.end_block>
+        '{' <declaration-list> <.end-block>
     }
 
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list { [ <declaration> || <dropped_decl> ]* }
+    rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
     # delcaration:sym<validated> - extension point for CSS::Language suite
-    rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
-    rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
+    rule declaration:sym<validated> { <decl> <prio>? <end-decl> }
+    rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
     # css1 syntax allows a unary operator in front of all terms. Throw it
     # out, if the term doesn't consume it.
-    rule expr { [<term>||<.unary_op><term>] [ <operator>? [<term>||<.unary_op><term>] ]* }
-    rule unary_op       {'+'|'-'}
+    rule expr { [<term>||<.unary-op><term>] [ <operator>? [<term>||<.unary-op><term>] ]* }
+    rule unary-op       {'+'|'-'}
 
-    token selector {<simple_selector>[<ws><simple_selector>]* <pseudo>?}
+    token selector {<simple-selector>[<ws><simple-selector>]* <pseudo>?}
 
-    token simple_selector { <element_name> <id>? <class>? <pseudo>?
+    token simple-selector { <element-name> <id>? <class>? <pseudo>?
                           | <id> <class>? <pseudo>?
                           | <class> <pseudo>?
                           | <pseudo> }

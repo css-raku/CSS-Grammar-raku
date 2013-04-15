@@ -11,22 +11,22 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # productions
     rule stylesheet { <charset>?
                       [<import> || <misplaced>]*
-                      ['@'<at_rule> | <ruleset> || <misplaced> || <unknown>]* }
+                      ['@'<at-rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
-    rule import  { \@(:i'import')  [<string>|<url>] <media_list>? ';' }
+    rule import  { \@(:i'import')  [<string>|<url>] <media-list>? ';' }
     # to detect out of order directives
     rule misplaced {<charset>|<import>}
 
-    proto rule at_rule {*}
+    proto rule at-rule {*}
 
-    rule at_rule:sym<media>   {(:i'media') <media_list> <media_rules> }
-    rule media_list           {<media_query> [',' <media_query>]*}
-    rule media_query          {<media=.ident>}
-    rule media_rules          {'{' <ruleset>* <.end_block>}
+    rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
+    rule media-list           {<media-query> [',' <media-query>]*}
+    rule media-query          {<media=.ident>}
+    rule media-rules          {'{' <ruleset>* <.end-block>}
 
-    rule at_rule:sym<page>    {(:i'page')  <page=.page_pseudo>? <declarations> }
-    rule page_pseudo          {':'<ident>}
+    rule at-rule:sym<page>    {(:i'page')  <page=.page-pseudo>? <declarations> }
+    rule page-pseudo          {':'<ident>}
 
     # inherited combinators: '+' (adjacent)
     token combinator:sym<not> {'-'}
@@ -39,17 +39,17 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule selectors { <selector> [',' <selector>]* }
 
     rule declarations {
-        '{' <declaration_list> <.end_block>
+        '{' <declaration-list> <.end-block>
     }
 
     # this rule is suitable for parsing style attributes in HTML documents.
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
-    rule declaration_list { [ <declaration> || <dropped_decl> ]* }
+    rule declaration-list { [ <declaration> || <dropped-decl> ]* }
     # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule declaration:sym<validated> { <decl> <prio>? <end_decl> }
-    rule declaration:sym<raw>       { <property> <expr> <prio>? <end_decl> }
+    rule declaration:sym<validated> { <decl> <prio>? <end-decl> }
+    rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
 
@@ -63,32 +63,32 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token freq                {:i<num>(k?Hz)}
     token quantity:sym<freq>  {<freq>}
 
-    rule term:sym<function>  {<function>|<function=.any_function>}
+    rule term:sym<function>  {<function>|<function=.any-function>}
 
-    rule selector{<simple_selector>[[<.ws>?<combinator><.ws>?]? <simple_selector>]*}
+    rule selector{<simple-selector>[[<.ws>?<combinator><.ws>?]? <simple-selector>]*}
 
-    token simple_selector { <element_name> [<id> | <class> | <attrib> | <pseudo>]*
+    token simple-selector { <element-name> [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
-    rule attrib  {'[' <ident> [ <attribute_selector> [<ident>|<string>] ]? ']'}
+    rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
 
-    proto token attribute_selector {*}
-    token attribute_selector:sym<equals>   {'='}
-    token attribute_selector:sym<includes> {'~='}
-    token attribute_selector:sym<dash>     {'|='}
+    proto token attribute-selector {*}
+    token attribute-selector:sym<equals>   {'='}
+    token attribute-selector:sym<includes> {'~='}
+    token attribute-selector:sym<dash>     {'|='}
 
     rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
-    rule pseudo:sym<function> {':'[<function=.pseudo_function>||<unknown_pseudo_func>]}
+    rule pseudo:sym<function> {':'[<function=.pseudo-function>||<unknown-pseudo-func>]}
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
     proto rule function { <...> }
-    token any_function      {<ident>'(' [<args=.expr>||<args=.any_arg>]* ')'}
+    token any-function      {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
 
-    proto rule pseudo_function { <...> }
-    rule pseudo_function:sym<lang> {:i'lang(' [ <ident> || <any_args> ] ')'}
+    proto rule pseudo-function { <...> }
+    rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
     # pseudo function catch-all
-    rule unknown_pseudo_func   {<ident>'(' [<args=.expr>||<args=.any_arg>]* ')'}
+    rule unknown-pseudo-func   {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

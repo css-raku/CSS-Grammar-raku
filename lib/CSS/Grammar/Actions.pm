@@ -6,8 +6,8 @@ class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Info;
     use CSS::Grammar::AST::Token;
 
-    has Int $.line_no is rw = 1;
-    has Int $!nl_highwater = 0;
+    has Int $.line-no is rw = 1;
+    has Int $!nl-rachet = 0;
     # variable encoding - not yet supported
     has $.encoding is rw = 'UTF-8';
 
@@ -16,8 +16,8 @@ class CSS::Grammar::Actions {
 
     method reset {
         @.warnings = ();
-        $.line_no = 1;
-        $!nl_highwater = 0;
+        $.line-no = 1;
+        $!nl-rachet = 0;
     }
 
     method token(Mu $ast, :$skip, :$type, :$units) {
@@ -52,7 +52,7 @@ class CSS::Grammar::Actions {
         return %terms;
     }
 
-    method at_rule($/) {
+    method at-rule($/) {
         my %terms = $.node($/);
         %terms<@> = $0.Str.lc;
         return %terms;
@@ -76,7 +76,7 @@ class CSS::Grammar::Actions {
         return @terms;
     }
 
-    sub _display_string($_str) {
+    sub _display-string($_str) {
 
         my $str = $_str.chomp.trim;
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
@@ -90,12 +90,12 @@ class CSS::Grammar::Actions {
 
     method warning ($message, $str?, $explanation?) {
         my $warning = $message;
-        $warning ~= ': ' ~ _display_string( $str )
+        $warning ~= ': ' ~ _display-string( $str )
             if $str.defined && $str ne '';
         $warning ~= ' - ' ~ $explanation
             if $explanation;
         $warning does CSS::Grammar::AST::Info;
-        $warning.line_no = $.line_no - 1;
+        $warning.line-no = $.line-no - 1;
         push @.warnings, $warning;
     }
 
@@ -103,27 +103,27 @@ class CSS::Grammar::Actions {
         my $pos = $/.from;
 
         return
-            if my $_backtracking = $pos <= $!nl_highwater;
+            if my $_backtracking = $pos <= $!nl-rachet;
 
-        $!nl_highwater = $pos;
-        $.line_no++;
+        $!nl-rachet = $pos;
+        $.line-no++;
     }
 
-    method element_name($/) {make $<ident>.ast}
+    method element-name($/) {make $<ident>.ast}
 
     method any($/) {}
 
-    method dropped_decl:sym<forward_compat>($/) {
+    method dropped-decl:sym<forward-compat>($/) {
         $.warning('dropping term', $0.Str)
             if $0.Str.chars;
         $.warning('dropping declaration', $<property>.ast);
     }
 
-    method dropped_decl:sym<stray_terms>($/) {
+    method dropped-decl:sym<stray-terms>($/) {
         $.warning('dropping term', $0.Str);
     }
 
-    method dropped_decl:sym<badstring>($/) {
+    method dropped-decl:sym<badstring>($/) {
         my $prop = $<property>>>.ast;
         if $prop {
             $.warning('dropping declaration', $prop);
@@ -133,17 +133,17 @@ class CSS::Grammar::Actions {
         }
     }
 
-    method dropped_decl:sym<flushed>($/) {
+    method dropped-decl:sym<flushed>($/) {
         $.warning('dropping term', $0.Str);
     }
 
-    method _to_unicode($str) {
-        my $ord = $._from_hex($str);
+    method _to-unicode($str) {
+        my $ord = $._from-hex($str);
         return Buf.new( $ord ).decode( $.encoding );
     }
 
     method unicode($/) {
-       make $._to_unicode( $0.Str );
+       make $._to-unicode( $0.Str );
     }
     method nonascii($/){make $/.Str}
     method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
@@ -171,8 +171,8 @@ class CSS::Grammar::Actions {
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
     method stringchar:sym<ascii>($/)    { make $/.Str }
 
-    method single_quote($/) {make "'"}
-    method double_quote($/) {make '"'}
+    method single-quote($/) {make "'"}
+    method double-quote($/) {make '"'}
 
     method string($/) {
         my $string = $<stringchar>.map({ $_.ast }).join('');
@@ -186,18 +186,18 @@ class CSS::Grammar::Actions {
     method id($/) { make $<name>.ast }
     method class($/) { make $<name>.ast }
 
-    method url_char($/) {
+    method url-char($/) {
         my $cap = $<escape> || $<nonascii>;
         make $cap ?? $cap.ast !! $/.Str
     }
-    method url_string($/) {
+    method url-string($/) {
         my $string = $<string> || $<badstring>;
         make $string
             ?? $string.ast
-            !! $.token( $<url_char>.map({$_.ast}).join('') );
+            !! $.token( $<url-char>.map({$_.ast}).join('') );
     }
 
-    method url($/)  { make $<url_string>.ast }
+    method url($/)  { make $<url-string>.ast }
     method uri($/)  { make $<url>.ast }
 
     method color-range($/) {
@@ -209,7 +209,7 @@ class CSS::Grammar::Actions {
 
     method color:sym<rgb>($/)  {
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
-            if $<any_args>;
+            if $<any-args>;
         make $.token($.node($/), :type<color>, :units<rgb>);
     }
     method color:sym<hex>($/)   {
@@ -224,7 +224,7 @@ class CSS::Grammar::Actions {
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
         my %rgb;
-        %rgb<r g b> = @rgb.map({$._from_hex( $_ )}); 
+        %rgb<r g b> = @rgb.map({$._from-hex( $_ )}); 
         make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
@@ -270,36 +270,36 @@ class CSS::Grammar::Actions {
     method combinator:sym<not>($/)      { make $.token($/.Str) } # '-' css2.1
     method combinator:sym<sibling>($/)  { make $.token($/.Str) } # '~'
 
-    method unicode_range:sym<from_to>($/) {
+    method unicode-range:sym<from-to>($/) {
         # don't produce actual hex chars; could be out of range
-        make [ $._from_hex($<from>.Str), $._from_hex($<to>.Str) ];
+        make [ $._from-hex($<from>.Str), $._from-hex($<to>.Str) ];
     }
 
-    method unicode_range:sym<masked>($/) {
+    method unicode-range:sym<masked>($/) {
         my $mask = $/.Str;
         my $lo = $mask.subst('?', '0'):g;
         my $hi = $mask.subst('?', 'F'):g;
 
         # don't produce actual hex chars; could be out of range
-        make [ $._from_hex($lo), $._from_hex($hi) ];
+        make [ $._from-hex($lo), $._from-hex($hi) ];
     }
 
     # css2/css3 core - media support
-    method at_rule:sym<media>($/) { make $.at_rule($/) }
-    method media_rules($/)        { make $.list($/) }
-    method media_list($/)         { make $.list($/) }
-    method media_query($/)        { make $.list($/) }
+    method at-rule:sym<media>($/) { make $.at-rule($/) }
+    method media-rules($/)        { make $.list($/) }
+    method media-list($/)         { make $.list($/) }
+    method media-query($/)        { make $.list($/) }
 
     # css2/css3 core - page support
-    method at_rule:sym<page>($/)  { make $.at_rule($/) }
-    method page_pseudo($/)        { make $<ident>.ast }
+    method at-rule:sym<page>($/)  { make $.at-rule($/) }
+    method page-pseudo($/)        { make $<ident>.ast }
 
     method property($/)           { make $<property>.ast }
     method inherit($/)            { make True }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
-    method declarations($/)       { make $<declaration_list>.ast }
-    method declaration_list($/)   {
+    method declarations($/)       { make $<declaration-list>.ast }
+    method declaration-list($/)   {
         my %declarations;
 
         for @$.list($/) {
@@ -308,7 +308,7 @@ class CSS::Grammar::Actions {
             die "unexpected in declaration ast: " ~ $_decl.perl
                 unless $_decl eq 'declaration';
 
-            my $props = %$decls.delete('property_list')
+            my $props = %$decls.delete('property-list')
                 || [$decls];
 
             for @$props {
@@ -379,40 +379,40 @@ class CSS::Grammar::Actions {
     }
 
     method selector($/)           { make $.list($/) }
-    method simple_selector($/)    { make $.list($/) }
+    method simple-selector($/)    { make $.list($/) }
     method attrib($/)             { make $.node($/) }
 
-    method any_function($/)       {
+    method any-function($/)       {
         my %ast = $.node($/);
         %ast<args> //= []; # indicates an empty argument list
         make $.token(%ast, :type('function'));
     }
 
-    method pseudo_function:sym<lang>($/)             {
+    method pseudo-function:sym<lang>($/)             {
         return $.warning('usage: lang(ident)')
-            if $<any_args>;
+            if $<any-args>;
         make {ident => 'lang', args => $.list($/)}
     }
 
-    method unknown_pseudo_func($/)             {
+    method unknown-pseudo-func($/)             {
         $.warning('unknown pseudo-function', $<ident>.ast.lc);
     }
 
-    method attribute_selector:sym<equals>($/)    { make $/.Str }
-    method attribute_selector:sym<includes>($/)  { make $/.Str }
-    method attribute_selector:sym<dash>($/)      { make $/.Str }
+    method attribute-selector:sym<equals>($/)    { make $/.Str }
+    method attribute-selector:sym<includes>($/)  { make $/.Str }
+    method attribute-selector:sym<dash>($/)      { make $/.Str }
 
-    method unclosed_comment($/) {
+    method unclosed-comment($/) {
         $.warning('unclosed comment at end of input');
     }
 
-    method unclosed_paren($/) {
+    method unclosed-paren($/) {
         $.warning("missing closing ')'");
     }
 
-    method end_block($/) {
+    method end-block($/) {
         $.warning("no closing '}'")
-            unless $<closing_paren>;
+            unless $<closing-paren>;
     }
 
     # todo: warnings can get a bit too verbose here
@@ -423,7 +423,7 @@ class CSS::Grammar::Actions {
 
     # utiltity methods / subs
 
-    method _from_hex($hex) {
+    method _from-hex($hex) {
 
         my $result = 0;
 

@@ -65,11 +65,11 @@ for (chr(0), ' ', '~') {
 } 
 
 for ('http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif') {
-    ok($_ ~~ /^<CSS::Grammar::url_string>$/, "css1 url_string: $_");
+    ok($_ ~~ /^<CSS::Grammar::url-string>$/, "css1 url-string: $_");
 }
 
 for ('http://www.bg.com/pink(ish).gif') {
-    nok($_ ~~ /^<CSS::Grammar::url_string>$/, "not css1 url_string: $_");
+    nok($_ ~~ /^<CSS::Grammar::url-string>$/, "not css1 url-string: $_");
 }
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t', '-i') {
@@ -97,20 +97,20 @@ for ('*', ',', '+', '>', '|=', '~=') {
     ok($_ ~~ /^<CSS::Grammar::Scan::_op>$/, "scan op: $_");
 }
 
-my $media_rules = '{
+my $media-rules = '{
    body { font-size: 10pt }
 }';
 
-for ('{ }', $media_rules) { 
-    ok($_ ~~ /^<CSS::Grammar::CSS21::media_rules>$/, "css21 media_rules: $_");
-    ok($_ ~~ /^<CSS::Grammar::CSS3::media_rules>$/, "css3 media_rules: $_");
+for ('{ }', $media-rules) { 
+    ok($_ ~~ /^<CSS::Grammar::CSS21::media-rules>$/, "css21 media-rules: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::media-rules>$/, "css3 media-rules: $_");
 }
 
-my $at_rule_page = '@page :left { margin: 3cm };';
-my $at_rule_print = '@media print ' ~ $media_rules;
+my $at-rule_page = '@page :left { margin: 3cm };';
+my $at-rule_print = '@media print ' ~ $media-rules;
 
-for ($at_rule_page, $at_rule_print) { 
-    ok($_ ~~ /^\@<CSS::Grammar::CSS21::at_rule>$/, "css21 at_rule: $_");
+for ($at-rule_page, $at-rule_print) { 
+    ok($_ ~~ /^\@<CSS::Grammar::CSS21::at-rule>$/, "css21 at-rule: $_");
 }
 
 done;

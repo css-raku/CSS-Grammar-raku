@@ -14,9 +14,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nl {"\n"|"\r\n"|"\r"|"\f"}
 
     # comments: nb trigger <nl> for accurate line counting
-    token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed_comment>]
-                  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed_comment>]}
-    token unclosed_comment {$}
+    token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed-comment>]
+                  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed-comment>]}
+    token unclosed-comment {$}
 
     token wc {<nl> | "\t"  | " "}
     token ws {<!ww>[<wc>|<comment>]*}
@@ -45,14 +45,14 @@ grammar CSS::Grammar:ver<0.0.1> {
     token stringchar:sym<nonascii>  {<nonascii>}
     token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \(..\[ \]..\~]>+}
 
-    token single_quote   {\'}
-    token double_quote   {\"}
-    token string         {\"[<stringchar>|<stringchar=.single_quote>]*\"
-                         |\'[<stringchar>|<stringchar=.double_quote>]*\'
+    token single-quote   {\'}
+    token double-quote   {\"}
+    token string         {\"[<stringchar>|<stringchar=.single-quote>]*\"
+                         |\'[<stringchar>|<stringchar=.double-quote>]*\'
     }
     token id             {'#'<name>}
     token class          {'.'<name>}
-    token element_name   {<ident>}
+    token element-name   {<ident>}
 
     proto token length       {<...>}
     token length:sym<qty>    {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
@@ -66,8 +66,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token quantity:sym<percentage> {<percentage>}
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
-    token url_char       {<escape>|<nonascii>|<- url_delim_char>+}
-    token url_string     {<string>|<url_char>*}
+    token url-char       {<escape>|<nonascii>|<- url_delim_char>+}
+    token url-string     {<string>|<url-char>*}
 
     # productions
 
@@ -75,10 +75,10 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule property {<property=.ident> ':'}
     token inherit {:i inherit}
-    rule end_decl { ';' | <?before '}'> | $ }
+    rule end-decl { ';' | <?before '}'> | $ }
 
-    rule url  {:i'url(' <url_string> ')' }
-    token unclosed_paren {''}
+    rule url  {:i'url(' <url-string> ')' }
+    token unclosed-paren {''}
 
     rule color-range{<num>$<percentage>=[\%]?}
 
@@ -86,7 +86,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule color:sym<rgb> {:i'rgb('
                    [ <r=.color-range> ','
                      <g=.color-range> ','
-                     <b=.color-range> || <any_args> ]
+                     <b=.color-range> || <any-args> ]
                    ')'
     }
     rule color:sym<hex> {<id>}
@@ -110,9 +110,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule term:sym<ident>     {<emx>|<ident>}
 
     # Unicode ranges - used by selector modules + scan rules
-    proto rule unicode_range {*}
-    rule unicode_range:sym<from_to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
-    rule unicode_range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
+    proto rule unicode-range {*}
+    rule unicode-range:sym<from-to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
+    rule unicode-range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
     # <decl> - extension point for CSS::Grammar::Validating suite
     proto rule decl {<...>}
@@ -122,26 +122,26 @@ grammar CSS::Grammar:ver<0.0.1> {
     # --------------
     # - <any>                    - for unknown terms etc
     rule any       {<CSS::Grammar::Scan::_value>}
-    # - <any_arg>, <any_args>    - for incorrect function args
-    rule any_arg   {<CSS::Grammar::Scan::_arg>}
-    rule any_args  {<any_arg>*}
+    # - <any-arg>, <any-args>    - for incorrect function args
+    rule any-arg   {<CSS::Grammar::Scan::_arg>}
+    rule any-args  {<any-arg>*}
     # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
 
     # failed declaration parse - how well formulated is it?
-    proto rule dropped_decl { <...> }
+    proto rule dropped-decl { <...> }
     # - extra semicolon - just ignore
-    rule dropped_decl:sym<empty>          { ';' }
+    rule dropped-decl:sym<empty>          { ';' }
     # - parsed a property; some terms are unknown
-    rule dropped_decl:sym<forward_compat> { <property> [<expr>||(<any>)]*? <end_decl> }
+    rule dropped-decl:sym<forward-compat> { <property> [<expr>||(<any>)]*? <end-decl> }
     # - couldn't get a property, but terms well formed
-    rule dropped_decl:sym<stray_terms>    { (<any>)+? <end_decl> }
+    rule dropped-decl:sym<stray-terms>    { (<any>)+? <end-decl> }
     # - unterminated string. might consume ';' '}' and other constructs
-    rule dropped_decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end_decl>? }
+    rule dropped-decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end-decl>? }
     # - unable to parse it at all; throw it out
-    rule dropped_decl:sym<flushed>        { ( <any> || <- [\;\}]> )+? <end_decl> }
+    rule dropped-decl:sym<flushed>        { ( <any> || <- [\;\}]> )+? <end-decl> }
 
-    rule end_block {[$<closing_paren>='}' ';'?]?}
+    rule end-block {[$<closing-paren>='}' ';'?]?}
 
     # forward compatible scanning and recovery - from the stylesheet top level
     proto token unknown {*}
@@ -174,35 +174,35 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     rule TOP           {^ <_stylesheet> $}
     rule _stylesheet   {<_statement>*}
-    rule _statement    {<_ruleset> | '@'<_at_rule>}
+    rule _statement    {<_ruleset> | '@'<_at-rule>}
 
     rule _at_keyword   {\@<ident>}
-    rule _at_rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
+    rule _at-rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations {'{' <_declaration_list> '}' ';'?}
-    rule _declaration_list {[ <property> | <_value> | <_badstring> |';' ]*}
+    rule _declarations {'{' <_declaration-list> '}' ';'?}
+    rule _declaration-list {[ <property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
     token _delim       {<[\( \) \{ \} \; \" \' \\]>}
     token _op          {[<punct> & <- _delim>]+}
 
-    rule _badstring    {\"[<stringchar>|<stringchar=.single_quote>]*[<nl>|$]
-                       |\'[<stringchar>|<stringchar=.double_quote>]*[<nl>|$]}
+    rule _badstring    {\"[<stringchar>|<stringchar=.single-quote>]*[<nl>|$]
+                       |\'[<stringchar>|<stringchar=.double-quote>]*[<nl>|$]}
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
     rule _any:sym<num>    { <num>['%'|<dimension=.ident>]? }
-    rule _any:sym<urange> { 'U+'<unicode_range> }
+    rule _any:sym<urange> { 'U+'<unicode-range> }
     rule _any:sym<ident>  { <ident> }
     rule _any:sym<pseudo> { <pseudo> }
     rule _any:sym<id>     { <id> }
     rule _any:sym<class>  { <class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' <_arg>* [']' | <unclosed_paren>] }
-    rule _any:sym<args>   { '(' <_arg>* [')' | <unclosed_paren>] }
+    rule _any:sym<attrib> { '[' <_arg>* [']' | <unclosed-paren>] }
+    rule _any:sym<args>   { '(' <_arg>* [')' | <unclosed-paren>] }
 
     rule _arg {[ <_any> | <_block> | <_at_keyword> | <_badstring> ]}
 }
