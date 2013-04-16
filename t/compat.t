@@ -37,7 +37,7 @@ for (
     },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
-    # number, percent, length, emx, emx, angle, time, freq
+    # number, percent, length, emx, emx, angle, time, frequency
     class => {input => '.zippy', ast => 'zippy'},
     class => {input => '.\55ft', ast => "\x[55f]t"},
     color => {input => 'Rgb(10, 20, 30)',

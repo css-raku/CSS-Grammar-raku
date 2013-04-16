@@ -32,7 +32,7 @@ for ("\\012AF", "\\012AFc") {
     ok($_ ~~ /^<CSS::Grammar::CSS3::unicode>$/, "css3 unicode: $_");
 }
 
-# angle, freq - introduced with css2
+# angle, frequency - introduced with css2
 for ('70deg', '50Hz') { 
     ok($_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::ident>$/, "css1 num+ident: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS21::term>$/, "css21 term: $_");

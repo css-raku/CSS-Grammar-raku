@@ -357,8 +357,8 @@ class CSS::Grammar::Actions {
     method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
     method quantity:sym<time>($/)       { make $<time>.ast }
 
-    method freq($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('freq')) }
-    method quantity:sym<freq>($/)       { make $<freq>.ast }
+    method frequency($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('frequency')) }
+    method quantity:sym<frequency>($/)       { make $<frequency>.ast }
 
     method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
     method quantity:sym<percentage>($/) { make $<percentage>.ast }
