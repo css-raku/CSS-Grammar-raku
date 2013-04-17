@@ -351,7 +351,7 @@ class CSS::Grammar::Actions {
         make $.token($num, :units($1.Str.lc), :type('length'))
     }
 
-    method angle($/)                    { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method angle:sym<drg>($/)           { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
     method quantity:sym<angle>($/)      { make $<angle>.ast }
 
     method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }

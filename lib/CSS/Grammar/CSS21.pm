@@ -53,8 +53,10 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule expr { <term> [ <operator>? <term> ]* }
 
+    proto token angle         {<...>}
+    token angle:sym<drg>      {:i<num>(deg|rad|grad)}
+
     # quantity inherited from base grammar: length, percentage
-    token angle               {:i<num>(deg|rad|grad)}
     token quantity:sym<angle> {<angle>}
 
     token time                {:i<num>(m?s)}
