@@ -62,7 +62,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token time                {:i<num>(m?s)}
     token quantity:sym<time>  {<time>}
 
-    token frequency                {:i<num>(k?Hz)}
+    proto token frequency     {<...>}
+    token frequency:sym<k?hz> {:i<num>(k?Hz)}
     token quantity:sym<frequency>  {<frequency>}
 
     rule term:sym<function>  {<function>|<function=.any-function>}
