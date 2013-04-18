@@ -173,6 +173,28 @@ for (
                                                "pseudo" => {"element" => "after"}},
                          "simple-selector" => {"element-name" => "img"}],
     },
+    selector => {input => 'H1[lang=fr]',
+                 ast => ["simple-selector" => ["element-name" => "h1",
+                                               "attrib" => ["ident" => "lang",
+                                                            "attribute-selector" => "=",
+                                                            "ident" => "fr"]
+                         ]
+                     ],
+                 css1 => {
+                     parse => 'H1',
+                     ast => ["simple-selector" => ["element-name" => "h1"]]
+,
+                 },
+    },
+    selector => {input => '*[lang=fr]',
+                 ast => ["simple-selector" => ["universal" => "*",
+                                               "attrib" => ["ident" => "lang",
+                                                            "attribute-selector" => "=",
+                                                            "ident" => "fr"]
+                         ]
+                     ],
+                 css1 => { parse => '', ast => Mu},
+    },
     num => {input => '1',ast => 1},
     num => {input => '.1', ast => .1 },
     num => {input => '1.9', ast => 1.9},

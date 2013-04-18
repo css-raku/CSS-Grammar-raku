@@ -70,7 +70,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule selector{<simple-selector>[[<.ws>?<combinator><.ws>?]? <simple-selector>]*}
 
-    token simple-selector { <element-name> [<id> | <class> | <attrib> | <pseudo>]*
+    token universal {'*'}
+    token simple-selector { [<element-name>|<universal>] [<id> | <class> | <attrib> | <pseudo>]*
                           |                [<id> | <class> | <attrib> | <pseudo>]+ }
 
     rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
@@ -81,7 +82,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token attribute-selector:sym<dash>     {'|='}
 
     rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
-    rule pseudo:sym<function> {':'[<function=.pseudo-function>||<unknown-pseudo-func>]}
+    rule pseudo:sym<function> {':'[<function=.pseudo-function>||<any-pseudo-func>]}
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
@@ -91,7 +92,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     proto rule pseudo-function { <...> }
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
     # pseudo function catch-all
-    rule unknown-pseudo-func   {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
+    rule any-pseudo-func   {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
 
     # 'lexer' css2 exceptions
     # non-ascii limited to single byte characters

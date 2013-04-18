@@ -189,8 +189,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token _delim       {<[\( \) \{ \} \; \" \' \\]>}
     token _op          {[<punct> & <- _delim>]+}
 
-    rule _badstring    {\"[<stringchar>|<stringchar=.single-quote>]*[<nl>|$]
-                       |\'[<stringchar>|<stringchar=.double-quote>]*[<nl>|$]}
+    rule _badstring    {\"[<stringchar>|\']*[<nl>|$]
+                       |\'[<stringchar>|\"]*[<nl>|$]}
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }

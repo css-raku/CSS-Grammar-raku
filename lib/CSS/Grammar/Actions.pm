@@ -378,9 +378,10 @@ class CSS::Grammar::Actions {
         make $.token($<ident>.ast, :type('ident'))
     }
 
+    method universal($/)          { make $/.Str }
     method selector($/)           { make $.list($/) }
     method simple-selector($/)    { make $.list($/) }
-    method attrib($/)             { make $.node($/) }
+    method attrib($/)             { make $.list($/) }
 
     method any-function($/)       {
         my %ast = $.node($/);
@@ -394,7 +395,7 @@ class CSS::Grammar::Actions {
         make {ident => 'lang', args => $.list($/)}
     }
 
-    method unknown-pseudo-func($/)             {
+    method any-pseudo-func($/)             {
         $.warning('unknown pseudo-function', $<ident>.ast.lc);
     }
 
