@@ -8,7 +8,9 @@ emphasis on:
 
 - support for CSS1, CSS2.1 and CSS3
 - forward compatibility rules, scanning and error recovery
-- mechanisms for CSS3 and custom extensions 
+
+This module performs only generic parsing of declarations in style-sheet rules.
+
 
 Installation (Rakudo Star)
 --------------------------
@@ -64,7 +66,8 @@ warnings for any unexpected input.
 
 See Also
 ========
-- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as an extension of CSS::Grammar. Its aim is to perform property-specific validation for CSS1, CSS2.1 and CSS3, and implement common CSS3 extension modules.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) extends CSS::Grammar. Its aim is to perform property-specific validation for CSS1 and CSS2.1.
+- [CSS::Language::CSS3](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a CSS Level 3 validating parser.
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
@@ -74,5 +77,4 @@ These grammars have been built from the W3C CSS Specifications. In particular:
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
 - CSS 2.1 Grammar - http://www.w3.org/TR/CSS21/grammar.html
 - CSS3 module: Syntax - http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
-- CSS3 Module: Paged Media - http://www.w3.org/TR/2006/WD-css3-page-20061010/
 - CSS Style Attributes - http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax

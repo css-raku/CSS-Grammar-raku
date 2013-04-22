@@ -3,5 +3,5 @@
     "version"     : "*",
     "description" : "Perl 6 CSS related grammars",
     "depends"     : [  ],
-    "source-url"  : "git://github.com/dwarring/perl6-CSS-Grammar.git"
+    "source-url"  : "git://github.com/p6-css/perl6-CSS-Grammar.git"
 }
