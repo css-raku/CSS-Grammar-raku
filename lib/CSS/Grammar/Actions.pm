@@ -153,12 +153,11 @@ class CSS::Grammar::Actions {
     method nmchar($/){
         make $<nmreg> ?? $<nmreg>.Str !! ($<nonascii> || $<escape>).ast;
     }
-    method ident-cs($/) {
+    method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
         my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
-        make $pfx ~ $ident;
+        make $pfx ~ $ident.lc;
     }
-    method ident($/) { make $<ident-cs>.ast.lc }
     method name($/)  {
         make $<nmchar>.map({$_.ast}).join('');
     }

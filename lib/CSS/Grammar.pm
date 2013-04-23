@@ -32,9 +32,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar         {<nmreg>|<nonascii>|<escape>}
     token nmreg          {<[_ \- a..z A..Z 0..9]>+}
-    # <ident-cs> :== case sensitive   <ident> :== case-insensistive
-    token ident-cs       {$<pfx>=['-']?<nmstrt><nmchar>*}
-    token ident          {<ident-cs>}
+    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name           {<nmchar>+}
     token num            {[\+|\-]?[\d* \.]? \d+}
     token posint         {\d+}
@@ -194,7 +192,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
-    rule _any:sym<num>    { <num>['%'|<dimension=.ident>]? }
+    rule _any:sym<qty>    { <num>['%'|<dimension=.ident>]? }
     rule _any:sym<urange> { 'U+'<unicode-range> }
     rule _any:sym<ident>  { <ident> }
     rule _any:sym<pseudo> { <pseudo> }

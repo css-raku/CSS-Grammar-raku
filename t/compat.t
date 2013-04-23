@@ -109,6 +109,21 @@ for (
                                  "class" => "some-class",
                                  "pseudo" => {"class" => "active"}}},
     },
+    # CSS1 selectors are more restrictive and order sensitive
+    selector => {input => '.c1#ID.c2 .d1.d2',
+                 ast => ["simple-selector" => ["class" => "c1",
+                                               "id" => "ID",
+                                               "class" => "c2"],
+                         "simple-selector" => ["class" => "d1",
+                                               "class" => "d2"]],
+                 css1 => {
+                     ast => ["simple-selector" => ["class" => "c1"],
+                             "simple-selector" => ["id" => "ID",
+                                                   "class" => "c2"],
+                             "simple-selector" => ["class" => "d1"],
+                             "simple-selector" => ["class" => "d2"]],
+                 },
+    },
     # Test for whitespace sensitivity in selectors
     selector => {input => '#my-id /* white-space */ :first-line',
                  ast => [
