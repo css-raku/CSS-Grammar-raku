@@ -100,8 +100,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     token combinator:sym<child>    {'>'}
 
     proto rule term {*}
+    rule term:sym<num>       {<num><!before ['%'|\w]>}
     rule term:sym<qty>       {<quantity>}
-    rule term:sym<num>       {<num>}
     rule term:sym<string>    {<string>}
     rule term:sym<color>     {<color>}
     rule term:sym<url>       {<url>}
