@@ -72,7 +72,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule operator             {'/'|','}
 
     rule property {<property=.ident> ':'}
-    token inherit {:i inherit}
     rule end-decl { ';' | <?before '}'> | $ }
 
     rule url  {:i'url(' <url-string> ')' }

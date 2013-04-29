@@ -1,6 +1,7 @@
 use v6;
 
-# rules for constructing ASTs for CSS::Grammar
+# rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
+# CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
 class CSS::Grammar::Actions {
     use CSS::Grammar::AST::Info;
@@ -237,7 +238,7 @@ class CSS::Grammar::Actions {
         make $0.Str.lc
     }
 
-    # from the TOP (CSS1 + CSS21)
+    # from the TOP (CSS1 + CSS21 + CSS3)
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.list($/) }
 
@@ -259,14 +260,13 @@ class CSS::Grammar::Actions {
                                      %node<element> = $<element>.Str.lc;
                                      make %node;
     }
-    method pseudo:sym<element2>($/) { make $.node($/) }
     method pseudo:sym<function>($/) { make $.node($/) }
     method pseudo:sym<class>($/)    { make $.node($/) }
 
     # combinators
     method combinator:sym<adjacent>($/) { make $.token($/.Str) } # '+'
     method combinator:sym<child>($/)    { make $.token($/.Str) } # '>'
-    method combinator:sym<not>($/)      { make $.token($/.Str) } # '-' css2.1
+    method combinator:sym<not>($/)      { make $.token($/.Str) } # '-' css21
     method combinator:sym<sibling>($/)  { make $.token($/.Str) } # '~'
 
     method unicode-range:sym<from-to>($/) {
@@ -283,18 +283,17 @@ class CSS::Grammar::Actions {
         make [ $._from-hex($lo), $._from-hex($hi) ];
     }
 
-    # css2/css3 core - media support
+    # css21/css3 core - media support
     method at-rule:sym<media>($/) { make $.at-rule($/) }
     method media-rules($/)        { make $.list($/) }
     method media-list($/)         { make $.list($/) }
     method media-query($/)        { make $.list($/) }
 
-    # css2/css3 core - page support
+    # css21/css3 core - page support
     method at-rule:sym<page>($/)  { make $.at-rule($/) }
     method page-pseudo($/)        { make $<ident>.ast }
 
     method property($/)           { make $<property>.ast }
-    method inherit($/)            { make True }
     method ruleset($/)            { make $.node($/) }
     method selectors($/)          { make $.list($/) }
     method declarations($/)       { make $<declaration-list>.ast }
@@ -343,7 +342,7 @@ class CSS::Grammar::Actions {
 
     method length:sym<qty>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
     method quantity:sym<length>($/)     { make $<length>.ast }
-    # digit can be dropped, e.g. 'ex' => '1ex'; -em => '-1em'
+    # digits can be dropped, e.g. 'ex' => '1ex'; -em => '-1em'
     method length:sym<emx>($/)          { make $<emx>.ast }
     method emx($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
