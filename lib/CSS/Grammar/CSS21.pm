@@ -48,7 +48,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
     # an unterminated string might have run to end-of-line and consumed ';'
 
-    rule declaration:sym<validated> { <decl> <prio>? <end-decl> }
+    rule declaration:sym<validated> { <decl> <prio>? <any-arg>* <end-decl> }
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
 
     rule expr { <term> [ <operator>? <term> ]* }
