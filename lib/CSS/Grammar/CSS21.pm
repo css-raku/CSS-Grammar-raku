@@ -21,8 +21,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     proto rule at-rule {*}
 
     rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
-    rule media-list           {<media-query> [',' <media-query>]*}
-    rule media-query          {<media=.ident>}
+    rule media-list           {<media-query> +% ','}
+    rule media-query          { <media=.ident> }
     rule media-rules          {'{' <ruleset>* <.end-block>}
 
     rule at-rule:sym<page>    {(:i'page')  <page=.page-pseudo>? <declarations> }
@@ -36,7 +36,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
         <selectors> <declarations>
     }
 
-    rule selectors { <selector> [',' <selector>]* }
+    rule selectors {<selector> +% ','}
 
     rule declarations {
         '{' <declaration-list> <.end-block>
@@ -46,7 +46,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
-    # an unterminated string might have run to end-of-line and consumed ';'
 
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
 
@@ -67,7 +66,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule term:sym<function>  {<function>|<function=.any-function>}
 
-    rule selector{<simple-selector>[[<.ws>?<combinator><.ws>?]? <simple-selector>]*}
+    rule selector{ <simple-selector>[[<.ws>?<combinator><.ws>?]? <simple-selector>]* }
 
     token universal {'*'}
     token simple-selector { [<element-name>|<universal>] [<id> | <class> | <attrib> | <pseudo>]*

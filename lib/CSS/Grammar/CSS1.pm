@@ -22,7 +22,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
         <selectors> <declarations>
     }
 
-    rule selectors { <selector> [',' <selector>]* }
+    rule selectors { <selector> +% ',' }
 
     rule declarations {
         '{' <declaration-list> <.end-block>
