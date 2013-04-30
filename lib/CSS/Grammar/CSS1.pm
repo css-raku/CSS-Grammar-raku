@@ -33,8 +33,6 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    # delcaration:sym<validated> - extension point for CSS::Language suite
-    rule declaration:sym<validated> { <decl> <prio>? <end-decl> }
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
     # css1 syntax allows a unary operator in front of all terms. Throw it
     # out, if the term doesn't consume it.
