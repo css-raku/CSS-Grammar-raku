@@ -144,9 +144,9 @@ for (
     # css1 doesn't understand '+' combinator
     selector => {input => '#my-id + :first-line',
                  css1 => {ast => Mu},
-                 ast => ["simple-selector" => {"id" => "my-id"},
+                 ast => ["simple-selector" => ["id" => "my-id"],
                          "combinator" => "+",
-                         "simple-selector" => {"pseudo" => {"element" => "first-line"}}],
+                         "simple-selector" => ["pseudo" => {"element" => "first-line"}]],
                  css1 => {parse => '#my-id',
                           ast => ["simple-selector" => {"id" => "my-id"}]},
     },

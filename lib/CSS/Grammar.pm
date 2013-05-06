@@ -69,13 +69,12 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # productions
 
-    rule operator             {'/'|','}
+    token operator             {'/'|','}
 
     rule property {<property=.ident> ':'}
     rule end-decl { ';' | <?before '}'> | $ }
 
     rule url  {:i'url(' <url-string> ')' }
-    token unclosed-paren {''}
 
     rule color-range{<num>$<percentage>=[\%]?}
 
@@ -94,9 +93,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto rule pseudo {<...>}
 
     # Combinators - introduced with css2.1
-    proto token combinator {*}
-    token combinator:sym<adjacent> {'+'}
-    token combinator:sym<child>    {'>'}
+    proto rule combinator {*}
+    rule combinator:sym<adjacent> { '+' }
+    rule combinator:sym<child>    { '>' }
 
     proto rule term {*}
     rule term:sym<num>       {<num><!before ['%'|\w]>}
@@ -124,6 +123,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule any-args  {<any-arg>*}
     # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
+    rule unclosed-paren {''}
+    rule unclosed-paren2 {''}
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped-decl { <...> }
@@ -183,7 +184,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _declaration-list {[ <property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
-    token _delim       {<[\( \) \{ \} \; \" \' \\]>}
+    token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<punct> & <- _delim>]+}
 
     rule _badstring    {\"[<stringchar>|\']*[<nl>|$]
@@ -198,8 +199,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<id>     { <id> }
     rule _any:sym<class>  { <class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' <_arg>* [']' | <unclosed-paren>] }
-    rule _any:sym<args>   { '(' <_arg>* [')' | <unclosed-paren>] }
+    rule _any:sym<attrib> { '[' <_arg>* [ ']' || <unclosed-paren> ] }
+    rule _any:sym<args>   { '(' <_arg>* [ ')' || <unclosed-paren2> ] }
 
     rule _arg {[ <_any> | <_block> | <_at_keyword> | <_badstring> ]}
 }

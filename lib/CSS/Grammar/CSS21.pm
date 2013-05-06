@@ -29,7 +29,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule page-pseudo          {':'<ident>}
 
     # inherited combinators: '+' (adjacent)
-    token combinator:sym<not> {'-'}
+    token combinator:sym<not> { '-' }
 
     rule ruleset {
         <!after \@> # not an "@" rule
@@ -49,7 +49,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
 
-    rule expr { <term> [ <operator>? <term> ]* }
+    # should be '+%' - see rakudo rt #117831
+    rule expr { <term> +%% [ <operator>? ] }
 
     proto token angle         {<...>}
     token angle:sym<drg>      {:i<num>(deg|rad|grad)}
@@ -66,11 +67,12 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule term:sym<function>  {<function>|<function=.any-function>}
 
-    rule selector{ <simple-selector>[[<.ws>?<combinator><.ws>?]? <simple-selector>]* }
+    # should be '+%' - see rakudo rt #117831
+    rule selector{ <simple-selector> +%% <combinator>? }
 
     token universal {'*'}
-    token simple-selector { [<element-name>|<universal>] [<id> | <class> | <attrib> | <pseudo>]*
-                          |                [<id> | <class> | <attrib> | <pseudo>]+ }
+    rule simple-selector { [<element-name>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
+                           |                           [<id>|<class>|<attrib>|<pseudo>]+ }
 
     rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
 

@@ -147,9 +147,9 @@ h6 {color: black }',
                    ast => [],
                    warnings => 'dropping: @media print and (width: 21cm) @page { margin: 3cm; @top-center { content: "Page " counter(page); }}',
     },
-    stylesheet => {input => '* foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
+    stylesheet => {input => '* foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/"] {}',
                    ast => [],
-                   warnings => 'dropping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/" {}',
+                   warnings => 'dropping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/"] {}',
     },
     ) {
     my $rule = $_.key;

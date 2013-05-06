@@ -264,10 +264,9 @@ class CSS::Grammar::Actions {
     method pseudo:sym<class>($/)    { make $.node($/) }
 
     # combinators
-    method combinator:sym<adjacent>($/) { make $.token($/.Str) } # '+'
-    method combinator:sym<child>($/)    { make $.token($/.Str) } # '>'
-    method combinator:sym<not>($/)      { make $.token($/.Str) } # '-' css21
-    method combinator:sym<sibling>($/)  { make $.token($/.Str) } # '~'
+    method combinator:sym<adjacent>($/) { make $.token('+') }
+    method combinator:sym<child>($/)    { make $.token('>') }
+    method combinator:sym<not>($/)      { make $.token('-') } # css21
 
     method unicode-range:sym<from-to>($/) {
         # don't produce actual hex chars; could be out of range
@@ -406,6 +405,10 @@ class CSS::Grammar::Actions {
     }
 
     method unclosed-paren($/) {
+        $.warning("missing closing ']'");
+    }
+
+    method unclosed-paren2($/) {
         $.warning("missing closing ')'");
     }
 

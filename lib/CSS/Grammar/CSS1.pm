@@ -36,10 +36,11 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
     # css1 syntax allows a unary operator in front of all terms. Throw it
     # out, if the term doesn't consume it.
-    rule expr { [<term>||<.unary-op><term>] [ <operator>? [<term>||<.unary-op><term>] ]* }
+    # should be '+%' - see rakudo rt #117831
+    rule expr { [<term>||<.unary-op><term>] +%% [ <operator>? ] }
     rule unary-op       {'+'|'-'}
 
-    token selector {<simple-selector>[<ws><simple-selector>]* <pseudo>?}
+    token selector {<simple-selector> +% <.ws> <pseudo>?}
 
     token simple-selector { <element-name> <id>? <class>? <pseudo>?
                           | <id> <class>? <pseudo>?
