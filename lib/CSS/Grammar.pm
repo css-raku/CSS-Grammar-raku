@@ -110,7 +110,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode-range:sym<from-to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode-range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
-    # <decl> - extension point for CSS::Grammar::Validating suite
+    # <decl> - extension point for CSS::Language property validation suite
     proto rule decl {<...>}
     proto rule declaration {<...>}
 
@@ -164,7 +164,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     # It's been generalized to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
-    # e.g this should be complety dropped: h3, h4 & h5 {color: red }
+    # e.g this should be completely dropped: h3, h4 & h5 {color: red }
     # Errata:
     # - declarations are less structured - optimized for robustness
     # - added <_op> for general purpose operator detection

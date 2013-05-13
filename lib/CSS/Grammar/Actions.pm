@@ -305,11 +305,14 @@ class CSS::Grammar::Actions {
             die "unexpected in declaration ast: " ~ $_decl.perl
                 unless $_decl eq 'declaration';
 
+            my $prio = %$decls.delete('prio');
+
             my $props = %$decls.delete('property-list')
                 || [$decls];
 
             for @$props {
                 my %decl = %$_;
+                %decl<prio> = $prio if $prio;
                 my $prop = %decl.delete('property')
                     // die "unable to find property in declaration";
 
