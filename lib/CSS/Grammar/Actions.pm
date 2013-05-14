@@ -345,8 +345,8 @@ class CSS::Grammar::Actions {
     method length:sym<qty>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
     method quantity:sym<length>($/)     { make $<length>.ast }
     # digits can be dropped, e.g. 'ex' => '1ex'; -em => '-1em'
-    method length:sym<emx>($/)          { make $<emx>.ast }
-    method emx($/) {
+    method length:sym<rel-font>($/)         { make $<rel-font>.ast }
+    method rel-font($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
         make $.token($num, :units($1.Str.lc), :type('length'))
     }
@@ -370,11 +370,6 @@ class CSS::Grammar::Actions {
         make $.token($<function>.ast, :type('function'));
     }
     method term:sym<ident>($/)    {
-        if $<emx> {
-            # floating 'em' or 'ex'
-            make $<emx>.ast;
-            return;
-        }
         make $.token($<ident>.ast, :type('ident'))
     }
 

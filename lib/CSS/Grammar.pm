@@ -11,11 +11,11 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # Comments and whitespace
 
-    token nl {"\n"|"\r\n"|"\r"|"\f"}
+    token nl {\xA|"\r"\xA|"\r"|"\f"}
 
     # comments: nb trigger <nl> for accurate line counting
     token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed-comment>]
-                  |('/*')  [<nl>|.]*?  ['*/'  | <unclosed-comment>]}
+                  |('/*')   [<nl>|.]*? ['*/'  | <unclosed-comment>]}
     token unclosed-comment {$}
 
     token wc {<nl> | "\t"  | " "}
@@ -52,10 +52,16 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element-name   {<ident>}
 
-    proto token length       {<...>}
-    token length:sym<qty>    {:i<num>(pt|mm|cm|pc|in|px|em|ex)}
-    token length:sym<emx>    {<emx>}
-    token emx                {:i(\+|\-)?(e[m|x])}
+    proto token distance-units     {<...>}
+    token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px}
+    token distance-units:sym<font> {<rel-font-units>}
+    token rel-font-units           {:i[em|ex]}
+
+    proto token length         {<...>}
+    token length:sym<qty>      {:i<num>(<.distance-units>)}
+    token length:sym<rel-font> {<rel-font>}
+    # floating 'em' or 'ex'. E.g. -ex :== -1ex
+    token rel-font             {(\+|\-)?(<.rel-font-units>)}
 
     proto token quantity {<...>}
     token quantity:sym<length>     {<length>}
@@ -103,7 +109,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule term:sym<string>    {<string>}
     rule term:sym<color>     {<color>}
     rule term:sym<url>       {<url>}
-    rule term:sym<ident>     {<emx>|<ident>}
+    rule term:sym<ident>     {<ident>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}
