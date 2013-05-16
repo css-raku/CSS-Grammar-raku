@@ -339,29 +339,27 @@ class CSS::Grammar::Actions {
 
     method expr($/) { make $.list($/) }
 
-    method term:sym<num>($/)  { make $.token($<num>.ast, :type('num')); }
-    method term:sym<qty>($/)  { make $<quantity>.ast }
+    method term:sym<num>($/)        { make $.token($<num>.ast, :type('num')); }
+    method term:sym<dimension>($/)  { make $<dimension>.ast }
+    method term:sym<percentage>($/) { make $<percentage>.ast }
 
-    method length:sym<qty>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
-    method quantity:sym<length>($/)     { make $<length>.ast }
-    # digits can be dropped, e.g. 'ex' => '1ex'; -em => '-1em'
-    method length:sym<rel-font>($/)         { make $<rel-font>.ast }
-    method rel-font($/) {
+    method length:sym<dim>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method dimension:sym<length>($/)     { make $<length>.ast }
+    method length:sym<rel-font-sans-num>($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
         make $.token($num, :units($1.Str.lc), :type('length'))
     }
 
-    method angle:sym<drg>($/)           { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
-    method quantity:sym<angle>($/)      { make $<angle>.ast }
+    method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
+    method dimension:sym<angle>($/)      { make $<angle>.ast }
 
     method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
-    method quantity:sym<time>($/)       { make $<time>.ast }
+    method dimension:sym<time>($/)       { make $<time>.ast }
 
-    method frequency:sym<k?hz>($/)      { make $.token($<num>.ast, :units($0.Str.lc), :type('frequency')) }
-    method quantity:sym<frequency>($/)  { make $<frequency>.ast }
+    method frequency:sym<dim>($/)      { make $.token($<num>.ast, :units($0.Str.lc), :type('frequency')) }
+    method dimension:sym<frequency>($/)  { make $<frequency>.ast }
 
     method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
-    method quantity:sym<percentage>($/) { make $<percentage>.ast }
 
     method term:sym<string>($/)   { make $.token($<string>.ast, :type('string')) }
     method term:sym<url>($/)      { make $.token($<url>.ast, :type('url')) }

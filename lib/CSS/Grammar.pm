@@ -24,18 +24,18 @@ grammar CSS::Grammar:ver<0.0.1> {
     # "lexer"com
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
-    token unicode        {'\\'(<[0..9 a..f A..F]>**1..6)}
+    token unicode  {'\\'(<[0..9 a..f A..F]>**1..6)}
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
-    token regascii       {<[\x20..\x7F]>}
-    token nonascii       {<- [\x0..\x7F]>}
-    token escape         {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
-    token nmstrt         {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
-    token nmchar         {<nmreg>|<nonascii>|<escape>}
-    token nmreg          {<[_ \- a..z A..Z 0..9]>+}
-    token ident          {$<pfx>=['-']?<nmstrt><nmchar>*}
-    token name           {<nmchar>+}
-    token num            {[\+|\-]?[\d* \.]? \d+}
-    token posint         {\d+}
+    token regascii {<[\x20..\x7F]>}
+    token nonascii {<- [\x0..\x7F]>}
+    token escape   {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
+    token nmstrt   {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
+    token nmchar   {<nmreg>|<nonascii>|<escape>}
+    token nmreg    {<[_ \- a..z A..Z 0..9]>+}
+    token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
+    token name     {<nmchar>+}
+    token num      {[\+|\-]?[\d* \.]? \d+}
+    token posint   {\d+}
 
     proto token stringchar {*}
     token stringchar:sym<cont>      {\\<nl>}
@@ -58,16 +58,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     token rel-font-units           {:i[em|ex]}
 
     proto token length         {<...>}
-    token length:sym<qty>      {:i<num>(<.distance-units>)}
-    token length:sym<rel-font> {<rel-font>}
-    # floating 'em' or 'ex'. E.g. -ex :== -1ex
-    token rel-font             {(\+|\-)?(<.rel-font-units>)}
+    token length:sym<dim>      {:i<num>(<.distance-units>)}
+    # As a special case, relative font lengths don't need a number.
+    # E.g. -ex :== -1ex
+    token length:sym<rel-font-sans-num> {(\+|\-)? (<.rel-font-units>)}
 
-    proto token quantity {<...>}
-    token quantity:sym<length>     {<length>}
+    proto token dimension {<...>}
+    token dimension:sym<length>     {<length>}
 
     token percentage               {<num>'%'}
-    token quantity:sym<percentage> {<percentage>}
 
     token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
     token url-char       {<escape>|<nonascii>|<- url_delim_char>+}
@@ -104,12 +103,13 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule combinator:sym<child>    { '>' }
 
     proto rule term {*}
-    rule term:sym<num>       {<num><!before ['%'|\w]>}
-    rule term:sym<qty>       {<quantity>}
-    rule term:sym<string>    {<string>}
-    rule term:sym<color>     {<color>}
-    rule term:sym<url>       {<url>}
-    rule term:sym<ident>     {<ident>}
+    rule term:sym<num>        {<num><!before ['%'|\w]>}
+    rule term:sym<dimension>  {<dimension>}
+    rule term:sym<percentage> {<percentage>}
+    rule term:sym<string>     {<string>}
+    rule term:sym<color>      {<color>}
+    rule term:sym<url>        {<url>}
+    rule term:sym<ident>      {<ident>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}
@@ -198,7 +198,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
-    rule _any:sym<qty>    { <num>['%'|<dimension=.ident>]? }
+    rule _any:sym<dim>    { <num>['%'|<dimension=.ident>]? }
     rule _any:sym<urange> { 'U+'<unicode-range> }
     rule _any:sym<ident>  { <ident> }
     rule _any:sym<pseudo> { <pseudo> }

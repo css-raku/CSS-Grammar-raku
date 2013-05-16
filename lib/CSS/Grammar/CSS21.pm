@@ -53,17 +53,18 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule expr { <term> +%% [ <operator>? ] }
 
     proto token angle         {<...>}
-    token angle:sym<drg>      {:i<num>(deg|rad|grad)}
+    token angle-units         {:i[deg|rad|grad]}
+    token angle:sym<dim>      {:i<num>(<.angle-units>)}
 
-    # quantity inherited from base grammar: length, percentage
-    token quantity:sym<angle> {<angle>}
+    # dimension inherited from base grammar: length, percentage
+    token dimension:sym<angle> {<angle>}
 
-    token time                {:i<num>(m?s)}
-    token quantity:sym<time>  {<time>}
+    token time                 {:i<num>(m?s)}
+    token dimension:sym<time>  {<time>}
 
-    proto token frequency     {<...>}
-    token frequency:sym<k?hz> {:i<num>(k?Hz)}
-    token quantity:sym<frequency>  {<frequency>}
+    proto token frequency      {<...>}
+    token frequency:sym<dim>   {:i<num>(k?Hz)}
+    token dimension:sym<frequency>  {<frequency>}
 
     rule term:sym<function>  {<function>|<function=.any-function>}
 
