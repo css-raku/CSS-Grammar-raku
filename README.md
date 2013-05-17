@@ -11,23 +11,6 @@ emphasis on:
 
 This module performs only generic parsing of declarations in style-sheet rules.
 
-
-Installation (Rakudo Star)
---------------------------
-You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
-
-Ensure that `perl6` and `panda` are available on your path, e.g. :
-
-    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
-
-You can then use `panda` to test and install `CSS::Grammar`:
-
-    % panda install CSS::Grammar
-
-To try parsing some content:
-
-    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
-
 Contents
 ========
 
@@ -64,10 +47,27 @@ warnings for any unexpected input.
     # skipping term: gunk
     # H1: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
 
+Installation (Rakudo Star)
+--------------------------
+
+You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
+
+Ensure that `perl6` and `panda` are available on your path, e.g. :
+
+    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
+
+You can then use `panda` to test and install `CSS::Grammar`:
+
+    % panda install CSS::Grammar
+
+To try parsing some content:
+
+    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
+
 See Also
 ========
-- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) extends CSS::Grammar. Its aim is to perform property-specific validation for CSS1 and CSS2.1.
-- [CSS::Language::CSS3](https://github.com/p6-css/perl6-CSS-Language) is currently under construction as a CSS Level 3 validating parser.
+- [CSS::Language](https://github.com/p6-css/perl6-CSS-Language) extends CSS::Grammar. Its aim is to perform property-specific validation for CSS Levels 1, 2.1 and 3.
+- [CSS::Drafts](https://github.com/p6-css/perl6-Drafts) construction area for draft/experimental CSS Level 3 extension modules.
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
