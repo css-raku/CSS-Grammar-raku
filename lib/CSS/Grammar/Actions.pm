@@ -371,9 +371,12 @@ class CSS::Grammar::Actions {
         make $.token($<ident>.ast, :type('ident'))
     }
 
-    method universal($/)          { make $/.Str }
     method selector($/)           { make $.list($/) }
+
+    method universal($/)          { make {element-name => $/.Str} }
+    method qname($/)              { make $.node($/) }
     method simple-selector($/)    { make $.list($/) }
+
     method attrib($/)             { make $.list($/) }
 
     method any-function($/)       {

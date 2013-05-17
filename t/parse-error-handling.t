@@ -36,7 +36,7 @@ for (
     ruleset =>  {input => 'h1 { color: red; rotation: 70minutes }',
                  warnings => ['dropping term: 70minutes',
                               'dropping declaration: rotation'],
-                 ast => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h1"]]],
+                 ast => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                  "declarations" => {"color" =>"expr" => ["term" => "red"]}},
     },
     # unclosed parens
@@ -44,7 +44,7 @@ for (
                 warnings => ["missing closing ')'",
                              'dropping term: (10,20,30 dropped2',
                              'dropping declaration: color'],
-                ast => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h1"]]],
+                ast => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                         "declarations" => {"kept1" => {"expr" => ["term" => 1]},
                                            "kept2" => {"expr" => ["term" => 2]}}
                         },
@@ -52,14 +52,14 @@ for (
     },
     ruleset => {input => 'h1 {color:red; content:"Section" counter(42)}',
                 ast => {
-                    "selectors" => ["selector" => ["simple-selector" => ["element-name" => "h1"]]],
+                    "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                     "declarations" => {"color" => {"expr" => ["term" => "red"]},
                                        "content" => {"expr" => ["term" => "Section", "term" => {"ident" => "counter", "args" => ["term" => 42]}]}}
                 },
     },
     ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
                 ast => {
-                    "selectors" => ["selector" => ["simple-selector" => ["element-name" => "h2"]]],
+                    "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h2"}]]],
                     "declarations" => {"content" => {"expr" => ["term" => "Chapter", "term" => {"ident" => "counter", "args" => []}]},
                                        "color" => {"expr" => ["term" => "blue"]}},
                 },
@@ -67,7 +67,7 @@ for (
     # unclosed string. scanner should discard first line
     ruleset => {input => 'h2 {bad: dropme "http://unclosed-string.org; color:blue;
                               background-color:#ccc;}',
-                ast => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h2"]]],
+                ast => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h2"}]]],
                         "declarations" => {"background-color" => {"expr" => ["term" => {"r" => 204, "g" => 204, "b" => 204}]}}},
                 warnings => [
                     'unterminated string: "http://unclosed-string.org; color:blue;',
@@ -122,10 +122,10 @@ for (
 h3, h4 & h5 {color: red }
 h6 {color: black }',
             warnings => 'dropping: h3, h4 & h5 {color: red }',
-                   ast => ["ruleset" => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h1"]],
-                                                         "selector" => ["simple-selector" => ["element-name" => "h2"]]],
+                   ast => ["ruleset" => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]],
+                                                         "selector" => ["simple-selector" => [qname => {"element-name" => "h2"}]]],
                                          "declarations" => {"color" => {"expr" => ["term" => "green"]}},
-                                         "ruleset" => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h6"]]],
+                                         "ruleset" => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h6"}]]],
                                                        "declarations" => {"color" => {"expr" => ["term" => "black"]}}}
                            }
                        ],
@@ -139,7 +139,7 @@ h6 {color: black }',
     }
     h1 { color: blue }',
                    warnings => 'dropping: @three-dee { @background-lighting { azimuth: 30deg; elevation: 190deg; } h1 { color: red } }',
-                   ast => ["ruleset" => {"selectors" => ["selector" => ["simple-selector" => ["element-name" => "h1"]]],
+                   ast => ["ruleset" => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                                          "declarations" => {"color" => {"expr" => ["term" => "blue"]}}}],
     },
     # try a few extended terms. we don't have the media extensions loaded

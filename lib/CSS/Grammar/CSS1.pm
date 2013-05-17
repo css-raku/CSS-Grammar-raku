@@ -42,7 +42,8 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
 
     token selector {<simple-selector> +% <.ws> <pseudo>?}
 
-    token simple-selector { <element-name> <id>? <class>? <pseudo>?
+    token qname           { <element-name> }
+    token simple-selector { <qname> <id>? <class>? <pseudo>?
                           | <id> <class>? <pseudo>?
                           | <class> <pseudo>?
                           | <pseudo> }

@@ -72,7 +72,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule selector{ <simple-selector> +%% <combinator>? }
 
     token universal {'*'}
-    rule simple-selector { [<element-name>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
+    token qname     {<element-name>}
+    rule simple-selector { [<qname>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
                            |                           [<id>|<class>|<attrib>|<pseudo>]+ }
 
     rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
