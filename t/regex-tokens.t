@@ -65,11 +65,11 @@ for (chr(0), ' ', '~') {
 } 
 
 for ('http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif') {
-    ok($_ ~~ /^<CSS::Grammar::url-string>$/, "css1 url-string: $_");
+    ok("url($_)" ~~ /^<CSS::Grammar::url>$/, "css1 url: url($_)");
 }
 
 for ('http://www.bg.com/pink(ish).gif') {
-    nok($_ ~~ /^<CSS::Grammar::url-string>$/, "not css1 url-string: $_");
+    nok("url($_)" ~~ /^<CSS::Grammar::url>$/, "not css1 url: url($_)");
 }
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t', '-i') {

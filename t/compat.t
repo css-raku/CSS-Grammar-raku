@@ -32,9 +32,6 @@ for (
     unicode => {input => '\\021',
                 ast => '!',
     },
-    url-string => {input => q{"'Hello World\\021\\""},
-                   ast => q{'Hello World!"},
-    },
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
     # number, percent, length, emx, emx, angle, time, frequency

@@ -41,7 +41,8 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     rule unary-op       {'+'|'-'}
 
     token selector {<simple-selector> +% <.ws> <pseudo>?}
-
+    # <qname> - for forward compat with css2.1 and 3
+    # - see http://www.w3.org/TR/2008/CR-css3-namespace-20080523/#css-qnames
     token qname           { <element-name> }
     token simple-selector { <qname> <id>? <class>? <pseudo>?
                           | <id> <class>? <pseudo>?

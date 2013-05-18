@@ -45,9 +45,10 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token single-quote   {\'}
     token double-quote   {\"}
-    token string         {\"[<stringchar>|<stringchar=.single-quote>]*\"
-                         |\'[<stringchar>|<stringchar=.double-quote>]*\'
-    }
+    proto token string   {<...>}
+    token string:sym<double-q>  {\"[<stringchar>|<stringchar=.single-quote>]*\"}
+    token string:sym<single-q>  {\'[<stringchar>|<stringchar=.double-quote>]*\'}
+
     token id             {'#'<name>}
     token class          {'.'<name>}
     token element-name   {<ident>}
@@ -61,27 +62,28 @@ grammar CSS::Grammar:ver<0.0.1> {
     token length:sym<dim>      {:i<num>(<.distance-units>)}
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
-    token length:sym<rel-font-sans-num> {(\+|\-)? (<.rel-font-units>)}
+    token length:sym<rel-font-unit> {(\+|\-)? (<.rel-font-units>)}
 
     proto token dimension {<...>}
     token dimension:sym<length>     {<length>}
 
-    token percentage               {<num>'%'}
+    token url_delim_char   {\( | \) | \' | \" | \\ | <.wc>}
+    token url-chars        {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
-    token url_delim_char {\( | \) | \' | \" | \\ | <wc>}
-    token url-char       {<escape>|<nonascii>|<- url_delim_char>+}
-    token url-string     {<string>|<url-char>*}
+    proto rule url         {<...>}
+    rule url:sym<string>   {:i'url(' <string> ')' }
+    rule url:sym<unquoted> {:i'url(' <url-chars>* ')' }
+
+    token percentage       {<num>'%'}
 
     # productions
 
-    token operator             {'/'|','}
+    token operator       {'/'|','}
 
-    rule property {<property=.ident> ':'}
-    rule end-decl { ';' | <?before '}'> | $ }
+    rule property        {<property=.ident> ':'}
+    rule end-decl        { ';' | <?before '}'> | $ }
 
-    rule url  {:i'url(' <url-string> ')' }
-
-    rule color-range{<num>$<percentage>=[\%]?}
+    rule color-range     {<num>$<percentage>=[\%]?}
 
     proto rule color    {*}
     rule color:sym<rgb> {:i'rgb('

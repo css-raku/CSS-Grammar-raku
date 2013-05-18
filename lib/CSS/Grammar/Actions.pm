@@ -174,10 +174,12 @@ class CSS::Grammar::Actions {
     method single-quote($/) {make "'"}
     method double-quote($/) {make '"'}
 
-    method string($/) {
+    method _string($/) {
         my $string = $<stringchar>.map({ $_.ast }).join('');
         make $.token($string, :type('string'));
     }
+    method string:sym<single-q>($/) { $._string($/) }
+    method string:sym<double-q>($/) { $._string($/) }
 
     method badstring($/) {
         $.warning('unterminated string', $/.Str);
@@ -186,18 +188,15 @@ class CSS::Grammar::Actions {
     method id($/) { make $<name>.ast }
     method class($/) { make $<name>.ast }
 
-    method url-char($/) {
-        my $cap = $<escape> || $<nonascii>;
-        make $cap ?? $cap.ast !! $/.Str
+    method url-chars($/) {
+        make $<char> ?? $<char>.ast !! $/.Str
     }
-    method url-string($/) {
-        my $string = $<string> || $<badstring>;
-        make $string
-            ?? $string.ast
-            !! $.token( $<url-char>.map({$_.ast}).join('') );
+    method url:sym<string>($/) { make $<string>.ast }
+    method url:sym<unquoted>($/) {
+        make $.token( $<url-chars>.map({$_.ast}).join('') );
     }
 
-    method url($/)  { make $<url-string>.ast }
+    # uri - synonym for url?
     method uri($/)  { make $<url>.ast }
 
     method color-range($/) {
@@ -345,7 +344,7 @@ class CSS::Grammar::Actions {
 
     method length:sym<dim>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
     method dimension:sym<length>($/)     { make $<length>.ast }
-    method length:sym<rel-font-sans-num>($/) {
+    method length:sym<rel-font-unit>($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
         make $.token($num, :units($1.Str.lc), :type('length'))
     }
