@@ -54,16 +54,17 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     proto token angle         {<...>}
     token angle-units         {:i[deg|rad|grad]}
-    token angle:sym<dim>      {:i<num>(<.angle-units>)}
-
-    # dimension inherited from base grammar: length, percentage
+    token angle:sym<dim>      {:i<num><units=.angle-units>}
     token dimension:sym<angle> {<angle>}
 
-    token time                 {:i<num>(m?s)}
+    token time-units           {:i m?s}
+    proto token time           {<...>}
+    token time:sym<dim>        {<num><units=.time-units>}
     token dimension:sym<time>  {<time>}
 
     proto token frequency      {<...>}
-    token frequency:sym<dim>   {:i<num>(k?Hz)}
+    token frequency-units      {:i k?Hz}
+    token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
 
     rule term:sym<function>  {<function>|<function=.any-function>}

@@ -112,6 +112,9 @@ class CSS::Grammar::Actions {
 
     method element-name($/) {make $<ident>.ast}
 
+    method distance-units:sym<abs>($/) { make $.token( $/.Str.lc, :type<length> ) }
+    method distance-units:sym<font>($/) { make $.token( $/.Str.lc, :type<length> ) }
+
     method any($/) {}
 
     method dropped-decl:sym<forward-compat>($/) {
@@ -342,21 +345,24 @@ class CSS::Grammar::Actions {
     method term:sym<dimension>($/)  { make $<dimension>.ast }
     method term:sym<percentage>($/) { make $<percentage>.ast }
 
-    method length:sym<dim>($/) { make $.token($<num>.ast, :units($0.Str.lc), :type('length')); }
+    method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
     method dimension:sym<length>($/)     { make $<length>.ast }
     method length:sym<rel-font-unit>($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
-        make $.token($num, :units($1.Str.lc), :type('length'))
+        make $.token($num, :units($1.Str.lc), :type<length>)
     }
 
-    method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($0.Str.lc), :type('angle')) }
-    method dimension:sym<angle>($/)      { make $<angle>.ast }
+    method angle-units($/)              { make $.token( $/.Str.lc, :type<angle> ) }
+    method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type('angle')) }
+    method dimension:sym<angle>($/)     { make $<angle>.ast }
 
-    method time($/)                     { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
-    method dimension:sym<time>($/)       { make $<time>.ast }
+    method time-units($/)               { make $.token( $/.Str.lc, :type<time> ) }
+    method time:sym<dim>($/)            { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method dimension:sym<time>($/)      { make $<time>.ast }
 
-    method frequency:sym<dim>($/)      { make $.token($<num>.ast, :units($0.Str.lc), :type('frequency')) }
-    method dimension:sym<frequency>($/)  { make $<frequency>.ast }
+    method frequency-units($/)          {  make $.token( $/.Str.lc, :type<frequency> ) }
+    method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
+    method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
     method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
 
@@ -379,9 +385,7 @@ class CSS::Grammar::Actions {
     method attrib($/)             { make $.list($/) }
 
     method any-function($/)       {
-        my %ast = $.node($/);
-        %ast<args> //= []; # indicates an empty argument list
-        make $.token(%ast, :type('function'));
+        make $.token( $.list($/), :type('function'));
     }
 
     method pseudo-function:sym<lang>($/)             {
@@ -441,7 +445,7 @@ class CSS::Grammar::Actions {
                 $hex_digit = ord($_) - ord('a') + 10;
             }
             else {
-                # our grammar shouldn't allow this
+                # our grammar should've filtered this
                 die "illegal hexidecimal digit: $_";
             }
 

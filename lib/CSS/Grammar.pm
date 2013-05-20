@@ -59,7 +59,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token rel-font-units           {:i[em|ex]}
 
     proto token length         {<...>}
-    token length:sym<dim>      {:i<num>(<.distance-units>)}
+    token length:sym<dim>      {:i<num><units=.distance-units>}
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
     token length:sym<rel-font-unit> {(\+|\-)? (<.rel-font-units>)}
@@ -200,7 +200,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     proto rule _any { <...> }
     rule _any:sym<string> { <string> }
-    rule _any:sym<dim>    { <num>['%'|<dimension=.ident>]? }
+    rule _any:sym<dim>    { <num>['%'|<units=.ident>]? }
     rule _any:sym<urange> { 'U+'<unicode-range> }
     rule _any:sym<ident>  { <ident> }
     rule _any:sym<pseudo> { <pseudo> }

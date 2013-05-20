@@ -2,17 +2,13 @@
 use v6;
 use Test;
 
-use CSS::Grammar::CSS3::Extended;
+use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 use lib '.';
 use t::AST;
 
-# can't find alplha(..) or mask(..) in specs or w3c css validator test suite
-
-my %expected = {ast => Mu,
-                warnings => Mu,
-};
+my %expected = {ast => Mu};
 
 my $test_css = %*ENV<CSS_TEST_FILE>;
 if ($test_css) {
@@ -21,12 +17,6 @@ if ($test_css) {
 }
 else {
     $test_css = 't/jquery-ui-themeroller.css';
-    %expected<warnings> = [
-        'unknown function: alpha', 'dropping declaration: filter',
-        'unknown function: mask',  'dropping declaration: filter',
-        'unknown function: alpha', 'dropping declaration: filter',
-        ];
-
     diag "loading $test_css (set \$CSS_TEST_FILE to override)";
 }
 
@@ -36,11 +26,11 @@ my $fh = open $test_css
 my $css_body = join("\n", $fh.lines);
 $fh.close;
 
-my $actions = CSS::Grammar::CSS3::Extended::Actions.new;
+my $actions = CSS::Grammar::Actions.new;
 
 diag "...parsing...";
 
-my $p = CSS::Grammar::CSS3::Extended.parsefile($test_css, :actions($actions) );
+my $p = CSS::Grammar::CSS3.parsefile($test_css, :actions($actions) );
 
 ok($p, "parsed css content ($test_css)")
     or die "parse failed - can't continue";
