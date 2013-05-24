@@ -54,13 +54,13 @@ for (
                 ast => {
                     "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                     "declarations" => {"color" => {"expr" => ["term" => "red"]},
-                                       "content" => {"expr" => ["term" => "Section", "term" => {"ident" => "counter", "args" => ["term" => 42]}]}}
+                                       "content" => {"expr" => ["term" => "Section", "term" => {"function" => "counter", "args" => ["term" => 42]}]}}
                 },
     },
     ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
                 ast => {
                     "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h2"}]]],
-                    "declarations" => {"content" => {"expr" => ["term" => "Chapter", "term" => {"ident" => "counter", "args" => []}]},
+                    "declarations" => {"content" => {"expr" => ["term" => "Chapter", "term" => {"function" => "counter"}]},
                                        "color" => {"expr" => ["term" => "blue"]}},
                 },
     },

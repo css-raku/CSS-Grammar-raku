@@ -47,7 +47,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    rule declaration:sym<raw>       { <property> <expr> <prio>? <end-decl> }
+    rule declaration:sym<core>       { <property> <expr> <prio>? <end-decl> }
 
     # should be '+%' - see rakudo rt #117831
     rule expr { <term> +%% [ <operator>? ] }
@@ -67,7 +67,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
 
-    rule term:sym<function>  {<function>|<function=.any-function>}
+    rule term:sym<function>  {<function>}
 
     # should be '+%' - see rakudo rt #117831
     rule selector{ <simple-selector> +%% <combinator>? }
@@ -89,8 +89,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
-    proto rule function { <...> }
-    token any-function      {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
+    token function      {<function=.ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
 
     proto rule pseudo-function { <...> }
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}

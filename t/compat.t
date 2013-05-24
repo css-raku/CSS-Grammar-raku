@@ -258,11 +258,11 @@ for (
                                           term => 45,
                                           term => 10, term => 50,
                                           term => 'ZZ',
-                                          term => {"ident" => "counter",
+                                          term => {"function" => "counter",
                                                    "args" => [term => "a", operator => ",", term => "b"]},
-                                          term => {"ident" => "counters",
+                                          term => {"function" => "counters",
                                                    "args" => [term => "p", operator => ",", term => "s"]},
-                                          term => {"ident" => "attr",
+                                          term => {"function" => "attr",
                                                    "args" => [term => "data-foo"]},
                                      ]
                              }

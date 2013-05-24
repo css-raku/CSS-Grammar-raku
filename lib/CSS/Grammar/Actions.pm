@@ -36,14 +36,17 @@ class CSS::Grammar::Actions {
         return $ast;
     }
 
-    method node($/) {
+    method node($/, :$capture?) {
         # make an intermediate node
         my %terms;
 
         for $/.caps -> $cap {
             my ($key, $value) = $cap.kv;
-            $value = $value.ast;
-            next unless $value.defined;
+            $value = $value.ast
+                // ($capture && $capture eq $key
+                    ?? $value.Str
+                    !! next);
+
             die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
                 if %terms.exists($key);
 
@@ -59,7 +62,7 @@ class CSS::Grammar::Actions {
         return %terms;
     }
 
-    method list($/) {
+    method list($/, :$capture?) {
         # make a node that contains repeatable elements
         my @terms;
 
@@ -68,8 +71,11 @@ class CSS::Grammar::Actions {
         for @l {
             for $_.caps -> $cap {
                 my ($key, $value) = $cap.kv;
-                $value = $value.ast;
-                next unless $value.defined;
+                $value = $value.ast
+                    // ($capture && $capture eq $key
+                        ?? $value.Str
+                        !! next);
+
                 push @terms, ($key => $value);
             }
         }
@@ -82,11 +88,11 @@ class CSS::Grammar::Actions {
         my $str = $_str.chomp.trim;
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
-        $str.split('').map({
+        [~] $str.split('').map({
             $_ eq "\\"               ?? '\\'
-            !! /<[\t\o40 \!..\~]>/   ?? $_   
-            !! $_.ord.fmt("\\x[%x]")
-       }).join('');
+                !! /<[\t\o40 \!..\~]>/   ?? $_   
+                !! $_.ord.fmt("\\x[%x]")
+                               });
     }
 
     method warning ($message, $str?, $explanation?) {
@@ -159,11 +165,11 @@ class CSS::Grammar::Actions {
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        my $ident =  $<nmstrt>.ast ~ $<nmchar>.map({$_.ast}).join('');
+        my $ident = [~] ($<nmstrt>.ast, $<nmchar>.map({$_.ast}));
         make $pfx ~ $ident.lc;
     }
     method name($/)  {
-        make $<nmchar>.map({$_.ast}).join('');
+        make [~] $<nmchar>.map({$_.ast});
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
@@ -178,8 +184,8 @@ class CSS::Grammar::Actions {
     method double-quote($/) {make '"'}
 
     method _string($/) {
-        my $string = $<stringchar>.map({ $_.ast }).join('');
-        make $.token($string, :type('string'));
+        my $string = [~] $<stringchar>.map({ $_.ast });
+        make $.token($string, :type<string>);
     }
     method string:sym<single-q>($/) { $._string($/) }
     method string:sym<double-q>($/) { $._string($/) }
@@ -196,7 +202,7 @@ class CSS::Grammar::Actions {
     }
     method url:sym<string>($/) { make $<string>.ast }
     method url:sym<unquoted>($/) {
-        make $.token( $<url-chars>.map({$_.ast}).join('') );
+        make $.token( [~] $<url-chars>.map({$_.ast}) );
     }
 
     # uri - synonym for url?
@@ -258,10 +264,7 @@ class CSS::Grammar::Actions {
     method operator($/) { make $.token($/.Str, :type('operator')) }
 
     # pseudos
-    method pseudo:sym<element>($/) { my %node; # :first-line
-                                     %node<element> = $<element>.Str.lc;
-                                     make %node;
-    }
+    method pseudo:sym<element>($/)  { make {element => $<element>.Str.lc} }
     method pseudo:sym<function>($/) { make $.node($/) }
     method pseudo:sym<class>($/)    { make $.node($/) }
 
@@ -330,7 +333,7 @@ class CSS::Grammar::Actions {
         make %declarations;
     }
 
-    method declaration:sym<raw>($/)        {
+    method declaration:sym<core>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
             return;
@@ -357,10 +360,10 @@ class CSS::Grammar::Actions {
     method dimension:sym<angle>($/)     { make $<angle>.ast }
 
     method time-units($/)               { make $.token( $/.Str.lc, :type<time> ) }
-    method time:sym<dim>($/)            { make $.token($<num>.ast, :units($0.Str.lc), :type('time')) }
+    method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type('time')) }
     method dimension:sym<time>($/)      { make $<time>.ast }
 
-    method frequency-units($/)          {  make $.token( $/.Str.lc, :type<frequency> ) }
+    method frequency-units($/)          { make $.token( $/.Str.lc, :type<frequency> ) }
     method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
     method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
@@ -369,9 +372,7 @@ class CSS::Grammar::Actions {
     method term:sym<string>($/)   { make $.token($<string>.ast, :type('string')) }
     method term:sym<url>($/)      { make $.token($<url>.ast, :type('url')) }
     method term:sym<color>($/)    { make $<color>.ast; }
-    method term:sym<function>($/) {
-        make $.token($<function>.ast, :type('function'));
-    }
+    method term:sym<function>($/) { make $<function>.ast }
     method term:sym<ident>($/)    {
         make $.token($<ident>.ast, :type('ident'))
     }
@@ -384,7 +385,7 @@ class CSS::Grammar::Actions {
 
     method attrib($/)             { make $.list($/) }
 
-    method any-function($/)       {
+    method function($/)       {
         make $.token( $.list($/), :type('function'));
     }
 
