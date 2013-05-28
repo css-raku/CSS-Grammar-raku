@@ -47,14 +47,14 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    rule declaration:sym<core>       { <property> <expr> <prio>? <end-decl> }
+    rule declaration:sym<base>       { <property> <expr> <prio>? <end-decl> }
 
     # should be '+%' - see rakudo rt #117831
     rule expr { <term> +%% [ <operator>? ] }
 
-    proto token angle         {<...>}
-    token angle-units         {:i[deg|rad|grad]}
-    token angle:sym<dim>      {:i<num><units=.angle-units>}
+    proto token angle          {<...>}
+    token angle-units          {:i[deg|rad|grad]}
+    token angle:sym<dim>       {:i<num><units=.angle-units>}
     token dimension:sym<angle> {<angle>}
 
     token time-units           {:i m?s}

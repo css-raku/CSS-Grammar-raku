@@ -33,7 +33,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    rule declaration:sym<core>       { <property> <expr> <prio>? <end-decl> }
+    rule declaration:sym<base>       { <property> <expr> <prio>? <end-decl> }
     # css1 syntax allows a unary operator in front of all terms. Throw it
     # out, if the term doesn't consume it.
     # should be '+%' - see rakudo rt #117831

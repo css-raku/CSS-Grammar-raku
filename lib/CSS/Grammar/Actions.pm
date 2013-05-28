@@ -37,20 +37,24 @@ class CSS::Grammar::Actions {
     }
 
     method node($/, :$capture?) {
-        # make an intermediate node
         my %terms;
 
-        for $/.caps -> $cap {
-            my ($key, $value) = $cap.kv;
-            $value = $value.ast
-                // ($capture && $capture eq $key
-                    ?? $value.Str
-                    !! next);
+        # unwrap Parcels
+        my @l = $/.can('caps')
+            ?? ($/)
+            !! $/.grep({$_.defined});
 
-            die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
-                if %terms.exists($key);
+        for @l {
+            for $_.caps -> $cap {
+                my ($key, $value) = $cap.kv;
+                die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
+                    if %terms.exists($key);
 
-            %terms{$key} = $value;
+                %terms{$key} = $value.ast
+                    // ($capture && $capture eq $key
+                        ?? $value.Str
+                        !! next);
+            }
         }
 
         return %terms;
@@ -66,17 +70,20 @@ class CSS::Grammar::Actions {
         # make a node that contains repeatable elements
         my @terms;
 
-        my @l = $/.can('caps') ?? ($/) !! (@$/);
+        # unwrap Parcels
+        my @l = $/.can('caps')
+            ?? ($/)
+            !! $/.grep({$_.defined});
 
         for @l {
             for $_.caps -> $cap {
                 my ($key, $value) = $cap.kv;
-                $value = $value.ast
+                my $val = $value.ast
                     // ($capture && $capture eq $key
                         ?? $value.Str
                         !! next);
 
-                push @terms, ($key => $value);
+                push @terms, ($key => $val);
             }
         }
 
@@ -333,7 +340,7 @@ class CSS::Grammar::Actions {
         make %declarations;
     }
 
-    method declaration:sym<core>($/)        {
+    method declaration:sym<base>($/)        {
         if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
             return;
