@@ -118,8 +118,6 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode-range:sym<from-to> {$<from>=[<xdigit> ** 1..6] '-' $<to>=[<xdigit> ** 1..6]}
     rule unicode-range:sym<masked>  {[<xdigit>|'?'] ** 1..6}
 
-    # <decl> - extension point for CSS::Language property validation suite
-    proto rule decl {<...>}
     proto rule declaration {<...>}
 
     # Error Recovery
