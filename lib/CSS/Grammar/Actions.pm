@@ -47,13 +47,17 @@ class CSS::Grammar::Actions {
         for @l {
             for $_.caps -> $cap {
                 my ($key, $value) = $cap.kv;
-                die "repeated term: " ~ $key ~ " (use .list, implement custom method, or refactor grammar)"
-                    if %terms.exists($key);
+                if %terms.exists($key) {
+                    $.warning("repeated term " ~ $key ~ ":", $value);
+                    return Any;
+                }
 
-                %terms{$key} = $value.ast
+                $value = $value.ast
                     // ($capture && $capture eq $key
                         ?? $value.Str
                         !! next);
+
+                %terms{$key} = $value;
             }
         }
 
@@ -78,12 +82,12 @@ class CSS::Grammar::Actions {
         for @l {
             for $_.caps -> $cap {
                 my ($key, $value) = $cap.kv;
-                my $val = $value.ast
+                $value = $value.ast
                     // ($capture && $capture eq $key
                         ?? $value.Str
                         !! next);
 
-                push @terms, ($key => $val);
+                push @terms, ($key => $value);
             }
         }
 
