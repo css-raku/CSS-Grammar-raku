@@ -42,10 +42,10 @@ class CSS::Grammar::Actions {
         # unwrap Parcels
         my @l = $/.can('caps')
             ?? ($/)
-            !! $/.grep({$_.defined});
+            !! $/.grep({ .defined });
 
         for @l {
-            for $_.caps -> $cap {
+            for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 if %terms.exists($key) {
                     $.warning("repeated term " ~ $key ~ ":", $value);
@@ -77,10 +77,10 @@ class CSS::Grammar::Actions {
         # unwrap Parcels
         my @l = $/.can('caps')
             ?? ($/)
-            !! $/.grep({$_.defined});
+            !! $/.grep({ .defined });
 
         for @l {
-            for $_.caps -> $cap {
+            for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 $value = $value.ast
                     // ($capture && $capture eq $key
@@ -100,10 +100,10 @@ class CSS::Grammar::Actions {
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
         [~] $str.split('').map({
-            $_ eq "\\"               ?? '\\'
-                !! /<[\t\o40 \!..\~]>/   ?? $_   
-                !! $_.ord.fmt("\\x[%x]")
-                               });
+                $_ eq "\\"               ?? '\\'
+                    !! /<[\t\o40 \!..\~]>/   ?? $_   
+                    !! .ord.fmt("\\x[%x]")
+            });
     }
 
     method warning ($message, $str?, $explanation?) {
@@ -159,7 +159,7 @@ class CSS::Grammar::Actions {
     }
 
     method _to-unicode($str) {
-        my $ord = $._from-hex($str);
+        my $ord = :16($str);
         return Buf.new( $ord ).decode( $.encoding );
     }
 
@@ -176,11 +176,11 @@ class CSS::Grammar::Actions {
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        my $ident = [~] ($<nmstrt>.ast, $<nmchar>.map({$_.ast}));
+        my $ident = [~] ($<nmstrt>.ast, $<nmchar>.map({ .ast }));
         make $pfx ~ $ident.lc;
     }
     method name($/)  {
-        make [~] $<nmchar>.map({$_.ast});
+        make [~] $<nmchar>.map({ .ast });
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
@@ -195,7 +195,7 @@ class CSS::Grammar::Actions {
     method double-quote($/) {make '"'}
 
     method _string($/) {
-        my $string = [~] $<stringchar>.map({ $_.ast });
+        my $string = [~] $<stringchar>.map({ .ast });
         make $.token($string, :type<string>);
     }
     method string:sym<single-q>($/) { $._string($/) }
@@ -213,7 +213,7 @@ class CSS::Grammar::Actions {
     }
     method url:sym<string>($/) { make $<string>.ast }
     method url:sym<unquoted>($/) {
-        make $.token( [~] $<url-chars>.map({$_.ast}) );
+        make $.token( [~] $<url-chars>.map({ .ast }) );
     }
 
     # uri - synonym for url?
@@ -243,7 +243,7 @@ class CSS::Grammar::Actions {
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
         my %rgb;
-        %rgb<r g b> = @rgb.map({$._from-hex( $_ )}); 
+        %rgb<r g b> = @rgb.map({ :16($_) }); 
         make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
@@ -286,7 +286,7 @@ class CSS::Grammar::Actions {
 
     method unicode-range:sym<from-to>($/) {
         # don't produce actual hex chars; could be out of range
-        make [ $._from-hex($<from>.Str), $._from-hex($<to>.Str) ];
+        make [ :16($<from>.Str), :16($<to>.Str) ];
     }
 
     method unicode-range:sym<masked>($/) {
@@ -295,7 +295,7 @@ class CSS::Grammar::Actions {
         my $hi = $mask.subst('?', 'F'):g;
 
         # don't produce actual hex chars; could be out of range
-        make [ $._from-hex($lo), $._from-hex($hi) ];
+        make [ :16($lo), :16($hi) ];
     }
 
     # css21/css3 core - media support
@@ -316,7 +316,7 @@ class CSS::Grammar::Actions {
         my %declarations;
 
         for @$.list($/) {
-            my ($_decl, $decls) = $_.kv;
+            my ($_decl, $decls) = .kv;
 
             die "unexpected in declaration ast: " ~ $_decl.perl
                 unless $_decl eq 'declaration';
@@ -345,7 +345,7 @@ class CSS::Grammar::Actions {
     }
 
     method declaration:sym<base>($/)        {
-        if !$<expr>.caps || $<expr>.caps.grep({! $_.value.ast.defined}) {
+        if !$<expr>.caps || $<expr>.caps.grep({! .value.ast.defined}) {
             $.warning('dropping declaration', $<property>.ast);
             return;
         }
@@ -436,34 +436,4 @@ class CSS::Grammar::Actions {
     method unknown:sym<flushed>($/)   {$.warning('dropping', $/.Str)}
     method unknown:sym<punct>($/)     {$.warning('dropping', $/.Str)}
     method unknown:sym<char>($/)      {$.warning('dropping', $/.Str)}
-
-    # utiltity methods / subs
-
-    method _from-hex($hex) {
-
-        my $result = 0;
-
-        for $hex.split('') {
-
-            my $hex_digit;
-
-            if ($_ ge '0' && $_ le '9') {
-                $hex_digit = $_.Int;
-            }
-            elsif ($_ ge 'A' && $_ le 'F') {
-                $hex_digit = ord($_) - ord('A') + 10;
-            }
-            elsif ($_ ge 'a' && $_ le 'f') {
-                $hex_digit = ord($_) - ord('a') + 10;
-            }
-            else {
-                # our grammar should've filtered this
-                die "illegal hexidecimal digit: $_";
-            }
-
-            $result *= 16;
-            $result += $hex_digit;
-        }
-        return $result;
-    }
 }
