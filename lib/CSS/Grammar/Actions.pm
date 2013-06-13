@@ -418,12 +418,12 @@ class CSS::Grammar::Actions {
         $.warning('unclosed comment at end of input');
     }
 
-    method unclosed-paren($/) {
-        $.warning("missing closing ']'");
+    method unclosed-paren-square($/) {
+        $.warning("no closing ']'");
     }
 
-    method unclosed-paren2($/) {
-        $.warning("missing closing ')'");
+    method unclosed-paren-round($/) {
+        $.warning("no closing ')'");
     }
 
     method end-block($/) {

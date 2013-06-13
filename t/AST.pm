@@ -25,6 +25,8 @@ module t::AST {
         }
         else {
             my @expected_warnings = %expected<warnings> // ();
+            todo( %expected<warnings-todo> )
+                if %expected<warnings-todo>;
             is(@warnings, @expected_warnings,
                @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
         }

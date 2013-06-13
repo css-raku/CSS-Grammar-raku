@@ -15,24 +15,23 @@ use t::AST;
 my $css_actions = CSS::Grammar::Actions.new;
 
 for (
-    declaration-list => {input => 'bg:url("http://www.bg.com/pinkish.gif")',
-            ast => {"bg" => "expr" => ["term" => "http://www.bg.com/pinkish.gif"]},
+    declaration-list => {input => 'background:url("http://www.bg.com/pinkish.gif")',
+            ast => {"background" => "expr" => ["term" => "http://www.bg.com/pinkish.gif"]},
     },
-    declaration-list => {input => 'bg:URL(http://www.bg.com/pinkish.gif)',
-                         ast => {"bg" => {"expr" => ["term" => "http://www.bg.com/pinkish.gif"]}},
+    declaration-list => {input => 'background:URL(http://www.bg.com/pinkish.gif)',
+                         ast => {"background" => {"expr" => ["term" => "http://www.bg.com/pinkish.gif"]}},
    },
-    declaration-list => {input => 'bg:URL(http://www.bg.com/pinkish.gif',
+    declaration-list => {input => 'background:URL(http://www.bg.com/pinkish.gif',
                          ast => Mu,
-                         warnings => ["missing closing ')'",
-                                      'dropping term: (http://www.bg.com/pinkish.gif',
-                                      'dropping declaration: bg',
+                         warnings => ["no closing ')'",
+                                      'dropping term: URL(http://www.bg.com/pinkish.gif',
+                                      'dropping declaration: background',
                              ],
     },
-# todo: producing duplicate warnings while backtracking
-##    declaration-list => {input => 'bg:URL("http://www.bg.com/pinkish.gif',
-##            ast => Mu,
-##            warnings => [q{unterminated string: "http://www.bg.com/pinkish.gif}, "missing closing ')'"],
-##    },
+    declaration-list => {input => 'background:URL("http://www.bg.com/pinkish.gif',
+                         ast => Mu,
+                         warnings => ["no closing ')'", q{dropping term: URL("http://www.bg.com/pinkish.gif}, q{dropping declaration: background}],
+    },
     ruleset =>  {input => 'h1 { color: red; rotation: 70minutes }',
                  warnings => ['dropping term: 70minutes',
                               'dropping declaration: rotation'],
@@ -41,8 +40,8 @@ for (
     },
     # unclosed parens
     ruleset => {input => 'h1 {kept1:1; color: dropped1 rgb(10,20,30 dropped2; kept2:2;}',
-                warnings => ["missing closing ')'",
-                             'dropping term: (10,20,30 dropped2',
+                warnings => ["no closing ')'",
+                             'dropping term: rgb(10,20,30 dropped2',
                              'dropping declaration: color'],
                 ast => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                         "declarations" => {"kept1" => {"expr" => ["term" => 1]},
@@ -152,8 +151,8 @@ h6 {color: black }',
                    warnings => 'dropping: * foo|* |h1 body:not(.home) h2 + p:first-letter tr:nth-last-child(-n+2) object[type^="image/"] {}',
     },
     ) {
-    my $rule = $_.key;
-    my %test = $_.value;
+    my $rule = .key;
+    my %test = .value;
     my $input = %test<input>;
 
     $css_actions.reset;

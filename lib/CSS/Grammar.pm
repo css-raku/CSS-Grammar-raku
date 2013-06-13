@@ -14,12 +14,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nl {\xA|"\r"\xA|"\r"|"\f"}
 
     # comments: nb trigger <nl> for accurate line counting
-    token comment {('<!--') [<nl>|.]*? ['-->' | <unclosed-comment>]
-                  |('/*')   [<nl>|.]*? ['*/'  | <unclosed-comment>]}
+    token comment {('<!--') [<.nl>|.]*? ['-->' | <unclosed-comment>]
+                  |('/*')   [<.nl>|.]*? ['*/'  | <unclosed-comment>]}
     token unclosed-comment {$}
 
-    token wc {<nl> | "\t"  | " "}
-    token ws {<!ww>[<wc>|<comment>]*}
+    token wc {<.nl> | "\t"  | " "}
+    token ws {<!ww>[<.wc>|<.comment>]*}
 
     # "lexer"com
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
@@ -111,7 +111,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule term:sym<string>     {<string>}
     rule term:sym<color>      {<color>}
     rule term:sym<url>        {<url>}
-    rule term:sym<ident>      {<ident>}
+    rule term:sym<ident>      {<ident><!before '('>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}
@@ -129,8 +129,8 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule any-args  {<any-arg>*}
     # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Scan::_badstring>}
-    rule unclosed-paren {''}
-    rule unclosed-paren2 {''}
+    rule unclosed-paren-square {<?>}
+    rule unclosed-paren-round  {<?>}
 
     # failed declaration parse - how well formulated is it?
     proto rule dropped-decl { <...> }
@@ -187,26 +187,26 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _ruleset      { <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration-list> '}' ';'?}
-    rule _declaration-list {[ <property> | <_value> | <_badstring> |';' ]*}
+    rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
-    token _op          {[<punct> & <- _delim>]+}
+    token _op          {[<.punct> & <- _delim>]+}
 
-    rule _badstring    {\"[<stringchar>|\']*[<nl>|$]
-                       |\'[<stringchar>|\"]*[<nl>|$]}
+    rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
+                       |\'[<.stringchar>|\"]*[<.nl>|$]}
 
     proto rule _any { <...> }
-    rule _any:sym<string> { <string> }
-    rule _any:sym<dim>    { <num>['%'|<units=.ident>]? }
-    rule _any:sym<urange> { 'U+'<unicode-range> }
-    rule _any:sym<ident>  { <ident> }
-    rule _any:sym<pseudo> { <pseudo> }
-    rule _any:sym<id>     { <id> }
-    rule _any:sym<class>  { <class> }
+    rule _any:sym<string> { <.string> }
+    rule _any:sym<dim>    { <.num>['%'|<.ident>]? }
+    rule _any:sym<urange> { 'U+'<.unicode-range> }
+    rule _any:sym<ident>  { <.ident> }
+    rule _any:sym<pseudo> { <.pseudo> }
+    rule _any:sym<id>     { <.id> }
+    rule _any:sym<class>  { <.class> }
     rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' <_arg>* [ ']' || <unclosed-paren> ] }
-    rule _any:sym<args>   { '(' <_arg>* [ ')' || <unclosed-paren2> ] }
+    rule _any:sym<attrib> { '[' <_arg>* [ ']' || <.unclosed-paren-square> ] }
+    rule _any:sym<args>   { '(' <_arg>* [ ')' || <.unclosed-paren-round> ] }
 
     rule _arg {[ <_any> | <_block> | <_at_keyword> | <_badstring> ]}
 }

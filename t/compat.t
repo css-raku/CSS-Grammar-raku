@@ -242,7 +242,7 @@ for (
 
              css1 => {
                  ast => Mu,
-                 parse => '-moz-linear-gradient',
+                 parse => '',
                  warnings => Mu,
              },
     },
@@ -445,8 +445,8 @@ for (
     },
     ) {
 
-    my $rule = $_.key;
-    my %test = $_.value;
+    my $rule = .key;
+    my %test = .value;
     my $input = %test<input>;
 
     $css_actions.reset;

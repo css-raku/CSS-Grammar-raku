@@ -78,22 +78,22 @@ my @tests = (
     );
 
 for @tests {
-    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :rule('stylesheet') );
-    ok( $p1, 'css1 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value},
+    my $p1 = CSS::Grammar::CSS1.parse( .value, :rule('stylesheet') );
+    ok( $p1, 'css1 parse ' ~ .key)
+    or diag do {.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || .value},
 }
 
 for @tests {
-    my $p2 = CSS::Grammar::CSS21.parse( $_.value, :rule('stylesheet') );
-    ok( $p2, 'css2 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value},
+    my $p2 = CSS::Grammar::CSS21.parse( .value, :rule('stylesheet') );
+    ok( $p2, 'css2 parse ' ~ .key)
+    or diag do {.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || .value},
             
 }
 
 for @tests {
-    my $p3 = CSS::Grammar::CSS3.parse( $_.value, :rule('stylesheet') );
+    my $p3 = CSS::Grammar::CSS3.parse( .value, :rule('stylesheet') );
     ok( $p3, 'css3 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || $_.value},
+    or diag do {.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || .value},
             
 }
 

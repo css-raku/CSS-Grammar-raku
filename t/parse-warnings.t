@@ -78,10 +78,10 @@ my $expected_lines = 60;
 
 for @tests {
     $css_actions.reset;     
-    my $p1 = CSS::Grammar::CSS1.parse( $_.value, :actions($css_actions));
+    my $p1 = CSS::Grammar::CSS1.parse( .value, :actions($css_actions));
 
-    ok( $p1, 'css1 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || $_.value};
+    ok( $p1, 'css1 parse ' ~ .key)
+    or diag do {.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || .value};
     is($css_actions.line-no, $expected_lines, 'line count');
     # warnings are normal here - tests to be added
     note $css_actions.warnings if $css_actions.warnings;
@@ -89,9 +89,9 @@ for @tests {
             
 for @tests {
     $css_actions.reset;     
-    my $p2 = CSS::Grammar::CSS21.parse( $_.value, :actions($css_actions) );
-    ok( $p2, 'css2 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || $_.value};
+    my $p2 = CSS::Grammar::CSS21.parse( .value, :actions($css_actions) );
+    ok( $p2, 'css2 parse ' ~ .key)
+    or diag do {.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || .value};
     is($css_actions.line-no, $expected_lines, 'line count');
             
     # warnings are normal here - tests to be added
@@ -100,9 +100,9 @@ for @tests {
 
 for @tests {
     $css_actions.reset;     
-    my $p3 = CSS::Grammar::CSS3.parse( $_.value, :actions($css_actions) );
-    ok( $p3, 'css3 parse ' ~ $_.key)
-    or diag do {$_.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || $_.value};
+    my $p3 = CSS::Grammar::CSS3.parse( .value, :actions($css_actions) );
+    ok( $p3, 'css3 parse ' ~ .key)
+    or diag do {.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || .value};
     is($css_actions.line-no, $expected_lines, 'line count');
             
     # warnings are normal here - tests to be added
