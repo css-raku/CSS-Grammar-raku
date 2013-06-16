@@ -223,6 +223,12 @@ class CSS::Grammar::Actions {
         my $arg = %<num>.ast;
         $arg = ($arg * 2.55).round
             if $<percentage>.Str;
+
+        # clip out-of-range colors, see
+        # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
+        $arg = 0 if $arg < 0;
+        $arg = 255 if $arg > 255;
+
         make $.token($arg, :type('num'), :units('8bit'));
     }
 
