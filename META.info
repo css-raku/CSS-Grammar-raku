@@ -1,7 +1,7 @@
 {
     "name"        : "CSS::Grammar",
     "version"     : "*",
-    "description" : "Perl 6 CSS related grammars",
+    "description" : "Perl 6 CSS generic grammars",
     "depends"     : [  ],
     "source-url"  : "git://github.com/p6-css/perl6-CSS-Grammar.git"
 }
