@@ -49,18 +49,11 @@ for (
                         },
                 
     },
-    ruleset => {input => 'h1 {color:red; content:"Section" counter(42)}',
+    ruleset => {input => 'h1 {color:red; content:"Section" counter(hdr-1)}',
                 ast => {
                     "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                     "declarations" => {"color" => {"expr" => ["term" => "red"]},
-                                       "content" => {"expr" => ["term" => "Section", "term" => {"function" => "counter", "args" => ["term" => 42]}]}}
-                },
-    },
-    ruleset => {input => 'h2 {content: "Chapter" counter(); color:blue}',
-                ast => {
-                    "selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h2"}]]],
-                    "declarations" => {"content" => {"expr" => ["term" => "Chapter", "term" => {"function" => "counter"}]},
-                                       "color" => {"expr" => ["term" => "blue"]}},
+                                       "content" => {"expr" => ["term" => "Section", "term" => {"function" => "counter", "args" => ["term" => 'hdr-1']}]}}
                 },
     },
     # unclosed string. scanner should discard first line

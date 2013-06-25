@@ -67,7 +67,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto token dimension {<...>}
     token dimension:sym<length>     {<length>}
 
-    token url_delim_char   {\( | \) | \' | \" | \\ | <.wc>}
+    token url_delim_char   { <[ \( \) \' \" \\ ]> | <.wc>}
     token url-chars        {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
     proto rule url         {<...>}
@@ -135,7 +135,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # failed declaration parse - how well formulated is it?
     proto rule dropped-decl { <...> }
     # - extra semicolon - just ignore
-    rule dropped-decl:sym<empty>          { ';' }
+    rule dropped-decl:sym<empty-decl>     { ';' }
     # - parsed a property; some terms are unknown
     rule dropped-decl:sym<forward-compat> { <property> [<expr>||(<any>)]*? <end-decl> }
     # - couldn't get a property, but terms well formed

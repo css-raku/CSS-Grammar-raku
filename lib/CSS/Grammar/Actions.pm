@@ -176,11 +176,11 @@ class CSS::Grammar::Actions {
     }
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        my $ident = [~] ($<nmstrt>.ast, $<nmchar>.map({ .ast }));
+        my $ident = [~] ($<nmstrt>.ast, $<nmchar>>>.ast);
         make $pfx ~ $ident.lc;
     }
     method name($/)  {
-        make [~] $<nmchar>.map({ .ast });
+        make [~] $<nmchar>>>.ast;;
     }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/) { make $/.Num }
@@ -195,7 +195,7 @@ class CSS::Grammar::Actions {
     method double-quote($/) {make '"'}
 
     method _string($/) {
-        my $string = [~] $<stringchar>.map({ .ast });
+        my $string = [~] $<stringchar>>>.ast;
         make $.token($string, :type<string>);
     }
     method string:sym<single-q>($/) { $._string($/) }
@@ -213,7 +213,7 @@ class CSS::Grammar::Actions {
     }
     method url:sym<string>($/) { make $<string>.ast }
     method url:sym<unquoted>($/) {
-        make $.token( [~] $<url-chars>.map({ .ast }) );
+        make $.token( [~] $<url-chars>>>.ast );
     }
 
     # uri - synonym for url?
