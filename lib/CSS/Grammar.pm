@@ -41,7 +41,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token stringchar:sym<cont>      {\\<nl>}
     token stringchar:sym<escape>    {<escape>}
     token stringchar:sym<nonascii>  {<nonascii>}
-    token stringchar:sym<ascii>     {<[\o40 \! \# \$ \% \& \(..\[ \]..\~]>+}
+    token stringchar:sym<ascii>     {<[\x20 \! \# \$ \% \& \(..\[ \]..\~]>+}
 
     token single-quote   {\'}
     token double-quote   {\"}
@@ -135,7 +135,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # failed declaration parse - how well formulated is it?
     proto rule dropped-decl { <...> }
     # - extra semicolon - just ignore
-    rule dropped-decl:sym<empty-decl>     { ';' }
+    rule dropped-decl:sym<empty>     { ';' }
     # - parsed a property; some terms are unknown
     rule dropped-decl:sym<forward-compat> { <property> [<expr>||(<any>)]*? <end-decl> }
     # - couldn't get a property, but terms well formed
@@ -154,7 +154,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # - if that failed, start skipping intermediate tokens
     token unknown:sym<flushed>     { <any>+ }
     token unknown:sym<badstring>   { <badstring> } 
-    token unknown:sym<punct>       { <punct> }
+    token unknown:sym<punct>       { <CSS::Grammar::Scan::_ascii-punct> }
     # - last resort skip a character; let parser try again
     token unknown:sym<char>        {<[.]>}
 }
@@ -190,8 +190,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
+    token _ascii-punct {:i<!before [\x20 a..z 0..9]> <regascii>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
-    token _op          {[<.punct> & <- _delim>]+}
+    token _op          {[<._ascii-punct> & <- _delim>]+}
 
     rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
                        |\'[<.stringchar>|\"]*[<.nl>|$]}
