@@ -56,7 +56,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto token distance-units     {<...>}
     token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px}
     token distance-units:sym<font> {<rel-font-units>}
-    token rel-font-units           {:i[em|ex]}
+    token rel-font-units           {:i em|ex}
 
     proto token length         {<...>}
     token length:sym<dim>      {:i<num><units=.distance-units>}

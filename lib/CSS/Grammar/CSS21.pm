@@ -9,8 +9,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule TOP {^ <stylesheet> $}
 
     # productions
-    rule stylesheet { <charset>?
-                      [<import> || <misplaced>]*
+    rule stylesheet { <charset>? <import>*
                       ['@'<at-rule> | <ruleset> || <misplaced> || <unknown>]* }
 
     rule charset { \@(:i'charset') <string> ';' }
@@ -25,7 +24,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule media-query          { <media=.ident> }
     rule media-rules          {'{' <ruleset>* <.end-block>}
 
-    rule at-rule:sym<page>    {(:i<sym>)  <page=.page-pseudo>? <declarations> }
+    rule at-rule:sym<page>    {(:i<sym>) <page=.page-pseudo>? <declarations> }
     rule page-pseudo          {':'<ident>}
 
     # inherited combinators: '+' (adjacent)
@@ -47,7 +46,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    rule declaration:sym<base>       { <property> <expr> <prio>? <end-decl> }
+    rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
 
     # should be '+%' - see rakudo rt #117831
     rule expr { <term> +%% [ <operator>? ] }
