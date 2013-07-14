@@ -410,7 +410,7 @@ for (
                         '@' => 'media'},
                 css1 => {skip_test => True},
     },
-    at-rule => {input => 'page :first { margin-right: 2cm }',
+    at-rule => {input => 'Page :first { margin-right: 2cm }',
                 ast => {"page" => "first", "declarations" => {"margin-right" => {"expr" => ["term" => 2]}},
                         '@' => 'page'},
                 css1 => {skip_test => True},
@@ -426,7 +426,7 @@ for (
                        warnings => [q{dropping: @charset 'bazinga';}]
                    },
     },
-    stylesheet => {input => "\@import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
+    stylesheet => {input => "\@Import 'foo';\nH1 \{ color: blue; \};\n@charset 'bazinga';\n\@import 'too-late';\nH2\{color:green\}",
                    ast => ["import" => {"string" => "foo"},
                            "ruleset" => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
                                          "declarations" => {"color" => {"expr" => ["term" => 'blue']}},

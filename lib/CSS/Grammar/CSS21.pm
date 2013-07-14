@@ -19,12 +19,12 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     proto rule at-rule {*}
 
-    rule at-rule:sym<media>   {(:i<sym>) <media-list> <media-rules> }
+    rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
     rule media-list           {<media-query> +% ','}
     rule media-query          { <media=.ident> }
     rule media-rules          {'{' <ruleset>* <.end-block>}
 
-    rule at-rule:sym<page>    {(:i<sym>) <page=.page-pseudo>? <declarations> }
+    rule at-rule:sym<page>    {(:i'page') <page=.page-pseudo>? <declarations> }
     rule page-pseudo          {':'<ident>}
 
     # inherited combinators: '+' (adjacent)
