@@ -190,7 +190,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
 
-    token _ascii-punct {:i<!before [\x20 a..z 0..9]> <regascii>}
+    token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<._ascii-punct> & <- _delim>]+}
 
