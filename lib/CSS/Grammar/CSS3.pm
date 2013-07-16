@@ -10,8 +10,7 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     rule TOP {^ <stylesheet> $}
 
     # productions
-    rule stylesheet { <charset>?
-                      [<import>                 || <misplaced>]*
+    rule stylesheet { <charset>? <import>*
                       ['@'<at-rule=.at-decl>    || <misplaced>]*
                       ['@'<at-rule> | <ruleset> || <misplaced2> || <unknown>]* }
 
