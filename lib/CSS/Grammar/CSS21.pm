@@ -9,8 +9,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule TOP {^ <stylesheet> $}
 
     # productions
-    rule stylesheet { <charset>? <import>*
-                      ['@'<at-rule> | <ruleset> || <misplaced> || <unknown>]* }
+    rule stylesheet { <charset>? [ <import> ]*
+                      [ '@'<at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
     rule charset { \@(:i'charset') <string> ';' }
     rule import  { \@(:i'import')  [<string>|<url>] <media-list>? ';' }
@@ -95,7 +95,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # pseudo function catch-all
     rule any-pseudo-func   {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
 
-    # 'lexer' css2 exceptions
+    # 'lexer' css21 exceptions
     # non-ascii limited to single byte characters
     token nonascii            {<[\o240..\o377]>}
 }
