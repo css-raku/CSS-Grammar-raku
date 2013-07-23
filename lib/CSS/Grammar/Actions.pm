@@ -296,7 +296,7 @@ class CSS::Grammar::Actions {
     }
 
     method unicode-range:sym<masked>($/) {
-        my $mask = $/.Str;
+        my $mask = $<mask>.Str;
         my $lo = $mask.subst('?', '0'):g;
         my $hi = $mask.subst('?', 'F'):g;
 
