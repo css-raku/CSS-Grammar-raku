@@ -100,7 +100,7 @@ class CSS::Grammar::Actions {
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
         [~] $str.split('').map({
-                $_ eq "\\"               ?? '\\'
+                $_ eq "\\"                   ?? '\\'
                     !! /<[\t\o40 \!..\~]>/   ?? $_   
                     !! .ord.fmt("\\x[%x]")
             });
@@ -127,9 +127,9 @@ class CSS::Grammar::Actions {
         $.line-no++;
     }
 
-    method element-name($/) {make $<ident>.ast}
+    method element-name($/)             { make $<ident>.ast }
 
-    method distance-units:sym<abs>($/) { make $.token( $/.Str.lc, :type<length> ) }
+    method distance-units:sym<abs>($/)  { make $.token( $/.Str.lc, :type<length> ) }
     method distance-units:sym<font>($/) { make $.token( $/.Str.lc, :type<length> ) }
 
     method any($/) {}
@@ -166,24 +166,28 @@ class CSS::Grammar::Actions {
     method unicode($/) {
        make $._to-unicode( $0.Str );
     }
-    method nonascii($/){make $/.Str}
-    method escape($/){make $<unicode> ?? $<unicode>.ast !! $<char>.Str}
+
+    method nonascii($/) { make $/.Str }
+
+    method escape($/)   { make $<unicode> ?? $<unicode>.ast !! $<char>.Str }
+
     method nmstrt($/){
         make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
     }
+
     method nmchar($/){
         make $<nmreg> ?? $<nmreg>.Str !! ($<nonascii> || $<escape>).ast;
     }
+
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
-        my $ident = [~] ($<nmstrt>.ast, $<nmchar>>>.ast);
-        make $pfx ~ $ident.lc;
+        my $ident = [~] ($pfx, $<nmstrt>.ast, $<nmchar>>>.ast);
+        make $ident.lc;
     }
-    method name($/)  {
-        make [~] $<nmchar>>>.ast;;
-    }
+
+    method name($/)   { make [~] $<nmchar>>>.ast; }
     method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
-    method num($/) { make $/.Num }
+    method num($/)    { make $/.Num }
     method posint($/) { make $/.Int }
 
     method stringchar:sym<cont>($/)     { make '' }
@@ -191,8 +195,8 @@ class CSS::Grammar::Actions {
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
     method stringchar:sym<ascii>($/)    { make $/.Str }
 
-    method single-quote($/) {make "'"}
-    method double-quote($/) {make '"'}
+    method single-quote($/) { make "'" }
+    method double-quote($/) { make '"' }
 
     method _string($/) {
         my $string = [~] $<stringchar>>>.ast;
@@ -205,7 +209,7 @@ class CSS::Grammar::Actions {
         $.warning('unterminated string', $/.Str);
     }
 
-    method id($/) { make $<name>.ast }
+    method id($/)    { make $<name>.ast }
     method class($/) { make $<name>.ast }
 
     method url-chars($/) {
@@ -229,7 +233,7 @@ class CSS::Grammar::Actions {
         $arg = 0 if $arg < 0;
         $arg = 255 if $arg > 255;
 
-        make $.token($arg, :type('num'), :units('8bit'));
+        make $.token($arg, :type<num>, :units<8bit>);
     }
 
     method color:sym<rgb>($/)  {
@@ -245,11 +249,11 @@ class CSS::Grammar::Actions {
             unless $id.match(/^<xdigit>+$/)
             && ($chars == 3 || $chars == 6);
 
-        my @rgb = $chars == 3
+        my @_rgb = $chars == 3
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
         my %rgb;
-        %rgb<r g b> = @rgb.map({ :16($_) }); 
+        %rgb<r g b> = @_rgb.map({ :16($_) }); 
         make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
@@ -274,11 +278,8 @@ class CSS::Grammar::Actions {
     method misplaced($/) {
         $.warning('ignoring out of sequence directive', $/.Str)
     }
-    method misplaced2($/) {
-        $.warning('ignoring out of sequence directive', $/.Str)
-    }
 
-    method operator($/) { make $.token($/.Str, :type('operator')) }
+    method operator($/) { make $.token($/.Str, :type<operator>) }
 
     # pseudos
     method pseudo:sym<element>($/)  { make {element => $<element>.Str.lc} }
@@ -361,7 +362,7 @@ class CSS::Grammar::Actions {
 
     method expr($/) { make $.list($/) }
 
-    method term:sym<num>($/)        { make $.token($<num>.ast, :type('num')); }
+    method term:sym<num>($/)        { make $.token($<num>.ast, :type<num>); }
     method term:sym<dimension>($/)  { make $<dimension>.ast }
     method term:sym<percentage>($/) { make $<percentage>.ast }
 
@@ -373,25 +374,25 @@ class CSS::Grammar::Actions {
     }
 
     method angle-units($/)              { make $.token( $/.Str.lc, :type<angle> ) }
-    method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type('angle')) }
+    method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type<angle>) }
     method dimension:sym<angle>($/)     { make $<angle>.ast }
 
     method time-units($/)               { make $.token( $/.Str.lc, :type<time> ) }
-    method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type('time')) }
+    method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type<time>) }
     method dimension:sym<time>($/)      { make $<time>.ast }
 
     method frequency-units($/)          { make $.token( $/.Str.lc, :type<frequency> ) }
     method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
     method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-    method percentage($/)               { make $.token($<num>.ast, :units('%'), :type('percentage')) }
+    method percentage($/)               { make $.token($<num>.ast, :units<%>, :type<percentage>) }
 
-    method term:sym<string>($/)   { make $.token($<string>.ast, :type('string')) }
-    method term:sym<url>($/)      { make $.token($<url>.ast, :type('url')) }
+    method term:sym<string>($/)   { make $.token($<string>.ast, :type<string>) }
+    method term:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
     method term:sym<color>($/)    { make $<color>.ast; }
     method term:sym<function>($/) { make $<function>.ast }
     method term:sym<ident>($/)    {
-        make $.token($<ident>.ast, :type('ident'))
+        make $.token($<ident>.ast, :type<ident>)
     }
 
     method selector($/)           { make $.list($/) }
@@ -403,7 +404,7 @@ class CSS::Grammar::Actions {
     method attrib($/)             { make $.list($/) }
 
     method function($/)       {
-        make $.token( $.list($/), :type('function'));
+        make $.token( $.list($/), :type<function>);
     }
 
     method pseudo-function:sym<lang>($/)             {
