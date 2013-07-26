@@ -24,11 +24,11 @@ grammar CSS::Grammar:ver<0.0.1> {
     # "lexer"com
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
-    token unicode  {'\\'(<[0..9 a..f A..F]>**1..6)}
+    token unicode  {(<[0..9 a..f A..F]>**1..6)}
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token regascii {<[\x20..\x7F]>}
     token nonascii {<- [\x0..\x7F]>}
-    token escape   {<unicode>|'\\'$<char>=[<regascii>|<nonascii>]}
+    token escape   {'\\'[<unicode>|<char=.regascii>|<char=.nonascii>]}
     token nmstrt   {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
     token nmchar   {<nmreg>|<nonascii>|<escape>}
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
@@ -162,15 +162,19 @@ grammar CSS::Grammar:ver<0.0.1> {
 
 grammar CSS::Grammar::Scan is CSS::Grammar {
 
-    # Fallback Grammar Only!!
-    # This grammar is based on the universal grammar syntax described in
+    # Fallback/Normalization Grammar
+    # This is based on the universal grammar syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
-    # It is a scanning grammar that is only used to implement term flushing
-    # for forward compatiblity and/or ignoring unknown constructs
+    # It is a scanning grammar that is only used to implement:
+    # -- term flushing  for forward compatiblity and error recovery
+    # -- normalization
 
+    # Term Flushing:
+    # --------------
     # It's been generalized to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
     # e.g this should be completely dropped: h3, h4 & h5 {color: red }
+
     # Errata:
     # - declarations are less structured - optimized for robustness
     # - added <_op> for general purpose operator detection
@@ -180,7 +184,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _stylesheet   {<_statement>*}
     rule _statement    {<_ruleset> | '@'<_at-rule>}
 
-    rule _at_keyword   {\@<ident>}
+    rule _at-keyword   {\@<ident>}
     rule _at-rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
@@ -188,7 +192,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration-list> '}' ';'?}
     rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
-    rule _value        {[ <_any> | <_block> | <_at_keyword> ]+}
+    rule _value        {[ <_any> | <_block> | <_at-keyword> ]+}
 
     token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
@@ -209,5 +213,24 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<attrib> { '[' <_arg>* [ ']' || <.unclosed-paren-square> ] }
     rule _any:sym<args>   { '(' <_arg>* [ ')' || <.unclosed-paren-round> ] }
 
-    rule _arg {[ <_any> | <_block> | <_at_keyword> | <_badstring> ]}
+    rule _arg {[ <_any> | <_block> | <_at-keyword> | <_badstring> ]}
+
+    # Ident cleanup
+    # -------------
+    # CSS grammars allow escapes anywhere that idents may appear.
+    # This leads to irregular parsing. For example, to define EM
+    # in http://www.w3.org/TR/2011/REC-CSS2-20110607/grammar.html
+    #
+    # E		e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
+    # M		m|\\0{0,4}(4d|6d)(\r\n|[ \t\r\n\f])?|\\m
+    # {num}?{E}{M}		{return EMS;}
+    #
+    # <ident-cleanup> is an experimental rule for cleaning of irregular idents.
+    #
+    #  my $a = CSS::Grammar::Scan::Actions.new;
+    #  my $p = CSS::Grammar::Scan.parse('\h1{c\ol\6fr: bl\ue}', :actions($a), :rule<ident-cleanup>);
+    #  my $css-cleaned = $p.ast; # 'h1{color: blue}'
+    #  CSS::Language::CSS21.parse($css-cleaned);
+
+    token ident-cleanup {^ [<ident>(.*?)|(.+?)]* $}
 }

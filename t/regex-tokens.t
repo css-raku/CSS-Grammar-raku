@@ -21,11 +21,11 @@ for ('/**/', '/* hi */', '<!--X-->',
 }
 
 # unicode
-for ("\\f", "\\012f", "\\012A") {
+for ("f", "012f", "012A") {
     ok($_ ~~ /^<CSS::Grammar::unicode>$/, "unicode: $_");
 }
 
-for ("\\012AF", "\\012AFc") {
+for ("012AF", "012AFc") {
     # css2+ unicode is up to 6 digits
     nok($_ ~~ /^<CSS::Grammar::CSS1::unicode>$/, "not css1 unicode: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS21::unicode>$/, "css21 unicode: $_");

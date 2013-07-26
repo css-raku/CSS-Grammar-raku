@@ -4,7 +4,7 @@
 # -- css1 is a subset of css2.1 and sometimes parses differently
 # -- css3 without extensions should be largley css2.1 compatibile
 # -- our scanning grammar should parse identically to css21 and css3, when
-#    there are now warnings
+#    there are no warnings
 
 use Test;
 
@@ -29,12 +29,9 @@ for (
            warnings => ['unclosed comment at end of input'],
     },
     name => {input => 'my-class', ast => 'my-class'},
-    unicode => {input => '\\021',
-                ast => '!',
-    },
+    unicode => {input => '021',   ast => '!',},
     num => {input => '2.52', ast => 2.52},
     id => {input => '#z0y\021', ast => 'z0y!'},
-    # number, percent, length, emx, emx, angle, time, frequency
     class => {input => '.zippy', ast => 'zippy'},
     class => {input => '.\55ft', ast => "\x[55f]t"},
     color => {input => 'Rgb(10, 20, 30)',
@@ -176,7 +173,7 @@ for (
                          "simple-selector" => [qname => {"element-name" => "img"}]],
     },
     selector => {input => 'A:After IMG',
-                 css1 => {  # css1 doesn't understand :after element
+                 css1 => {  # css1 doesn't understand ':after' pseudo element
                       ast => ["simple-selector" => [qname => {"element-name" => "a"},
                                                     "pseudo" => {"class" => "after"}],
                               "simple-selector" => [qname => {"element-name" => "img"}]],
@@ -294,11 +291,11 @@ for (
                                        "term" => "blue"]},
     },
     declaration-list => {input => 'font-size:0px;color:white;z-index:-9;position:absolute;left:-999px',
-                         ast => {"font-size" => {"expr" => ["term" => 0e0]},
+                         ast => {"font-size" => {"expr" => ["term" => 0]},
                                  "color" => {"expr" => ["term" => "white"]},
-                                 "z-index" => {"expr" => ["term" => -9e0]},
+                                 "z-index" => {"expr" => ["term" => -9]},
                                  "position" => {"expr" => ["term" => "absolute"]},
-                                 "left" => {"expr" => ["term" => -999e0]}},
+                                 "left" => {"expr" => ["term" => -999]}},
     },
     ruleset => {input => 'H1 { color: blue; }',
                 ast => {"selectors" => ["selector" => ["simple-selector" => [qname => {"element-name" => "h1"}]]],
@@ -479,11 +476,10 @@ for (
                          :expected( %(%test, %$css3)) );
 
     # try a general scan
-
     if ($rule ~~ /^(TOP|statement|at\-rule|ruleset|selectors|declaration[s|\-list]|property)$/
     && !$css_actions.warnings) {
         my $p_any = CSS::Grammar::Scan.parse( $input, :rule('_'~$rule) );
-        t::AST::parse_tests($input, $p_any, :rule($rule), :suite('any'),
+        t::AST::parse_tests($input, $p_any, :rule($rule), :suite('scan'),
                             :expected({ast => Mu}) );
     }
 }
