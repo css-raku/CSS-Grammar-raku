@@ -160,7 +160,7 @@ class CSS::Grammar::Actions {
 
     method _to-unicode($str) {
         my $ord = :16($str);
-        return Buf.new( $ord ).decode( $.encoding );
+        return chr( $ord );
     }
 
     method unicode($/) {
