@@ -2,6 +2,6 @@
     "name"        : "CSS::Grammar",
     "version"     : "*",
     "description" : "Perl 6 core CSS grammars",
-    "depends"     : [  ],
+    "depends"     : [ "JSON::Tiny" ],
     "source-url"  : "git://github.com/p6-css/perl6-CSS-Grammar.git"
 }
