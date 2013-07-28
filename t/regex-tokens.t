@@ -80,7 +80,8 @@ for ('8') {
     nok($_ ~~ /^<CSS::Grammar::ident>$/, "not ident: $_");
 }
 
-for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}) {
+for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, 
+    q{"a /* non-comment */"}) {
     ok($_ ~~ /^<CSS::Grammar::string>$/, "string: $_");
 }
 
