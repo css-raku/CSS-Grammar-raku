@@ -1,6 +1,6 @@
 # CSS Testing - utility functions
 
-module t::AST {
+module CSS::Grammar::Test {
 
     use Test;
 
@@ -24,12 +24,20 @@ module t::AST {
                 if @warnings;
         }
         else {
-            my @expected_warnings = %expected<warnings> // ();
             todo( %expected<warnings-todo> )
                 if %expected<warnings-todo>;
-            is(@warnings, @expected_warnings,
-               @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
-        }
+     
+            if %expected<warnings>.isa('Regex') {
+                my @matched = ([~] @warnings).match(%expected<warnings>);
+                ok( @matched, "{$suite} warnings")
+                    or diag @warnings;
+            }
+            else {
+                my @expected_warnings = %expected<warnings> // ();
+                is(@warnings, @expected_warnings,
+                   @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
+            }
+	}
 
         if defined (my $ast = %expected<ast>) {
             is($parse.ast, $ast, "{$suite} - ast")

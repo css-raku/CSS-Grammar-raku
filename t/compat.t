@@ -15,7 +15,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 use lib '.';
-use t::AST;
+use CSS::Grammar::Test;
 
 my $css_actions = CSS::Grammar::Actions.new;
 
@@ -23,7 +23,7 @@ my $fh = open 't/compat.json', :r;
 
 for ($fh.lines) {
     if .substr(0,2) eq '//' {
-        note '[' ~ .substr(2) ~ ']';
+##        note '[' ~ .substr(2) ~ ']';
         next;
     }
     my ($rule, %test) = @( from-json($_) );
@@ -39,7 +39,7 @@ for ($fh.lines) {
     unless %$css1<skip_test> {
         $css_actions.reset;
         my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-        t::AST::parse_tests($input, $p1, :rule($rule), :suite('css1'),
+        CSS::Grammar::Test::parse_tests($input, $p1, :rule($rule), :suite('css1'),
                             :warnings($css_actions.warnings),
                             :expected( %(%test, %$css1)) );
     }
@@ -47,7 +47,7 @@ for ($fh.lines) {
     # CSS21 Compat
     $css_actions.reset;
     my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    t::AST::parse_tests($input, $p2, :rule($rule), :suite('css2'),
+    CSS::Grammar::Test::parse_tests($input, $p2, :rule($rule), :suite('css2'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css2)) );
 
@@ -55,7 +55,7 @@ for ($fh.lines) {
     # -- css3 core only
     $css_actions.reset;
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3'),
+    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3'),
                          :warnings($css_actions.warnings),
                          :expected( %(%test, %$css3)) );
 
@@ -63,7 +63,7 @@ for ($fh.lines) {
     if ($rule ~~ /^(TOP|statement|at\-rule|ruleset|selectors|declaration[s|\-list]|property)$/
     && !$css_actions.warnings) {
         my $p_any = CSS::Grammar::Scan.parse( $input, :rule('_'~$rule) );
-        t::AST::parse_tests($input, $p_any, :rule($rule), :suite('scan'),
+        CSS::Grammar::Test::parse_tests($input, $p_any, :rule($rule), :suite('scan'),
                             :expected({ast => Any}) );
     }
 }

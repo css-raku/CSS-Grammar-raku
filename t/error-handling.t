@@ -11,7 +11,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
 use lib '.';
-use t::AST;
+use CSS::Grammar::Test;
 
 my $css_actions = CSS::Grammar::Actions.new;
 
@@ -19,7 +19,7 @@ my $fh = open("t/error-handling.json", :r);
 
 for ( $fh.lines ) {
     if .substr(0,2) eq '//' {
-        note '[' ~ .substr(2) ~ ']';
+##        note '[' ~ .substr(2) ~ ']';
         next;
     }
     my ($rule, %test) = @( from-json($_) );
@@ -28,11 +28,10 @@ for ( $fh.lines ) {
 
     $css_actions.reset;
     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    t::AST::parse_tests($input, $p3, :rule($rule), :suite('css3 errors'),
+    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3 errors'),
                          :warnings($css_actions.warnings),
                          :expected(%test) );
 
 }
 
-$fh.close;
 done;
