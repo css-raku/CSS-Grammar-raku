@@ -13,8 +13,6 @@ use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-
-use lib '.';
 use CSS::Grammar::Test;
 
 my $css_actions = CSS::Grammar::Actions.new;

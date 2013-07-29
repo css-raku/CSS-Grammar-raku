@@ -9,8 +9,6 @@ use JSON::Tiny;
 use CSS::Grammar;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-
-use lib '.';
 use CSS::Grammar::Test;
 
 my $css_actions = CSS::Grammar::Actions.new;
