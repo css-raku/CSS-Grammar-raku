@@ -40,7 +40,10 @@ module CSS::Grammar::Test {
 	}
 
         if defined (my $ast = %expected<ast>) {
-            is($parse.ast, $ast, "{$suite} - ast")
+            if my $todo-ast = %expected<todo><ast> {
+                todo($todo-ast);
+            }
+	    is($parse.ast, $ast, "{$suite} - ast")
                 or diag $parse.ast.perl;
         }
         else {
