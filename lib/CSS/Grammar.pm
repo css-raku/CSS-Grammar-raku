@@ -150,7 +150,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # forward compatible scanning and recovery - from the stylesheet top level
     # - skip statements, at-rules or other recognised constructs
     token unknown  {  <CSS::Grammar::Scan::_statement>
-                   || [ <any> | <badstring> ]
+                   || <CSS::Grammar::Scan::_arg>
                    || <CSS::Grammar::Scan::_ascii-punct>
                    # - last resort - skip a character
                    || <[.]>+?
