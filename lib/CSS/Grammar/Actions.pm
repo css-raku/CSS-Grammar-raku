@@ -421,6 +421,11 @@ class CSS::Grammar::Actions {
     method attribute-selector:sym<includes>($/)  { make $/.Str }
     method attribute-selector:sym<dash>($/)      { make $/.Str }
 
+    method end-block($/) {
+        $.warning("no closing '}'")
+            unless $<closing-paren>;
+    }
+
     method unclosed-comment($/) {
         $.warning('unclosed comment at end of input');
     }
@@ -433,14 +438,8 @@ class CSS::Grammar::Actions {
         $.warning("no closing ')'");
     }
 
-    method end-block($/) {
-        $.warning("no closing '}'")
-            unless $<closing-paren>;
+    method unknown($/) {
+        $.warning('dropping', $/.Str)
     }
 
-    # todo: warnings can get a bit too verbose here
-    method unknown:sym<statement>($/) {$.warning('dropping', $/.Str)}
-    method unknown:sym<flushed>($/)   {$.warning('dropping', $/.Str)}
-    method unknown:sym<punct>($/)     {$.warning('dropping', $/.Str)}
-    method unknown:sym<char>($/)      {$.warning('dropping', $/.Str)}
 }

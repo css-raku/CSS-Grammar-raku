@@ -148,15 +148,13 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule end-block {[$<closing-paren>='}' ';'?]?}
 
     # forward compatible scanning and recovery - from the stylesheet top level
-    proto token unknown {*}
-    # - try to skip whole statements or at-rules
-    token unknown:sym<statement>   { <CSS::Grammar::Scan::_statement> }
-    # - if that failed, start skipping intermediate tokens
-    token unknown:sym<flushed>     { <any>+ }
-    token unknown:sym<badstring>   { <badstring> } 
-    token unknown:sym<punct>       { <CSS::Grammar::Scan::_ascii-punct> }
-    # - last resort skip a character; let parser try again
-    token unknown:sym<char>        {<[.]>}
+    # - skip statements, at-rules or other recognised constructs
+    token unknown  {  <CSS::Grammar::Scan::_statement>
+                   || [ <any> | <badstring> ]
+                   || <CSS::Grammar::Scan::_ascii-punct>
+                   # - last resort - skip a character
+                   || <[.]>+?
+                   }
 }
 
 
