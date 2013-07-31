@@ -136,21 +136,21 @@ class CSS::Grammar::Actions {
 
     method dropped-decl:sym<forward-compat>($/) {
         $.warning('dropping term', $0.Str)
-            if $0.Str.chars;
-        $.warning('dropping declaration', $<property>.ast);
+            if $0;
+        $.warning('dropping term', $1.Str)
+            if $1;
+        $.warning('dropping declaration', $<property>.ast)
+	    if $<property>;
     }
 
-    method dropped-decl:sym<stray-terms>($/) {
-        $.warning('dropping term', $0.Str);
-    }
+    method dropped-decl($/) {
 
-    method dropped-decl:sym<badstring>($/) {
-        my $prop = $<property>>>.ast;
-        if $prop {
-            $.warning('dropping declaration', $prop);
+        if $<any> {
+            $.warning('dropping term', $<any>.Str)
         }
-        elsif $0.Str.chars {
-            $.warning('dropping term', $0.Str)
+
+        if my $prop = $<property>>>.ast {
+            $.warning('dropping declaration', $prop);
         }
     }
 
@@ -333,8 +333,7 @@ class CSS::Grammar::Actions {
             my $props = %$decls.delete('property-list')
                 || [$decls];
 
-            for @$props {
-                my %decl = %$_;
+            for @$props -> %decl {
                 %decl<prio> = $prio if $prio;
                 my $prop = %decl.delete('property')
                     // die "unable to find property in declaration";

@@ -19,5 +19,5 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     proto rule at-decl {*}
 
     # 'lexer' css3 exceptions
-    token nonascii       {<- [\x0..\x7F]>}
+    token nonascii     {<- [\x0..\x7F]>}
 }

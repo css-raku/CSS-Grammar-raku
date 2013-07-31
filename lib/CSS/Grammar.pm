@@ -85,16 +85,16 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     rule color-range     {<num>$<percentage>=[\%]?}
 
-    proto rule color    {*}
-    rule color:sym<rgb> {:i'rgb('
+    proto rule color     {*}
+    rule color:sym<rgb>  {:i'rgb('
                    [ <r=.color-range> ','
                      <g=.color-range> ','
                      <b=.color-range> || <any-args> ]
                    ')'
     }
-    rule color:sym<hex> {<id>}
+    rule color:sym<hex>  {<id>}
 
-    token prio {:i'!' [('important')||<any>] }
+    token prio           {:i'!' [('important')||<any>] }
 
     # pseudos
     proto rule pseudo {<...>}
@@ -132,18 +132,20 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unclosed-paren-square {<?>}
     rule unclosed-paren-round  {<?>}
 
-    # failed declaration parse - how well formulated is it?
-    proto rule dropped-decl { <...> }
-    # - extra semicolon - just ignore
-    rule dropped-decl:sym<empty>     { ';' }
-    # - parsed a property; some terms are unknown
-    rule dropped-decl:sym<forward-compat> { <property> [<expr>||(<any>)]*? <end-decl> }
-    # - couldn't get a property, but terms well formed
-    rule dropped-decl:sym<stray-terms>    { (<any>)+? <end-decl> }
-    # - unterminated string. might consume ';' '}' and other constructs
-    rule dropped-decl:sym<badstring>      { <property>? (<any>)*? <.badstring> <end-decl>? }
-    # - unable to parse it at all; throw it out
-    rule dropped-decl:sym<flushed>        { ( <any> || <- [\;\}]> )+? <end-decl> }
+    # failed declaration parse - anaylse and drop
+    rule dropped-decl  { 
+	       # - extra semicolon - just ignore
+	       ';'
+
+	       # - well-formed terms - flush to end of declaration
+	       || [ [<property>||<any>] [<expr>||<any>]*? <end-decl> ]
+
+	       # - stop on unterminated string. might consume ';' '}' 
+	       || <property>? <any>*? <.badstring> <end-decl>?
+
+	       # - last resort - flush characters
+	       || [ <any=.any-arg> || $<any>=<- [\;\}]> ]+? <end-decl>
+    }
 
     rule end-block {[$<closing-paren>='}' ';'?]?}
 
