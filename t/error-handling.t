@@ -21,7 +21,6 @@ for ( $fh.lines ) {
         next;
     }
     my ($rule, %test) = @( from-json($_) );
-    
     my $input = %test<input>;
 
     $css_actions.reset;
