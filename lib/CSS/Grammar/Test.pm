@@ -3,6 +3,7 @@
 module CSS::Grammar::Test {
 
     use Test;
+    use JSON::Tiny;
 
     our sub parse_tests($input, $parse,
                          :$rule, :$suite, :%expected, :@warnings) {
@@ -44,7 +45,7 @@ module CSS::Grammar::Test {
                 todo($todo-ast);
             }
 	    is($parse.ast, $ast, "{$suite} - ast")
-                or diag $parse.ast.perl;
+                or diag to-json( $parse.ast );
         }
         else {
             if defined $parse.ast {
