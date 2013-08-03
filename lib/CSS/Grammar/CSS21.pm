@@ -84,7 +84,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token attribute-selector:sym<dash>     {'|='}
 
     rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
-    rule pseudo:sym<function> {':'[<function=.pseudo-function>||<any-pseudo-func>]}
+    rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-func>]}
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
@@ -93,7 +93,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     proto rule pseudo-function { <...> }
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
     # pseudo function catch-all
-    rule any-pseudo-func   {<ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
+    rule unknown-pseudo-func   {<ident>'(' <any-args> ')'}
 
     # 'lexer' css21 exceptions
     # non-ascii limited to single byte characters
