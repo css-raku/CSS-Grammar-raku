@@ -412,8 +412,8 @@ class CSS::Grammar::Actions {
         make {ident => 'lang', args => $.list($/)}
     }
 
-    method any-pseudo-func($/)             {
-        $.warning('unknown pseudo-function', $<ident>.ast.lc);
+    method unknown-pseudo-func($/)             {
+        $.warning('unknown pseudo-function', $<ident>.ast);
     }
 
     method attribute-selector:sym<equals>($/)    { make $/.Str }
