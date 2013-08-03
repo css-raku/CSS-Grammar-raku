@@ -221,9 +221,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # This leads to irregular parsing. For example, to define EM
     # in http://www.w3.org/TR/2011/REC-CSS2-20110607/grammar.html
     #
-    # E		e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
-    # M		m|\\0{0,4}(4d|6d)(\r\n|[ \t\r\n\f])?|\\m
-    # {num}?{E}{M}		{return EMS;}
+    # E	     e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
+    # M	     m|\\0{0,4}(4d|6d)(\r\n|[ \t\r\n\f])?|\\m
+    # {num}?{E}{M}       {return EMS;}
     #
     # <ident-cleanup> is an experimental rule for cleaning of irregular idents.
     #
