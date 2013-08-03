@@ -184,7 +184,6 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _stylesheet   {<_statement>*}
     rule _statement    {<_ruleset> | '@'<_at-rule>}
 
-    rule _at-keyword   {\@<ident>}
     rule _at-rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
@@ -192,7 +191,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration-list> '}' ';'?}
     rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
-    rule _value        {[ <_any> | <_block> | <_at-keyword> ]+}
+    rule _value        {[ <_any> | <_block> ]+}
 
     token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
@@ -209,11 +208,12 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<pseudo> { <.pseudo> }
     rule _any:sym<id>     { <.id> }
     rule _any:sym<class>  { <.class> }
+    rule _any:sym<at-keyw>{ '@'<.ident> }
     rule _any:sym<op>     { <_op> }
     rule _any:sym<attrib> { '[' <_arg>* [ ']' || <.unclosed-paren-square> ] }
     rule _any:sym<args>   { '(' <_arg>* [ ')' || <.unclosed-paren-round> ] }
 
-    rule _arg {[ <_any> | <_block> | <_at-keyword> | <_badstring> ]}
+    rule _arg {[ <_any> | <_block> | <_badstring> ]}
 
     # Ident cleanup
     # -------------
