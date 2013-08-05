@@ -58,9 +58,10 @@ for ($fh.lines) {
                          :expected( %(%test, %$css3)) );
 
     # try a general scan
-    if ($rule ~~ /^(TOP|statement|at\-rule|ruleset|selectors|declaration[s|\-list]|property)$/
+    if ($rule ~~ /^(TOP|statement|at\-rule|ruleset|selector[s?]|declaration[s|\-list]|property)$/
     && !$css_actions.warnings) {
-        my $p_any = CSS::Grammar::Scan.parse( $input, :rule('_'~$rule) );
+        my $_rule = $rule eq 'selector' ?? '_selectors' !! '_' ~ $rule;
+        my $p_any = CSS::Grammar::Scan.parse( $input, :rule($_rule) );
         CSS::Grammar::Test::parse_tests($input, $p_any, :rule($rule), :suite('scan'),
                             :expected({ast => Any}) );
     }
