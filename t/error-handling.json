@@ -10,6 +10,7 @@
 [ "ruleset", { "input" : "h2 {bad: dropme 'http://unclosed-string.org; color:blue;\n background-color:#ccc;}" }, { "ast" : { "selectors" : [ { "selector" : [ { "simple-selector" : [ { "qname" : { "element-name" : "h2" } } ] } ] } ], "declarations" : { "background-color" : { "expr" : [ { "term" : { "r" : 204, "g" : 204, "b" : 204 } } ] } } } }, { "warnings" : [ "unterminated string: 'http://unclosed-string.org; color:blue;", "dropping term: dropme", "dropping declaration: bad" ] } ]
 [ "ruleset", { "input" : "p { color:rgb(10,17); }" }, { "ast" : null }, { "warnings" : [ "usage: rgb(c,c,c) where c is 0..255 or 0%-100%", "dropping declaration: color" ] } ]
 [ "ruleset", { "input" : "p:foo(42) { color:bar(); }" }, { "ast" : null }, { "warnings" : [ "unknown pseudo-function: foo" ] } ]
+[ "ruleset", { "input" : "p { color:bar(@42); }" }, { "ast" : null }, { "warnings" : [ "skipping function arguments: @", "dropping declaration: color" ] } ]
 [ "ruleset", { "input" : "p { color }" }, { "ast" : null }, { "warnings" : "dropping term: color" } ]
 [ "ruleset", { "input" : "p { term1:a; color; term2:b }" }, { "ast" : null }, { "warnings" : "dropping term: color" } ]
 [ "ruleset", { "input" : "p {term1:a; color: }" }, { "ast" : null }, { "warnings" : "dropping declaration: color" } ]

@@ -88,7 +88,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # assume anything else is a class
     rule pseudo:sym<class>     {':' <class=.ident> }
 
-    token function      {<function=.ident>'(' [<args=.expr>||<args=.any-arg>]* ')'}
+    token function      {<function=.ident>'(' [<args=.expr>||<any-arg>]* ')'}
 
     proto rule pseudo-function { <...> }
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
