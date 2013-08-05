@@ -184,7 +184,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _stylesheet   {<_statement>*}
     rule _statement    {<_ruleset> | '@'<_at-rule>}
 
-    rule _at-rule      {(<ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
+    rule _at-rule      {(<.ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <_selectors>? <_declarations> }

@@ -403,6 +403,8 @@ class CSS::Grammar::Actions {
     method attrib($/)             { make $.list($/) }
 
     method function($/)       {
+	return $.warning('skipping function arguments', $<any-arg>.Str)
+	    if $<any-arg>;
         make $.token( $.list($/), :type<function>);
     }
 
