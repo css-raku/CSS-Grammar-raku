@@ -165,9 +165,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # Fallback/Normalization Grammar
     # This is based on the universal grammar syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
-    # It is a scanning grammar that is only used to implement:
-    # -- term flushing  for forward compatiblity and error recovery
-    # -- normalization
+    # It is a scanning grammar that is only used to implement
+    # term flushing, for forward compatiblity and error recovery
+    #
 
     # Term Flushing:
     # --------------
@@ -196,7 +196,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<._ascii-punct> & <- _delim>]+}
-
+    
     rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
                        |\'[<.stringchar>|\"]*[<.nl>|$]}
 
@@ -209,28 +209,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _any:sym<id>     { <.id> }
     rule _any:sym<class>  { <.class> }
     rule _any:sym<at-keyw>{ '@'<.ident> }
-    rule _any:sym<op>     { <_op> }
-    rule _any:sym<attrib> { '[' <_arg>* [ ']' || <.unclosed-paren-square> ] }
-    rule _any:sym<args>   { '(' <_arg>* [ ')' || <.unclosed-paren-round> ] }
+    rule _any:sym<op>     { <._op> }
+    rule _any:sym<attrib> { '[' <._arg>* [ ']' || <.unclosed-paren-square> ] }
+    rule _any:sym<args>   { '(' <._arg>* [ ')' || <.unclosed-paren-round> ] }
 
     rule _arg {[ <_any> | <_block> | <_badstring> ]}
-
-    # Ident cleanup
-    # -------------
-    # CSS grammars allow escapes anywhere that idents may appear.
-    # This leads to irregular parsing. For example, to define EM
-    # in http://www.w3.org/TR/2011/REC-CSS2-20110607/grammar.html
-    #
-    # E	     e|\\0{0,4}(45|65)(\r\n|[ \t\r\n\f])?
-    # M	     m|\\0{0,4}(4d|6d)(\r\n|[ \t\r\n\f])?|\\m
-    # {num}?{E}{M}       {return EMS;}
-    #
-    # <ident-cleanup> is an experimental rule for cleaning of irregular idents.
-    #
-    #  my $a = CSS::Grammar::Scan::Actions.new;
-    #  my $p = CSS::Grammar::Scan.parse('\h1{c\ol\6fr: bl\ue}', :actions($a), :rule<ident-cleanup>);
-    #  my $css-cleaned = $p.ast; # 'h1{color: blue}'
-    #  CSS::Language::CSS21.parse($css-cleaned);
-
-    token ident-cleanup {^ [<ident>(.*?)|(.+?)]* $}
 }
