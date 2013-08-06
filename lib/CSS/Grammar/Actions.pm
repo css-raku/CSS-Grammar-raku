@@ -202,7 +202,9 @@ class CSS::Grammar::Actions {
         my $string = [~] $<stringchar>>>.ast;
         make $.token($string, :type<string>);
     }
+
     method string:sym<single-q>($/) { $._string($/) }
+
     method string:sym<double-q>($/) { $._string($/) }
 
     method badstring($/) {
@@ -210,18 +212,17 @@ class CSS::Grammar::Actions {
     }
 
     method id($/)    { make $<name>.ast }
+
     method class($/) { make $<name>.ast }
 
-    method url-chars($/) {
+    method url-char($/) {
         make $<char> ?? $<char>.ast !! $/.Str
     }
-    method url:sym<string>($/) { make $<string>.ast }
-    method url:sym<unquoted>($/) {
-        make $.token( [~] $<url-chars>>>.ast );
-    }
+
+    method url($/)   { make $<string>>>.ast }
 
     # uri - synonym for url?
-    method uri($/)  { make $<url>.ast }
+    method uri($/)   { make $<url>.ast }
 
     method color-range($/) {
         my $arg = %<num>.ast;

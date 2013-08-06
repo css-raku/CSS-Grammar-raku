@@ -68,11 +68,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token dimension:sym<length>     {<length>}
 
     token url_delim_char   { <[ \( \) \' \" \\ ]> | <.wc>}
-    token url-chars        {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
+    token url-char         {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
-    proto rule url         {<...>}
-    rule url:sym<string>   {:i'url(' <string> ')' }
-    rule url:sym<unquoted> {:i'url(' <url-chars>* ')' }
+    rule url               {:i'url(' [<string>|<string=.url-char>*] ')' }
 
     token percentage       {<num>'%'}
 
@@ -196,7 +194,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<._ascii-punct> & <- _delim>]+}
-    
+
     rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
                        |\'[<.stringchar>|\"]*[<.nl>|$]}
 
