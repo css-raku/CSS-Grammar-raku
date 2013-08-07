@@ -219,7 +219,7 @@ class CSS::Grammar::Actions {
         make $<char> ?? $<char>.ast !! $/.Str
     }
 
-    method url($/)   { make $<string>>>.ast }
+    method url($/)   { make [~] $<string>>>.ast }
 
     # uri - synonym for url?
     method uri($/)   { make $<url>.ast }

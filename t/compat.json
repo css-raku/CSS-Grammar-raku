@@ -16,7 +16,7 @@
 [ "import", { "input" : "@IMPORT '/etc/group';", "ast" : { "string" : "/etc/group" } } ]
 // imports can be assigned to media types. See:
 // http://www.w3.org/TR/2011/REC-CSS2-20110607/cascade.html#at-import
-[ "import", { "input" : "@import url('bluish.css') projection, tv;", "ast" : { "url" : "bluish.css", "media-list" : [ { "media-query" : [ { "media" : "projection" } ] }, { "media-query" : [ { "media" : "tv" } ] } ] }, "css1" : { "parse" : "", "ast" : null } } ]
+[ "import", { "input" : "@import url(bluish\\.css) projection, tv;", "ast" : { "url" : "bluish.css", "media-list" : [ { "media-query" : [ { "media" : "projection" } ] }, { "media-query" : [ { "media" : "tv" } ] } ] }, "css1" : { "parse" : "", "ast" : null } } ]
 [ "class", { "input" : ".class", "ast" : "class" } ]
 [ "simple-selector", { "input" : "BODY", "ast" : [ { "qname" : { "element-name" : "body" } } ] } ]
 [ "selector", { "input" : "A:Visited", "ast" : [ { "simple-selector" : [ { "qname" : { "element-name" : "a" } }, { "pseudo" : { "class" : "visited" } } ] } ] } ]
