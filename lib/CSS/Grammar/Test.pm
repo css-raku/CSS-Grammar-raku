@@ -44,12 +44,18 @@ module CSS::Grammar::Test {
             if my $todo-ast = %expected<todo><ast> {
                 todo($todo-ast);
             }
-	    is($parse.ast, $ast, "{$suite} - ast")
-                or diag to-json( $parse.ast );
+	    if %*ENV<CSS_XT> {
+		# test json canonicalization - thorough, but slower
+		is( to-json($parse.ast), to-json($ast), "{$suite} - ast");
+	    }
+	    else {
+		# just test stringification
+		is( $parse.ast.Str, $ast.Str, "{$suite} - ast");
+	    }
         }
         else {
             if defined $parse.ast {
-                note 'untested_ast: ' ~ $parse.ast.perl
+                note 'untested_ast: ' ~ to-json( $parse.ast )
                     unless %expected.exists('ast');
             }
             else {
