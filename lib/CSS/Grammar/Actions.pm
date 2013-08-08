@@ -222,16 +222,16 @@ class CSS::Grammar::Actions {
     method uri($/)   { make $<url>.ast }
 
     method color-range($/) {
-        my $arg = %<num>.ast;
-        $arg = ($arg * 2.55).round
+        my $range = $<num>.ast;
+        $range = ($range * 2.55)
             if $<percentage>.Str;
 
         # clip out-of-range colors, see
         # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
-        $arg = 0 if $arg < 0;
-        $arg = 255 if $arg > 255;
+        $range = 0 if $range < 0;
+        $range = 255 if $range > 255;
 
-        make $.token($arg, :type<num>, :units<8bit>);
+        make $.token($range.round, :type<num>, :units<8bit>);
     }
 
     method color:sym<rgb>($/)  {
