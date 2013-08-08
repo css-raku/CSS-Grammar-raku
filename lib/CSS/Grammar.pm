@@ -28,9 +28,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token regascii {<[\x20..\x7F]>}
     token nonascii {<- [\x0..\x7F]>}
-    token escape   {'\\'[<unicode>|<char=.regascii>|<char=.nonascii>]}
-    token nmstrt   {(<[_ a..z A..Z]>)|<nonascii>|<escape>}
-    token nmchar   {<nmreg>|<nonascii>|<escape>}
+    token escape   {'\\'[<char=.unicode>|<char=.regascii>|<char=.nonascii>]}
+    token nmstrt   {(<[_ a..z A..Z]>)|<char=.nonascii>|<char=.escape>}
+    token nmchar   {<char=.nmreg>|<char=.nonascii>|<char=.escape>}
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
     token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name     {<nmchar>+}
@@ -65,7 +65,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token length:sym<rel-font-unit> {(\+|\-)? (<.rel-font-units>)}
 
     proto token dimension {<...>}
-    token dimension:sym<length>     {<length>}
+    token dimension:sym<length> {<length>}
 
     token url_delim_char   { <[ \( \) \' \" \\ ]> | <.wc>}
     token url-char         {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}

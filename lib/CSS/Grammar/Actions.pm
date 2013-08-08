@@ -145,9 +145,8 @@ class CSS::Grammar::Actions {
 
     method dropped-decl($/) {
 
-        if $<any> {
-            $.warning('dropping term', $<any>.Str)
-        }
+	$.warning('dropping term', $<any>.Str)
+	    if $<any>;
 
         if my $prop = $<property>>>.ast {
             $.warning('dropping declaration', $prop);
@@ -167,17 +166,16 @@ class CSS::Grammar::Actions {
        make $._to-unicode( $0.Str );
     }
 
+    method regascii($/) { make $/.Str }
     method nonascii($/) { make $/.Str }
 
-    method escape($/)   { make $<unicode> ?? $<unicode>.ast !! $<char>.Str }
+    method escape($/)   { make $<char>.ast }
 
-    method nmstrt($/){
-        make $0 ?? $0.Str !! ($<nonascii> || $<escape>).ast;
-    }
+    method nmstrt($/)   { make $<char> ?? $<char>.ast !! $0.Str}
 
-    method nmchar($/){
-        make $<nmreg> ?? $<nmreg>.Str !! ($<nonascii> || $<escape>).ast;
-    }
+    method nmchar($/)   { make $<char>.ast }
+
+    method nmreg($/)    { make $/.Str }
 
     method ident($/) {
         my $pfx = $<pfx> ?? $<pfx>.Str !! '';
@@ -186,7 +184,6 @@ class CSS::Grammar::Actions {
     }
 
     method name($/)   { make [~] $<nmchar>>>.ast; }
-    method notnum($/) { make $0.chars ?? $0.Str !! $<nonascii>.Str }
     method num($/)    { make $/.Num }
     method posint($/) { make $/.Int }
 
@@ -367,7 +364,7 @@ class CSS::Grammar::Actions {
     method term:sym<percentage>($/) { make $<percentage>.ast }
 
     method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
-    method dimension:sym<length>($/)     { make $<length>.ast }
+    method dimension:sym<length>($/) { make $<length>.ast }
     method length:sym<rel-font-unit>($/) {
         my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
         make $.token($num, :units($1.Str.lc), :type<length>)
@@ -403,19 +400,19 @@ class CSS::Grammar::Actions {
 
     method attrib($/)             { make $.list($/) }
 
-    method function($/)       {
+    method function($/) {
 	return $.warning('skipping function arguments', $<any-arg>.Str)
 	    if $<any-arg>;
         make $.token( $.list($/), :type<function>);
     }
 
-    method pseudo-function:sym<lang>($/)             {
+    method pseudo-function:sym<lang>($/) {
         return $.warning('usage: lang(ident)')
             if $<any-args>;
         make {ident => 'lang', args => $.list($/)}
     }
 
-    method unknown-pseudo-func($/)             {
+    method unknown-pseudo-func($/) {
         $.warning('unknown pseudo-function', $<ident>.ast);
     }
 
