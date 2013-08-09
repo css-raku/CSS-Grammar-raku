@@ -38,7 +38,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token posint   {\d+}
 
     proto token stringchar {*}
-    token stringchar:sym<cont>      {\\<nl>}
+    token stringchar:sym<cont>      {\\<.nl>}
     token stringchar:sym<escape>    {<escape>}
     token stringchar:sym<nonascii>  {<nonascii>}
     token stringchar:sym<ascii>     {<[\x20 \! \# \$ \% \& \(..\[ \]..\~]>+}
@@ -67,7 +67,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto token dimension {<...>}
     token dimension:sym<length> {<length>}
 
-    token url_delim_char   { <[ \( \) \' \" \\ ]> | <.wc>}
+    token url_delim_char   {<[ \( \) \' \" \\ ]> | <.wc>}
     token url-char         {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
     rule url               {:i'url(' [<string>|<string=.url-char>*] ')' }
@@ -174,6 +174,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # e.g this should be completely dropped: h3, h4 & h5 {color: red }
 
     # Errata:
+    # -------
     # - declarations are less structured - optimized for robustness
     # - added <_op> for general purpose operator detection
     # - may assume closing parenthesis in nested values and blocks
@@ -185,9 +186,9 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _at-rule      {(<.ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
-    rule _ruleset      { <_selectors>? <_declarations> }
+    rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations {'{' <_declaration-list> '}' ';'?}
+    rule _declarations {'{' <_declaration-list> '}' }
     rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
     rule _value        {[ <_any> | <_block> ]+}
 
