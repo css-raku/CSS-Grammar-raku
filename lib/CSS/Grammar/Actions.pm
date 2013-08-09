@@ -247,11 +247,11 @@ class CSS::Grammar::Actions {
             unless $id.match(/^<xdigit>+$/)
             && ($chars == 3 || $chars == 6);
 
-        my @_rgb = $chars == 3
+        my @rgb-vals = $chars == 3
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
-        my %rgb;
-        %rgb<r g b> = @_rgb.map({ :16($_) }); 
+
+        my %rgb = <r g b> »=>« @rgb-vals.map({ :16($_) }); 
         make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
