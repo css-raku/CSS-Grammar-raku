@@ -34,7 +34,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
     token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name     {<nmchar>+}
-    token num      {[\+|\-]?[\d* \.]? \d+}
+    token num      {[\+|\-]? (\d* \.)? \d+}
     token posint   {\d+}
 
     proto token stringchar {*}

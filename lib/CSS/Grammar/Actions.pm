@@ -184,7 +184,7 @@ class CSS::Grammar::Actions {
     }
 
     method name($/)   { make [~] $<nmchar>>>.ast; }
-    method num($/)    { make $/.Num }
+    method num($/)    { make $0 ?? $/.Rat !! $/.Int}
     method posint($/) { make $/.Int }
 
     method stringchar:sym<cont>($/)     { make '' }
@@ -251,7 +251,7 @@ class CSS::Grammar::Actions {
             ?? $id.comb(/./).map({$_ ~ $_})
             !! $id.comb(/../);
 
-        my %rgb = <r g b> »=>« @rgb-vals.map({ :16($_) }); 
+        my %rgb = <r g b> Z=> @rgb-vals.map({ :16($_) }); 
         make $.token(%rgb, :type<color>, :units<rgb>);
     }
 
