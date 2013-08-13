@@ -50,7 +50,8 @@ module CSS::Grammar::Test {
 	    }
 	    else {
 		# just test stringification
-		is( $parse.ast.Str, $ast.Str, "{$suite} - ast");
+		is( $parse.ast.Str, $ast.Str, "{$suite} - ast")
+		    or diag to-json($parse.ast);
 	    }
         }
         else {
@@ -70,9 +71,6 @@ module CSS::Grammar::Test {
                 }
                 if my $type = %$token<type> {
                     is($parse.ast.type, $type, "{$suite} - type: " ~$type);
-                }
-                if (my $skip = %$token<skip>).defined {
-                    is($parse.ast.skip // False, $skip, "{$suite} - skip: " ~ $skip);
                 }
             }
         }

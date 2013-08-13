@@ -21,7 +21,7 @@ class CSS::Grammar::Actions {
         $!nl-rachet = 0;
     }
 
-    method token(Mu $ast, :$skip, :$type, :$units) {
+    method token(Mu $ast, :$type, :$units) {
 
         return unless $ast.defined;
 
@@ -29,9 +29,8 @@ class CSS::Grammar::Actions {
             does CSS::Grammar::AST::Token
             unless $ast.can('type');
 
-        $ast.skip = $skip if defined $skip;
-        $ast.type = $type if defined $type;
-        $ast.units = $units if defined $units;
+        $ast.type = $type   if $type.defined;
+        $ast.units = $units if $units.defined;
 
         return $ast;
     }
@@ -337,7 +336,7 @@ class CSS::Grammar::Actions {
                     // die "unable to find property in declaration";
 
                 if %declarations.exists($prop) {
-                    # drop the previous declaration unless it's !important
+                    # override the previous declaration unless it's more !important
                     next if %declarations{$prop}<prio> && ! %decl<prio>;
                 }
 
