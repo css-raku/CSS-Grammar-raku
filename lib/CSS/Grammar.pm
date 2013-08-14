@@ -45,7 +45,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token single-quote   {\'}
     token double-quote   {\"}
-    proto token string   {<...>}
+    proto token string   {*}
     token string:sym<double-q>  {\"[<stringchar>|<stringchar=.single-quote>]*\"}
     token string:sym<single-q>  {\'[<stringchar>|<stringchar=.double-quote>]*\'}
 
@@ -53,18 +53,18 @@ grammar CSS::Grammar:ver<0.0.1> {
     token class          {'.'<name>}
     token element-name   {<ident>}
 
-    proto token distance-units     {<...>}
+    proto token distance-units     {*}
     token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px}
     token distance-units:sym<font> {<rel-font-units>}
     token rel-font-units           {:i em|ex}
 
-    proto token length         {<...>}
+    proto token length         {*}
     token length:sym<dim>      {:i<num><units=.distance-units>}
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
     token length:sym<rel-font-unit> {(\+|\-)? (<.rel-font-units>)}
 
-    proto token dimension {<...>}
+    proto token dimension {*}
     token dimension:sym<length> {<length>}
 
     token url_delim_char   {<[ \( \) \' \" \\ ]> | <.wc>}
@@ -95,7 +95,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token prio           {:i'!' [('important')||<any>] }
 
     # pseudos
-    proto rule pseudo {<...>}
+    proto rule pseudo {*}
 
     # Combinators - introduced with css2.1
     proto rule combinator {*}
@@ -116,7 +116,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unicode-range:sym<from-to> {$<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]}
     rule unicode-range:sym<masked>  {$<mask>=[<.xdigit>|'?']**1..6 <!before \->}
 
-    proto rule declaration {<...>}
+    proto rule declaration {*}
 
     # Error Recovery
     # --------------
@@ -171,7 +171,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # --------------
     # It's been generalized to handle the rule dropping requirements outlined
     # in http://www.w3.org/TR/2003/WD-css3-syntax-20030813/#rule-sets
-    # e.g this should be completely dropped: h3, h4 & h5 {color: red }
+    # e.g this should be completely scanned as single statement:
+    # h3, h4 & h5 {color: red }
 
     # Errata:
     # -------
@@ -199,7 +200,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
                        |\'[<.stringchar>|\"]*[<.nl>|$]}
 
-    proto rule _any { <...> }
+    proto rule _any {*}
     rule _any:sym<string> { <.string> }
     rule _any:sym<dim>    { <.num>['%'|<.ident>]? }
     rule _any:sym<urange> { 'U+'<.unicode-range> }

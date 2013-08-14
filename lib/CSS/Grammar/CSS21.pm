@@ -20,7 +20,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     proto rule at-rule {*}
 
     rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
-    rule media-list           {<media-query> +% ','}
+    rule media-list           { <media-query> +% ',' }
     rule media-query          { <media=.ident> }
     rule media-rules          {'{' <ruleset>* <.end-block>}
 
@@ -51,17 +51,17 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # should be '+%' - see rakudo rt #117831
     rule expr { <term> +%% [ <operator>? ] }
 
-    proto token angle          {<...>}
+    proto token angle          {*}
     token angle-units          {:i[deg|rad|grad]}
     token angle:sym<dim>       {:i<num><units=.angle-units>}
     token dimension:sym<angle> {<angle>}
 
     token time-units           {:i m?s}
-    proto token time           {<...>}
+    proto token time           {*}
     token time:sym<dim>        {<num><units=.time-units>}
     token dimension:sym<time>  {<time>}
 
-    proto token frequency      {<...>}
+    proto token frequency      {*}
     token frequency-units      {:i k?Hz}
     token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
@@ -90,7 +90,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     token function      {<function=.ident>'(' [<args=.expr>||<any-arg>]* ')'}
 
-    proto rule pseudo-function { <...> }
+    proto rule pseudo-function {*}
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
     # pseudo function catch-all
     rule unknown-pseudo-func   {<ident>'(' <any-args> ')'}
