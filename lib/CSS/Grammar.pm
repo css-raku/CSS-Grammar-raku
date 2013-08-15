@@ -67,16 +67,16 @@ grammar CSS::Grammar:ver<0.0.1> {
     proto token dimension {*}
     token dimension:sym<length> {<length>}
 
-    token url_delim_char   {<[ \( \) \' \" \\ ]> | <.wc>}
-    token url-char         {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
+    token url_delim_char {<[ \( \) \' \" \\ ]> | <.wc>}
+    token url-char       {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
-    rule url               {:i'url(' [<string>|<string=.url-char>*] ')' }
+    rule url             {:i'url(' [<string>|<string=.url-char>*] ')' }
 
-    token percentage       {<num>'%'}
+    token percentage     {<num>'%'}
 
     # productions
 
-    token operator       {'/'|','}
+    token operator       {'/'|','|'='}
 
     rule property        {<property=.ident> ':'}
     rule end-decl        { ';' | <?before '}'> | $ }
@@ -85,10 +85,10 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     proto rule color     {*}
     rule color:sym<rgb>  {:i'rgb('
-                   [ <r=.color-range> ','
-                     <g=.color-range> ','
-                     <b=.color-range> || <any-args> ]
-                   ')'
+			      [ <r=.color-range> ','
+				<g=.color-range> ','
+				<b=.color-range> || <any-args> ]
+			     ')'
     }
     rule color:sym<hex>  {<id>}
 

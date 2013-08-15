@@ -5,22 +5,21 @@ use Test;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
-use lib '.';
-use t::AST;
+use CSS::Grammar::Test;
 
 my %expected = {ast => Mu};
 
-my $test_css = %*ENV<CSS_TEST_FILE>;
-if ($test_css) {
-    diag "loading $test_css";
+my $test-css = %*ENV<CSS_TEST_FILE>;
+if $test-css {
+    diag "loading $test-css";
     %expected<warnings> = Mu;
 }
 else {
-    $test_css = 't/jquery-ui-themeroller.css';
-    diag "loading $test_css (set \$CSS_TEST_FILE to override)";
+    $test-css = 't/jquery-ui-themeroller.css';
+    diag "loading $test-css (set \$CSS_TEST_FILE to override)";
 }
 
-my $fh = open $test_css
+my $fh = open $test-css
     or die "unable to open $fh: $!";
 
 my $css_body = join("\n", $fh.lines);
@@ -30,12 +29,12 @@ my $actions = CSS::Grammar::Actions.new;
 
 diag "...parsing...";
 
-my $p = CSS::Grammar::CSS3.parsefile($test_css, :actions($actions) );
+my $p = CSS::Grammar::CSS3.parsefile($test-css, :actions($actions) );
 
-ok($p, "parsed css content ($test_css)")
+ok($p, "parsed css content ($test-css)")
     or die "parse failed - can't continue";
 
-t::AST::parse_tests($css_body, $p, :suite('css3 file'), :rule('TOP'),
+CSS::Grammar::Test::parse_tests($css_body, $p, :suite('css3 file'), :rule('TOP'),
                     :warnings($actions.warnings),
                     :expected(%expected));
 
