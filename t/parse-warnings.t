@@ -6,107 +6,31 @@ use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
-# from: http://www.w3.org/Style/CSS/Test/CSS1/current/sec71.htm
-my $css3_sample = q:to/END_CSS3/;
-@Import 'foo.bar';
-P.one {color: green; rotation: 70deg;}
-P.oneb {color: green;}
-P.oneb {color: invalidValue;}
-P.two {background-color: inherit;}
-@zz {foo:bar}
-H1 + P.three {color: blue;}
-P.four + H1 {color: red;}
-P.five {background-color: "red";}
-P.sixa {border-width: medium; border-style: solid;}
-P.sixb {border-width: funny; border-style: solid;}
-P.sixc {border-width: 50Hz; border-style: solid;}
-P.sixd {border-width: px; border-style: solid;}
+my $fh = open 't/parse-warnings.css', :r;
+my @lines = $fh.lines;
+my $expected_lines = @lines.Int;
+my $css-sample = $fh.slurp;
 
-@three-dee {
-   @background-lighting {
-     azimuth: 30deg;
-     elevation: 190deg;
-   }
-   P.seven { color: red }
-}
+my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? ($0.Str => $/.postmatch) !! ()});
 
-P.eight {COLOR: GREEN;}
-OL:wait {color: maroon;}
-P.ten:first-child {color: maroon;}
-UL:lang(fr) {color: gray;}
-BLOCKQUOTE[href] {color: navy;}
-ACRONYM[href="foo"] {color: purple;}
-ADDRESS[href~="foo"] {color: purple;}
-SPAN[lang|="fr"] {color: #c37;}
-@media tty {
-   H1 {color: red;}
-   P.sixteen {color: red;}
-}
-@three-dee {
-   P.seventeen {color: red }
-}
-P.eighteena {text-decoration: underline overline line-through diagonal;
-            font: bold highlighted 100% sans-serif;}
-P.eighteenb {text-decoration: underline overline line-through diagonal;
-            font: bold highlighted 100% serif;}
-EM, P.nineteena ! EM, STRONG {font-size: 200%; }
+my $css-actions = CSS::Grammar::Actions.new;
 
-// UL.nineteenb,
-P.nineteenb {color: red;}
+for (css1 => CSS::Grammar::CSS1),
+    (css21 => CSS::Grammar::CSS21),
+    (css3 => CSS::Grammar::CSS3) {
 
-P.twentya {rotation-code: "}"; color: blue;} 
-P.twentyb {rotation-code: "\"}\""; color: green;}
-P.twentyonea {rotation-code: '}'; color: purple;} 
-P.twentyoneb {rotation-code: '\'}\''; color: green;}
+    my ($test, $class) = .kv;
 
-P.twentytwo {
-  type-display: @threedee {rotation-code: '}';};
-  color: green;
-}
+    $css-actions.reset;     
+    my $p1 = $class.parse( $css-sample, :actions($css-actions));
+    ok( $p1, $test ~ ' parse' );
 
-P.twentythree {text-indent: 0.5in;}
+    todo('disgreement with rakudo line-count');
+    is($css-actions.line-no, $expected_lines, 'line count');
 
-P.twentyfour {color: red;}
-END_CSS3
-
-my @tests = (
-    sample => $css3_sample,
-    );
-
-my $css_actions = CSS::Grammar::Actions.new;
-my $expected_lines = 60;
-
-for @tests {
-    $css_actions.reset;     
-    my $p1 = CSS::Grammar::CSS1.parse( .value, :actions($css_actions));
-
-    ok( $p1, 'css1 parse ' ~ .key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || .value};
-    is($css_actions.line-no, $expected_lines, 'line count');
-    # warnings are normal here - tests to be added
-    note $css_actions.warnings if $css_actions.warnings;
-}
-            
-for @tests {
-    $css_actions.reset;     
-    my $p2 = CSS::Grammar::CSS21.parse( .value, :actions($css_actions) );
-    ok( $p2, 'css2 parse ' ~ .key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || .value};
-    is($css_actions.line-no, $expected_lines, 'line count');
-            
-    # warnings are normal here - tests to be added
-    note $css_actions.warnings if $css_actions.warnings;
-}
-
-for @tests {
-    $css_actions.reset;     
-    my $p3 = CSS::Grammar::CSS3.parse( .value, :actions($css_actions) );
-    ok( $p3, 'css3 parse ' ~ .key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || .value};
-    is($css_actions.line-no, $expected_lines, 'line count');
-            
-    # warnings are normal here - tests to be added
-    note $css_actions.warnings if $css_actions.warnings;
+    my $expected-warnings = %level-warnings{$test};
+    my $actual-warnings = $css-actions.warnings.Str;
+    is($actual-warnings, $expected-warnings, $test ~ ' warnings')
 }
 
 done;
