@@ -19,7 +19,7 @@ my $body = 'BODY {
 }
 ';
 
-my $sample = $body ~ q:to/END_SAMPLE/;
+my $sample = q:to/END_SAMPLE/;
 
 H1, H2, H3, H4, H5, H6, P, UL, OL, DIR, MENU, DIV, 
 DT, DD, ADDRESS, BLOCKQUOTE, PRE, BR, HR, FORM, DL { 
@@ -74,27 +74,21 @@ my @tests = (
     tiny => $tiny,
     small => $small,
     body => $body,
-    sample => $sample,
+    sample => $body ~ $sample,
     );
 
 for @tests {
-    my $p1 = CSS::Grammar::CSS1.parse( .value, :rule('stylesheet') );
-    ok( $p1, 'css1 parse ' ~ .key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS1::stylesheet>)/; $0.Str || .value},
-}
+    my ($test, $input) = .kv;
 
-for @tests {
-    my $p2 = CSS::Grammar::CSS21.parse( .value, :rule('stylesheet') );
-    ok( $p2, 'css2 parse ' ~ .key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS21::stylesheet>)/; $0.Str || .value},
-            
-}
+    for (css1  => CSS::Grammar::CSS1),
+        (css21 => CSS::Grammar::CSS21),
+        (css3  => CSS::Grammar::CSS3) {
+	    my ($level, $class) = .kv;
 
-for @tests {
-    my $p3 = CSS::Grammar::CSS3.parse( .value, :rule('stylesheet') );
-    ok( $p3, 'css3 parse ' ~ $_.key)
-    or diag do {.value ~~ /(<CSS::Grammar::CSS3::stylesheet>)/; $0.Str || .value},
-            
+	    my $p = $class.parse( $input, :rule('stylesheet') );
+	    ok( $p, $level ~ ' parse ' ~ $test)
+		or diag $input;
+    }
 }
 
 done;

@@ -15,7 +15,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use CSS::Grammar::Test;
 
-my $css_actions = CSS::Grammar::Actions.new;
+my $css-actions = CSS::Grammar::Actions.new;
 
 my $fh = open 't/compat.json', :r;
 
@@ -25,45 +25,39 @@ for ($fh.lines) {
         next;
     }
     my ($rule, %test) = @( from-json($_) );
-
     my $input = %test<input>;
 
-    $css_actions.reset;
-    my $css1 = %test<css1> // {};
-    my $css2 = %test<css2> // {};
-    my $css3 = %test<css3> // {};
+    for (css1  => CSS::Grammar::CSS1),
+        (css21 => CSS::Grammar::CSS21),
+        (css3  => CSS::Grammar::CSS3),
+        (scan  => CSS::Grammar::Scan) {
 
-    # CSS1 Compat
-    unless %$css1<skip_test> {
-        $css_actions.reset;
-        my $p1 = CSS::Grammar::CSS1.parse( $input, :rule($rule), :actions($css_actions));
-        CSS::Grammar::Test::parse_tests($input, $p1, :rule($rule), :suite('css1'),
-                            :warnings($css_actions.warnings),
-                            :expected( %(%test, %$css1)) );
-    }
-        
-    # CSS21 Compat
-    $css_actions.reset;
-    my $p2 = CSS::Grammar::CSS21.parse( $input, :rule($rule), :actions($css_actions));
-    CSS::Grammar::Test::parse_tests($input, $p2, :rule($rule), :suite('css2'),
-                         :warnings($css_actions.warnings),
-                         :expected( %(%test, %$css2)) );
+	my ($level, $class) = .kv;
+	my $pfx = '';
 
-    # CSS3 Compat
-    # -- css3 core only
-    $css_actions.reset;
-    my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3'),
-                         :warnings($css_actions.warnings),
-                         :expected( %(%test, %$css3)) );
+	my $level-tests = %test{$level} // {};
+	my %expected =  %(%test, %$level-tests);
 
-    # try a general scan
-    if ($rule ~~ /^(TOP|statement|at\-rule|ruleset|selector[s?]|declaration[s|\-list]|property)$/
-    && !$css_actions.warnings) {
-        my $_rule = $rule eq 'selector' ?? '_selectors' !! '_' ~ $rule;
-        my $p_any = CSS::Grammar::Scan.parse( $input, :rule($_rule) );
-        CSS::Grammar::Test::parse_tests($input, $p_any, :rule($rule), :suite('scan'),
-                            :expected({ast => Any}) );
+	if $level eq 'scan' {
+	    # the scanning grammar only implements a subset of rules
+	    next unless $rule ~~ /^(TOP|statement|at\-rule|ruleset|selectors|declaration[s|\-list]|property)$/;
+	    # doesn't emit warnings or ASTs...
+	    %expected<warnings> = Any;
+	    %expected<ast> = Any;
+	    # all rules are prefixed by '_'
+	    $pfx = '_';
+	}
+
+	$css-actions.reset;
+
+	unless $level-tests<skip_test> {
+	    $class.parse( $input, :rule($pfx ~ $rule), :actions($css-actions));
+	    CSS::Grammar::Test::parse_tests($input, $/,
+					    :rule($pfx ~ $rule),
+					    :suite($level),
+					    :warnings($css-actions.warnings),
+					    :expected(%expected) );
+	}
     }
 }
 
