@@ -9,7 +9,7 @@ use CSS::Grammar::Actions;
 my $fh = open 't/parse-warnings.css', :r;
 my @lines = $fh.lines;
 my $expected_lines = @lines.Int;
-my $css-sample = $fh.slurp;
+my $css-sample = @lines.join("\n");
 
 my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? ($0.Str => $/.postmatch) !! ()});
 
@@ -25,7 +25,6 @@ for (css1 => CSS::Grammar::CSS1),
     my $p1 = $class.parse( $css-sample, :actions($css-actions));
     ok( $p1, $test ~ ' parse' );
 
-    todo('disgreement with rakudo line-count');
     is($css-actions.line-no, $expected_lines, 'line count');
 
     my $expected-warnings = %level-warnings{$test};
