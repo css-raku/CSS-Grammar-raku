@@ -189,8 +189,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations {'{' <_declaration-list> '}' }
-    rule _declaration-list {[ <.property> | <_value> | <_badstring> |';' ]*}
+    rule _declarations {'{' <_declaration-list> '}'? }
+    rule _declaration-list {[ <.property> | <_value> | <.badstring> | ';' ]*}
     rule _value        {[ <_any> | <_block> ]+}
 
     token _ascii-punct {<[\! .. \~] -alnum>}
