@@ -157,8 +157,18 @@ class CSS::Grammar::Actions {
     }
 
     method _to-unicode($str) {
-        my $ord = :16($str);
-        return chr( $ord );
+	my $char;
+	try {
+	    my $ord = :16($str);
+	    $char = chr( $ord );
+	    CATCH {
+		default{
+		    $.warning('invalid unicode code-point', $str.uc );
+		    $char = chr(0xFFFD); # �
+		}
+	    }
+	}
+	return $char;
     }
 
     method unicode($/) {

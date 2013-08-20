@@ -5,6 +5,7 @@
 [ "ws", { "input" : "/* unterminated\nstar\ncomment ... ", "warnings" : [ "unclosed comment at end of input" ] } ]
 [ "name", { "input" : "my-class", "ast" : "my-class" } ]
 [ "unicode", { "input" : "021", "ast" : "!" } ]
+[ "unicode", { "input" : "0D800", "ast" : "�", "warnings": [ "invalid unicode code-point: 0D800" ], "css1" : { "parse" : "0D80", "ast" : "඀", "warnings" : [] } } ]
 [ "num", { "input" : "2.52", "ast" : 2.52 } ]
 [ "num", { "input" : "0", "ast" : 0 } ]
 [ "num", { "input" : "1", "ast" : 1 } ]
