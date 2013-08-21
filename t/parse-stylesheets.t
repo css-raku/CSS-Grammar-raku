@@ -1,6 +1,7 @@
 #!/usr/bin/env perl6
 
 use Test;
+use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
@@ -85,9 +86,9 @@ for @tests {
         (css3  => CSS::Grammar::CSS3) {
 	    my ($level, $class) = .kv;
 
-	    my $p = $class.parse( $input, :rule('stylesheet') );
-	    ok( $p, $level ~ ' parse ' ~ $test)
-		or diag $input;
+	    CSS::Grammar::Test::parse-tests( $class, $input,
+					     :suite($level),
+					     :rule<stylesheet> );
     }
 }
 

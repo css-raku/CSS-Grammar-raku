@@ -11,7 +11,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use CSS::Grammar::Test;
 
-my $css_actions = CSS::Grammar::Actions.new;
+my $actions = CSS::Grammar::Actions.new;
 
 my $fh = open("t/error-handling.json", :r);
 
@@ -23,11 +23,11 @@ for ( $fh.lines ) {
     my ($rule, %test) = @( from-json($_) );
     my $input = %test<input>;
 
-    $css_actions.reset;
-    my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3 errors'),
-                         :warnings($css_actions.warnings),
-                         :expected(%test) );
+    CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
+				    :actions($actions),
+				    :rule($rule),
+				    :suite<css3 errors>,
+				    :expected(%test) );
 
 }
 

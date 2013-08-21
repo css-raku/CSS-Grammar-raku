@@ -6,7 +6,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use CSS::Grammar::Test;
 
-my $css_actions = CSS::Grammar::Actions.new;
+my $actions = CSS::Grammar::Actions.new;
 
 for (
     term => {input => '42%', ast => 42,
@@ -38,7 +38,7 @@ for (
              token => {type => 'num'}},
     term => {input => q{"Hello World"},
              ast => q{Hello World},
-             token => {type => 'string', skip => False},
+             token => {type => 'string'},
     },
     term => {input => "'\\\nto \\\n\\\nbe \\\ncontinued\\\n'",
              ast => 'to be continued',
@@ -64,11 +64,11 @@ for (
     my %test = .value;
     my $input = %test<input>;
 
-    $css_actions.reset;
-     my $p3 = CSS::Grammar::CSS3.parse( $input, :rule($rule), :actions($css_actions));
-    CSS::Grammar::Test::parse_tests($input, $p3, :rule($rule), :suite('css3'),
-                         :warnings($css_actions.warnings),
-                         :expected(%test) );
+    CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
+				    :actions($actions),
+				    :rule($rule),
+				    :suite<css3>,
+				    :expected(%test) );
 }
 
 done;

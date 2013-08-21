@@ -51,11 +51,10 @@ for ($fh.lines) {
 	$css-actions.reset;
 
 	unless $level-tests<skip_test> {
-	    $class.parse( $input, :rule($pfx ~ $rule), :actions($css-actions));
-	    CSS::Grammar::Test::parse_tests($input, $/,
+	    CSS::Grammar::Test::parse-tests($class, $input,
+					    :actions($css-actions),
 					    :rule($pfx ~ $rule),
 					    :suite($level),
-					    :warnings($css-actions.warnings),
 					    :expected(%expected) );
 	}
     }

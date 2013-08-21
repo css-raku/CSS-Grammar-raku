@@ -22,21 +22,22 @@ else {
 my $fh = open $test-css
     or die "unable to open $fh: $!";
 
-my $css_body = join("\n", $fh.lines);
+my $css-body = join("\n", $fh.lines);
 $fh.close;
 
 my $actions = CSS::Grammar::Actions.new;
 
 diag "...parsing...";
 
-my $p = CSS::Grammar::CSS3.parsefile($test-css, :actions($actions) );
+my $p = try { CSS::Grammar::CSS3.parsefile($test-css, :actions($actions) ) };
 
 ok($p, "parsed css content ($test-css)")
     or die "parse failed - can't continue";
 
-CSS::Grammar::Test::parse_tests($css_body, $p, :suite('css3 file'), :rule('TOP'),
-                    :warnings($actions.warnings),
-                    :expected(%expected));
+CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $css-body,
+				:parse($p),
+				:suite('css3 file'),
+				:expected(%expected));
 
 diag "...dumping...";
 note $p.ast.perl;
