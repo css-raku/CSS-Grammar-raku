@@ -93,7 +93,7 @@ module CSS::Grammar::Test {
 	    }
 	}	
 
-	return $parse;
+	return $p;
     }
 
 }
