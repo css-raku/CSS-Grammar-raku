@@ -156,14 +156,13 @@ class CSS::Grammar::Actions {
         $.warning('dropping term', $0.Str);
     }
 
-    method _to-unicode($str) {
+    method _to-unicode($hex-str) {
 	my $char;
 	try {
-	    my $ord = :16($str);
-	    $char = chr( $ord );
+	    $char = chr( :16($hex-str) );
 	    CATCH {
 		default{
-		    $.warning('invalid unicode code-point', $str.uc );
+		    $.warning('invalid unicode code-point', 'U+' ~ $hex-str.uc );
 		    $char = chr(0xFFFD); # �
 		}
 	    }
