@@ -1,4 +1,4 @@
-# CSS Testing - utility functions
+# CSS Testing - lightweight harness
 
 module CSS::Grammar::Test {
 
@@ -11,9 +11,11 @@ module CSS::Grammar::Test {
 	my $p = $parse;
 
 	try {
-	    $actions.reset if $actions.can('reset');
 
-	    $p //= $class.parse( $input, :rule($rule), :actions($actions));
+	    $p //= do { 
+		$actions.reset if $actions.can('reset');
+		$class.parse( $input, :rule($rule), :actions($actions))
+	    };
 
 	    my @warnings = $actions.warnings
 		if $actions.can('warnings');
@@ -70,7 +72,9 @@ module CSS::Grammar::Test {
 			unless %expected.exists('ast');
 		}
 		else {
-		    diag "no {$suite} ast: " ~ ($input // '');
+		    diag "no {$suite} ast: " ~ ($input // '')
+			unless $expected-parse eq ''
+			||     $suite.match(/:i scan/);
 		}
 	    }
 
