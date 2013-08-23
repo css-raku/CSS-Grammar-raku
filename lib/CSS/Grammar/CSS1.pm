@@ -33,11 +33,10 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
     #
     rule declaration-list { [ <declaration> || <dropped-decl> ]* }
 
-    rule declaration:sym<base>       { <property> <expr> <prio>? <end-decl> }
+    rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
     # css1 syntax allows a unary operator in front of all terms. Throw it
     # out, if the term doesn't consume it.
-    # should be '+%' - see rakudo rt #117831
-    rule expr { [<term>||<.unary-op><term>] +%% [ <operator>? ] }
+    rule expr { [<term>||<.unary-op><term>] +% [ <operator>? ] }
     rule unary-op       {'+'|'-'}
 
     token selector {<simple-selector> +% <.ws> <pseudo>?}
@@ -51,7 +50,7 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
 
     rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]]}
     # assume anything else is a class
-    rule pseudo:sym<class>     {':' <class=.ident> }
+    rule pseudo:sym<class>   {':' <class=.ident> }
 
     # 'lexer' css1 exceptions:
     # -- css1 identifiers - don't allow '_' or leading '-'

@@ -16,7 +16,7 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
     proto rule at-decl {*}
 
     # to detect out of order directives
-    rule misplaced {<charset>|<import>|'@'<at-decl>}
+    rule misplaced     {<charset>|<import>|'@'<at-decl>}
 
     # 'lexer' css3 exceptions
     token nonascii     {<- [\x0..\x7F]>}

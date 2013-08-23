@@ -50,11 +50,11 @@ warnings for any unexpected input.
 Installation (Rakudo Star)
 --------------------------
 
-You'll first need to download and build Rakudo Star 2012.11 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
+You'll first need to download and build Rakudo Star 2013.05 or better (http://rakudo.org/downloads/star/ - don't forget the final `make install`):
 
 Ensure that `perl6` and `panda` are available on your path, e.g. :
 
-    % export PATH=~/src/rakudo-star-2012.11/install/bin:$PATH
+    % export PATH=~/src/rakudo-star-2013.05/install/bin:$PATH
 
 You can then use `panda` to test and install `CSS::Grammar`:
 

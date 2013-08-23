@@ -48,8 +48,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
 
-    # should be '+%' - see rakudo rt #117831
-    rule expr { <term> +%% [ <operator>? ] }
+    rule expr { <term> +% [ <operator>? ] }
 
     proto token angle          {*}
     token angle-units          {:i[deg|rad|grad]}
@@ -66,27 +65,26 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
 
-    rule term:sym<function>  {<function>}
+    rule term:sym<function>    {<function>}
 
-    # should be '+%' - see rakudo rt #117831
-    rule selector{ <simple-selector> +%% <combinator>? }
+    rule selector{ <simple-selector> +% <combinator>? }
 
     token universal {'*'}
     token qname     {<element-name>}
     rule simple-selector { [<qname>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
-                           |                           [<id>|<class>|<attrib>|<pseudo>]+ }
+                           |                    [<id>|<class>|<attrib>|<pseudo>]+ }
 
     rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
 
-    proto token attribute-selector {*}
+    proto token attribute-selector         {*}
     token attribute-selector:sym<equals>   {'='}
     token attribute-selector:sym<includes> {'~='}
     token attribute-selector:sym<dash>     {'|='}
 
-    rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]|before|after]}
+    rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]}
     rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-func>]}
     # assume anything else is a class
-    rule pseudo:sym<class>     {':' <class=.ident> }
+    rule pseudo:sym<class>    {':' <class=.ident> }
 
     token function      {<function=.ident>'(' [<args=.expr>||<any-arg>]* ')'}
 
@@ -97,6 +95,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     # 'lexer' css21 exceptions
     # non-ascii limited to single byte characters
-    token nonascii            {<[\o240..\o377]>}
+    token nonascii             {<[\o240..\o377]>}
 }
 
