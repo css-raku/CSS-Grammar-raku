@@ -161,7 +161,7 @@ class CSS::Grammar::Actions {
 	try {
 	    $char = chr( :16($hex-str) );
 	    CATCH {
-		default{
+		default {
 		    $.warning('invalid unicode code-point', 'U+' ~ $hex-str.uc );
 		    $char = chr(0xFFFD); # �
 		}
@@ -264,11 +264,8 @@ class CSS::Grammar::Actions {
     }
 
     method prio($/) {
-        my ($any) = $<any>.list;
-        if $any || !$0 {
-            $.warning("dropping term", $/.Str);
-            return;
-        }
+        return $.warning("dropping term", $/.Str)
+            if $<any> || !$0;
 
         make $0.Str.lc
     }
