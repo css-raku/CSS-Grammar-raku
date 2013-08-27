@@ -47,7 +47,7 @@ class CSS::Grammar::Actions {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 if %terms.exists($key) {
-                    $.warning("repeated term " ~ $key ~ ":", $value);
+                    $.warning("repeated term " ~ $key, $value);
                     return Any;
                 }
 
@@ -326,14 +326,13 @@ class CSS::Grammar::Actions {
         my %declarations;
 
         for @$.list($/) {
-            my ($_decl, $decls) = .kv;
+            my ($tk, $decls) = .kv; 
 
-            die "unexpected in declaration ast: " ~ $_decl.perl
-                unless $_decl eq 'declaration';
+            die "unexpected in declaration ast: " ~ $tk
+                unless $tk eq 'declaration';
 
-            my $prio = %$decls.delete('prio');
-
-            my $props = %$decls.delete('property-list')
+            my $prio = $decls<prio>;
+            my $props = $decls<property-list>
                 || [$decls];
 
             for @$props -> %decl {
@@ -354,10 +353,9 @@ class CSS::Grammar::Actions {
     }
 
     method declaration:sym<base>($/)        {
-        if !$<expr>.caps || $<expr>.caps.grep({! .value.ast.defined}) {
-            $.warning('dropping declaration', $<property>.ast);
-            return;
-        }
+        return $.warning('dropping declaration', $<property>.ast)
+            if !$<expr>.caps
+            || $<expr>.caps.grep({! .value.ast.defined});
 
         make $.node($/);
     }
