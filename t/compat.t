@@ -29,34 +29,30 @@ for ($fh.lines) {
 
     for (css1  => CSS::Grammar::CSS1),
         (css21 => CSS::Grammar::CSS21),
-        (css3  => CSS::Grammar::CSS3),
-        (scan  => CSS::Grammar::Scan) {
+        (css3  => CSS::Grammar::CSS3) {
 
 	my ($level, $class) = .kv;
-	my $pfx = '';
-
 	my $level-tests = %test{$level} // {};
 	my %expected =  %(%test, %$level-tests);
-
-	if $level eq 'scan' {
-	    # the scanning grammar only implements a subset of rules
-	    next unless $rule ~~ /^(TOP|statement|at\-rule|ruleset|selectors|declaration[s|\-list]|property)$/;
-	    # doesn't emit warnings or ASTs...
-	    %expected<warnings> = Any;
-	    %expected<ast> = Any;
-	    # all rules are prefixed by '_'
-	    $pfx = '_';
-	}
 
 	$css-actions.reset;
 
 	unless $level-tests<skip_test> {
 	    CSS::Grammar::Test::parse-tests($class, $input,
 					    :actions($css-actions),
-					    :rule($pfx ~ $rule),
+					    :rule($rule),
 					    :suite($level),
 					    :expected(%expected) );
 	}
+    }
+
+    if CSS::Grammar::Scan.can( '_' ~ $rule ) {
+        my %expected =  %(%test, warnings => Any, ast => Any);
+        CSS::Grammar::Test::parse-tests(CSS::Grammar::Scan, $input,
+					    :actions($css-actions),
+					    :rule('_' ~ $rule),
+					    :suite('scan'),
+					    :expected(%expected) );
     }
 }
 
