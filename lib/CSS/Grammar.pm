@@ -182,7 +182,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     rule TOP           {^ <_stylesheet> $}
     rule _stylesheet   {<_statement>*}
-    rule _statement    {<_ruleset> | '@'<_at-rule>}
+    rule _statement    {<_ruleset> | '@'<_at-rule> || <_any> || <_delim>}
 
     rule _at-rule      {(<.ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
