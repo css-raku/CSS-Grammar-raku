@@ -130,7 +130,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule unclosed-paren-square {<?>}
     rule unclosed-paren-round  {<?>}
 
-    # failed declaration parse - anaylse and drop
+    # failed declaration parse - analyse and drop
     rule dropped-decl  { 
 	       # - extra semicolon - just ignore
 	       ';'
