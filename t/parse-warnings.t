@@ -11,7 +11,7 @@ my @lines = $fh.lines;
 my $expected_lines = @lines.Int;
 my $css-sample = @lines.join("\n");
 
-my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? ($0.Str => $/.postmatch) !! ()});
+my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? (~$0 => $/.postmatch) !! ()});
 
 my $css-actions = CSS::Grammar::Actions.new;
 
@@ -28,7 +28,7 @@ for (css1 => CSS::Grammar::CSS1),
     is($css-actions.line-no, $expected_lines, 'line count');
 
     my $expected-warnings = %level-warnings{$test};
-    my $actual-warnings = $css-actions.warnings.Str;
+    my $actual-warnings = ~$css-actions.warnings;
     is($actual-warnings, $expected-warnings, $test ~ ' warnings')
 }
 

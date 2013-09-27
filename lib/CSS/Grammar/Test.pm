@@ -24,12 +24,12 @@ module CSS::Grammar::Test {
 
 	    if (defined $input) {
 		my $input-display = $input.chars > 300 ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50) !! $input;
-		my $got = $p.Str.trim;
+		my $got = (~$p).trim;
 		my $expected = $expected-parse.trim;
 		is($got, $expected, "{$suite}: " ~ $rule ~ " parse: " ~ $input-display)
 	    }
 	    else {
-		ok($p.Str, "{$suite}: " ~ $rule ~ " parsed")
+		ok(~$p, "{$suite}: " ~ $rule ~ " parsed")
 	    }
 
 	    if  %expected.exists('warnings') && ! %expected<warnings>.defined {
@@ -62,7 +62,7 @@ module CSS::Grammar::Test {
 		}
 		else {
 		    # just test stringification
-		    is( $p.ast.Str, $ast.Str, "{$suite} - ast")
+		    is( ~$p.ast, ~$ast, "{$suite} - ast")
 			or diag to-json($p.ast);
 		}
 	    }

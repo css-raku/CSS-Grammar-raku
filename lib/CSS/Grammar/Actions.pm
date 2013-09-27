@@ -53,7 +53,7 @@ class CSS::Grammar::Actions {
 
                 $value = $value.ast
                     // ($capture && $capture eq $key
-                        ?? $value.Str
+                        ?? ~$value
                         !! next);
 
                 %terms{$key} = $value;
@@ -65,7 +65,7 @@ class CSS::Grammar::Actions {
 
     method at-rule($/) {
         my %terms = $.node($/);
-        %terms<@> = $0.Str.lc;
+        %terms<@> = (~$0).lc;
         return %terms;
     }
 
@@ -83,7 +83,7 @@ class CSS::Grammar::Actions {
                 my ($key, $value) = $cap.kv;
                 $value = $value.ast
                     // ($capture && $capture eq $key
-                        ?? $value.Str
+                        ?? ~$value
                         !! next);
 
                 push @terms, ($key => $value);
@@ -128,15 +128,15 @@ class CSS::Grammar::Actions {
 
     method element-name($/)             { make $<ident>.ast }
 
-    method distance-units:sym<abs>($/)  { make $.token( $/.Str.lc, :type<length> ) }
-    method distance-units:sym<font>($/) { make $.token( $/.Str.lc, :type<length> ) }
+    method distance-units:sym<abs>($/)  { make $.token( ~($/).lc, :type<length> ) }
+    method distance-units:sym<font>($/) { make $.token( ~($/).lc, :type<length> ) }
 
     method any($/) {}
 
     method dropped-decl:sym<forward-compat>($/) {
-        $.warning('dropping term', $0.Str)
+        $.warning('dropping term', ~$0)
             if $0;
-        $.warning('dropping term', $1.Str)
+        $.warning('dropping term', ~$1)
             if $1;
         $.warning('dropping declaration', $<property>.ast)
 	    if $<property>;
@@ -144,7 +144,7 @@ class CSS::Grammar::Actions {
 
     method dropped-decl($/) {
 
-	$.warning('dropping term', $<any>.Str)
+	$.warning('dropping term', ~$<any>)
 	    if $<any>;
 
         if my $prop = $<property>>>.ast {
@@ -153,7 +153,7 @@ class CSS::Grammar::Actions {
     }
 
     method dropped-decl:sym<flushed>($/) {
-        $.warning('dropping term', $0.Str);
+        $.warning('dropping term', ~$0);
     }
 
     method _to-unicode($hex-str) {
@@ -171,22 +171,22 @@ class CSS::Grammar::Actions {
     }
 
     method unicode($/) {
-       make $._to-unicode( $0.Str );
+       make $._to-unicode( ~$0 );
     }
 
-    method regascii($/) { make $/.Str }
-    method nonascii($/) { make $/.Str }
+    method regascii($/) { make ~$/ }
+    method nonascii($/) { make ~$/ }
 
     method escape($/)   { make $<char>.ast }
 
-    method nmstrt($/)   { make $<char> ?? $<char>.ast !! $0.Str}
+    method nmstrt($/)   { make $<char> ?? $<char>.ast !! ~$0}
 
     method nmchar($/)   { make $<char>.ast }
 
-    method nmreg($/)    { make $/.Str }
+    method nmreg($/)    { make ~$/ }
 
     method ident($/) {
-        my $pfx = $<pfx> ?? $<pfx>.Str !! '';
+        my $pfx = $<pfx> ?? ~$<pfx> !! '';
         my $ident = [~] ($pfx, $<nmstrt>.ast, $<nmchar>>>.ast);
         make $ident.lc;
     }
@@ -198,7 +198,7 @@ class CSS::Grammar::Actions {
     method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
-    method stringchar:sym<ascii>($/)    { make $/.Str }
+    method stringchar:sym<ascii>($/)    { make ~$/ }
 
     method single-quote($/) { make "'" }
     method double-quote($/) { make '"' }
@@ -213,7 +213,7 @@ class CSS::Grammar::Actions {
     method string:sym<double-q>($/) { $._string($/) }
 
     method badstring($/) {
-        $.warning('unterminated string', $/.Str);
+        $.warning('unterminated string', ~$/);
     }
 
     method id($/)    { make $<name>.ast }
@@ -221,7 +221,7 @@ class CSS::Grammar::Actions {
     method class($/) { make $<name>.ast }
 
     method url-char($/) {
-        make $<char> ?? $<char>.ast !! $/.Str
+        make $<char> ?? $<char>.ast !! ~$/
     }
 
     method url($/)   { make [~] $<string>>>.ast }
@@ -231,8 +231,8 @@ class CSS::Grammar::Actions {
 
     method color-range($/) {
         my $range = $<num>.ast;
-        $range = ($range * 2.55)
-            if $<percentage>.Str;
+        $range *= 2.55
+            if ~$<percentage>;
 
         # clip out-of-range colors, see
         # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
@@ -247,11 +247,12 @@ class CSS::Grammar::Actions {
             if $<any-args>;
         make $.token($.node($/), :type<color>, :units<rgb>);
     }
+
     method color:sym<hex>($/)   {
         my $id = $<id>.ast;
         my $chars = $id.chars;
 
-        return $.warning("bad hex color", $/.Str)
+        return $.warning("bad hex color", ~$/)
             unless $id.match(/^<xdigit>+$/)
             && ($chars == 3 || $chars == 6);
 
@@ -264,10 +265,10 @@ class CSS::Grammar::Actions {
     }
 
     method prio($/) {
-        return $.warning("dropping term", $/.Str)
+        return $.warning("dropping term", ~$/)
             if $<any> || !$0;
 
-        make $0.Str.lc
+        make (~$0).lc
     }
 
     # from the TOP (CSS1 + CSS21 + CSS3)
@@ -279,13 +280,13 @@ class CSS::Grammar::Actions {
     method namespace($/) { make $.node($/) }
 
     method misplaced($/) {
-        $.warning('ignoring out of sequence directive', $/.Str)
+        $.warning('ignoring out of sequence directive', ~$/)
     }
 
-    method operator($/) { make $.token($/.Str, :type<operator>) }
+    method operator($/) { make $.token(~$/, :type<operator>) }
 
     # pseudos
-    method pseudo:sym<element>($/)  { make {element => $<element>.Str.lc} }
+    method pseudo:sym<element>($/)  { make {element => (~$<element>).lc} }
     method pseudo:sym<function>($/) { make $.node($/) }
     method pseudo:sym<class>($/)    { make $.node($/) }
 
@@ -296,11 +297,11 @@ class CSS::Grammar::Actions {
 
     method unicode-range:sym<from-to>($/) {
         # don't produce actual hex chars; could be out of range
-        make [ :16($<from>.Str), :16($<to>.Str) ];
+        make [ :16( ~$<from> ), :16( ~$<to> ) ];
     }
 
     method unicode-range:sym<masked>($/) {
-        my $mask = $<mask>.Str;
+        my $mask = ~$<mask>;
         my $lo = $mask.subst('?', '0'):g;
         my $hi = $mask.subst('?', 'F'):g;
 
@@ -369,19 +370,19 @@ class CSS::Grammar::Actions {
     method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
     method dimension:sym<length>($/) { make $<length>.ast }
     method length:sym<rel-font-unit>($/) {
-        my $num = $0 && $0.Str eq '-' ?? -1 !! +1;
-        make $.token($num, :units($1.Str.lc), :type<length>)
+        my $num = $0 && ~$0 eq '-' ?? -1 !! +1;
+        make $.token($num, :units( ~($1).lc), :type<length>)
     }
 
-    method angle-units($/)              { make $.token( $/.Str.lc, :type<angle> ) }
+    method angle-units($/)              { make $.token( ~($/).lc, :type<angle> ) }
     method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type<angle>) }
     method dimension:sym<angle>($/)     { make $<angle>.ast }
 
-    method time-units($/)               { make $.token( $/.Str.lc, :type<time> ) }
+    method time-units($/)               { make $.token( ~($/).lc, :type<time> ) }
     method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type<time>) }
     method dimension:sym<time>($/)      { make $<time>.ast }
 
-    method frequency-units($/)          { make $.token( $/.Str.lc, :type<frequency> ) }
+    method frequency-units($/)          { make $.token( ~($/).lc, :type<frequency> ) }
     method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
     method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
@@ -397,14 +398,14 @@ class CSS::Grammar::Actions {
 
     method selector($/)           { make $.list($/) }
 
-    method universal($/)          { make {element-name => $/.Str} }
+    method universal($/)          { make {element-name => ~$/} }
     method qname($/)              { make $.node($/) }
     method simple-selector($/)    { make $.list($/) }
 
     method attrib($/)             { make $.list($/) }
 
     method function($/) {
-	return $.warning('skipping function arguments', $<any-arg>.Str)
+	return $.warning('skipping function arguments', ~$<any-arg>)
 	    if $<any-arg>;
         make $.token( $.list($/), :type<function>);
     }
@@ -419,9 +420,9 @@ class CSS::Grammar::Actions {
         $.warning('unknown pseudo-function', $<ident>.ast);
     }
 
-    method attribute-selector:sym<equals>($/)    { make $/.Str }
-    method attribute-selector:sym<includes>($/)  { make $/.Str }
-    method attribute-selector:sym<dash>($/)      { make $/.Str }
+    method attribute-selector:sym<equals>($/)    { make ~$/ }
+    method attribute-selector:sym<includes>($/)  { make ~$/ }
+    method attribute-selector:sym<dash>($/)      { make ~$/ }
 
     method end-block($/) {
         $.warning("no closing '}'")
@@ -441,7 +442,7 @@ class CSS::Grammar::Actions {
     }
 
     method unknown($/) {
-        $.warning('dropping', $/.Str)
+        $.warning('dropping', ~$/)
     }
 
 }
