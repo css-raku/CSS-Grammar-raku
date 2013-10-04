@@ -12,13 +12,13 @@ grammar CSS::Grammar::CSS1:ver<20080411.000>
 
     rule stylesheet { <import>* [<ruleset> || <misplaced> || <unknown>]* }
 
-    rule import { \@(:i'import') [<string>|<url>] ';' }
+    rule import { '@'(:i'import') [<string>|<url>] ';' }
 
     # to detect out of order directives
     rule misplaced {<import>}
 
     rule ruleset {
-        <!after \@> # not an "@" rule
+        <!after '@'> # not an "@" rule
         <selectors> <declarations>
     }
 

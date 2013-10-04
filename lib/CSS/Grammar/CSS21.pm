@@ -12,8 +12,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     rule stylesheet { <charset>? [ <import> ]*
                       [ '@'<at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
-    rule charset { \@(:i'charset') <string> ';' }
-    rule import  { \@(:i'import')  [<string>|<url>] <media-list>? ';' }
+    rule charset { '@'(:i'charset') <string> ';' }
+    rule import  { '@'(:i'import')  [<string>|<url>] <media-list>? ';' }
     # to detect out of order directives
     rule misplaced {<charset>|<import>}
 
@@ -31,7 +31,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token combinator:sym<not> { '-' }
 
     rule ruleset {
-        <!after \@> # not an "@" rule
+        <!after '@'> # not an "@" rule
         <selectors> <declarations>
     }
 

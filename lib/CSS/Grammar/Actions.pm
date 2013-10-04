@@ -46,7 +46,7 @@ class CSS::Grammar::Actions {
         for @l {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
-                if %terms.exists($key) {
+                if %terms{$key}:exists {
                     $.warning("repeated term " ~ $key, $value);
                     return Any;
                 }
@@ -338,10 +338,10 @@ class CSS::Grammar::Actions {
 
             for @$props -> %decl {
                 %decl<prio> = $prio if $prio;
-                my $prop = %decl.delete('property')
+                my $prop = %decl<property>:delete
                     // die "unable to find property in declaration";
 
-                if %declarations.exists($prop) {
+                if %declarations{$prop}:exists {
                     # override the previous declaration unless it's more !important
                     next if %declarations{$prop}<prio> && ! %decl<prio>;
                 }

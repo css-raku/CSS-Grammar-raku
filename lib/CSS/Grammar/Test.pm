@@ -32,7 +32,7 @@ module CSS::Grammar::Test {
 		ok(~$p, "{$suite}: " ~ $rule ~ " parsed")
 	    }
 
-	    if  %expected.exists('warnings') && ! %expected<warnings>.defined {
+	    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
 		diag "untested warnings: " ~ @warnings
 		    if @warnings;
 	    }
@@ -69,7 +69,7 @@ module CSS::Grammar::Test {
 	    else {
 		if defined $p.ast {
 		    note 'untested_ast: ' ~ to-json( $p.ast )
-			unless %expected.exists('ast');
+			unless %expected<ast>:exists;
 		}
 		else {
 		    diag "no {$suite} ast: " ~ ($input // '')
@@ -92,7 +92,7 @@ module CSS::Grammar::Test {
 	    CATCH {
 		default {
 		    note "parse failure: $_";
-		    ok(False, "{$suite}: " ~ $rule ~ " parsed");
+		    flunk("{$suite}: " ~ $rule ~ " parsed");
 		}
 	    }
 	}	
