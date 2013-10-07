@@ -48,11 +48,11 @@ for (
              ast => 'http://example.com',
              token => {type => 'url'},
     },
-    term => {input => 'foo(bar baz( 42 ) )',
+    expr => {input => 'foo(bar baz( 42 ) )',
              ast => Mu,
     },
     # function without arguments, e.g. jquery-ui-themeroller.css
-    term => {input => 'mask()',
+    expr => {input => 'mask()',
              ast => Mu,
     },
     unicode-range => {input => '416', ast => [0x416, 0x416]},

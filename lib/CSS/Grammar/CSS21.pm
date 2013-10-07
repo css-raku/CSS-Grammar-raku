@@ -48,7 +48,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
 
-    rule expr { <term> +% [ <operator>? ] }
+    rule expr { [<term>||<term=.any-function>] +% [ <operator>? ] }
 
     proto token angle          {*}
     token angle-units          {:i[deg|rad|grad]}
@@ -64,8 +64,6 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     token frequency-units      {:i k?Hz}
     token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
-
-    rule term:sym<function>    {<function>}
 
     rule selector{ <simple-selector> +% <combinator>? }
 
@@ -86,7 +84,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
     # assume anything else is a class
     rule pseudo:sym<class>    {':' <class=.ident> }
 
-    token function      {<function=.ident>'(' [<args=.expr>||<any-arg>]* ')'}
+    token any-function        {<function=.ident>'(' [<args=.expr>||<any-arg>]* ')'}
 
     proto rule pseudo-function {*}
     rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}

@@ -363,7 +363,6 @@ class CSS::Grammar::Actions {
 
     method expr($/) { make $.list($/) }
 
-    method term:sym<num>($/)        { make $.token($<num>.ast, :type<num>); }
     method term:sym<dimension>($/)  { make $<dimension>.ast }
     method term:sym<percentage>($/) { make $<percentage>.ast }
 
@@ -392,9 +391,15 @@ class CSS::Grammar::Actions {
     method term:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
     method term:sym<color>($/)    { make $<color>.ast; }
     method term:sym<function>($/) { make $<function>.ast }
-    method term:sym<ident>($/)    {
-        make $.token($<ident>.ast, :type<ident>)
+
+    # temporary work-around for rakudobug Oct 13
+    method term:sym<tmp>($/)      { make $<num>
+                                        ?? $.token($<num>.ast, :type<num>)
+                                        !! $.token($<ident>.ast, :type<ident>)
     }
+
+    method term:sym<num>($/)      { make $.token($<num>.ast, :type<num>); }
+    method term:sym<ident>($/)    { make $.token($<ident>.ast, :type<ident>) }
 
     method selector($/)           { make $.list($/) }
 
@@ -404,7 +409,7 @@ class CSS::Grammar::Actions {
 
     method attrib($/)             { make $.list($/) }
 
-    method function($/) {
+    method any-function($/) {
 	return $.warning('skipping function arguments', ~$<any-arg>)
 	    if $<any-arg>;
         make $.token( $.list($/), :type<function>);

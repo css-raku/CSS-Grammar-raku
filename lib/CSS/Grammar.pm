@@ -14,14 +14,14 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nl {\xA|"\r"\xA|"\r"|"\f"}
 
     # comments: nb trigger <nl> for accurate line counting
-    token comment {('<!--') [<.nl>|.]*? ['-->' | <unclosed-comment>]
-                  |('/*')   [<.nl>|.]*? ['*/'  | <unclosed-comment>]}
+    token comment {('<!--') [<.nl>|.]*? ['-->' || <unclosed-comment>]
+                  |('/*')   [<.nl>|.]*? ['*/'  || <unclosed-comment>]}
     token unclosed-comment {$}
 
     token wc {<.nl> | "\t"  | " "}
     token ws {<!ww>[<.wc>|<.comment>]*}
 
-    # "lexer"com
+    # "lexer"
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
     token unicode  {(<[0..9 a..f A..F]>**1..6)}
@@ -34,7 +34,9 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
     token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name     {<nmchar>+}
-    token num      {[\+|\-]? (\d* \.)? \d+}
+# work around current rakudo bug - Oct 13
+##    token num      {[\+|\-]? (\d* \.)? \d+}
+    token num      {[\+|\-]? [(\d* \.) \d+ | \d+]}
     token posint   {\d+}
 
     proto token stringchar {*}
@@ -103,13 +105,15 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule combinator:sym<child>    { '>' }
 
     proto rule term {*}
-    rule term:sym<num>        {<num><!before ['%'|\w]>}
+    # temporary work-around for rakudobug Oct 13
+    token term:sym<tmp> {<num><!before ['%'|\w]>||<ident><!before '('>}
+##    rule term:sym<num>        {<num><!before ['%'|\w]>}
+##    rule term:sym<ident>      {<ident><!before '('>}
     rule term:sym<dimension>  {<dimension>}
     rule term:sym<percentage> {<percentage>}
     rule term:sym<string>     {<string>}
     rule term:sym<color>      {<color>}
     rule term:sym<url>        {<url>}
-    rule term:sym<ident>      {<ident><!before '('>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}

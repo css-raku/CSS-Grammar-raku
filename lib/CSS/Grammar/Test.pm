@@ -74,7 +74,6 @@ module CSS::Grammar::Test {
 		else {
 		    diag "no {$suite} ast: " ~ ($input // '')
 			unless $expected-parse eq ''
-			||     $suite.match(/:i scan/);
 		}
 	    }
 
