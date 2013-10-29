@@ -185,8 +185,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     # - may assume closing parenthesis in nested values and blocks
 
     rule TOP           {^ <_stylesheet> $}
-    rule _stylesheet   {<_statement>*}
-    rule _statement    {<_ruleset> | '@'<_at-rule> || <_any> || <_delim>}
+    rule _stylesheet   { <_statement>* }
+    rule _statement    { <_ruleset> | '@'<_at-rule> || <_any> || <_delim> }
 
     rule _at-rule      {(<.ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
@@ -195,13 +195,13 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations {'{' <_declaration-list> '}'? }
     rule _declaration-list {[ <.property> | <_value> | <.badstring> | ';' ]*}
-    rule _value        {[ <_any> | <_block> ]+}
+    rule _value        { [ <_any> | <_block> ]+ }
 
     token _ascii-punct {<[\! .. \~] -alnum>}
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<._ascii-punct> & <- _delim>]+}
 
-    rule _badstring    {\"[<.stringchar>|\']*[<.nl>|$]
+    token _badstring   {\"[<.stringchar>|\']*[<.nl>|$]
                        |\'[<.stringchar>|\"]*[<.nl>|$]}
 
     proto rule _any {*}
