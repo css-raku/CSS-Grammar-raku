@@ -34,9 +34,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
     token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name     {<nmchar>+}
-# work around current rakudo bug - Oct 13
-##    token num      {[\+|\-]? (\d* \.)? \d+}
-    token num      {[\+|\-]? [(\d* \.) \d+ | \d+]}
+    token num      {[\+|\-]? (\d* \.)? \d+}
     token posint   {\d+}
 
     proto token stringchar {*}
@@ -80,7 +78,7 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     token operator       {'/'|','|'='}
 
-    rule property        {<property=.ident> ':'}
+    rule property        { <.ws>? <property=.ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
     rule color-range     {<num>$<percentage>=[\%]?}
@@ -193,7 +191,7 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations {'{' <_declaration-list> '}'? }
+    rule _declarations { '{' <_declaration-list> '}'? }
     rule _declaration-list {[ <.property> | <_value> | <.badstring> | ';' ]*}
     rule _value        { [ <_any> | <_block> ]+ }
 
