@@ -98,9 +98,9 @@ class CSS::Grammar::Actions {
         my $str = $_str.chomp.trim;
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
-        [~] $str.split('').map({
-                $_ eq "\\"                   ?? '\\'
-                    !! /<[\t\o40 \!..\~]>/   ?? $_   
+        [~] $str.comb.map({
+                $_ eq "\\"                  ?? '\\'
+                    !! /<[\t \s \!..\~]>/   ?? $_   
                     !! .ord.fmt("\\x[%x]")
             });
     }
