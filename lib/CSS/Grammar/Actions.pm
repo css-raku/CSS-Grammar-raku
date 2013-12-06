@@ -220,7 +220,7 @@ class CSS::Grammar::Actions {
 
     method class($/) { make $<name>.ast }
 
-    method url-char($/) {
+    method bare-url-char($/) {
         make $<char> ?? $<char>.ast !! ~$/
     }
 
