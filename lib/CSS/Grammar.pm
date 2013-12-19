@@ -116,7 +116,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}
     rule unicode-range:sym<from-to> {$<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]}
-    rule unicode-range:sym<masked>  {$<mask>=[<.xdigit>|'?']**1..6 <!before \->}
+    rule unicode-range:sym<masked>  {$<mask>=[<.xdigit>|'?']**1..6 <!before '-'>}
 
     proto rule declaration {*}
 
