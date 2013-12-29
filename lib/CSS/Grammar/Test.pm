@@ -71,10 +71,6 @@ module CSS::Grammar::Test {
 		    note 'untested_ast: ' ~ to-json( $p.ast )
 			unless %expected<ast>:exists;
 		}
-		else {
-		    diag "no {$suite} ast: " ~ ($input // '')
-			unless $expected-parse eq ''
-		}
 	    }
 
 	    if defined (my $token = %expected<token>) {
