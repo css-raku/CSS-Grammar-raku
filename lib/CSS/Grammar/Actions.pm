@@ -257,7 +257,7 @@ class CSS::Grammar::Actions {
             && ($chars == 3 || $chars == 6);
 
         my @rgb-vals = $chars == 3
-            ?? $id.comb(/./).map({$_ ~ $_})
+            ?? $id.comb(/./).map({$^hex-digit ~ $^hex-digit})
             !! $id.comb(/../);
 
         my %rgb = <r g b> Z=> @rgb-vals.map({ :16($_) }); 
@@ -392,7 +392,7 @@ class CSS::Grammar::Actions {
     method term:sym<color>($/)    { make $<color>.ast; }
     method term:sym<function>($/) { make $<function>.ast }
 
-    # temporary work-around for rakudobug Oct 13
+    # temporary work-around for RT120146 Oct 13
     method term:sym<tmp>($/)      { make $<num>
                                         ?? $.token($<num>.ast, :type<num>)
                                         !! $.token($<ident>.ast, :type<ident>)

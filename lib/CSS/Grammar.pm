@@ -103,7 +103,7 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule combinator:sym<child>    { '>' }
 
     proto rule term {*}
-    # temporary work-around for rakudobug Oct 13
+    # temporary work-around for RT120146 Oct 13
     token term:sym<tmp> {<num><!before ['%'|\w]>||<ident><!before '('>}
 ##    rule term:sym<num>        {<num><!before ['%'|\w]>}
 ##    rule term:sym<ident>      {<ident><!before '('>}

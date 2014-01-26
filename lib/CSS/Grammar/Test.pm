@@ -22,7 +22,7 @@ module CSS::Grammar::Test {
 
 	    my $expected-parse = %expected<parse> // $input;
 
-	    if (defined $input) {
+	    if defined $input {
 		my $input-display = $input.chars > 300 ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50) !! $input;
 		my $got = (~$p).trim;
 		my $expected = $expected-parse.trim;
