@@ -361,10 +361,11 @@ class CSS::Grammar::Actions {
         make $.node($/);
     }
 
-    method expr($/) { make $.list($/) }
+    method expr($/)           { make $.list($/) }
+    method term:sym<base>($/) { make $<term>.ast }
 
-    method term:sym<dimension>($/)  { make $<dimension>.ast }
-    method term:sym<percentage>($/) { make $<percentage>.ast }
+    method term1:sym<dimension>($/)  { make $<dimension>.ast }
+    method term1:sym<percentage>($/) { make $<percentage>.ast }
 
     method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
     method dimension:sym<length>($/) { make $<length>.ast }
@@ -387,19 +388,19 @@ class CSS::Grammar::Actions {
 
     method percentage($/)               { make $.token($<num>.ast, :units<%>, :type<percentage>) }
 
-    method term:sym<string>($/)   { make $.token($<string>.ast, :type<string>) }
-    method term:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
-    method term:sym<color>($/)    { make $<color>.ast; }
-    method term:sym<function>($/) { make $<function>.ast }
+    method term1:sym<string>($/)   { make $.token($<string>.ast, :type<string>) }
+    method term1:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
+    method term1:sym<color>($/)    { make $<color>.ast; }
+    method term2:sym<function>($/) { make $<function>.ast }
 
     # temporary work-around for RT120146 Oct 13
-    method term:sym<tmp>($/)      { make $<num>
+    method term2:sym<tmp>($/)      { make $<num>
                                         ?? $.token($<num>.ast, :type<num>)
                                         !! $.token($<ident>.ast, :type<ident>)
     }
 
-    method term:sym<num>($/)      { make $.token($<num>.ast, :type<num>); }
-    method term:sym<ident>($/)    { make $.token($<ident>.ast, :type<ident>) }
+    method term2:sym<num>($/)      { make $.token($<num>.ast, :type<num>); }
+    method term2:sym<ident>($/)    { make $.token($<ident>.ast, :type<ident>) }
 
     method selector($/)           { make $.list($/) }
 

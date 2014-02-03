@@ -102,16 +102,20 @@ grammar CSS::Grammar:ver<0.0.1> {
     rule combinator:sym<adjacent> { '+' }
     rule combinator:sym<child>    { '>' }
 
-    proto rule term {*}
+    proto rule term  {*}
+    rule term:sym<base> {<term=.term1>||<term=.term2>}
+			    
+    proto rule term1 {*}
+    proto rule term2 {*}
     # temporary work-around for RT120146 Oct 13
-    token term:sym<tmp> {<num><!before ['%'|\w]>||<ident><!before '('>}
-##    rule term:sym<num>        {<num><!before ['%'|\w]>}
-##    rule term:sym<ident>      {<ident><!before '('>}
-    rule term:sym<dimension>  {<dimension>}
-    rule term:sym<percentage> {<percentage>}
-    rule term:sym<string>     {<string>}
-    rule term:sym<color>      {<color>}
-    rule term:sym<url>        {<url>}
+    token term2:sym<tmp> {<num>||<ident><!before '('>}
+##    rule term2:sym<num>        {<num>}
+##    rule term2:sym<ident>      {<ident><!before '('>}
+    rule term1:sym<dimension>  {<dimension>}
+    rule term1:sym<percentage> {<percentage>}
+    rule term1:sym<string>     {<string>}
+    rule term1:sym<color>      {<color>}
+    rule term1:sym<url>        {<url>}
 
     # Unicode ranges - used by selector modules + scan rules
     proto rule unicode-range {*}

@@ -48,7 +48,8 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 
     rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
 
-    rule expr { [<term>||<term=.any-function>] +% [ <operator>? ] }
+    rule expr { <term> +% [ <operator>? ] }
+    token term2:sym<function>  {<function=.any-function>}
 
     proto token angle          {*}
     token angle-units          {:i[deg|rad|grad]}
