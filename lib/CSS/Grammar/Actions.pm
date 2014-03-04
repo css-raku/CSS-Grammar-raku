@@ -413,7 +413,7 @@ class CSS::Grammar::Actions {
     method any-function($/) {
 	return $.warning('skipping function arguments', ~$<any-arg>)
 	    if $<any-arg>;
-        make $.token( $.list($/), :type<function>);
+        make $.list($/, :type<function>);
     }
 
     method pseudo-function:sym<lang>($/) {
