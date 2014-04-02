@@ -37,13 +37,16 @@ for ($fh.lines) {
 
 	$css-actions.reset;
 
-	unless $level-tests<skip_test> {
-	    CSS::Grammar::Test::parse-tests($class, $input,
-					    :actions($css-actions),
-					    :rule($rule),
-					    :suite($level),
-					    :expected(%expected) );
+	if %expected<skip> {
+	    skip( $rule ~ ': ' ~ %expected<skip> );
+	    next;
 	}
+
+	CSS::Grammar::Test::parse-tests($class, $input,
+					:actions($css-actions),
+					:rule($rule),
+					:suite($level),
+					:expected(%expected) );
     }
 
     if CSS::Grammar::Scan.can( '_' ~ $rule ) {

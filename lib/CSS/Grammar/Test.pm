@@ -89,6 +89,8 @@ module CSS::Grammar::Test {
 		default {
 		    note "parse failure: $_";
 		    flunk("{$suite}: " ~ $rule ~ " parsed");
+		    diag "input: {$input}"
+			if $input;
 		}
 	    }
 	}	
