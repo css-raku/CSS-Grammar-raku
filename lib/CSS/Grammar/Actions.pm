@@ -193,7 +193,6 @@ class CSS::Grammar::Actions {
 
     method name($/)   { make [~] $<nmchar>>>.ast; }
     method num($/)    { make $0 ?? $/.Rat !! $/.Int}
-    method posint($/) { make $/.Int }
 
     method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
