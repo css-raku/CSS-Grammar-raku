@@ -5,6 +5,34 @@ module CSS::Grammar::Test {
     use Test;
     use JSON::Tiny;
 
+    # allow only json compatible data
+    multi sub json-eqv (EnumMap:D $a, EnumMap:D $b) {
+	if +$a != +$b { return False }
+	for $a.kv -> $k, $v {
+	    unless $b.exists_key($k) && json-eqv($a{$k}, $b{$k}) {
+		return False;
+	    }
+	}
+	return True;
+    }
+    multi sub json-eqv (List:D $a, List:D $b) {
+	if +$a != +$b { return Bool::False }
+	for (0 .. +$a-1) {
+	    return False
+		unless (json-eqv($a[$_], $b[$_]));
+	}
+	return True;
+    }
+    multi sub json-eqv (Numeric:D $a, Numeric:D $b) { $a == $b }
+    multi sub json-eqv (Stringy $a, Stringy $b) { $a eq $b }
+    multi sub json-eqv (Bool $a, Bool $b) { $a == $b }
+    multi sub json-eqv (Any $a, Any $b) {
+	note "data type mismatch";
+	note "    - expected: {$b.perl}";
+	note "    - got: {$a.perl}";
+	return False;
+    }
+
     our sub parse-tests($class, $input, :$parse, :$actions,
 			:$rule, :$suite, :%expected) {
 
@@ -56,14 +84,11 @@ module CSS::Grammar::Test {
 		    if my $todo-ast = %expected<todo><ast> {
 			todo($todo-ast);
 		    }
-		    if %*ENV<CSS_XT> {
-			# test json canonicalization - thorough, but slower
-			is( to-json($p.ast), to-json($ast), "{$suite} - ast");
-		    }
 		    else {
 			# just test stringification
-			is( ~$p.ast, ~$ast, "{$suite} - ast")
-			    or diag to-json($p.ast);
+			ok ($p.ast.defined && json-eqv($p.ast, $ast)), "{$suite} - ast"
+			    or do {diag "expected: " ~ to-json($ast);
+				   diag "got: " ~ to-json($p.ast)};
 		    }
 		}
 		else {
@@ -91,6 +116,8 @@ module CSS::Grammar::Test {
 		    flunk("{$suite}: " ~ $rule ~ " parsed");
 		    diag "input: {$input}"
 			if $input;
+		    diag "ast: {$p.ast.perl}"
+			if $p.ast;
 		}
 	    }
 	}	

@@ -19,7 +19,7 @@ my $css-actions = CSS::Grammar::Actions.new;
 
 my $fh = open 't/compat.json', :r;
 
-for ($fh.lines) {
+for $fh.lines {
     if .substr(0,2) eq '//' {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
@@ -46,7 +46,7 @@ for ($fh.lines) {
 					:actions($css-actions),
 					:rule($rule),
 					:suite($level),
-					:expected(%expected) );
+					:expected(%expected));
     }
 
     if CSS::Grammar::Scan.can( '_' ~ $rule ) {
@@ -55,7 +55,7 @@ for ($fh.lines) {
 					    :actions($css-actions),
 					    :rule('_' ~ $rule),
 					    :suite('scan'),
-					    :expected(%expected) );
+					    :expected(%expected));
     }
 }
 

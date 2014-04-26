@@ -86,7 +86,8 @@ class CSS::Grammar::Actions {
                         ?? ~$value
                         !! next);
 
-                push @terms, ($key => $value);
+		# dumbed down for json compatibility
+                push @terms, {$key => $value};
             }
         }
 
