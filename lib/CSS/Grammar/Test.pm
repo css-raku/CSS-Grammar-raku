@@ -42,83 +42,77 @@ module CSS::Grammar::Test {
 
 	    $p //= do { 
 		$actions.reset if $actions.can('reset');
-		$class.parse( $input, :rule($rule), :actions($actions))
+		$class.subparse( $input, :rule($rule), :actions($actions))
 	    };
 
 	    my @warnings = $actions.warnings
 		if $actions.can('warnings');
 
+	    my $expected-parse = (%expected<parse> // $input).trim;
+
+	    if $input.defined && $expected-parse.defined {
+		my $input-display = $input.chars > 300
+		    ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50)
+		    !! $input;
+		my $got = $p.defined ?? (~$p).trim !! '';
+		# partial matches bit iffy at the moment
+		is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
+	    }
+
 	    my $parsed = $p.defined && ~$p ne '';
 
-	    ok(~$parsed, "{$suite}: " ~ $rule ~ " parsed");
-
-	    if $parsed {
-		if defined $input {
-		    my $input-display = $input.chars > 300 ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50) !! $input;
-		    my $got = (~$p).trim;
-		    my $expected-parse = (%expected<parse> // $input).trim;
-		    is($got, $expected-parse, "{$suite}: " ~ $rule ~ " parse: " ~ $input-display)
-		}
-
-		if  %expected<warnings>:exists && ! %expected<warnings>.defined {
-		    diag "untested warnings: " ~ @warnings
-			if @warnings;
-		}
-		else {
-		    todo( %expected<warnings-todo> )
-			if %expected<warnings-todo>;
+	    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
+		diag "untested warnings: " ~ @warnings
+		    if @warnings;
+	    }
+	    else {
+		todo( %expected<warnings-todo> )
+		    if %expected<warnings-todo>;
      
-		    if %expected<warnings>.isa('Regex') {
-			my @matched = ([~] @warnings).match(%expected<warnings>);
-			ok( @matched, "{$suite} warnings")
-			    or diag @warnings;
-		    }
-		    else {
-			my @expected_warnings = %expected<warnings> // ();
-			is(@warnings, @expected_warnings,
-			   @expected_warnings ?? "{$suite} warnings" !! "{$suite} no warnings");
-		    }
-		}
-
-		if defined (my $ast = %expected<ast>) {
-		    if my $todo-ast = %expected<todo><ast> {
-			todo($todo-ast);
-		    }
-		    else {
-			# just test stringification
-			ok ($p.ast.defined && json-eqv($p.ast, $ast)), "{$suite} - ast"
-			    or do {diag "expected: " ~ to-json($ast);
-				   diag "got: " ~ to-json($p.ast)};
-		    }
+		if %expected<warnings>.isa('Regex') {
+		    my @matched = ([~] @warnings).match(%expected<warnings>);
+		    ok( @matched, "{$suite} $rule warnings")
+			or diag @warnings;
 		}
 		else {
-		    if defined $p.ast {
-			note 'untested_ast: ' ~ to-json( $p.ast )
-			    unless %expected<ast>:exists;
-		    }
-		}
-
-		if defined (my $token = %expected<token>) {
-		    if ok($p.ast.can('units'), "{$suite} is a token") {
-			if my $units = %$token<units> {
-			    is($p.ast.units, $units, "{$suite} - units: " ~$units);
-			}
-			if my $type = %$token<type> {
-			    is($p.ast.type, $type, "{$suite} - type: " ~$type);
-			}
-		    }
+		    my @expected_warnings = %expected<warnings> // ();
+		    is(@warnings, @expected_warnings,
+		       @expected_warnings ?? "{$suite} $rule warnings" !! "{$suite} $rule no warnings");
 		}
 	    }
 
-	    CATCH {
-		default {
-		    note "parse failure: $_";
-		    flunk("{$suite}: " ~ $rule ~ " parsed");
-		    diag "input: {$input}"
-			if $input;
-		    diag "ast: {$p.ast.perl}"
-			if $p.ast;
+	    if defined (my $ast = %expected<ast>) {
+		ok ($p.defined && $p.ast.defined && json-eqv($p.ast, $ast)), "{$suite} $rule ast"
+		    or do {diag "expected: " ~ to-json($ast);
+			   diag "got: " ~ to-json($p.ast)};
+	    }
+	    else {
+		if $p.defined && $p.ast.defined {
+		    note 'untested_ast: ' ~ to-json( $p.ast )
+			unless %expected<ast>:exists;
 		}
+	    }
+
+	    if defined (my $token = %expected<token>) {
+		if ok($p.defined && $p.ast.can('units'), "{$suite} $rule is a token") {
+		    if my $units = %$token<units> {
+			is($p.ast.units, $units, "{$suite} $rule units: " ~$units);
+		    }
+		    if my $type = %$token<type> {
+			is($p.ast.type, $type, "{$suite} $rule type: " ~$type);
+		    }
+		}
+	    }
+	}
+
+	CATCH {
+	    default {
+		note "parse failure: $_";
+		flunk("{$suite} $rule parsed");
+		diag "input: {$input}"
+		    if $input.defined;
+		diag "ast: {$p.ast.perl}"
+		    if $p.defined;
 	    }
 	}	
 
