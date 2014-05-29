@@ -45,8 +45,8 @@ for ('¡', "\o250", 'ÿ') {
     ok($_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_");
-    ok($_ ~~ /^<CSS::Grammar::Scan::nonascii>$/, "non-ascii scan: $_");
-    ok($_ ~~ /^<CSS::Grammar::Scan::ident>$/, "non-ascii ident: $_");
+    ok($_ ~~ /^<CSS::Grammar::Core::nonascii>$/, "non-ascii scan: $_");
+    ok($_ ~~ /^<CSS::Grammar::Core::ident>$/, "non-ascii ident: $_");
 }
 
 # css1 and css21 only recognise latin chars as non-ascii (\o240-\o377)
@@ -95,7 +95,7 @@ for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
 }
 
 for ('*', ',', '+', '>', '|=', '~=') {
-    ok($_ ~~ /^<CSS::Grammar::Scan::_op>$/, "scan op: $_");
+    ok($_ ~~ /^<CSS::Grammar::Core::_op>$/, "scan op: $_");
 }
 
 my $media-rules = '{

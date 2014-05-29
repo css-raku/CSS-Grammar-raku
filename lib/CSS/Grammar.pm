@@ -1,6 +1,6 @@
 use v6;
 
-grammar CSS::Grammar::Scan{...}
+grammar CSS::Grammar::Core{...}
 
 grammar CSS::Grammar:ver<0.0.1> {
 
@@ -126,12 +126,12 @@ grammar CSS::Grammar:ver<0.0.1> {
     # Error Recovery
     # --------------
     # - <any>                    - for unknown terms etc
-    rule any       {<CSS::Grammar::Scan::_value>}
+    rule any       {<CSS::Grammar::Core::_value>}
     # - <any-arg>, <any-args>    - for incorrect function args
-    rule any-arg   {<CSS::Grammar::Scan::_arg>}
+    rule any-arg   {<CSS::Grammar::Core::_arg>}
     rule any-args  {<any-arg>*}
     # - <badstring>               - for unclosed strings
-    rule badstring {<CSS::Grammar::Scan::_badstring>}
+    rule badstring {<CSS::Grammar::Core::_badstring>}
     rule unclosed-paren-square {<?>}
     rule unclosed-paren-round  {<?>}
 
@@ -154,19 +154,18 @@ grammar CSS::Grammar:ver<0.0.1> {
 
     # forward compatible scanning and recovery - from the stylesheet top level
     # - skip statements, at-rules or other recognised constructs
-    token unknown  {  <CSS::Grammar::Scan::_statement>
-                   || <CSS::Grammar::Scan::_arg>
-                   || <CSS::Grammar::Scan::_ascii-punct>
+    token unknown  {  <CSS::Grammar::Core::_statement>
+                   || <CSS::Grammar::Core::_arg>
+                   || <CSS::Grammar::Core::_ascii-punct>
                    # - last resort - skip a character
                    || <[.]>+?
                    }
 }
 
-
-grammar CSS::Grammar::Scan is CSS::Grammar {
+grammar CSS::Grammar::Core is CSS::Grammar {
 
     # Fallback/Normalization Grammar
-    # This is based on the universal grammar syntax described in
+    # This is based on the core grammar syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement
     # term flushing, for forward compatiblity and error recovery
@@ -194,8 +193,8 @@ grammar CSS::Grammar::Scan is CSS::Grammar {
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations { '{' <_declaration-list> '}'? }
-    rule _declaration-list {[ <.property> | <_value> | <.badstring> | ';' ]*}
+    rule _declarations { '{' <_declaration>* '}'? }
+    rule _declaration  {[ <.property> | <_value> | <.badstring>]+ ';'? || ';'}
     rule _value        { [ <_any> | <_block> ]+ }
 
     token _ascii-punct {<[\! .. \~] -alnum>}

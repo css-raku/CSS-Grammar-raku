@@ -49,9 +49,9 @@ for $fh.lines {
 					:expected(%expected));
     }
 
-    if CSS::Grammar::Scan.can( '_' ~ $rule ) {
+    if CSS::Grammar::Core.can( '_' ~ $rule ) {
         my %expected =  %(%test, warnings => Any, ast => Any);
-        CSS::Grammar::Test::parse-tests(CSS::Grammar::Scan, $input,
+        CSS::Grammar::Test::parse-tests(CSS::Grammar::Core, $input,
 					    :actions($css-actions),
 					    :rule('_' ~ $rule),
 					    :suite('scan'),
