@@ -2,7 +2,8 @@ use v6;
 
 grammar CSS::Grammar::Core{...}
 
-grammar CSS::Grammar:ver<0.0.1> {
+# based on http://www.w3.org/TR/2011/REC-CSS2-20110607
+grammar CSS::Grammar:ver<20110607.001> {
 
     # abstract base grammar for CSS instance grammars:
     #  CSS::Grammar::CSS1  - CSS level 1
@@ -162,7 +163,7 @@ grammar CSS::Grammar:ver<0.0.1> {
                    }
 }
 
-grammar CSS::Grammar::Core is CSS::Grammar {
+grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
 
     # Fallback/Normalization Grammar
     # This is based on the core grammar syntax described in
@@ -193,8 +194,8 @@ grammar CSS::Grammar::Core is CSS::Grammar {
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
-    rule _declarations { '{' <_declaration>* '}'? }
-    rule _declaration  {[ <.property> | <_value> | <.badstring>]+ ';'? || ';'}
+    rule _declarations { '{' <_declaration> *%% ';'? '}'? }
+    rule _declaration  { [ <.property> | <_value> | <.badstring> ]+ }
     rule _value        { [ <_any> | <_block> ]+ }
 
     token _ascii-punct {<[\! .. \~] -alnum>}
