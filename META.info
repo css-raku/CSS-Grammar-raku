@@ -5,6 +5,7 @@
     "depends"     : [ "JSON::Tiny" ],
     "provides"    : {
           "CSS::Grammar" : "lib/CSS/Grammar.pm",
+          "CSS::Grammar::Core" : "lib/CSS/Grammar.pm",
           "CSS::Grammar::Actions" : "lib/CSS/Grammar/Actions.pm",
           "CSS::Grammar::CSS1" : "lib/CSS/Grammar/CSS1.pm",
           "CSS::Grammar::CSS21" : "lib/CSS/Grammar/CSS21.pm",
