@@ -209,6 +209,7 @@ method _string($/) {
     make $.token($string, :type<string>);
 }
 
+proto method string {*}
 method string:sym<single-q>($/) { $._string($/) }
 
 method string:sym<double-q>($/) { $._string($/) }
@@ -375,14 +376,17 @@ method length:sym<rel-font-unit>($/) {
     make $.token($num, :units( ~($1).lc), :type<length>)
 }
 
+proto method angle {*}
 method angle-units($/)              { make $.token( ~($/).lc, :type<angle> ) }
 method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type<angle>) }
 method dimension:sym<angle>($/)     { make $<angle>.ast }
 
+proto method time {*}
 method time-units($/)               { make $.token( ~($/).lc, :type<time> ) }
 method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type<time>) }
 method dimension:sym<time>($/)      { make $<time>.ast }
 
+proto method frequency {*}
 method frequency-units($/)          { make $.token( ~($/).lc, :type<frequency> ) }
 method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
