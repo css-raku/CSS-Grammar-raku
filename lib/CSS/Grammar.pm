@@ -81,16 +81,16 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule property        { <.ws>? <property=.ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
-    rule color-range     {<num>$<percentage>=[\%]?}
+    rule color-range     { <num>$<percentage>=[\%]? }
 
     proto rule color     {*}
-    rule color:sym<rgb>  {:i'rgb('
+    rule color:sym<rgb>  {:i 'rgb('
 			      [ <r=.color-range> ','
 				<g=.color-range> ','
 				<b=.color-range> || <any-args> ]
-			     ')'
+                                ')'
     }
-    rule color:sym<hex>  {<id>}
+    rule color:sym<hex>  { <id> }
 
     token prio           {:i'!' [('important')||<any>] }
 

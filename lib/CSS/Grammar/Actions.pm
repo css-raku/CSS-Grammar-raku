@@ -57,7 +57,7 @@ method node($/, :$capture?) {
 		    ?? ~$value
 		    !! next);
 
-	    %terms{$key} = $value;
+	    %terms{$key.subst(/^'expr-'/, '')} = $value;
 	}
     }
 
@@ -88,7 +88,7 @@ method list($/, :$capture?) {
 		    !! next);
 
 	    # dumbed down for json compatibility
-	    push @terms, {$key => $value};
+	    push @terms, {$key.subst(/^'expr-'/, '') => $value};
 	}
     }
 
