@@ -103,16 +103,16 @@ module CSS::Grammar::Test {
 		    }
 		}
 	    }
-	}
 
-	CATCH {
-	    default {
-		note "parse failure: $_";
-		flunk("{$suite} $rule parsed");
-		diag "input: {$input}"
-		    if $input.defined;
-		diag "ast: {$p.ast.perl}"
-		    if $p.defined;
+            CATCH {
+                default {
+                    note "parse failure: $_";
+                    flunk("{$suite} $rule parsed");
+                    diag "input: {$input}"
+                        if $input.defined;
+                    diag "ast: {$p.ast.perl}"
+                        if $p.defined;
+                }
 	    }
 	}	
 
