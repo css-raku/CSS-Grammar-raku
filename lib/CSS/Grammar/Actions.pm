@@ -244,6 +244,7 @@ method color-range($/) {
     make $.token($range.round, :type<num>, :units<8bit>);
 }
 
+proto method color {*}
 method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
@@ -369,6 +370,7 @@ method term:sym<base>($/) { make $<term>.ast }
 method term1:sym<dimension>($/)  { make $<dimension>.ast }
 method term1:sym<percentage>($/) { make $<percentage>.ast }
 
+proto method length {*}
 method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
