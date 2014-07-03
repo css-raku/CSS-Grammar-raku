@@ -20,7 +20,8 @@ for ( $fh.lines ) {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
     }
-    my ($rule, %test) = @( from-json($_) );
+    my ($rule, $t) = @( from-json($_) );
+    my %test = @$t;
     my $input = %test<input>;
 
     CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,

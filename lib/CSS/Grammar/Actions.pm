@@ -65,7 +65,7 @@ method node($/, :$capture?) {
 }
 
 method at-rule($/) {
-    my %terms = $.node($/);
+    my %terms = @$.node($/);
     %terms<@> = (~$0).lc;
     return %terms;
 }

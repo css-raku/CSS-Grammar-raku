@@ -61,14 +61,14 @@ for (
     ) {
 
     my $rule = .key;
-    my %test = .value;
-    my $input = %test<input>;
+    my $test = .value;
+    my $input = $test<input>;
 
     CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
 				    :actions($actions),
 				    :rule($rule),
 				    :suite<css3>,
-				    :expected(%test) );
+				    :expected($test) );
 }
 
 done;
