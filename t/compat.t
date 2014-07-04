@@ -25,7 +25,7 @@ for $fh.lines {
         next;
     }
     my ($rule, $t) = @( from-json($_) );
-    my %test = @$t;
+    my %test = %$t;
     my $input = %test<input>;
 
     for (css1  => CSS::Grammar::CSS1),
@@ -33,7 +33,7 @@ for $fh.lines {
         (css3  => CSS::Grammar::CSS3) {
 
 	my ($level, $class) = .kv;
-	my %level-tests = @( %test{$level} // () );
+	my %level-tests = %( %test{$level} // () );
 	my %expected = %test, %level-tests;
 
 	$css-actions.reset;
