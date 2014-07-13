@@ -28,9 +28,9 @@ for $fh.lines {
     my %test = %$t;
     my $input = %test<input>;
 
-    for (css1  => CSS::Grammar::CSS1),
-        (css21 => CSS::Grammar::CSS21),
-        (css3  => CSS::Grammar::CSS3) {
+    for (css1  => CSS::Grammar::CSS1,
+         css21 => CSS::Grammar::CSS21,
+         css3  => CSS::Grammar::CSS3) {
 
 	my ($level, $class) = .kv;
 	my %level-tests = %( %test{$level} // () );

@@ -35,7 +35,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
     token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
     token name     {<nmchar>+}
-    token num      {[\+|\-]? (\d* \.)? \d+}
+    token num      {< + - >? (\d* \.)? \d+}
 
     proto token stringchar {*}
     token stringchar:sym<cont>      {\\<.nl>}
@@ -62,12 +62,12 @@ grammar CSS::Grammar:ver<20110607.001> {
     token length:sym<dim>      {:i<num><units=.distance-units>}
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
-    token length:sym<rel-font-unit> {(\+|\-)? (<.rel-font-units>)}
+    token length:sym<rel-font-unit> {$<sign>=< + - >? <rel-font-units>}
 
     proto token dimension {*}
     token dimension:sym<length> {<length>}
 
-    token url_delim_char {<[ \( \) \' \" \\ ]> | <.wc>}
+    token url_delim_char {< ( ) ' " \\ > | <.wc>}
     token bare-url-char  {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
 
     rule url             {:i'url(' [<string>|<string=.bare-url-char>*] ')' }
@@ -76,7 +76,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     # productions
 
-    token operator       {'/'|','|'='}
+    token operator       {< / , = >}
 
     rule property        { <.ws>? <property=.ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }

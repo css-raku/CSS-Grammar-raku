@@ -108,7 +108,7 @@ module CSS::Grammar::Test {
                 default {
                     note "parse failure: $_";
                     flunk("{$suite} $rule parsed");
-                    diag "input: {$input}"
+                    diag "input $rule: {$input}"
                         if $input.defined;
                     diag "ast: {$p.ast.perl}"
                         if $p.defined;

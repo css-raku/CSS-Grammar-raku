@@ -374,8 +374,8 @@ proto method length {*}
 method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
-    my $num = $0 && ~$0 eq '-' ?? -1 !! +1;
-    make $.token($num, :units( ~($1).lc), :type<length>)
+    my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
+    make $.token($num, :units( ~($<rel-font-units>).lc), :type<length>)
 }
 
 proto method angle {*}
