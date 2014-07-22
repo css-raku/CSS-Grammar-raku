@@ -29,7 +29,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token regascii {<[\x20..\x7F]>}
     token nonascii {<- [\x0..\x7F]>}
-    token escape   {'\\'[<char=.unicode>|<char=.regascii>|<char=.nonascii>]}
+    token escape   {'\\'[<char=.unicode>||<char=.regascii>|<char=.nonascii>]}
     token nmstrt   {(<[_ a..z A..Z]>)|<char=.nonascii>|<char=.escape>}
     token nmchar   {<char=.nmreg>|<char=.nonascii>|<char=.escape>}
     token nmreg    {<[_ \- a..z A..Z 0..9]>+}
