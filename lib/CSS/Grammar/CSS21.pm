@@ -80,10 +80,10 @@ token attribute-selector:sym<equals>   {'='}
 token attribute-selector:sym<includes> {'~='}
 token attribute-selector:sym<dash>     {'|='}
 
-rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]}
+rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
 rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-func>]}
 # assume anything else is a class
-rule pseudo:sym<class>    {':' <class=.ident> }
+rule pseudo:sym<class>    {':' <class=.ident><!before '('>}
 
 rule any-function        {<function=.ident>'(' [ <args=.expr> || <any-arg> ]* ')'}
 

@@ -111,7 +111,7 @@ module CSS::Grammar::Test {
                     diag "input $rule: {$input}"
                         if $input.defined;
                     diag "ast: {$p.ast.perl}"
-                        if $p.defined;
+                        if $p.defined && $p.ast.defined;
                 }
 	    }
 	}	
