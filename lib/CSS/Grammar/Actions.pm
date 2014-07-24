@@ -297,7 +297,7 @@ method misplaced($/) {
     $.warning('ignoring out of sequence directive', ~$/)
 }
 
-method operator($/) { make $.token(~$/, :type<operator>) }
+method operator($/) { make ~$/ }
 
 # pseudos
 method pseudo:sym<element>($/)  { make {element => (~$<element>).lc} }
@@ -305,12 +305,12 @@ method pseudo:sym<function>($/) { make $.node($/) }
 method pseudo:sym<class>($/)    { make $.node($/) }
 
 # combinators
-method combinator:sym<adjacent>($/) { make $.token('+') }
-method combinator:sym<child>($/)    { make $.token('>') }
-method combinator:sym<not>($/)      { make $.token('-') } # css21
+method combinator:sym<adjacent>($/) { make '+' }
+method combinator:sym<child>($/)    { make '>' }
+method combinator:sym<not>($/)      { make '-' } # css21
 
 method _code-point($hex-str) {
-    return $.token( :16(~$hex-str), :type<code-point> );
+    return :16( ~$hex-str );
 }
 
 method unicode-range:sym<from-to>($/) {
