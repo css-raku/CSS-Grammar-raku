@@ -60,8 +60,6 @@ module CSS::Grammar::Test {
 		is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
 	    }
 
-	    my $parsed = $p.defined && ~$p ne '';
-
 	    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
 		diag "untested warnings: " ~ @warnings
 		    if @warnings;
@@ -76,9 +74,8 @@ module CSS::Grammar::Test {
 			or diag @warnings;
 		}
 		else {
-		    my @expected_warnings = %expected<warnings> // ();
-		    is(@warnings, @expected_warnings,
-		       @expected_warnings ?? "{$suite} $rule warnings" !! "{$suite} $rule no warnings");
+		    my @expected-warnings = @( %expected<warnings> // () );
+		    is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
 		}
 	    }
 
