@@ -11,7 +11,8 @@ use CSS::Grammar::AST::Token;
 has Int $.line-no is rw = 1;
 has Int $!nl-rachet = 0;
 # variable encoding - not yet supported
-has $.encoding is rw = 'UTF-8';
+has Str $.encoding is rw = 'UTF-8';
+has Bool $.verbose is rw = False;
 
 # accumulated warnings
 has @.warnings;
@@ -20,11 +21,21 @@ method reset {
     @.warnings = ();
     $.line-no = 1;
     $!nl-rachet = 0;
+    $.verbose = False;
 }
 
 method token(Mu $ast, :$type, :$units) {
 
     return unless $ast.defined;
+
+    if ($.verbose) {
+        my %ast;
+        %ast<val> = $ast if $ast.defined;
+        %ast<type> = $type if $type.defined;
+        # suffix, or units
+        %ast<units> = $units if $units.defined;
+        return item %ast;
+    }
 
     $ast
 	does CSS::Grammar::AST::Token
@@ -130,8 +141,8 @@ method nl($/) {
 
 method element-name($/)             { make $<ident>.ast }
 
-method distance-units:sym<abs>($/)  { make $.token( ~($/).lc, :type<length> ) }
-method distance-units:sym<font>($/) { make $.token( ~($/).lc, :type<length> ) }
+method distance-units:sym<abs>($/)  { make ~($/).lc }
+method distance-units:sym<font>($/) { make ~($/).lc }
 
 method any($/) {}
 
@@ -241,7 +252,7 @@ method color-range($/) {
     $range = 0 if $range < 0;
     $range = 255 if $range > 255;
 
-    make $.token($range.round, :type<num>, :units<8bit>);
+    make $range.round;
 }
 
 proto method color {*}
@@ -298,18 +309,23 @@ method combinator:sym<adjacent>($/) { make $.token('+') }
 method combinator:sym<child>($/)    { make $.token('>') }
 method combinator:sym<not>($/)      { make $.token('-') } # css21
 
+method _code-point($hex-str) {
+    return $.token( :16(~$hex-str), :type<code-point> );
+}
+
 method unicode-range:sym<from-to>($/) {
     # don't produce actual hex chars; could be out of range
-    make [ :16( ~$<from> ), :16( ~$<to> ) ];
+    make [ $._code-point( $<from> ), $._code-point( $<to> ) ];
 }
 
 method unicode-range:sym<masked>($/) {
     my $mask = ~$<mask>;
+
     my $lo = $mask.subst('?', '0'):g;
     my $hi = $mask.subst('?', 'F'):g;
 
     # don't produce actual hex chars; could be out of range
-    make [ :16($lo), :16($hi) ];
+    make [ $._code-point($lo), $._code-point($hi) ];
 }
 
 # css21/css3 core - media support
@@ -393,9 +409,9 @@ method frequency-units($/)          { make $.token( ~($/).lc, :type<frequency> )
 method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-method percentage($/)               { make $.token($<num>.ast, :units<%>, :type<percentage>) }
+method percentage($/)               { make $.token($<num>.ast, :units<%>) }
 
-method term1:sym<string>($/)   { make $.token($<string>.ast, :type<string>) }
+method term1:sym<string>($/)   { make $<string>.ast }
 method term1:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
 method term1:sym<color>($/)    { make $<color>.ast; }
 method term2:sym<function>($/) { make $<function>.ast }
