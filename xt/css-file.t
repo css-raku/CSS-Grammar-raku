@@ -7,7 +7,7 @@ use CSS::Grammar::Actions;
 
 use CSS::Grammar::Test;
 
-my %expected = {ast => Mu};
+my %expected = ast => Mu;
 
 my $test-css = %*ENV<CSS_TEST_FILE>;
 if $test-css {
