@@ -1,6 +1,8 @@
 use v6;
 
 use Test;
+
+use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;

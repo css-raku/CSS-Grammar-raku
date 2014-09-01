@@ -3,17 +3,16 @@
 # general compatibility tests
 # -- css1 is a subset of css2.1 and sometimes parses differently
 # -- css3 without extensions should be largely css2.1 compatibile
-# -- our scanning grammar should parse identically to css21 and css3, when
-#    there are no warnings
+# -- our scanning grammar should parse identically to css2.1 and css3
 
 use Test;
 use JSON::Tiny;
 
+use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
-use CSS::Grammar::Test;
 
 my $css-actions = CSS::Grammar::Actions.new;
 
