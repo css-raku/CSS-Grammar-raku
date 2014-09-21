@@ -108,9 +108,8 @@ grammar CSS::Grammar:ver<20110607.001> {
     proto rule term1 {*}
     proto rule term2 {*}
     # temporary work-around for RT120146 Oct 13
-    token term2:sym<tmp> {<num>||<ident><!before '('>}
-##    rule term2:sym<num>        {<num>}
-##    rule term2:sym<ident>      {<ident><!before '('>}
+    rule term2:sym<num>        {<num>}
+    rule term2:sym<ident>      {<id=.ident><!before '('>}
     rule term1:sym<dimension>  {<dimension>}
     rule term1:sym<percentage> {<percentage>}
     rule term1:sym<string>     {<string>}

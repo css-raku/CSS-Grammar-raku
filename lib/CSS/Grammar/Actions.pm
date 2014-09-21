@@ -416,14 +416,8 @@ method term1:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
 method term1:sym<color>($/)    { make $<color>.ast; }
 method term2:sym<function>($/) { make $<function>.ast }
 
-# temporary work-around for RT120146 Oct 13
-method term2:sym<tmp>($/)      { make $<num>
-				    ?? $.token($<num>.ast, :type<num>)
-				    !! $.token($<ident>.ast, :type<ident>)
-}
-
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type<num>); }
-method term2:sym<ident>($/)    { make $.token($<ident>.ast, :type<ident>) }
+method term2:sym<ident>($/)    { make $.token($<id>.ast, :type<ident>) }
 
 method selector($/)           { make $.list($/) }
 
