@@ -184,7 +184,7 @@ method _to-unicode($hex-str) {
 }
 
 method unicode($/) {
-   make $._to-unicode( ~$0 );
+   make $._to-unicode( ~$/ );
 }
 
 method regascii($/) { make ~$/ }

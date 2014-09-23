@@ -19,60 +19,60 @@ grammar CSS::Grammar:ver<20110607.001> {
                   |('/*')   [<.nl>|.]*? ['*/'  || <unclosed-comment>]}
     token unclosed-comment {$}
 
-    token wc {<.nl> | "\t"  | " "}
-    token ws {<!ww>[<.wc>|<.comment>]*}
+    token wc { <.nl> | "\t"  | " " }
+    token ws { <!ww>[ <.wc> | <.comment> ]* }
 
     # "lexer"
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
-    token unicode  {(<[0..9 a..f A..F]>**1..6)}
+    token unicode  { <[ 0..9 a..f A..F ]>**1..6 }
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
-    token regascii {<[\x20..\x7F]>}
-    token nonascii {<- [\x0..\x7F]>}
-    token escape   {'\\'[<char=.unicode>||<char=.regascii>|<char=.nonascii>]}
-    token nmstrt   {(<[_ a..z A..Z]>)|<char=.nonascii>|<char=.escape>}
-    token nmchar   {<char=.nmreg>|<char=.nonascii>|<char=.escape>}
-    token nmreg    {<[_ \- a..z A..Z 0..9]>+}
-    token ident    {$<pfx>=['-']?<nmstrt><nmchar>*}
-    token name     {<nmchar>+}
-    token num      {< + - >? (\d* \.)? \d+}
+    token regascii { <[ \x20..\x7F ]> }
+    token nonascii { <- [ \x0..\x7F ]> }
+    token escape   { '\\'[ <char=.unicode> || <char=.regascii> | <char=.nonascii> ] }
+    token nmstrt   { (<[_ a..z A..Z]>) | <char=.nonascii> | <char=.escape> }
+    token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
+    token nmreg    { <[_ \- a..z A..Z 0..9]>+ }
+    token ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
+    token name     { <nmchar>+ }
+    token num      { < + - >? (\d* \.)? \d+ }
 
     proto token stringchar {*}
-    token stringchar:sym<cont>      {\\<.nl>}
-    token stringchar:sym<escape>    {<escape>}
-    token stringchar:sym<nonascii>  {<nonascii>}
-    token stringchar:sym<ascii>     {<[\x20 \! \# \$ \% \& \(..\[ \]..\~]>+}
+    token stringchar:sym<cont>     { \\<.nl> }
+    token stringchar:sym<escape>   { <escape> }
+    token stringchar:sym<nonascii> { <nonascii> }
+    token stringchar:sym<ascii>    { <[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
 
     token single-quote   {\'}
     token double-quote   {\"}
     proto token string   {*}
-    token string:sym<double-q>  {\"[<stringchar>|<stringchar=.single-quote>]*\"}
-    token string:sym<single-q>  {\'[<stringchar>|<stringchar=.double-quote>]*\'}
+    token string:sym<double-q>  { \"[ <stringchar> | <stringchar=.single-quote> ]*\" }
+    token string:sym<single-q>  { \'[ <stringchar> | <stringchar=.double-quote> ]*\' }
 
-    token id             {'#'<name>}
-    token class          {'.'<name>}
-    token element-name   {<ident>}
+    token id             { '#'<name> }
+    token class          { '.'<name> }
+    token element-name   { <ident> }
 
     proto token distance-units     {*}
-    token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px}
-    token distance-units:sym<font> {<rel-font-units>}
+    token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
+    token distance-units:sym<font> { <rel-font-units> }
     token rel-font-units           {:i em|ex}
 
     proto token length         {*}
-    token length:sym<dim>      {:i<num><units=.distance-units>}
+    token length:sym<dim>      {:i <num><units=.distance-units> }
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
-    token length:sym<rel-font-unit> {$<sign>=< + - >? <rel-font-units>}
+    token length:sym<rel-font-unit> { $<sign>=< + - >? <rel-font-units> }
 
     proto token dimension {*}
-    token dimension:sym<length> {<length>}
+    token dimension:sym<length> { <length> }
 
-    token url_delim_char {< ( ) ' " \\ > | <.wc>}
-    token bare-url-char  {<char=.escape>|<char=.nonascii>|<- url_delim_char>+}
+    token url_delim_char { < ( ) ' " \\ > | <.wc> }
+    token bare-url-char  { <char=.escape> | <char=.nonascii> | <- url_delim_char>+ }
 
-    rule url             {:i'url(' [<string>|<string=.bare-url-char>*] ')' }
+    rule url             {:i'url(' [ <string> | <string=.bare-url-char>* ] ')' }
 
-    token percentage     {<num>'%'}
+    token percentage     { <num>'%' }
 
     # productions
 
@@ -92,7 +92,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     }
     rule color:sym<hex>  { <id> }
 
-    token prio           {:i'!' [('important')||<any>] }
+    token prio           {:i '!' [ ('important') || <any> ] }
 
     # pseudos
     proto rule pseudo {*}
@@ -103,7 +103,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule combinator:sym<child>    { '>' }
 
     proto rule term  {*}
-    rule term:sym<base> {<term=.term1>||<term=.term2>}
+    rule term:sym<base> { <term=.term1> || <term=.term2> }
 			    
     proto rule term1 {*}
     proto rule term2 {*}
