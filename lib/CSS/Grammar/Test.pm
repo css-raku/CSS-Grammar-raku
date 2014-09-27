@@ -34,7 +34,7 @@ module CSS::Grammar::Test {
     }
 
     our sub parse-tests($class, $input, :$parse, :$actions,
-			:$verbose = False, :$rule = 'TOP', :$suite, :%expected) {
+			:$verbose = False, :$rule = 'TOP', :$suite = '', :%expected) {
 
 	my $p = $parse;
 
