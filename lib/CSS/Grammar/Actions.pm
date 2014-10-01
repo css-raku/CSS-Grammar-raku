@@ -372,7 +372,7 @@ method declaration-list($/)   {
     make %declarations;
 }
 
-method declaration:sym<base>($/)        {
+method declaration($/)        {
     return $.warning('dropping declaration', $<property>.ast)
 	if !$<expr>.caps
 	|| $<expr>.caps.grep({! .value.ast.defined});

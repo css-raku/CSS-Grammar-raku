@@ -31,13 +31,13 @@ rule declarations {
 # this rule is suitable for parsing style attributes in HTML documents.
 # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
 #
-rule declaration-list { [ <declaration> || <dropped-decl> ]* }
+rule declaration-list { [ <declaration=.module-declaration> || <declaration> || <dropped-decl> ]* }
 
-rule declaration:sym<base> { <property> <expr> <prio>? <end-decl> }
+rule declaration { <property> <expr> <prio>? <end-decl> }
 # css1 syntax allows a unary operator in front of all terms. Throw it
 # out, if the term doesn't consume it.
 rule expr { [<term>||<.unary-op><term>] +% [ <operator>? ] }
-rule unary-op       {'+'|'-'}
+rule unary-op       {< + - >}
 
 token selector {<simple-selector> +% <.ws> <pseudo>?}
 # <qname> - for forward compat with css2.1 and 3
