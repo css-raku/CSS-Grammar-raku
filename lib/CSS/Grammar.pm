@@ -78,7 +78,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     token operator       {< / , = >}
 
-    rule property        { <.ws>? <property=.ident> ':' }
+    rule property        { <.ws>? <ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
     rule color-range     { <num>$<percentage>=[\%]? }

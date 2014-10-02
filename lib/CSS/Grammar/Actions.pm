@@ -338,7 +338,7 @@ method media-query($/)        { make $.list($/) }
 method at-rule:sym<page>($/)  { make $.at-rule($/) }
 method page-pseudo($/)        { make $<ident>.ast }
 
-method property($/)           { make $<property>.ast }
+method property($/)           { make $<ident>.ast }
 method ruleset($/)            { make $.node($/) }
 method selectors($/)          { make $.list($/) }
 method declarations($/)       { make $<declaration-list>.ast }
