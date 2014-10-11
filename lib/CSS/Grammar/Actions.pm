@@ -358,7 +358,7 @@ method declaration-list($/)   {
 	for @$props -> %decl {
 	    %decl<prio> = $prio if $prio;
 	    my $prop = %decl<property>:delete
-		// die "unable to find property in declaration";
+		// next;
 
 	    if %declarations{$prop}:exists {
 		# override the previous declaration unless it's more !important
