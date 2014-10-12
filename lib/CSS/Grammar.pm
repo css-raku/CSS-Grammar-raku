@@ -81,9 +81,6 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule property        { <.ws>? <ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
-    # extension point for css-module, etc.
-    proto rule module-declaration {*}
-
     rule color-range     { <num>$<percentage>=[\%]? }
 
     proto rule color     {*}
@@ -110,7 +107,6 @@ grammar CSS::Grammar:ver<20110607.001> {
 			    
     proto rule term1 {*}
     proto rule term2 {*}
-    # temporary work-around for RT120146 Oct 13
     rule term2:sym<num>        {<num>}
     rule term2:sym<ident>      {<id=.ident><!before '('>}
     rule term1:sym<dimension>  {<dimension>}
