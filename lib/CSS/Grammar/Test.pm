@@ -51,6 +51,8 @@ module CSS::Grammar::Test {
 
 	    my $expected-parse = (%expected<parse> // $input).trim;
 
+            my %todo = %( %expected<todo> // {} );
+
 	    if $input.defined && $expected-parse.defined {
 		my $input-display = $input.chars > 300
 		    ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50)
@@ -60,26 +62,23 @@ module CSS::Grammar::Test {
 		is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
 	    }
 
+            todo( %todo<warnings> )
+                if %todo<warnings>;
+
 	    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
 		diag "untested warnings: " ~ @warnings
 		    if @warnings;
 	    }
 	    else {
-		todo( %expected<warnings-todo> )
-		    if %expected<warnings-todo>;
-     
-		if %expected<warnings>.isa('Regex') {
-		    my @matched = ([~] @warnings).match(%expected<warnings>);
-		    ok( @matched, "{$suite} $rule warnings")
-			or diag @warnings;
-		}
-		else {
-		    my @expected-warnings = @( %expected<warnings> // () );
-		    is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
-		}
+                my @expected-warnings = @( %expected<warnings> // () );
+                is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
 	    }
 
 	    if defined (my $ast = %expected<ast>) {
+
+               todo( %todo<ast> )
+		    if %todo<ast>;     
+
 		ok ($p.defined && $p.ast.defined && json-eqv($p.ast, $ast)), "{$suite} $rule ast"
 		    or do {diag "expected: " ~ to-json($ast);
 			   diag "got: " ~ to-json($p.ast)};
