@@ -70,8 +70,15 @@ module CSS::Grammar::Test {
 		    if @warnings;
 	    }
 	    else {
-                my @expected-warnings = @( %expected<warnings> // () );
-                is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
+               if %expected<warnings>.isa('Regex') {
+                   my @matched = ([~] @warnings).match(%expected<warnings>);
+                   ok( @matched, "{$suite} $rule warnings")
+                       or diag @warnings;
+               }
+               else {
+                   my @expected-warnings = @( %expected<warnings> // () );
+                   is_deeply @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
+               }
 	    }
 
 	    if defined (my $ast = %expected<ast>) {
