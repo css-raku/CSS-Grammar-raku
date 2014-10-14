@@ -77,7 +77,7 @@ module CSS::Grammar::Test {
                }
                else {
                    my @expected-warnings = @( %expected<warnings> // () );
-                   is_deeply @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
+                   is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
                }
 	    }
 
