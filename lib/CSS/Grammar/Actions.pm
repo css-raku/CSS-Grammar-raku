@@ -119,11 +119,11 @@ sub _display-string($_str) {
 }
 
 method warning ($message, $str?, $explanation?) {
-    my $warning = $message;
+    my $warning = ~$message;
     $warning ~= ': ' ~ _display-string( $str )
-	if $str.defined && $str ne '';
+	if ($str // '') ne '';
     $warning ~= ' - ' ~ $explanation
-	if $explanation;
+	if ($explanation // '') ne '';
     $warning does CSS::Grammar::AST::Info;
     $warning.line-no = $.line-no - 1;
     push @.warnings, $warning;
@@ -373,6 +373,7 @@ method declaration-list($/)   {
 }
 
 method declaration($/)        {
+    return if $<dropped-decl>;
     return $.warning('dropping declaration', $<property>.ast)
 	if !$<expr>.caps
 	|| $<expr>.caps.grep({! .value.ast.defined});

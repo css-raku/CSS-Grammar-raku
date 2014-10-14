@@ -44,9 +44,9 @@ rule declarations {
 # this rule is suitable for parsing style attributes in HTML documents.
 # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
 #
-rule declaration-list { [ <declaration> || <dropped-decl> ]* }
+rule declaration-list { <declaration> * }
 
-rule declaration { <property> <expr> <prio>? <end-decl> }
+rule declaration { <property> <expr> <prio>? <end-decl> || <dropped-decl> }
 
 rule expr { <term> +% [ <operator>? ] }
 token term2:sym<function>  {<function=.any-function>}
