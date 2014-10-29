@@ -5,6 +5,7 @@ use v6;
 
 class CSS::Grammar::Actions;
 
+use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSType;
 use CSS::Grammar::AST::Info;
 use CSS::Grammar::AST::Token;
 
@@ -31,9 +32,9 @@ method token(Mu $ast, :$type, :$units) {
     if ($.verbose) {
         my %ast;
         %ast<val> = $ast if $ast.defined;
-        %ast<type> = $type if $type.defined;
+        %ast<type> = ~$type if $type.defined;
         # suffix, or units
-        %ast<units> = $units if $units.defined;
+        %ast<units> = ~$units if $units.defined;
         return item %ast;
     }
     else {
@@ -215,7 +216,7 @@ method double-quote($/) { make '"' }
 
 method _string($/) {
     my $string = [~] $<stringchar>>>.ast;
-    make $.token($string, :type<string>);
+    make $.token($string, :type(CSSValue::StringComponent));
 }
 
 proto method string {*}
@@ -257,7 +258,7 @@ proto method color {*}
 method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
-    make $.token($.node($/), :type<color>, :units<rgb>);
+    make $.token($.node($/), :type(CSSValue::ColorComponent), :units<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -273,7 +274,7 @@ method color:sym<hex>($/)   {
 	!! $id.comb(/../);
 
     my %rgb = <r g b> Z=> @rgb-vals.map({ :16($_) }); 
-    make $.token(%rgb, :type<color>, :units<rgb>);
+    make $.token(%rgb, :type(CSSValue::ColorComponent), :units<rgb>);
 }
 
 method prio($/) {
@@ -386,37 +387,37 @@ method term1:sym<dimension>($/)  { make $<dimension>.ast }
 method term1:sym<percentage>($/) { make $<percentage>.ast }
 
 proto method length {*}
-method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type<length>); }
+method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::LengthComponent)); }
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :units( ~($<rel-font-units>).lc), :type<length>)
+    make $.token($num, :units( ~($<rel-font-units>).lc), :type(CSSValue::LengthComponent))
 }
 
 proto method angle {*}
-method angle-units($/)              { make $.token( ~($/).lc, :type<angle> ) }
-method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type<angle>) }
+method angle-units($/)              { make $.token( ~($/).lc, :type(CSSValue::AngleComponent) ) }
+method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::AngleComponent)) }
 method dimension:sym<angle>($/)     { make $<angle>.ast }
 
 proto method time {*}
-method time-units($/)               { make $.token( ~($/).lc, :type<time> ) }
-method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type<time>) }
+method time-units($/)               { make $.token( ~($/).lc ) }
+method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::TimeComponent)) }
 method dimension:sym<time>($/)      { make $<time>.ast }
 
 proto method frequency {*}
-method frequency-units($/)          { make $.token( ~($/).lc, :type<frequency> ) }
-method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type<frequency>) }
+method frequency-units($/)          { make $.token( ~($/).lc, :type(CSSValue::FrequencyComponent) ) }
+method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::FrequencyComponent)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-method percentage($/)               { make $.token($<num>.ast, :units<%>) }
+method percentage($/)               { make $.token($<num>.ast, :units<%>, :type(CSSValue::PercentageComponent)) }
 
 method term1:sym<string>($/)   { make $<string>.ast }
-method term1:sym<url>($/)      { make $.token($<url>.ast, :type<url>) }
+method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
 method term1:sym<color>($/)    { make $<color>.ast; }
 method term2:sym<function>($/) { make $<function>.ast }
 
-method term2:sym<num>($/)      { make $.token($<num>.ast, :type<num>); }
-method term2:sym<ident>($/)    { make $.token($<id>.ast, :type<ident>) }
+method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
+method term2:sym<ident>($/)    { make $.token($<id>.ast, :type(CSSValue::IdentifierComponent)) }
 
 method selector($/)           { make $.list($/) }
 
@@ -429,7 +430,7 @@ method attrib($/)             { make $.list($/) }
 method any-function($/) {
     return $.warning('skipping function arguments', ~$<any-arg>)
 	if $<any-arg>;
-    make $.list($/, :type<function>);
+    make $.list($/, :type(CSSValue::FunctionComponent));
 }
 
 method pseudo-function:sym<lang>($/) {
