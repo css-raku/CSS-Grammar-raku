@@ -36,15 +36,16 @@ method token(Mu $ast, :$type, :$units) {
         %ast<units> = $units if $units.defined;
         return item %ast;
     }
+    else {
+        $ast
+            does CSS::Grammar::AST::Token
+            unless $ast.can('type');
 
-    $ast
-	does CSS::Grammar::AST::Token
-	unless $ast.can('type');
+        $ast.type = $type   if $type.defined;
+        $ast.units = $units if $units.defined;
 
-    $ast.type = $type   if $type.defined;
-    $ast.units = $units if $units.defined;
-
-    return $ast;
+        return $ast;
+    }
 }
 
 method node($/, :$capture?) {
@@ -64,11 +65,10 @@ method node($/, :$capture?) {
 	    }
 
 	    $value = $value.ast
-		// ($capture && $capture eq $key
-		    ?? ~$value
-		    !! next);
+		// $capture && $capture eq $key && ~$value;
 
-	    %terms{$key.subst(/^'expr-'/, '')} = $value;
+	    %terms{$key.subst(/^'expr-'/, '')} = $value
+                if $value.defined;
 	}
     }
 
@@ -94,12 +94,10 @@ method list($/, :$capture?) {
 	for .caps -> $cap {
 	    my ($key, $value) = $cap.kv;
 	    $value = $value.ast
-		// ($capture && $capture eq $key
-		    ?? ~$value
-		    !! next);
+		// $capture && $capture eq $key && ~$value;
 
-	    # dumbed down for json compatibility
-	    push @terms, {$key.subst(/^'expr-'/, '') => $value};
+	    push( @terms, {$key.subst(/^'expr-'/, '') => $value} )
+                if $value.defined;
 	}
     }
 
@@ -200,7 +198,7 @@ method nmreg($/)    { make ~$/ }
 
 method ident($/) {
     my $pfx = $<pfx> ?? ~$<pfx> !! '';
-    my $ident = [~] ($pfx, $<nmstrt>.ast, $<nmchar>>>.ast);
+    my $ident = [~] $pfx, $<nmstrt>.ast, $<nmchar>>>.ast;
     make $ident.lc;
 }
 
