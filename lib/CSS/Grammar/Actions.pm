@@ -25,7 +25,7 @@ method reset {
     $.verbose = False;
 }
 
-method token(Mu $ast, :$type, :$units) {
+method token(Mu $ast, :$type, :$units, :$trait) {
 
     return unless $ast.defined;
 
@@ -44,6 +44,7 @@ method token(Mu $ast, :$type, :$units) {
 
         $ast.type = $type   if $type.defined;
         $ast.units = $units if $units.defined;
+        $ast.trait = $trait if $trait.defined;
 
         return $ast;
     }
