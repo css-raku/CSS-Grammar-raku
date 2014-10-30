@@ -3,7 +3,7 @@
 # general compatibility tests
 # -- css1 is a subset of css2.1 and sometimes parses differently
 # -- css3 without extensions should be largely css2.1 compatibile
-# -- our scanning grammar should parse identically to css2.1 and css3
+# -- the core grammar should parse identically to css2.1 and css3
 
 use Test;
 use JSON::Tiny;
@@ -51,7 +51,8 @@ for $fh.lines {
     }
 
     if CSS::Grammar::Core.can( '_' ~ $rule ) {
-	my %expected = %( %test<core> // {} );
+        my %core-tests = %( %test<core> // {} );
+	my %expected = %( %test, ast => Any, warnings => Any, %core-tests );
         %expected<warnings> //= Any;
         CSS::Grammar::Test::parse-tests(CSS::Grammar::Core, $input,
 					    :$actions,
