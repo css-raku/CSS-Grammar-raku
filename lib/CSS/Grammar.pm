@@ -12,7 +12,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     # Comments and whitespace
 
-    token nl {\xA|"\r"\xA|"\r"|"\f"}
+    token nl { \n | \f }
 
     # comments: nb trigger <nl> for accurate line counting
     token comment {('<!--') [<.nl>|.]*? ['-->' || <unclosed-comment>]
