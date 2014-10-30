@@ -86,7 +86,7 @@
 [ "ruleset", { "input" : "H1 { color: }", "warnings" : [ "dropping declaration: color" ], "ast" : null } ]
 [ "ruleset", { "input" : "H2 { color: green; rotation: 70deg;", "warnings" : [ "no closing '}'" ], "ast" : null, "css1" : { "warnings" : [ "dropping term: 70deg", "dropping declaration: rotation", "no closing '}'" ] } } ]
 [ "ruleset", { "input" : "H2 { color: green; rotation: }", "warnings" : "dropping declaration: rotation", "ast" : null } ]
-[ "ruleset", { "input" : "H2 { test: 'this is not closed", "warnings" : [ "unterminated string: 'this is not closed", "dropping declaration: test", "no closing '}'" ], "ast" : null } ]
+[ "ruleset", { "input" : "H2 { test: 'this is not closed", "warnings" : [ "unterminated string: 'this is not closed", "dropping declaration: test", "no closing '}'" ], "ast" : null, "core" : { "warnings" : "unterminated string: 'this is not closed" } } ]
 [ "at-rule", { "input" : "media print {body{margin: 1cm}}", "ast" : { "media-list" : [ { "media-query" : [ { "media" : "print" } ] } ], "media-rules" : [ { "ruleset" : { "selectors" : [ { "selector" : [ { "simple-selector" : [ { "qname" : { "element-name" : "body" } } ] } ] } ], "declarations" : { "margin" : { "expr" : [ { "term" : 1 } ] } } } } ], "@" : "media" }, "css1" : { "skip" : "N/A to CSS1" } } ]
 [ "at-rule", { "input" : "Page :first { margin-right: 2cm }", "ast" : { "page" : "first", "declarations" : { "margin-right" : { "expr" : [ { "term" : 2 } ] } }, "@" : "page" }, "css1" : { "skip" : "N/A to CSS1" } } ]
 [ "stylesheet", { "input" : "@charset 'bazinga';", "ast" : null, "css2" : { "ast" : [ { "charset" : "bazinga" } ] }, "css1" : { "warnings" : [ "dropping: @charset 'bazinga';" ] } } ]

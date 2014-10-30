@@ -14,7 +14,7 @@ use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 
-my $css-actions = CSS::Grammar::Actions.new;
+my $actions = CSS::Grammar::Actions.new;
 
 my $fh = open 't/compat.json', :r;
 
@@ -29,13 +29,14 @@ for $fh.lines {
 
     for (css1  => CSS::Grammar::CSS1,
          css21 => CSS::Grammar::CSS21,
-         css3  => CSS::Grammar::CSS3) {
+         css3  => CSS::Grammar::CSS3,
+        ) {
 
 	my ($level, $class) = .kv;
 	my %level-tests = %( %test{$level} // () );
 	my %expected = %test, %level-tests;
 
-	$css-actions.reset;
+	$actions.reset;
 
 	if %expected<skip> {
 	    skip( $rule ~ ': ' ~ %expected<skip> );
@@ -43,19 +44,20 @@ for $fh.lines {
 	}
 
 	CSS::Grammar::Test::parse-tests($class, $input,
-					:actions($css-actions),
-					:rule($rule),
+					:$actions,
+					:$rule,
 					:suite($level),
-					:expected(%expected));
+					:%expected);
     }
 
     if CSS::Grammar::Core.can( '_' ~ $rule ) {
-        my %expected =  %(%test, warnings => Any, ast => Any);
+	my %expected = %( %test<core> // {} );
+        %expected<warnings> //= Any;
         CSS::Grammar::Test::parse-tests(CSS::Grammar::Core, $input,
-					    :actions($css-actions),
+					    :$actions,
 					    :rule('_' ~ $rule),
-					    :suite('scan'),
-					    :expected(%expected));
+					    :suite<core>,
+					    :%expected);
     }
 }
 
