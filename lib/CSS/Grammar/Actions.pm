@@ -5,7 +5,7 @@ use v6;
 
 class CSS::Grammar::Actions;
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSType;
+use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSTrait;
 use CSS::Grammar::AST::Info;
 use CSS::Grammar::AST::Token;
 
@@ -76,9 +76,9 @@ method node($/, :$capture?) {
     return %terms;
 }
 
-method at-rule($/) {
-    my %terms = %( $.node($/) );
-    %terms<@> = (~$0).lc;
+method at-rule($/, :$type) {
+    my %terms = %( $.node($/, :$type) );
+    %terms<@> = $0.lc;
     return %terms;
 }
 
@@ -140,8 +140,8 @@ method nl($/) {
 
 method element-name($/)             { make $<ident>.ast }
 
-method distance-units:sym<abs>($/)  { make ~($/).lc }
-method distance-units:sym<font>($/) { make ~($/).lc }
+method distance-units:sym<abs>($/)  { make $/.lc }
+method distance-units:sym<font>($/) { make $/.lc }
 
 method any($/) {}
 
@@ -281,16 +281,15 @@ method prio($/) {
     return $.warning("dropping term", ~$/)
 	if $<any> || !$0;
 
-    make (~$0).lc
+    make $0.lc
 }
 
 # from the TOP (CSS1 + CSS21 + CSS3)
 method TOP($/) { make $<stylesheet>.ast }
-method stylesheet($/) { make $.list($/) }
+method stylesheet($/) { make $.list($/, :type(CSSObject::StyleSheet)) }
 
-method charset($/)   { make $<string>.ast }
-method import($/)    { make $.node($/) }
-method namespace($/) { make $.node($/) }
+method charset($/)   { make $.node($<string>, :type(CSSObject::CharsetRule)) }
+method import($/)    { make $.node($/, :type(CSSObject::ImportRule)) }
 
 method misplaced($/) {
     $.warning('ignoring out of sequence directive', ~$/)
@@ -299,7 +298,7 @@ method misplaced($/) {
 method operator($/) { make ~$/ }
 
 # pseudos
-method pseudo:sym<element>($/)  { make {element => (~$<element>).lc} }
+ method pseudo:sym<element>($/)  { make { element => $<element>.lc } }
 method pseudo:sym<function>($/) { make $.node($/) }
 method pseudo:sym<class>($/)    { make $.node($/) }
 
@@ -328,17 +327,17 @@ method unicode-range:sym<masked>($/) {
 }
 
 # css21/css3 core - media support
-method at-rule:sym<media>($/) { make $.at-rule($/) }
-method media-rules($/)        { make $.list($/) }
+method at-rule:sym<media>($/) { make $.at-rule($/, :type(CSSObject::MediaRule)) }
+method media-rules($/)        { make $.list($/, :type(CSSObject::RuleList)) }
 method media-list($/)         { make $.list($/) }
 method media-query($/)        { make $.list($/) }
 
 # css21/css3 core - page support
-method at-rule:sym<page>($/)  { make $.at-rule($/) }
+method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
 method page-pseudo($/)        { make $<ident>.ast }
 
 method property($/)           { make $<ident>.ast }
-method ruleset($/)            { make $.node($/) }
+method ruleset($/)            { make $.node($/, :type(CSSObject::StyleRule)) }
 method selectors($/)          { make $.list($/) }
 method declarations($/)       { make $<declaration-list>.ast }
 method declaration-list($/)   {
@@ -377,7 +376,7 @@ method declaration($/)        {
 	if !$<expr>.caps
 	|| $<expr>.caps.grep({! .value.ast.defined});
 
-    make $.node($/);
+    make $.node($/, :type(CSSObject::StyleDeclaration));
 }
 
 method expr($/)           { make $.list($/) }
@@ -391,25 +390,25 @@ method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :typ
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :units( ~($<rel-font-units>).lc), :type(CSSValue::LengthComponent))
+    make $.token($num, :units( $<rel-font-units>.lc ), :type(CSSValue::LengthComponent))
 }
 
 proto method angle {*}
-method angle-units($/)              { make $.token( ~($/).lc, :type(CSSValue::AngleComponent) ) }
-method angle:sym<dim>($/)           { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::AngleComponent)) }
-method dimension:sym<angle>($/)     { make $<angle>.ast }
+method angle-units($/)         { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
+method angle:sym<dim>($/)      { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::AngleComponent)) }
+method dimension:sym<angle>($/){ make $<angle>.ast }
 
 proto method time {*}
-method time-units($/)               { make $.token( ~($/).lc ) }
-method time:sym<dim>($/)            { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::TimeComponent)) }
-method dimension:sym<time>($/)      { make $<time>.ast }
+method time-units($/)          { make $.token( $/.lc ) }
+method time:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::TimeComponent)) }
+method dimension:sym<time>($/) { make $<time>.ast }
 
 proto method frequency {*}
-method frequency-units($/)          { make $.token( ~($/).lc, :type(CSSValue::FrequencyComponent) ) }
-method frequency:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::FrequencyComponent)) }
+method frequency-units($/)     { make $.token( $/.lc, :type(CSSValue::FrequencyComponent) ) }
+method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::FrequencyComponent)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-method percentage($/)               { make $.token($<num>.ast, :units<%>, :type(CSSValue::PercentageComponent)) }
+method percentage($/)          { make $.token($<num>.ast, :units<%>, :type(CSSValue::PercentageComponent)) }
 
 method term1:sym<string>($/)   { make $<string>.ast }
 method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
@@ -443,9 +442,9 @@ method unknown-pseudo-func($/) {
     $.warning('unknown pseudo-function', $<ident>.ast);
 }
 
-method attribute-selector:sym<equals>($/)    { make ~$/ }
-method attribute-selector:sym<includes>($/)  { make ~$/ }
-method attribute-selector:sym<dash>($/)      { make ~$/ }
+method attribute-selector:sym<equals>($/)   { make ~$/ }
+method attribute-selector:sym<includes>($/) { make ~$/ }
+method attribute-selector:sym<dash>($/)     { make ~$/ }
 
 method end-block($/) {
     $.warning("no closing '}'")

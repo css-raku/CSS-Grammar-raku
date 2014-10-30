@@ -27,7 +27,7 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         »;
 
     # CSS value types based on http://dev.w3.org/csswg/cssom-values/
-    # for example CSSStyleDeclarationValue maps to StyleDeclaration
+    # for example 3.3 CSSStyleDeclarationValue maps to CSSValue::StyleDeclaration
     our Str enum CSSValue is export(:CSSValue) «
         :ColorComponent<color>
         :Component<value>
@@ -49,10 +49,11 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :FrequencyComponent<frequency>
         :FunctionComponent<function>
         :TimeComponent<time>
+
     »;
 
-    # cssom view
-    our Str enum CSSType is export(:CSSType) «:Box<box>»;
+    # from http://dev.w3.org/csswg/cssom-view/
+    our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
 
 }
 

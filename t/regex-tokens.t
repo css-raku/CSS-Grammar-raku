@@ -95,7 +95,7 @@ for (q{world'}, q{'''}, q{'grocer's'},  "'hello\nworld'") {
     nok($_ ~~ /^<CSS::Grammar::string>$/, "not string: $_");
 }
 
-for ('*', ',', '+', '>', '|=', '~=') {
+for (< * + \> |= ~= >) {
     ok($_ ~~ /^<CSS::Grammar::Core::_op>$/, "scan op: $_");
 }
 
