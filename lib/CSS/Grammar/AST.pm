@@ -44,7 +44,8 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
 
         # These components can occur in the AST, but do not have corresponding definitions in csssom-values
 
-        :NumberComponent<num>  # e.g. z-index
+        :NumberComponent<num>
+        :IntegerComponent<int>  # e.g. z-index
         :AngleComponent<angle>
         :FrequencyComponent<frequency>
         :FunctionComponent<function>
