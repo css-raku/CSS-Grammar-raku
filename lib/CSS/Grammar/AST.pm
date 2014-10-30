@@ -48,6 +48,7 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :AngleComponent<angle>
         :FrequencyComponent<frequency>
         :FunctionComponent<function>
+        :ResolutionComponent<resolution>
         :TimeComponent<time>
 
     »;
