@@ -289,7 +289,7 @@ method prio($/) {
 method TOP($/) { make $<stylesheet>.ast }
 method stylesheet($/) { make $.list($/, :type(CSSObject::StyleSheet)) }
 
-method charset($/)   { make $.node($<string>, :type(CSSObject::CharsetRule)) }
+method charset($/)   { make $.token($<string>.ast, :type(CSSObject::CharsetRule)) }
 method import($/)    { make $.node($/, :type(CSSObject::ImportRule)) }
 
 method misplaced($/) {
@@ -299,7 +299,7 @@ method misplaced($/) {
 method operator($/) { make ~$/ }
 
 # pseudos
- method pseudo:sym<element>($/)  { make { element => $<element>.lc } }
+method pseudo:sym<element>($/)  { make { element => $<element>.lc } }
 method pseudo:sym<function>($/) { make $.node($/) }
 method pseudo:sym<class>($/)    { make $.node($/) }
 

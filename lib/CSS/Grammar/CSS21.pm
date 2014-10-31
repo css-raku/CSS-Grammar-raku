@@ -13,7 +13,7 @@ rule stylesheet { <charset>? [ <import> ]*
 		  [ '@'<at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
 rule charset { '@'(:i'charset') <string> ';' }
-rule import  { '@'(:i'import')  [<string>|<url>] <media-list>? ';' }
+rule import  { '@'(:i'import')  [<url=.string>|<url>] <media-list>? ';' }
 # to detect out of order directives
 rule misplaced {<charset>|<import>}
 

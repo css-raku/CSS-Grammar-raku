@@ -12,7 +12,7 @@ rule TOP {^ <stylesheet> $}
 
 rule stylesheet { <import>* [<ruleset> || <misplaced> || <unknown>]* }
 
-rule import { '@'(:i'import') [<string>|<url>] ';' }
+rule import { '@'(:i'import') [<url=.string>|<url>] ';' }
 
 # to detect out of order directives
 rule misplaced {<import>}
