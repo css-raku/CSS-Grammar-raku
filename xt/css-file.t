@@ -19,27 +19,23 @@ else {
     diag "loading $test-css (set \$CSS_TEST_FILE to override)";
 }
 
-my $fh = open $test-css
-    or die "unable to open $fh: $!";
-
-my $css-body = join("\n", $fh.lines);
-$fh.close;
-
 my $actions = CSS::Grammar::Actions.new;
+
+my $css-body = $test-css.IO.slurp;
 
 diag "...parsing...";
 
-my $p = try { CSS::Grammar::CSS3.parsefile($test-css, :actions($actions) ) };
+temp $/ = CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $css-body,
+                                            :suite('css3 file'),
+                                            :$actions,
+                                            :%expected);
 
-ok($p, "parsed css content ($test-css)")
+ok($/, "parsed css content ($test-css)")
     or die "parse failed - can't continue";
 
-CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $css-body,
-				:parse($p),
-				:suite('css3 file'),
-				:expected(%expected));
+ok $/.ast.defined, "AST produced";
 
 diag "...dumping...";
-note $p.ast.perl;
+note $/.ast.perl;
 
 done;
