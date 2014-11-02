@@ -1,4 +1,4 @@
-[ "term", { "input" : "42%", "ast" : { "val" : 42, "units" : "%", "type" : "percent" } } ]
+[ "term", { "input" : "42%", "ast" : { "val" : 42, "type" : "percent" } } ]
 [ "term", { "input" : "rgb(10%,20%,30%)", "ast" : { "val" : { "r" : 26, "g" : 51, "b" : 77 }, "type" : "color", "units" : "rgb" } } ]
 [ "term", { "input" : "#aa77Ff", "ast" : { "val" : { "r" : 170, "g" : 119, "b" : 255 }, "type" : "color", "units" : "rgb" } } ]
 [ "term", { "input" : "#a7f", "ast" : { "val" : { "r" : 170, "g" : 119, "b" : 255 }, "type" : "color", "units" : "rgb" } } ]

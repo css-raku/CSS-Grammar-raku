@@ -152,8 +152,8 @@ method nl($/) {
 
 method element-name($/)             { make $<ident>.ast }
 
-method distance-units:sym<abs>($/)  { make $/.lc }
-method distance-units:sym<font>($/) { make $/.lc }
+method length-units:sym<abs>($/)  { make $/.lc }
+method length-units:sym<font>($/) { make $/.lc }
 
 method any($/) {}
 
@@ -420,7 +420,7 @@ method frequency-units($/)     { make $.token( $/.lc, :type(CSSValue::FrequencyC
 method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::FrequencyComponent)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-method percentage($/)          { make $.token($<num>.ast, :units<%>, :type(CSSValue::PercentageComponent)) }
+method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
 
 method term1:sym<string>($/)   { make $<string>.ast }
 method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }

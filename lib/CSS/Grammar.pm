@@ -53,13 +53,13 @@ grammar CSS::Grammar:ver<20110607.001> {
     token class          { '.'<name> }
     token element-name   { <ident> }
 
-    proto token distance-units     {*}
-    token distance-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
-    token distance-units:sym<font> { <rel-font-units> }
+    proto token length-units     {*}
+    token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
+    token length-units:sym<font> { <rel-font-units> }
     token rel-font-units           {:i em|ex}
 
     proto token length         {*}
-    token length:sym<dim>      {:i <num><units=.distance-units> }
+    token length:sym<dim>      {:i <num><units=.length-units> }
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
     token length:sym<rel-font-unit> { $<sign>=< + - >? <rel-font-units> }
