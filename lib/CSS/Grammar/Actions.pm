@@ -111,11 +111,11 @@ sub _display-string($_str) {
     my $str = $_str.chomp.trim;
     $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
 
-    [~] $str.comb.map({
-	    $_ eq "\\"                  ?? '\\'
-		!! /<[\t \s \!..\~]>/   ?? $_   
-		!! .ord.fmt("\\x[%x]")
-	});
+    [~] $str.comb.map: {
+		/<[ \\ \t \s \!..\~ ]>/
+                    ?? $_  
+                    !! .ord.fmt("\\x[%x]")
+	};
 }
 
 method warning ($message, $str?, $explanation?) {
