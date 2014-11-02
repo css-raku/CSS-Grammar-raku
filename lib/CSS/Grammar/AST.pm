@@ -49,12 +49,14 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :FunctionComponent<function>
         :ResolutionComponent<resolution>
         :TimeComponent<time>
-
     »;
+
+    # an enumerated list of all unit types for validation purposes.
+    # Adapted from the out-of-date http://www.w3.org/TR/DOM-Level-2-Style/css.html
+    our enum CSSUnits is export(:CSSUnits) <% ems exs px cm mm in pt pc deg rad grad ms s hz khz rgb
+    rgba hsl hsla em ex dpi dpcm>;
 
     # from http://dev.w3.org/csswg/cssom-view/
     our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
 
 }
-
-

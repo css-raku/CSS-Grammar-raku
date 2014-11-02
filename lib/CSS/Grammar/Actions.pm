@@ -5,7 +5,7 @@ use v6;
 
 class CSS::Grammar::Actions;
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSTrait;
+use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits;
 use CSS::Grammar::AST::Info;
 use CSS::Grammar::AST::Token;
 
@@ -25,16 +25,27 @@ method reset {
     $.verbose = False;
 }
 
+our %known-type = BEGIN
+    %( CSSObject.enums.invert ),
+    %( CSSValue.enums.invert ),
+    ;
+
 method token(Mu $ast, :$type, :$units, :$trait) {
 
     return unless $ast.defined;
+
+    die "unknown type: $type"
+        if $type.defined && (%known-type{$type}:!exists);
+
+    die "unknown units: $units"
+        if $units.defined && (CSSUnits.enums{$units}:!exists);
 
     if ($.verbose) {
         my %ast;
         %ast<val> = $ast if $ast.defined;
         %ast<type> = ~$type if $type.defined;
-        # suffix, or units
         %ast<units> = ~$units if $units.defined;
+
         return item %ast;
     }
     else {
@@ -42,9 +53,9 @@ method token(Mu $ast, :$type, :$units, :$trait) {
             does CSS::Grammar::AST::Token
             unless $ast.can('type');
 
-        $ast.type = $type   if $type.defined;
-        $ast.units = $units if $units.defined;
-        $ast.trait = $trait if $trait.defined;
+        $ast.type = ~$type   if $type.defined;
+        $ast.units = ~$units if $units.defined;
+        $ast.trait = ~$trait if $trait.defined;
 
         return $ast;
     }
