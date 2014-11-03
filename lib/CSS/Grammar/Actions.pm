@@ -30,15 +30,24 @@ our %known-type = BEGIN
     %( CSSValue.enums.invert ),
     ;
 
-method token(Mu $ast, :$type, :$units, :$trait) {
+method token(Mu $ast, :$type is copy, :$units, :$trait) {
 
     return unless $ast.defined;
 
+    my $inferred-type;
+
+    if $units.defined {
+        $inferred-type = CSSUnits.enums{$units}
+        or die "unknown units: $units";
+
+        die "type conflict for units $units; inferred: $inferred-type, actual: $type"
+            if $type.defined && $type ne $inferred-type;
+
+        $type //= $inferred-type;
+    }
+
     die "unknown type: $type"
         if $type.defined && (%known-type{$type}:!exists);
-
-    die "unknown units: $units"
-        if $units.defined && (CSSUnits.enums{$units}:!exists);
 
     if ($.verbose) {
         my %ast;
@@ -270,7 +279,7 @@ proto method color {*}
 method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
-    make $.token($.node($/), :type(CSSValue::ColorComponent), :units<rgb>);
+    make $.token($.node($/), :units<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -286,7 +295,7 @@ method color:sym<hex>($/)   {
 	!! $id.comb(/../);
 
     my %rgb = <r g b> Z=> @rgb-vals.map({ :16($_) }); 
-    make $.token(%rgb, :type(CSSValue::ColorComponent), :units<rgb>);
+    make $.token(%rgb, :units<rgb>);
 }
 
 method prio($/) {
@@ -398,26 +407,26 @@ method term1:sym<dimension>($/)  { make $<dimension>.ast }
 method term1:sym<percentage>($/) { make $<percentage>.ast }
 
 proto method length {*}
-method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::LengthComponent)); }
+method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast)); }
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :units( $<rel-font-units>.lc ), :type(CSSValue::LengthComponent))
+    make $.token($num, :units( $<rel-font-units>.lc ))
 }
 
 proto method angle {*}
 method angle-units($/)         { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
-method angle:sym<dim>($/)      { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::AngleComponent)) }
+method angle:sym<dim>($/)      { make $.token($<num>.ast, :units($<units>.ast)) }
 method dimension:sym<angle>($/){ make $<angle>.ast }
 
 proto method time {*}
 method time-units($/)          { make $.token( $/.lc ) }
-method time:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::TimeComponent)) }
+method time:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast)) }
 method dimension:sym<time>($/) { make $<time>.ast }
 
 proto method frequency {*}
-method frequency-units($/)     { make $.token( $/.lc, :type(CSSValue::FrequencyComponent) ) }
-method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast), :type(CSSValue::FrequencyComponent)) }
+method frequency-units($/)     { make $.token( $/.lc ) }
+method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
 method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
