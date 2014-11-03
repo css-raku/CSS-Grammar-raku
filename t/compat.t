@@ -16,25 +16,21 @@ use CSS::Grammar::Actions;
 
 my $actions = CSS::Grammar::Actions.new;
 
-my $fh = open 't/compat.json', :r;
-
-for $fh.lines {
+for 't/compat.json'.IO.lines {
     if .substr(0,2) eq '//' {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
     }
-    my ($rule, $t) = @( from-json($_) );
-    my %test = %$t;
-    my $input = %test<input>;
+    my ($rule, $test) = @( from-json($_) );
+    my $input = $test<input>;
 
-    for (css1  => CSS::Grammar::CSS1,
-         css21 => CSS::Grammar::CSS21,
-         css3  => CSS::Grammar::CSS3,
-        ) {
+    for css1  => CSS::Grammar::CSS1,
+        css21 => CSS::Grammar::CSS21,
+        css3  => CSS::Grammar::CSS3 {
 
 	my ($level, $class) = .kv;
-	my %level-tests = %( %test{$level} // () );
-	my %expected = %test, %level-tests;
+	my %level-tests = %( $test{$level} // () );
+	my %expected = %$test, %level-tests;
 
 	$actions.reset;
 
@@ -51,8 +47,8 @@ for $fh.lines {
     }
 
     if CSS::Grammar::Core.can( '_' ~ $rule ) {
-        my %core-tests = %( %test<core> // {} );
-	my %expected = %( %test, ast => Any, warnings => Any, %core-tests );
+        my %core-tests = %( $test<core> // {} );
+	my %expected = %( %$test, ast => Any, warnings => Any, %core-tests );
         %expected<warnings> //= Any;
         CSS::Grammar::Test::parse-tests(CSS::Grammar::Core, $input,
 					    :$actions,

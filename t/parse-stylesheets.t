@@ -81,9 +81,9 @@ my @tests = (
 for @tests {
     my ($test, $input) = .kv;
 
-    for (css1  => CSS::Grammar::CSS1),
-        (css21 => CSS::Grammar::CSS21),
-        (css3  => CSS::Grammar::CSS3) {
+    for css1  => CSS::Grammar::CSS1,
+        css21 => CSS::Grammar::CSS21,
+        css3  => CSS::Grammar::CSS3 {
 	    my ($level, $class) = .kv;
 
 	    CSS::Grammar::Test::parse-tests( $class, $input,
