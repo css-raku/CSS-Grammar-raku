@@ -51,7 +51,15 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
 
     if ($.verbose) {
         my %ast;
-        %ast<val> = $ast if $ast.defined;
+        if $ast.defined {
+            if $ast.isa('Hash') && (($ast<val>:exists) || ($ast<type>:exists)) {
+                # already have a token
+                %ast = %$ast;
+            }
+            else {
+                %ast<val> = $ast;
+            }
+        }
         %ast<type> = ~$type if $type.defined;
         %ast<units> = ~$units if $units.defined;
 
@@ -431,10 +439,10 @@ method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
 method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
 
-method term1:sym<string>($/)   { make $<string>.ast }
+method term1:sym<string>($/)   { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
 method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
-method term1:sym<color>($/)    { make $<color>.ast; }
-method term2:sym<function>($/) { make $<function>.ast }
+method term1:sym<color>($/)    { make $.token( $<color>.ast, :type(CSSValue::ColorComponent)) }
+method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
 method term2:sym<ident>($/)    { make $.token($<id>.ast, :type(CSSValue::IdentifierComponent)) }
