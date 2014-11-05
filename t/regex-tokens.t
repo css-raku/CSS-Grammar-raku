@@ -35,7 +35,7 @@ for ("012AF", "012AFc") {
 
 # angle, frequency - introduced with css2
 for ('70deg', '50Hz') { 
-    ok($_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::ident>$/, "css1 num+ident: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::Ident>$/, "css1 num+ident: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS21::term>$/, "css21 term: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS3::term>$/, "css3 term: $_");
 }
@@ -47,7 +47,7 @@ for ('¡', "\o250", 'ÿ') {
     ok($_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_");
     ok($_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_");
     ok($_ ~~ /^<CSS::Grammar::Core::nonascii>$/, "non-ascii scan: $_");
-    ok($_ ~~ /^<CSS::Grammar::Core::ident>$/, "non-ascii ident: $_");
+    ok($_ ~~ /^<CSS::Grammar::Core::Ident>$/, "non-ascii ident: $_");
 }
 
 # css1 and css21 only recognise latin chars as non-ascii (\o240-\o377)
@@ -74,11 +74,11 @@ for ('http://www.bg.com/pink(ish).gif') {
 }
 
 for ('Appl8s', 'oranges', 'k1w1-fru1t', '-i') {
-    ok($_ ~~ /^<CSS::Grammar::ident>$/, "ident: $_");
+    ok($_ ~~ /^<CSS::Grammar::Ident>$/, "ident: $_");
 }
 
 for ('8') {
-    nok($_ ~~ /^<CSS::Grammar::ident>$/, "not ident: $_");
+    nok($_ ~~ /^<CSS::Grammar::Ident>$/, "not ident: $_");
 }
 
 for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, 

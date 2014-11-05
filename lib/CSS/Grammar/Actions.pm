@@ -97,7 +97,7 @@ method node($/, :$capture?) {
 	    $value = $value.ast
 		// $capture && $capture eq $key && ~$value;
 
-	    %terms{$key.subst(/^'expr-'/, '')} = $value
+	    %terms{$key.subst(/^'expr-'/, '').lc} = $value
                 if $value.defined;
 	}
     }
@@ -126,7 +126,7 @@ method list($/, :$capture?) {
 	    $value = $value.ast
 		// $capture && $capture eq $key && ~$value;
 
-	    push( @terms, {$key.subst(/^'expr-'/, '') => $value} )
+	    push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
                 if $value.defined;
 	}
     }
@@ -167,7 +167,7 @@ method nl($/) {
     $.line-no++;
 }
 
-method element-name($/)             { make $<ident>.ast }
+method element-name($/)             { make $<Ident>.ast }
 
 method length-units:sym<abs>($/)  { make $/.lc }
 method length-units:sym<font>($/) { make $/.lc }
@@ -226,7 +226,7 @@ method nmchar($/)   { make $<char>.ast }
 
 method nmreg($/)    { make ~$/ }
 
-method ident($/) {
+method Ident($/) {
     my $pfx = $<pfx> ?? ~$<pfx> !! '';
     my $ident = [~] $pfx, $<nmstrt>.ast, $<nmchar>>>.ast;
     make $ident.lc;
@@ -363,9 +363,9 @@ method media-query($/)        { make $.list($/) }
 
 # css21/css3 core - page support
 method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
-method page-pseudo($/)        { make $<ident>.ast }
+method page-pseudo($/)        { make $<Ident>.ast }
 
-method property($/)           { make $<ident>.ast }
+method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.node($/, :type(CSSObject::StyleRule)) }
 method selectors($/)          { make $.list($/) }
 method declarations($/)       { make $<declaration-list>.ast }
@@ -445,7 +445,7 @@ method term1:sym<color>($/)    { make $.token( $<color>.ast, :type(CSSValue::Col
 method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
-method term2:sym<ident>($/)    { make $.token($<id>.ast, :type(CSSValue::IdentifierComponent)) }
+method term2:sym<ident>($/)    { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
 method selector($/)           { make $.list($/) }
 
@@ -458,7 +458,7 @@ method attrib($/)             { make $.list($/) }
 method any-function($/) {
     return $.warning('skipping function arguments', ~$<any-arg>)
 	if $<any-arg>;
-    make $.list($/, :type(CSSValue::FunctionComponent));
+    make $.list($/);
 }
 
 method pseudo-function:sym<lang>($/) {
@@ -468,7 +468,7 @@ method pseudo-function:sym<lang>($/) {
 }
 
 method unknown-pseudo-func($/) {
-    $.warning('unknown pseudo-function', $<ident>.ast);
+    $.warning('unknown pseudo-function', $<Ident>.ast);
 }
 
 method attribute-selector:sym<equals>($/)   { make ~$/ }

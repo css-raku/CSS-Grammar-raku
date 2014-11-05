@@ -33,7 +33,8 @@ grammar CSS::Grammar:ver<20110607.001> {
     token nmstrt   { (<[_ a..z A..Z]>) | <char=.nonascii> | <char=.escape> }
     token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
     token nmreg    { <[_ \- a..z A..Z 0..9]>+ }
-    token ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
+    # don't redefine <ident>, it's a built-in
+    token Ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
     token name     { <nmchar>+ }
     token num      { < + - >? (\d* \.)? \d+ }
 
@@ -51,7 +52,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     token id             { '#'<name> }
     token class          { '.'<name> }
-    token element-name   { <ident> }
+    token element-name   { <Ident> }
 
     proto token length-units     {*}
     token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
@@ -78,7 +79,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     token operator       {< / , = >}
 
-    rule property        { <.ws>? <ident> ':' }
+    rule property        { <.ws>? <Ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
     rule color-range     { <num>$<percentage>=[\%]? }
@@ -108,7 +109,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     proto rule term1 {*}
     proto rule term2 {*}
     rule term2:sym<num>        {<num>}
-    rule term2:sym<ident>      {<id=.ident><!before '('>}
+    rule term2:sym<ident>      {<Ident><!before '('>}
     rule term1:sym<dimension>  {<dimension>}
     rule term1:sym<percentage> {<percentage>}
     rule term1:sym<string>     {<string>}
@@ -185,7 +186,7 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
     rule _stylesheet   { <_statement>* }
     rule _statement    { <_ruleset> | '@'<_at-rule> || <_any> || <_delim> }
 
-    rule _at-rule      {(<.ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
+    rule _at-rule      {(<.Ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
@@ -203,13 +204,13 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
 
     proto rule _any {*}
     rule _any:sym<string> { <.string> }
-    rule _any:sym<dim>    { <.num>['%'|<.ident>]? }
+    rule _any:sym<dim>    { <.num>['%'|<.Ident>]? }
     rule _any:sym<urange> { 'U+'<.unicode-range> }
-    rule _any:sym<ident>  { <.ident> }
+    rule _any:sym<ident>  { <.Ident> }
     rule _any:sym<pseudo> { <.pseudo> }
     rule _any:sym<id>     { <.id> }
     rule _any:sym<class>  { <.class> }
-    rule _any:sym<at-keyw>{ '@'<.ident> }
+    rule _any:sym<at-keyw>{ '@'<.Ident> }
     rule _any:sym<op>     { <._op> }
     rule _any:sym<attrib> { '[' <._arg>* [ ']' || <.unclosed-paren-square> ] }
     rule _any:sym<args>   { '(' <._arg>* [ ')' || <.unclosed-paren-round> ] }

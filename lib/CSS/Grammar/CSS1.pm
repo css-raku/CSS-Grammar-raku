@@ -50,13 +50,13 @@ token simple-selector { <qname> <id>? <class>? <pseudo>?
 
 rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]]}
 # assume anything else is a class
-rule pseudo:sym<class>   {':' <class=.ident> }
+rule pseudo:sym<class>   {':' <class=.Ident> }
 
 # 'lexer' css1 exceptions:
 # -- css1 identifiers - don't allow '_' or leading '-'
 token nmstrt   {(<[a..z A..Z]>)|<nonascii>|<escape>}
 token nmreg    {<[\- a..z A..Z 0..9]>+}
-token ident    {<nmstrt><nmchar>*}
+token Ident    {<nmstrt><nmchar>*}
 # -- css1 unicode escape sequences only extend to 4 chars
 rule unicode   {(<[0..9 a..f A..F]>**1..4)}
 # -- css1 extended characters limited to latin1

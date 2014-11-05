@@ -21,11 +21,11 @@ proto rule at-rule {*}
 
 rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
 rule media-list           { <media-query> +% ',' }
-rule media-query          { <media=.ident> }
+rule media-query          { <media=.Ident> }
 rule media-rules          {'{' <ruleset>* <.end-block>}
 
 rule at-rule:sym<page>    {(:i'page') <page=.page-pseudo>? <declarations> }
-rule page-pseudo          {':'<ident>}
+rule page-pseudo          {':'<Ident>}
 
 # inherited combinators: '+' (adjacent)
 token combinator:sym<not> { '-' }
@@ -73,7 +73,7 @@ token qname     {<element-name>}
 rule simple-selector { [<qname>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
 		       |                    [<id>|<class>|<attrib>|<pseudo>]+ }
 
-rule attrib  {'[' <ident> [ <attribute-selector> [<ident>|<string>] ]? ']'}
+rule attrib  {'[' <Ident> [ <attribute-selector> [<Ident>|<string>] ]? ']'}
 
 proto token attribute-selector         {*}
 token attribute-selector:sym<equals>   {'='}
@@ -83,14 +83,14 @@ token attribute-selector:sym<dash>     {'|='}
 rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
 rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-func>]}
 # assume anything else is a class
-rule pseudo:sym<class>    {':' <class=.ident><!before '('>}
+rule pseudo:sym<class>    {':' <class=.Ident><!before '('>}
 
-rule any-function        {<function=.ident>'(' [ <args=.expr> || <any-arg> ]* ')'}
+rule any-function        {<Ident>'(' [ <args=.expr> || <any-arg> ]* ')'}
 
 proto rule pseudo-function {*}
-rule pseudo-function:sym<lang> {:i'lang(' [ <ident> || <any-args> ] ')'}
+rule pseudo-function:sym<lang> {:i'lang(' [ <Ident> || <any-args> ] ')'}
 # pseudo function catch-all
-rule unknown-pseudo-func   {<ident>'(' <any-args> ')'}
+rule unknown-pseudo-func   {<Ident>'(' <any-args> ')'}
 
 # 'lexer' css21 exceptions
 # non-ascii limited to single byte characters
