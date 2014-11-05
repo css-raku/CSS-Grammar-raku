@@ -212,7 +212,7 @@ method _to-unicode($hex-str) {
 }
 
 method unicode($/) {
-   make $._to-unicode( ~$/ );
+   make $._to-unicode( ~$0 );
 }
 
 method regascii($/) { make ~$/ }

@@ -13,6 +13,8 @@
 [ "num", { "input" : "+1.9", "ast" : 1.9 } ]
 [ "num", { "input" : "-3.14", "ast" : -3.14 } ]
 [ "id", { "input" : "#z0y\\021", "ast" : "z0y!" } ]
+// unicode trailing ws consumed in css2.1 and css3, but not css1
+[ "string", { "input" : "'hi\\021 there'", "ast" : "hi!there", "css1" : { "ast" : "hi! there" } } ]
 [ "class", { "input" : ".zippy", "ast" : "zippy" } ]
 [ "class", { "input" : ".\\55ft", "ast" : "\u055ft" } ]
 [ "color", { "input" : "Rgb(10, 20, 30)", "ast" : { "r" : 10, "g" : 20, "b" : 30 }, "token" : { "type" : "color", "units" : "rgb" } } ]
