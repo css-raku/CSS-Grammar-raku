@@ -38,11 +38,12 @@ grammar CSS::Grammar:ver<20110607.001> {
     token name     { <nmchar>+ }
     token num      { < + - >? (\d* \.)? \d+ }
 
+    token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
     token stringchar:sym<cont>     { \\<.nl> }
     token stringchar:sym<escape>   { <escape> }
     token stringchar:sym<nonascii> { <nonascii> }
-    token stringchar:sym<ascii>    { <[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
+    token stringchar:sym<ascii>    { <stringchar-regular>+ }
 
     token single-quote   {\'}
     token double-quote   {\"}
