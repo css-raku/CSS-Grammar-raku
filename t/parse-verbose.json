@@ -16,3 +16,4 @@
 [ "unicode-range", { "input" : "416", "ast" : [ 1046, 1046 ] } ]
 [ "unicode-range", { "input" : "400-4FF", "ast" : [ 1024, 1279 ] } ]
 [ "unicode-range", { "input" : "4??", "ast" : [ 1024, 1279 ] } ]
+[ "declaration", { "input" : "color : red", "ast" : { "val" : { "property" : "color", "expr" : [ { "term" : { "val" : "red", "type" : "ident" } } ] }, "type" : "property" } } ]

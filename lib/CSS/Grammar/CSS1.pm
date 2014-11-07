@@ -57,7 +57,7 @@ rule pseudo:sym<class>   {':' <class=.Ident> }
 token nmstrt   {(<[a..z A..Z]>)|<nonascii>|<escape>}
 token nmreg    {<[\- a..z A..Z 0..9]>+}
 token Ident    {<nmstrt><nmchar>*}
-# -- css1 unicode escape sequences only extend to 4 chars and do not cosume trailing white-space
+# -- css1 unicode escape sequences only extend to 4 chars and do not consume trailing white-space
 rule unicode   {(<[0..9 a..f A..F]>**1..4)}
 # -- css1 extended characters limited to latin1
 token nonascii {<[\o241..\o377]>}

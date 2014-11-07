@@ -396,7 +396,7 @@ method declaration-list($/)   {
 	}
     }
 
-    make %declarations;
+    make $.token( %declarations, :type(CSSValue::PropertyList) );
 }
 
 method declaration($/)        {
@@ -405,7 +405,7 @@ method declaration($/)        {
 	if !$<expr>.caps
 	|| $<expr>.caps.grep({! .value.ast.defined});
 
-    make $.node($/, :type(CSSObject::StyleDeclaration));
+    make $.token( $.node($/), :type(CSSValue::Property));
 }
 
 method expr($/)           { make $.list($/) }
