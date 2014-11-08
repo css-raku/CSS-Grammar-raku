@@ -17,11 +17,12 @@ for 't/parse-verbose.json'.IO.lines {
     my ($rule, $expected) = @( from-json($_) );
     my $input = $expected<input>;
 
+    temp $expected<verbose> = True;
+
     CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
 				    :$actions,
 				    :$rule,
 				    :suite<css3>,
-                                    :verbose,
 				    :$expected );
 }
 

@@ -34,7 +34,7 @@ module CSS::Grammar::Test {
     }
 
     our sub parse-tests($class, $input, :$parse, :$actions,
-			:$verbose = False, :$rule = 'TOP', :$suite = '', :%expected) {
+			:$rule = 'TOP', :$suite = '', :%expected) {
 
 	my $p = $parse;
 
@@ -42,7 +42,7 @@ module CSS::Grammar::Test {
 
 	    $p //= do { 
 		$actions.reset if $actions.can('reset');
-                $actions.verbose = $verbose  if $actions.can('verbose');
+                $actions.verbose = !!%expected<verbose>  if $actions.can('verbose');
 		$class.subparse( $input, :rule($rule), :actions($actions))
 	    };
 
