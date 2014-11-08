@@ -369,35 +369,7 @@ method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.node($/, :type(CSSObject::StyleRule)) }
 method selectors($/)          { make $.list($/) }
 method declarations($/)       { make $<declaration-list>.ast }
-method declaration-list($/)   {
-    my %declarations;
-
-    for @$.list($/) {
-	my ($tk, $decls) = .kv; 
-
-	die "unexpected in declaration ast: " ~ $tk
-	    unless $tk eq 'declaration';
-
-	my $prio = $decls<prio>;
-	my $props = $decls<property-list>
-	    || [$decls];
-
-	for @$props -> %decl {
-	    %decl<prio> = $prio if $prio;
-	    my $prop = %decl<property>:delete
-		// next;
-
-	    if %declarations{$prop}:exists {
-		# override the previous declaration unless it's more !important
-		next if %declarations{$prop}<prio> && ! %decl<prio>;
-	    }
-
-	    %declarations{ $prop } = %decl;
-	}
-    }
-
-    make $.token( %declarations, :type(CSSValue::PropertyList) );
-}
+method declaration-list($/)   { make $.token( [($<declaration>>>.ast).grep: {.defined}], :type(CSSValue::PropertyList) ) }
 
 method declaration($/)        {
     return if $<dropped-decl>;
