@@ -281,7 +281,7 @@ method color-range($/) {
     $range = 0 if $range < 0;
     $range = 255 if $range > 255;
 
-    make $range.round;
+    make $.token( $range.round, :type(CSSValue::NumberComponent));
 }
 
 proto method color {*}
@@ -303,7 +303,7 @@ method color:sym<hex>($/)   {
 	?? $id.comb(/./).map({$^hex-digit ~ $^hex-digit})
 	!! $id.comb(/../);
 
-    my %rgb = <r g b> Z=> @rgb-vals.map({ :16($_) }); 
+    my %rgb = <r g b> Z=> @rgb-vals.map({ $.token( :16($_), :type(CSSValue::NumberComponent)) }); 
     make $.token(%rgb, :units<rgb>);
 }
 
