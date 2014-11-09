@@ -60,8 +60,9 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
                 %ast<val> = $ast;
             }
         }
-        %ast<type> = ~$type if $type.defined;
-        %ast<units> = ~$units if $units.defined;
+        %ast<type> = $type.Str if $type.defined;
+        %ast<units> = $units.Str if $units.defined;
+        %ast<trait> = $trait.Str if $trait.defined;
 
         return item %ast;
     }
@@ -70,9 +71,9 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
             does CSS::Grammar::AST::Token
             unless $ast.can('type');
 
-        $ast.type = ~$type   if $type.defined;
-        $ast.units = ~$units if $units.defined;
-        $ast.trait = ~$trait if $trait.defined;
+        $ast.type = $type.Str   if $type.defined;
+        $ast.units = $units.Str if $units.defined;
+        $ast.trait = $trait.Str if $trait.defined;
 
         return $ast;
     }
