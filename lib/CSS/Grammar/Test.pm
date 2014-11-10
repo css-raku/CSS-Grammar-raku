@@ -42,7 +42,6 @@ module CSS::Grammar::Test {
 
 	    $p //= do { 
 		$actions.reset if $actions.can('reset');
-                $actions.verbose = !!%expected<verbose>  if $actions.can('verbose');
 		$class.subparse( $input, :rule($rule), :actions($actions))
 	    };
 
@@ -81,14 +80,18 @@ module CSS::Grammar::Test {
                }
 	    }
 
-	    if defined (my $ast = %expected<ast>) {
+	    if defined (my $expected-ast = %expected<ast>) {
 
                todo( %todo<ast> )
 		    if %todo<ast>;     
 
-		ok ($p.defined && $p.ast.defined && json-eqv($p.ast, $ast)), "{$suite} $rule ast"
-		    or do {diag "expected: " ~ to-json($ast);
-			   diag "got: " ~ to-json($p.ast)};
+                my $actual-ast = $p.defined && $p.ast;
+                $actual-ast = $actions.expand-ast( $actual-ast )
+                    if %expected<verbose>;
+
+		ok ($p.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast"
+		    or do {diag "expected: " ~ to-json($expected-ast);
+			   diag "got: " ~ to-json($actual-ast)};
 	    }
 	    else {
 		if $p.defined && $p.ast.defined {

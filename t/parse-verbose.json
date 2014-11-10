@@ -16,4 +16,4 @@
 [ "unicode-range", { "input" : "416", "ast" : [ 1046, 1046 ] } ]
 [ "unicode-range", { "input" : "400-4FF", "ast" : [ 1024, 1279 ] } ]
 [ "unicode-range", { "input" : "4??", "ast" : [ 1024, 1279 ] } ]
-[ "declaration", { "input" : "color : red", "ast" : { "val" : { "r" : { "val" : 255, "type" : "num" }, "g" : { "val" : 0, "type" : "num" }, "b" : { "val" : 0, "type" : "num" } }, "type" : "color", "units" : "rgb" }, "todo" : { "ast" : "verbose mode interfering with ast construction" } } ]
+[ "declaration", { "input" : "color : red", "ast" : { "val" : { "property" : "color", "expr" : [ { "term" : { "val" : "red", "type" : "ident" } } ] }, "type" : "property" } } ]

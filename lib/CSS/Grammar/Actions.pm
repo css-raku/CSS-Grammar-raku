@@ -22,7 +22,6 @@ method reset {
     @.warnings = ();
     $.line-no = 1;
     $!nl-rachet = 0;
-    $.verbose = False;
 }
 
 our %known-type = BEGIN
@@ -49,33 +48,38 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
     die "unknown type: $type"
         if $type.defined && (%known-type{$type}:!exists);
 
-    if ($.verbose) {
-        my %ast;
-        if $ast.defined {
-            if $ast.isa('Hash') && (($ast<val>:exists) || ($ast<type>:exists)) {
-                # already have a token
-                %ast = %$ast;
-            }
-            else {
-                %ast<val> = $ast;
-            }
-        }
-        %ast<type> = $type.Str if $type.defined;
-        %ast<units> = $units.Str if $units.defined;
-        %ast<trait> = $trait.Str if $trait.defined;
+    $ast
+        does CSS::Grammar::AST::Token
+        unless $ast.can('type');
 
-        return item %ast;
+    $ast.type = $type.Str   if $type.defined;
+    $ast.units = $units.Str if $units.defined;
+    $ast.trait = $trait.Str if $trait.defined;
+
+    return $ast;
+}
+
+# expand tokens to hashes from for debugging., serialization?
+method expand-ast(Any $ast, :$skip) {
+    if !$skip && $ast.can('type') {
+        my $type = $ast.type;
+        my $units = $ast.units;
+        my $trait = $ast.trait;
+  
+        my %token = val => $.expand-ast( $ast, :skip );
+        %token<type> = $type if $type.defined;
+        %token<units> = $units if $units.defined;
+        %token<trait> = $trait if $trait.defined;
+        return %token;
+    }
+    elsif $ast.isa(List) {
+        [ $ast.map: { $.expand-ast( $_ ) } ];
+    }
+    elsif $ast.isa(EnumMap) {
+        %( $ast.keys.map: { $_ => $.expand-ast( $ast{$_} ) } );
     }
     else {
-        $ast
-            does CSS::Grammar::AST::Token
-            unless $ast.can('type');
-
-        $ast.type = $type.Str   if $type.defined;
-        $ast.units = $units.Str if $units.defined;
-        $ast.trait = $trait.Str if $trait.defined;
-
-        return $ast;
+        $ast;
     }
 }
 
