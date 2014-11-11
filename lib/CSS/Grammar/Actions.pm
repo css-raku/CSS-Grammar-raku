@@ -5,7 +5,7 @@ use v6;
 
 class CSS::Grammar::Actions;
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits;
+use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
 use CSS::Grammar::AST::Info;
 use CSS::Grammar::AST::Token;
 
@@ -27,6 +27,7 @@ method reset {
 our %known-type = BEGIN
     %( CSSObject.enums.invert ),
     %( CSSValue.enums.invert ),
+    %( CSSSelector.enums.invert ),
     ;
 
 method token(Mu $ast, :$type is copy, :$units, :$trait) {
@@ -137,6 +138,10 @@ method list($/, :$capture?) {
     }
 
     return @terms;
+}
+
+method func($func-name, $args, :$type = CSSValue::FunctionComponent) {
+    $.token( {ident => $func-name, args => $args}, :$type );
 }
 
 sub _display-string($_str) {
@@ -424,24 +429,24 @@ method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
 method term2:sym<ident>($/)    { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
-method selector($/)           { make $.list($/) }
+method selector($/)            { make $.list($/) }
 
-method universal($/)          { make {element-name => ~$/} }
-method qname($/)              { make $.node($/) }
-method simple-selector($/)    { make $.list($/) }
+method universal($/)           { make {element-name => ~$/} }
+method qname($/)               { make $.token( $.node($/), :type(CSSValue::QnameComponent)) }
+method simple-selector($/)     { make $.list($/) }
 
-method attrib($/)             { make $.list($/) }
+method attrib($/)              { make $.list($/) }
 
 method any-function($/) {
-    return $.warning('skipping function arguments', ~$<any-arg>)
-	if $<any-arg>;
-    make $.list($/);
+    return $.warning('skipping function arguments', ~$<any-args>)
+	if $<any-args>;
+    make $.node($/);
 }
 
 method pseudo-function:sym<lang>($/) {
     return $.warning('usage: lang(ident)')
 	if $<any-args>;
-    make {ident => 'lang', args => $.list($/)}
+    make $.func( 'lang' , $.list($/), :type(CSSSelector::PseudoFunction) );
 }
 
 method unknown-pseudo-func($/) {

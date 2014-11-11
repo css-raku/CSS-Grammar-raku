@@ -19,7 +19,7 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :PageRule<page-rule>
         :Rule<rule>
         :RuleList<rule-list>
-        :StyleDeclaration<style-decl>
+        :StyleDeclaration<style>
         :StyleRule<style-rule>
         :StyleSheet<style-sheet>
         »;
@@ -37,7 +37,6 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :Property<property>
         :PropertyList<property-list>
         :StringComponent<string>
-        :StyleDeclaration<style>
         :URLComponent<url>
 
         # These components can occur in the AST, but do not have corresponding definitions in csssom-values
@@ -49,6 +48,7 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :FunctionComponent<function>
         :ResolutionComponent<resolution>
         :TimeComponent<time>
+        :QnameComponent<qname>
     »;
 
     # an enumerated list of all unit types for validation purposes.
@@ -62,6 +62,10 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :ms<time> :s<time>
         :hz<frequency> :khz<frequency>
         :rgb<color> :rgba<color> :hsl<color> :hsla<color>
+    »;
+
+    our Str enum CSSSelector is export(:CSSSelector) «
+        :PseudoFunction<pseudo-function>
     »;
 
     # from http://dev.w3.org/csswg/cssom-view/

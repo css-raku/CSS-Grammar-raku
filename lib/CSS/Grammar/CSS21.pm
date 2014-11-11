@@ -85,7 +85,7 @@ rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-fun
 # assume anything else is a class
 rule pseudo:sym<class>    {':' <class=.Ident><!before '('>}
 
-rule any-function        {<Ident>'(' [ <args=.expr> || <any-arg> ]* ')'}
+rule any-function         {<Ident>'(' [ <expr>? || <any-args> ] ')'}
 
 proto rule pseudo-function {*}
 rule pseudo-function:sym<lang> {:i'lang(' [ <Ident> || <any-args> ] ')'}
