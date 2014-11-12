@@ -293,7 +293,7 @@ method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
 
-    make $.token($.node($/, :!map), :units<rgb>);
+    make $.token([ $<color-range>>>.ast ], :units<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -308,8 +308,9 @@ method color:sym<hex>($/)   {
 	?? $id.comb(/./).map({$^hex-digit ~ $^hex-digit})
 	!! $id.comb(/../);
 
-    my %rgb = <r g b> Z=> @rgb-vals.map({ $.token( :16($_), :type(CSSValue::NumberComponent)) }); 
-    make $.token(%rgb, :units<rgb>);
+    my @rgb = @rgb-vals.map({ $.token( :16($_), :type(CSSValue::NumberComponent)) }); 
+
+    make $.token( @rgb, :units<rgb>);
 }
 
 method prio($/) {

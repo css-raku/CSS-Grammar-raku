@@ -89,9 +89,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     proto rule color     {*}
     rule color:sym<rgb>  {:i 'rgb('
-			      [ <r=.color-range> ','
-				<g=.color-range> ','
-				<b=.color-range> || <any-args> ]
+			      [ <color-range> **3% ',' || <any-args> ]
                                 ')'
                          }
     rule color:sym<hex>  { <id> }
