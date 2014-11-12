@@ -12,7 +12,7 @@ rule TOP {^ <stylesheet> $}
 
 rule stylesheet { <import>* [<ruleset> || <misplaced> || <unknown>]* }
 
-rule import { '@'(:i'import') [<url=.string>|<url>] ';' }
+rule import { '@'(:i'import') [<url-string>|<url>] ';' }
 
 # to detect out of order directives
 rule misplaced {<import>}
@@ -36,7 +36,7 @@ rule declaration-list { <declaration> * }
 rule declaration { <property> <expr> <prio>? <end-decl> || <dropped-decl> }
 # css1 syntax allows a unary operator in front of all terms. Throw it
 # out, if the term doesn't consume it.
-rule expr { [<term>||<.unary-op><term>] +% [ <operator>? ] }
+rule expr { [<term>||<.unary-op><term>] +% [ <term=.operator>? ] }
 rule unary-op       {< + - >}
 
 token selector {<simple-selector> +% <.ws> <pseudo>?}

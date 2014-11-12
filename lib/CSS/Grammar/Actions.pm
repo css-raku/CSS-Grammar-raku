@@ -46,6 +46,9 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
         $type //= $inferred-type;
     }
 
+    die 'usage: $.token( ... :$type || :$unit || :$trait)'
+        unless $type || $trait;
+
     die "unknown type: $type"
         if $type.defined && (%known-type{$type}:!exists);
 
@@ -60,31 +63,7 @@ method token(Mu $ast, :$type is copy, :$units, :$trait) {
     return $ast;
 }
 
-# expand tokens to hashes from for debugging., serialization?
-method expand-ast(Any $ast, :$skip) {
-    if !$skip && $ast.can('type') {
-        my $type = $ast.type;
-        my $units = $ast.units;
-        my $trait = $ast.trait;
-  
-        my %token = val => $.expand-ast( $ast, :skip );
-        %token<type> = $type if $type.defined;
-        %token<units> = $units if $units.defined;
-        %token<trait> = $trait if $trait.defined;
-        return %token;
-    }
-    elsif $ast.isa(List) {
-        [ $ast.map: { $.expand-ast( $_ ) } ];
-    }
-    elsif $ast.isa(EnumMap) {
-        %( $ast.keys.map: { $_ => $.expand-ast( $ast{$_} ) } );
-    }
-    else {
-        $ast;
-    }
-}
-
-method node($/, :$capture?) {
+method node($/, :$capture?, :$map = True) {
     my %terms;
 
     # unwrap Parcels
@@ -95,13 +74,18 @@ method node($/, :$capture?) {
     for @l {
 	for .caps -> $cap {
 	    my ($key, $value) = $cap.kv;
+
+	    $value = $value.ast
+		// $capture && $capture eq $key && ~$value;
+
+            if $map && $value.can('type') {
+                $key = $value.units // $value.type;
+            }
+
 	    if %terms{$key}:exists {
 		$.warning("repeated term " ~ $key, $value);
 		return Any;
 	    }
-
-	    $value = $value.ast
-		// $capture && $capture eq $key && ~$value;
 
 	    %terms{$key.subst(/^'expr-'/, '').lc} = $value
                 if $value.defined;
@@ -117,7 +101,7 @@ method at-rule($/, :$type) {
     return %terms;
 }
 
-method list($/, :$capture?) {
+method list($/, :$capture?, :$map = True) {
     # make a node that contains repeatable elements
     my @terms;
 
@@ -129,8 +113,13 @@ method list($/, :$capture?) {
     for @l {
 	for .caps -> $cap {
 	    my ($key, $value) = $cap.kv;
+
 	    $value = $value.ast
 		// $capture && $capture eq $key && ~$value;
+
+            if $map && $value.can('type') {
+                $key = $value.units // $value.type;
+            }
 
 	    push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
                 if $value.defined;
@@ -275,7 +264,13 @@ method bare-url-char($/) {
     make $<char> ?? $<char>.ast !! ~$/
 }
 
-method url($/)   { make [~] $<string>>>.ast }
+method bare-url($/) {
+    make [~] $<bare-url-char>>>.ast;
+}
+
+method url($/)   {
+    make $.token( $<url>.ast, :type(CSSValue::URLComponent));
+}
 
 # uri - synonym for url?
 method uri($/)   { make $<url>.ast }
@@ -297,7 +292,8 @@ proto method color {*}
 method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
-    make $.token($.node($/), :units<rgb>);
+
+    make $.token($.node($/, :!map), :units<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -329,12 +325,13 @@ method stylesheet($/) { make $.list($/, :type(CSSObject::StyleSheet)) }
 
 method charset($/)   { make $.token($<string>.ast, :type(CSSObject::CharsetRule)) }
 method import($/)    { make $.node($/, :type(CSSObject::ImportRule)) }
+method url-string($/){ make $.token($<string>.ast, :type(CSSValue::URLComponent)) }
 
 method misplaced($/) {
     $.warning('ignoring out of sequence directive', ~$/)
 }
 
-method operator($/) { make ~$/ }
+method operator($/) { make $.token( ~$/, :type(CSSValue::OperatorComponent)) }
 
 # pseudos
 method pseudo:sym<element>($/)  { make { element => $<element>.lc } }
@@ -390,7 +387,7 @@ method declaration($/)        {
     make $.token( $.node($/), :type(CSSValue::Property));
 }
 
-method expr($/)           { make $.list($/) }
+method expr($/)           { make $.list($/, :subs) }
 method term:sym<base>($/) { make $<term>.ast }
 
 method term1:sym<dimension>($/)  { make $<dimension>.ast }
@@ -410,12 +407,12 @@ method angle:sym<dim>($/)      { make $.token($<num>.ast, :units($<units>.ast)) 
 method dimension:sym<angle>($/){ make $<angle>.ast }
 
 proto method time {*}
-method time-units($/)          { make $.token( $/.lc ) }
+method time-units($/)          { make $/.lc }
 method time:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast)) }
 method dimension:sym<time>($/) { make $<time>.ast }
 
 proto method frequency {*}
-method frequency-units($/)     { make $.token( $/.lc ) }
+method frequency-units($/)     { make $/.lc }
 method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 

@@ -86,10 +86,8 @@ module CSS::Grammar::Test {
 		    if %todo<ast>;     
 
                 my $actual-ast = $p.defined && $p.ast;
-                $actual-ast = $actions.expand-ast( $actual-ast )
-                    if %expected<verbose>;
 
-		ok ($p.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast"
+		ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast"
 		    or do {diag "expected: " ~ to-json($expected-ast);
 			   diag "got: " ~ to-json($actual-ast)};
 	    }

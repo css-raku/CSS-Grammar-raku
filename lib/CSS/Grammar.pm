@@ -71,8 +71,10 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     token url_delim_char { < ( ) ' " \\ > | <.wc> }
     token bare-url-char  { <char=.escape> | <char=.nonascii> | <- url_delim_char>+ }
+    token bare-url       {<bare-url-char>*}
 
-    rule url             {:i'url(' [ <string> | <string=.bare-url-char>* ] ')' }
+    rule url             {:i'url(' [ <url=.url-string> | <url=.bare-url> ] ')' }
+    token url-string     {<string>}
 
     token percentage     { <num>'%' }
 

@@ -30,25 +30,26 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :ColorComponent<color>
         :Component<value>
         :IdentifierComponent<ident>
-        :KeywordComponent<keyword>
+        :KeywordComponent<keyw>
         :LengthComponent<length>
         :Map<map>
         :PercentageComponent<percent>
         :Property<property>
-        :PropertyList<property-list>
+        :PropertyList<declarations>
         :StringComponent<string>
         :URLComponent<url>
 
-        # These components can occur in the AST, but do not have corresponding definitions in csssom-values
+        # Extension components. These do not have corresponding definitions in csssom-values
 
         :NumberComponent<num>
         :IntegerComponent<int>  # e.g. z-index
         :AngleComponent<angle>
-        :FrequencyComponent<frequency>
-        :FunctionComponent<function>
+        :FrequencyComponent<freq>
+        :FunctionComponent<func>
         :ResolutionComponent<resolution>
         :TimeComponent<time>
         :QnameComponent<qname>
+        :OperatorComponent<op>
     »;
 
     # an enumerated list of all unit types for validation purposes.
@@ -60,12 +61,12 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :dpi<resolution> :dpcm<resolution> :dppx<resolution>
         :deg<angle> :rad<angle> :grad<angle> :turn<angle>
         :ms<time> :s<time>
-        :hz<frequency> :khz<frequency>
+        :hz<freq> :khz<freq>
         :rgb<color> :rgba<color> :hsl<color> :hsla<color>
     »;
 
     our Str enum CSSSelector is export(:CSSSelector) «
-        :PseudoFunction<pseudo-function>
+        :PseudoFunction<pseudo-func>
     »;
 
     # from http://dev.w3.org/csswg/cssom-view/

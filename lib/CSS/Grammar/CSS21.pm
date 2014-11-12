@@ -13,7 +13,7 @@ rule stylesheet { <charset>? [ <import> ]*
 		  [ '@'<at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
 rule charset { '@'(:i'charset') <string> ';' }
-rule import  { '@'(:i'import')  [<url=.string>|<url>] <media-list>? ';' }
+rule import  { '@'(:i'import')  [<url-string>|<url>] <media-list>? ';' }
 # to detect out of order directives
 rule misplaced {<charset>|<import>}
 
@@ -48,7 +48,7 @@ rule declaration-list { <declaration> * }
 
 rule declaration { <property> <expr> <prio>? <end-decl> || <dropped-decl> }
 
-rule expr { <term> +% [ <operator>? ] }
+rule expr { <term> +% [ <term=.operator>? ] }
 token term2:sym<function>  {<function=.any-function>}
 
 proto token angle          {*}
