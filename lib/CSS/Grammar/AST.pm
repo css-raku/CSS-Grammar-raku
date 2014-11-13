@@ -1,6 +1,7 @@
 use v6;
 
 use CSS::Grammar::AST::Info;
+use CSS::Grammar::AST::Token;
 
 class CSS::Grammar::AST does CSS::Grammar::AST::Info {
 
@@ -71,5 +72,111 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
 
     # from http://dev.w3.org/csswg/cssom-view/
     our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
+
+our %known-type = BEGIN
+    %( CSSObject.enums.invert ),
+    %( CSSValue.enums.invert ),
+    %( CSSSelector.enums.invert ),
+    ;
+
+    method token(Mu $ast, :$type is copy, :$units is copy, :$trait) {
+
+        return unless $ast.defined;
+
+        my $inferred-type;
+
+        if $units.defined {
+            $inferred-type = CSSUnits.enums{$units}
+            or die "unknown units: $units";
+
+        }
+        elsif $type.defined && ($inferred-type = CSSUnits.enums{$type}) {
+            $units = $type;
+            $type = $inferred-type
+        }
+
+        if $inferred-type {
+            die "type conflict for units $units; inferred: $inferred-type, actual: $type"
+                if $type.defined && $type ne $inferred-type;
+
+            $type //= $inferred-type;
+        }
+
+        die 'usage: $.token( ... :$type || :$unit || :$trait)'
+            unless $type || $trait;
+
+        die "unknown type: $type"
+            if $type.defined && (%known-type{$type}:!exists);
+
+        $ast
+            does CSS::Grammar::AST::Token
+            unless $ast.can('type');
+
+        $ast.type = $type.Str   if $type.defined;
+        $ast.units = $units.Str if $units.defined;
+        $ast.trait = $trait.Str if $trait.defined;
+
+        return $ast;
+    }
+
+    method node($/, :$capture?) {
+        my %terms;
+
+        # unwrap Parcels
+        my @l = $/.can('caps')
+            ?? ($/)
+            !! $/.grep({ .defined });
+
+        for @l {
+            for .caps -> $cap {
+                my ($key, $value) = $cap.kv;
+
+                $value = $value.ast
+                    // $capture && $capture eq $key && ~$value;
+
+                if $value.can('type') {
+                    $key = $value.units // $value.type;
+                }
+
+                if %terms{$key}:exists {
+                    $.warning("repeated term " ~ $key, $value);
+                    return Any;
+                }
+
+                %terms{$key.subst(/^'expr-'/, '').lc} = $value
+                if $value.defined;
+            }
+        }
+
+        return %terms;
+    }
+
+    method list($/, :$capture? ) {
+        # make a node that contains repeatable elements
+        my @terms;
+
+        # unwrap Parcels
+        my @l = $/.can('caps')
+            ?? ($/)
+            !! $/.grep({ .defined });
+
+        for @l {
+            for .caps -> $cap {
+                my ($key, $value) = $cap.kv;
+
+                $value = $value.ast
+                    // $capture && $capture eq $key && ~$value;
+
+                if $value.can('type') {
+                    $key = $value.units // $value.type;
+                }
+
+                push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
+                    if $value.defined;
+            }
+        }
+
+    return @terms;
+}
 
 }

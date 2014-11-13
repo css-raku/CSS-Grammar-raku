@@ -3,11 +3,10 @@ use v6;
 # rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
-class CSS::Grammar::Actions;
-
 use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
-use CSS::Grammar::AST::Info;
-use CSS::Grammar::AST::Token;
+
+class CSS::Grammar::Actions
+    is CSS::Grammar::AST;
 
 has Int $.line-no is rw = 1;
 has Int $!nl-rachet = 0;
@@ -24,109 +23,10 @@ method reset {
     $!nl-rachet = 0;
 }
 
-our %known-type = BEGIN
-    %( CSSObject.enums.invert ),
-    %( CSSValue.enums.invert ),
-    %( CSSSelector.enums.invert ),
-    ;
-
-method token(Mu $ast, :$type is copy, :$units, :$trait) {
-
-    return unless $ast.defined;
-
-    my $inferred-type;
-
-    if $units.defined {
-        $inferred-type = CSSUnits.enums{$units}
-        or die "unknown units: $units";
-
-        die "type conflict for units $units; inferred: $inferred-type, actual: $type"
-            if $type.defined && $type ne $inferred-type;
-
-        $type //= $inferred-type;
-    }
-
-    die 'usage: $.token( ... :$type || :$unit || :$trait)'
-        unless $type || $trait;
-
-    die "unknown type: $type"
-        if $type.defined && (%known-type{$type}:!exists);
-
-    $ast
-        does CSS::Grammar::AST::Token
-        unless $ast.can('type');
-
-    $ast.type = $type.Str   if $type.defined;
-    $ast.units = $units.Str if $units.defined;
-    $ast.trait = $trait.Str if $trait.defined;
-
-    return $ast;
-}
-
-method node($/, :$capture?, :$map = True) {
-    my %terms;
-
-    # unwrap Parcels
-    my @l = $/.can('caps')
-	?? ($/)
-	!! $/.grep({ .defined });
-
-    for @l {
-	for .caps -> $cap {
-	    my ($key, $value) = $cap.kv;
-
-	    $value = $value.ast
-		// $capture && $capture eq $key && ~$value;
-
-            if $map && $value.can('type') {
-                $key = $value.units // $value.type;
-            }
-
-	    if %terms{$key}:exists {
-		$.warning("repeated term " ~ $key, $value);
-		return Any;
-	    }
-
-	    %terms{$key.subst(/^'expr-'/, '').lc} = $value
-                if $value.defined;
-	}
-    }
-
-    return %terms;
-}
-
 method at-rule($/, :$type) {
     my %terms = %( $.node($/, :$type) );
     %terms<@> = $0.lc;
     return %terms;
-}
-
-method list($/, :$capture?, :$map = True) {
-    # make a node that contains repeatable elements
-    my @terms;
-
-    # unwrap Parcels
-    my @l = $/.can('caps')
-	?? ($/)
-	!! $/.grep({ .defined });
-
-    for @l {
-	for .caps -> $cap {
-	    my ($key, $value) = $cap.kv;
-
-	    $value = $value.ast
-		// $capture && $capture eq $key && ~$value;
-
-            if $map && $value.can('type') {
-                $key = $value.units // $value.type;
-            }
-
-	    push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
-                if $value.defined;
-	}
-    }
-
-    return @terms;
 }
 
 method func($func-name, $args, :$type = CSSValue::FunctionComponent) {
@@ -293,7 +193,7 @@ method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
 
-    make $.token([ $<color-range>>>.ast ], :units<rgb>);
+    make $.token( $.list($/), :units<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -304,13 +204,14 @@ method color:sym<hex>($/)   {
 	unless $id.match(/^<xdigit>+$/)
 	&& ($chars == 3 || $chars == 6);
 
-    my @rgb-vals = $chars == 3
+    my @rgb = $chars == 3
 	?? $id.comb(/./).map({$^hex-digit ~ $^hex-digit})
 	!! $id.comb(/../);
 
-    my @rgb = @rgb-vals.map({ $.token( :16($_), :type(CSSValue::NumberComponent)) }); 
+    my $num-type = CSSValue::NumberComponent;
+    my @color = @rgb.map: { %( $num-type.Str => $.token( :16($_), :type($num-type)) ).item };
 
-    make $.token( @rgb, :units<rgb>);
+    make $.token( @color, :units<rgb>);
 }
 
 method prio($/) {
