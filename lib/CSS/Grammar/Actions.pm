@@ -30,7 +30,10 @@ method at-rule($/, :$type) {
 }
 
 method func($func-name, $args, :$type = CSSValue::FunctionComponent) {
-    $.token( {ident => $func-name, args => $args}, :$type );
+    my %ast = (ident => $func-name,
+               args => $.token( $args, :type(CSSValue::ArgumentListComponent) ),
+        );
+    $.token( %ast, :$type );
 }
 
 sub _display-string($_str) {
@@ -282,14 +285,14 @@ method declaration-list($/)   { make $.token( [($<declaration>>>.ast).grep: {.de
 
 method declaration($/)        {
     return if $<dropped-decl>;
-    return $.warning('dropping declaration', $<property>.ast)
+    return $.warning('dropping declaration', $<Ident>.ast)
 	if !$<expr>.caps
 	|| $<expr>.caps.grep({! .value.ast.defined});
 
     make $.token( $.node($/), :type(CSSValue::Property));
 }
 
-method expr($/)           { make $.list($/, :subs) }
+method expr($/)           { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
 method term:sym<base>($/) { make $<term>.ast }
 
 method term1:sym<dimension>($/)  { make $<dimension>.ast }

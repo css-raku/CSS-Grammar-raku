@@ -46,7 +46,7 @@ rule declarations {
 #
 rule declaration-list { <declaration> * }
 
-rule declaration { <property> <expr> <prio>? <end-decl> || <dropped-decl> }
+rule declaration { <Ident=.property> <expr> <prio>? <end-decl> || <dropped-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
 token term2:sym<function>  {<function=.any-function>}

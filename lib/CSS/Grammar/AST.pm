@@ -51,6 +51,8 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :TimeComponent<time>
         :QnameComponent<qname>
         :OperatorComponent<op>
+        :ExpressionComponent<expr>
+        :ArgumentListComponent<args>
     »;
 
     # an enumerated list of all unit types for validation purposes.
