@@ -81,31 +81,19 @@ our %known-type = BEGIN
     %( CSSSelector.enums.invert ),
     ;
 
-    method token(Mu $ast, :$type is copy, :$units is copy, :$trait) {
+    method token(Mu $ast, :$type is copy, :$trait) {
+
+        die 'usage: $.token( ... :$type || :$trait)'
+            unless $type || $trait;
 
         return unless $ast.defined;
 
-        my $inferred-type;
+        my $units;
 
-        if $units.defined {
-            $inferred-type = CSSUnits.enums{$units}
-            or die "unknown units: $units";
-
-        }
-        elsif $type.defined && ($inferred-type = CSSUnits.enums{$type}) {
+        if $type.defined && (my $inferred-type = CSSUnits.enums{$type}) {
             $units = $type;
             $type = $inferred-type
         }
-
-        if $inferred-type {
-            die "type conflict for units $units; inferred: $inferred-type, actual: $type"
-                if $type.defined && $type ne $inferred-type;
-
-            $type //= $inferred-type;
-        }
-
-        die 'usage: $.token( ... :$type || :$unit || :$trait)'
-            unless $type || $trait;
 
         die "unknown type: $type"
             if $type.defined && (%known-type{$type}:!exists);

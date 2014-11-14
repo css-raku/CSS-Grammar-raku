@@ -196,7 +196,7 @@ method color:sym<rgb>($/)  {
     return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
 	if $<any-args>;
 
-    make $.token( $.list($/), :units<rgb>);
+    make $.token( $.list($/), :type<rgb>);
 }
 
 method color:sym<hex>($/)   {
@@ -214,7 +214,7 @@ method color:sym<hex>($/)   {
     my $num-type = CSSValue::NumberComponent;
     my @color = @rgb.map: { %( $num-type.Str => $.token( :16($_), :type($num-type)) ).item };
 
-    make $.token( @color, :units<rgb>);
+    make $.token( @color, :type<rgb>);
 }
 
 method prio($/) {
@@ -299,26 +299,26 @@ method term1:sym<dimension>($/)  { make $<dimension>.ast }
 method term1:sym<percentage>($/) { make $<percentage>.ast }
 
 proto method length {*}
-method length:sym<dim>($/) { make $.token($<num>.ast, :units($<units>.ast)); }
+method length:sym<dim>($/) { make $.token($<num>.ast, :type($<units>.ast)); }
 method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-unit>($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :units( $<rel-font-units>.lc ))
+    make $.token($num, :type( $<rel-font-units>.lc ))
 }
 
 proto method angle {*}
 method angle-units($/)         { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
-method angle:sym<dim>($/)      { make $.token($<num>.ast, :units($<units>.ast)) }
+method angle:sym<dim>($/)      { make $.token($<num>.ast, :type($<units>.ast)) }
 method dimension:sym<angle>($/){ make $<angle>.ast }
 
 proto method time {*}
 method time-units($/)          { make $/.lc }
-method time:sym<dim>($/)       { make $.token($<num>.ast, :units($<units>.ast)) }
+method time:sym<dim>($/)       { make $.token($<num>.ast, :type($<units>.ast)) }
 method dimension:sym<time>($/) { make $<time>.ast }
 
 proto method frequency {*}
 method frequency-units($/)     { make $/.lc }
-method frequency:sym<dim>($/)  { make $.token($<num>.ast, :units($<units>.ast)) }
+method frequency:sym<dim>($/)  { make $.token($<num>.ast, :type($<units>.ast)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
 method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
