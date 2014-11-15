@@ -130,6 +130,9 @@ our %known-type = BEGIN
                 if $value.can('type') {
                     $key = $value.units // $value.type;
                 }
+                elsif %known-type{$key}:exists {
+                    $value = $.token( $value, :type($key) );
+                }
 
                 if %terms{$key}:exists {
                     $.warning("repeated term " ~ $key, $value);
@@ -162,6 +165,9 @@ our %known-type = BEGIN
 
                 if $value.can('type') {
                     $key = $value.units // $value.type;
+                }
+                elsif %known-type{$key}:exists {
+                    $value = $.token( $value, :type($key));
                 }
 
                 push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
