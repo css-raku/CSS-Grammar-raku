@@ -50,9 +50,12 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :ResolutionComponent<resolution>
         :TimeComponent<time>
         :QnameComponent<qname>
+        :NamespacePrefixComponent<ns-prefix>
+        :ElementNameComponent<element-name>
         :OperatorComponent<op>
         :ExpressionComponent<expr>
         :ArgumentListComponent<args>
+        :AtKeywordComponent<@>
     »;
 
     # an enumerated list of all unit types for validation purposes.

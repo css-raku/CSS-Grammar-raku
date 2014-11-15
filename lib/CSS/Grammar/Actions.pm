@@ -25,7 +25,7 @@ method reset {
 
 method at-rule($/, :$type) {
     my %terms = %( $.node($/, :$type) );
-    %terms<@> = $0.lc;
+    %terms<@> = $.token( $0.lc, :type(CSSValue::AtKeywordComponent));
     return %terms;
 }
 
@@ -69,7 +69,7 @@ method nl($/) {
     $.line-no++;
 }
 
-method element-name($/)             { make $<Ident>.ast }
+method element-name($/)             { make $.token( $<Ident>.ast, :type(CSSValue::ElementNameComponent)) }
 
 method length-units:sym<abs>($/)  { make $/.lc }
 method length-units:sym<font>($/) { make $/.lc }
