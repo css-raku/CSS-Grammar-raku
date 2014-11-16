@@ -58,10 +58,10 @@ grammar CSS::Grammar:ver<20110607.001> {
     proto token length-units     {*}
     token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
     token length-units:sym<font> { <rel-font-units> }
-    token rel-font-units           {:i em|ex}
+    token rel-font-units         {:i em|ex}
 
-    proto token length         {*}
-    token length:sym<dim>      {:i <num><units=.length-units> }
+    proto token length           {*}
+    token length:sym<dim>        {:i <num><units=.length-units> }
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
     token length:sym<rel-font-unit> { $<sign>=< + - >? <rel-font-units> }

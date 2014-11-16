@@ -86,7 +86,7 @@ our %known-type = BEGIN
 
     method token(Mu $ast, :$type is copy, :$trait) {
 
-        die 'usage: $.token( ... :$type || :$trait)'
+        die 'usage: $.token($ast, :$type || :$trait)'
             unless $type || $trait;
 
         return unless $ast.defined;
@@ -139,7 +139,7 @@ our %known-type = BEGIN
                     return Any;
                 }
 
-                %terms{$key.subst(/^'expr-'/, '').lc} = $value
+                %terms{$key.subst(/^'expr-'/, 'expr:').lc} = $value
                 if $value.defined;
             }
         }
@@ -170,7 +170,7 @@ our %known-type = BEGIN
                     $value = $.token( $value, :type($key));
                 }
 
-                push( @terms, {$key.subst(/^'expr-'/, '').lc => $value} )
+                push( @terms, {$key.subst(/^'expr-'/, 'expr:').lc => $value} )
                     if $value.defined;
             }
         }
