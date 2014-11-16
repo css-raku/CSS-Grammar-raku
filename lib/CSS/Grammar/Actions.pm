@@ -29,11 +29,15 @@ method at-rule($/, :$type) {
     return %terms;
 }
 
-method func($func-name, $args, :$type = CSSValue::FunctionComponent) {
-    my %ast = (ident => $func-name,
+method func($name, $args, :$type = CSSValue::FunctionComponent) {
+    my %ast = (ident => $name,
                args => $.token( $args, :type(CSSValue::ArgumentListComponent) ),
         );
     $.token( %ast, :$type );
+}
+
+method pseudo-func( $name, $args) {
+    $.func( $name, $args, :type(CSSSelector::PseudoFunction) );
 }
 
 sub _display-string($_str) {
@@ -348,7 +352,7 @@ method any-function($/) {
 method pseudo-function:sym<lang>($/) {
     return $.warning('usage: lang(ident)')
 	if $<any-args>;
-    make $.func( 'lang' , $.list($/), :type(CSSSelector::PseudoFunction) );
+    make $.pseudo-func( 'lang' , $.list($/) );
 }
 
 method unknown-pseudo-func($/) {
