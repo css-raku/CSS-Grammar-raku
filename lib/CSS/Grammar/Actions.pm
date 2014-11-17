@@ -29,7 +29,8 @@ method at-rule($/, :$type) {
     return %terms;
 }
 
-method func($name, $args, :$type = CSSValue::FunctionComponent) {
+method func($name, $args is copy, :$type = CSSValue::FunctionComponent) {
+    $args = [ $args ] unless $args.isa(List);
     my %ast = (ident => $name,
                args => $.token( $args, :type(CSSValue::ArgumentListComponent) ),
         );
