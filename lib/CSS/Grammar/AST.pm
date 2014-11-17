@@ -127,7 +127,10 @@ our %known-type = BEGIN
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
 
-                if $value.can('type') {
+                if substr($key, 0, 4) eq 'expr-' {
+                    $key = $key.subst(/^'expr-'/, 'expr:')
+                }
+                elsif $value.can('type') {
                     $key = $value.units // $value.type;
                 }
                 elsif %known-type{$key}:exists {
@@ -139,7 +142,7 @@ our %known-type = BEGIN
                     return Any;
                 }
 
-                %terms{$key.subst(/^'expr-'/, 'expr:').lc} = $value
+                %terms{$key.lc} = $value
                 if $value.defined;
             }
         }
@@ -163,14 +166,17 @@ our %known-type = BEGIN
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
 
-                if $value.can('type') {
+                if substr($key, 0, 4) eq 'expr-' {
+                    $key = $key.subst(/^'expr-'/, 'expr:')
+                }
+                elsif $value.can('type') {
                     $key = $value.units // $value.type;
                 }
                 elsif %known-type{$key}:exists {
                     $value = $.token( $value, :type($key));
                 }
 
-                push( @terms, {$key.subst(/^'expr-'/, 'expr:').lc => $value} )
+                push( @terms, {$key.lc => $value} )
                     if $value.defined;
             }
         }
