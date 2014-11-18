@@ -23,10 +23,10 @@ method reset {
     $!nl-rachet = 0;
 }
 
-method at-rule($/, :$type) {
-    my %terms = %( $.node($/, :$type) );
+method at-rule($/, :$type!) {
+    my %terms = %( $.node($/) );
     %terms<@> = $.token( $0.lc, :type(CSSValue::AtKeywordComponent));
-    return %terms;
+    return $.token( %terms, :$type);
 }
 
 method func($name, $args is copy, :$type = CSSValue::FunctionComponent) {
@@ -231,10 +231,10 @@ method prio($/) {
 
 # from the TOP (CSS1 + CSS21 + CSS3)
 method TOP($/) { make $<stylesheet>.ast }
-method stylesheet($/) { make $.list($/, :type(CSSObject::StyleSheet)) }
+method stylesheet($/) { make $.token( $.list($/), :type(CSSObject::StyleSheet)) }
 
 method charset($/)   { make $.token($<string>.ast, :type(CSSObject::CharsetRule)) }
-method import($/)    { make $.node($/, :type(CSSObject::ImportRule)) }
+method import($/)    { make $.token($.node($/), :type(CSSObject::ImportRule)) }
 method url-string($/){ make $.token($<string>.ast, :type(CSSValue::URLComponent)) }
 
 method misplaced($/) {
@@ -274,7 +274,7 @@ method unicode-range:sym<masked>($/) {
 
 # css21/css3 core - media support
 method at-rule:sym<media>($/) { make $.at-rule($/, :type(CSSObject::MediaRule)) }
-method media-rules($/)        { make $.list($/, :type(CSSObject::RuleList)) }
+method media-rules($/)        { make $.token( $.list($/), :type(CSSObject::RuleList)) }
 method media-list($/)         { make $.list($/) }
 method media-query($/)        { make $.list($/) }
 
@@ -283,7 +283,7 @@ method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
 method page-pseudo($/)        { make $<Ident>.ast }
 
 method property($/)           { make $<Ident>.ast }
-method ruleset($/)            { make $.node($/, :type(CSSObject::StyleRule)) }
+method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }
 method selectors($/)          { make $.list($/) }
 method declarations($/)       { make $<declaration-list>.ast }
 method declaration-list($/)   { make $.token( [($<declaration>>>.ast).grep: {.defined}], :type(CSSValue::PropertyList) ) }
@@ -338,7 +338,7 @@ method term2:sym<ident>($/)    { make $.token($<Ident>.ast, :type(CSSValue::Iden
 
 method selector($/)            { make $.list($/) }
 
-method universal($/)           { make {element-name => ~$/} }
+method universal($/)           { make $.token( {element-name => ~$/}, :type(CSSValue::QnameComponent)) }
 method qname($/)               { make $.token( $.node($/), :type(CSSValue::QnameComponent)) }
 method simple-selector($/)     { make $.list($/) }
 

@@ -13,12 +13,13 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :CharsetRule<charset-rule>
         :FontFaceRule<fontface-rule>
         :GroupingRule<grouping-rule>
-        :ImportRule<import-rule>
+        :ImportRule<import>
         :MarginRule<margin-rule>
-        :MediaRule<media-rule>
+        :MediaRule<media-rules>
         :NamespaceRule<namespace-rule>
         :PageRule<page-rule>
-        :Rule<rule>
+        :Priority<prio>
+        :RuleSet<ruleset>
         :RuleList<rule-list>
         :StyleDeclaration<style>
         :StyleRule<style-rule>
@@ -72,7 +73,16 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
     »;
 
     our Str enum CSSSelector is export(:CSSSelector) «
+        :AttributeSelector<attrib>
+        :AttributeOp<attribute-selector>
+        :Class<class>
+        :Combinator<combinator>
+        :Id<id>
+        :Pseudo<pseudo>
         :PseudoFunction<pseudo-func>
+        :SelectorList<selectors>
+        :Selector<selector>
+        :SelectorComponent<simple-selector>
     »;
 
     # from http://dev.w3.org/csswg/cssom-view/
@@ -123,11 +133,13 @@ our %known-type = BEGIN
         for @l {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
+                $key = $key.lc;
 
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
+                next if $key eq '0' || !$value.defined;
 
-                if substr($key, 0, 4) eq 'expr-' {
+                if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
                 }
                 elsif $value.can('type') {
@@ -136,14 +148,16 @@ our %known-type = BEGIN
                 elsif %known-type{$key}:exists {
                     $value = $.token( $value, :type($key) );
                 }
+                else {
+                    warn "{$value.perl} has unknown type: $key";
+                }
 
                 if %terms{$key}:exists {
                     $.warning("repeated term " ~ $key, $value);
                     return Any;
                 }
 
-                %terms{$key.lc} = $value
-                if $value.defined;
+                %terms{$key} = $value;
             }
         }
 
@@ -163,10 +177,13 @@ our %known-type = BEGIN
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
 
+                $key = $key.lc;
+
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
+                next if $key eq '0' || !$value.defined;
 
-                if substr($key, 0, 4) eq 'expr-' {
+                if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
                 }
                 elsif $value.can('type') {
@@ -175,13 +192,15 @@ our %known-type = BEGIN
                 elsif %known-type{$key}:exists {
                     $value = $.token( $value, :type($key));
                 }
+                else {
+                    warn "{$value.perl} has unknown type: $key";
+                }
 
-                push( @terms, {$key.lc => $value} )
-                    if $value.defined;
+                push( @terms, {$key => $value} );
             }
         }
 
-    return @terms;
-}
+        return @terms;
+    }
 
 }
