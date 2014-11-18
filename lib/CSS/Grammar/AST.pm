@@ -109,7 +109,7 @@ our %known-type = BEGIN
         }
 
         die "unknown type: $type"
-            if $type.defined && (%known-type{$type}:!exists);
+            if $type.defined && (%known-type{$type.subst(/':'.*/,'')}:!exists);
 
         $ast
             does CSS::Grammar::AST::Token
@@ -134,6 +134,7 @@ our %known-type = BEGIN
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 $key = $key.lc;
+                my ($type, $_class) = $key.split(':');
 
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
@@ -145,7 +146,7 @@ our %known-type = BEGIN
                 elsif $value.can('type') {
                     $key = $value.units // $value.type;
                 }
-                elsif %known-type{$key}:exists {
+                elsif %known-type{$type}:exists {
                     $value = $.token( $value, :type($key) );
                 }
                 else {
@@ -178,6 +179,7 @@ our %known-type = BEGIN
                 my ($key, $value) = $cap.kv;
 
                 $key = $key.lc;
+                my ($type, $_class) = $key.split(':');
 
                 $value = $value.ast
                     // $capture && $capture eq $key && ~$value;
@@ -189,7 +191,7 @@ our %known-type = BEGIN
                 elsif $value.can('type') {
                     $key = $value.units // $value.type;
                 }
-                elsif %known-type{$key}:exists {
+                elsif %known-type{$type}:exists {
                     $value = $.token( $value, :type($key));
                 }
                 else {
