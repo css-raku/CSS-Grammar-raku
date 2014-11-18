@@ -81,7 +81,7 @@ token attribute-selector:sym<includes> {'~='}
 token attribute-selector:sym<dash>     {'|='}
 
 rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
-rule pseudo:sym<function> {':'[<function=.pseudo-function>||<.unknown-pseudo-func>]}
+rule pseudo:sym<function> {':'[<function=.pseudo-function>||<function=.any-pseudo-func>]}
 # assume anything else is a class
 rule pseudo:sym<class>    {':' <class=.Ident><!before '('>}
 
@@ -90,7 +90,7 @@ rule any-function         {<Ident>'(' [ <expr>? || <any-args> ] ')'}
 proto rule pseudo-function {*}
 rule pseudo-function:sym<lang> {:i'lang(' [ <Ident> || <any-args> ] ')'}
 # pseudo function catch-all
-rule unknown-pseudo-func   {<Ident>'(' <any-args> ')'}
+rule any-pseudo-func   {<any-function>}
 
 # 'lexer' css21 exceptions
 # non-ascii limited to single byte characters

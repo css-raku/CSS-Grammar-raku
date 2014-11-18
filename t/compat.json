@@ -19,7 +19,7 @@
 [ "class", { "input" : ".\\55ft", "ast" : "\u055ft" } ]
 [ "color", { "input" : "Rgb(10, 20, 30)", "ast" : [ { "num" : 10 }, { "num" : 20 }, { "num" : 30 } ], "token" : { "type" : "color", "units" : "rgb" } } ]
 [ "pseudo", { "input" : ":visited", "ast" : { "class" : "visited" } } ]
-[ "pseudo", { "input" : ":Lang(fr-ca)", "ast" : { "pseudo-func" : { "ident" : "lang", "args" : [ { "ident" : "fr-ca" } ] } }, "css1" : { "parse" : ":Lang", "ast" : { "class" : "lang" } } } ]
+[ "pseudo", { "input" : ":Lang(fr-ca)", "ast" : { "pseudo-func" : { "ident" : "lang", "expr" : [ { "ident" : "fr-ca" } ] } }, "css1" : { "parse" : ":Lang", "ast" : { "class" : "lang" } } } ]
 [ "import", { "input" : "@import url('file:///etc/passwd');", "ast" : { "url" : "file:///etc/passwd" } } ]
 [ "import", { "input" : "@IMPORT '/etc/group';", "ast" : { "url" : "/etc/group" } } ]
 // imports can be assigned to media types. See:

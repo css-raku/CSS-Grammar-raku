@@ -37,8 +37,12 @@ method func($name, $args is copy, :$type = CSSValue::FunctionComponent) {
     $.token( %ast, :$type );
 }
 
-method pseudo-func( $name, $args) {
-    $.func( $name, $args, :type(CSSSelector::PseudoFunction) );
+method pseudo-func( $name, $expr) {
+    $expr = [ $expr ] unless $expr.isa(List);
+    my %ast = (ident => $name,
+               expr => $.token( $expr, :type(CSSValue::ArgumentListComponent) ),
+        );
+    $.token( %ast, :type(CSSSelector::PseudoFunction) );
 }
 
 sub _display-string($_str) {
@@ -356,8 +360,10 @@ method pseudo-function:sym<lang>($/) {
     make $.pseudo-func( 'lang' , $.list($/) );
 }
 
-method unknown-pseudo-func($/) {
-    $.warning('unknown pseudo-function', $<Ident>.ast);
+method any-pseudo-func($/) {
+    my $ast = $<any-function>.ast;
+    return unless $ast.defined;
+    make $.token( $ast, :type(CSSSelector::PseudoFunction) );
 }
 
 method attribute-selector:sym<equals>($/)   { make ~$/ }

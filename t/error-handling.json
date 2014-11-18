@@ -9,7 +9,7 @@
 // unclosed string. scanner should discard first line
 [ "ruleset", { "input" : "h2 {bad: dropme 'http://unclosed-string.org; color:blue;\n background-color:#ccc;}" , "ast": { "selectors" : [ { "selector" : [ { "simple-selector" : [ { "qname" : { "element-name" : "h2" } } ] } ] } ], "declarations" : [ { "ident" : "background-color", "expr" : [ { "rgb" : [ { "num" : 204 }, { "num" : 204 }, { "num" : 204 } ] } ] } ] }, "warnings" : [ "unterminated string: 'http://unclosed-string.org; color:blue;", "dropping term: dropme", "dropping declaration: bad" ] } ]
 [ "ruleset", { "input" : "p { color:rgb(10,17); }" , "ast": null, "warnings" : [ "usage: rgb(c,c,c) where c is 0..255 or 0%-100%", "dropping declaration: color" ] } ]
-[ "ruleset", { "input" : "p:foo(42) { color:bar(); }" , "ast": null, "warnings" : [ "unknown pseudo-function: foo" ] } ]
+[ "ruleset", { "input" : "p:foo(42) { color:bar(); }" , "ast": { "selectors" : [ { "selector" : [ { "simple-selector" : [ { "qname" : { "element-name" : "p" } }, { "pseudo" : { "pseudo-func" : { "ident" : "foo", "expr" : [ { "num" : 42 } ] } } } ] } ] } ], "declarations" : [ { "ident" : "color", "expr" : [ { "func" : { "ident" : "bar" } } ] } ] } } ]
 [ "ruleset", { "input" : "p { color:bar(@42); }" , "ast": null, "warnings" : [ "skipping function arguments: @42", "dropping declaration: color" ] } ]
 [ "ruleset", { "input" : "p { color }" , "ast": null, "warnings" : "dropping term: color" } ]
 [ "ruleset", { "input" : "p { term1:a; color; term2:b }" , "ast": null, "warnings" : "dropping term: color" } ]
