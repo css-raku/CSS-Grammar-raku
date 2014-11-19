@@ -248,9 +248,9 @@ method misplaced($/) {
 method operator($/) { make $.token( ~$/, :type(CSSValue::OperatorComponent)) }
 
 # pseudos
-method pseudo:sym<element>($/)  { make { element => $<element>.lc } }
-method pseudo:sym<function>($/) { make $.node($/) }
-method pseudo:sym<class>($/)    { make $.node($/) }
+method pseudo:sym<element>($/)  { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+method pseudo:sym<function>($/) { make $<pseudo-function>.ast }
+method pseudo:sym<class>($/)    { make $.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
 
 # combinators
 method combinator:sym<adjacent>($/) { make '+' }

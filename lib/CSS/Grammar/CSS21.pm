@@ -81,7 +81,7 @@ token attribute-selector:sym<includes> {'~='}
 token attribute-selector:sym<dash>     {'|='}
 
 rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
-rule pseudo:sym<function> {':'[<function=.pseudo-function>||<function=.any-pseudo-func>]}
+rule pseudo:sym<function> {':'[<pseudo-function>||<pseudo-function=.any-pseudo-func>]}
 # assume anything else is a class
 rule pseudo:sym<class>    {':' <class=.Ident><!before '('>}
 

@@ -78,7 +78,8 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :Class<class>
         :Combinator<combinator>
         :Id<id>
-        :Pseudo<pseudo>
+        :PseudoClass<pseudo-class>
+        :PseudoElement<pseudo-elem>
         :PseudoFunction<pseudo-func>
         :SelectorList<selectors>
         :Selector<selector>
