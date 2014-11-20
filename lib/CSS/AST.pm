@@ -1,9 +1,9 @@
 use v6;
 
-use CSS::Grammar::AST::Info;
-use CSS::Grammar::AST::Token;
+use CSS::AST::Info;
+use CSS::AST::Token;
 
-class CSS::Grammar::AST does CSS::Grammar::AST::Info {
+class CSS::AST does CSS::AST::Info {
 
     # These tables map AST types to standard W3C component definitions.
 
@@ -115,7 +115,7 @@ our %known-type = BEGIN
             if $type.defined && (%known-type{$type.subst(/':'.*/,'')}:!exists);
 
         $ast
-            does CSS::Grammar::AST::Token
+            does CSS::AST::Token
             unless $ast.can('type');
 
         $ast.type = $type.Str   if $type.defined;

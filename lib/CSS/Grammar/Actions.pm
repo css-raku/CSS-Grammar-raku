@@ -3,10 +3,10 @@ use v6;
 # rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
+use CSS::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
 
 class CSS::Grammar::Actions
-    is CSS::Grammar::AST;
+    is CSS::AST;
 
 has Int $.line-no is rw = 1;
 has Int $!nl-rachet = 0;
@@ -63,7 +63,7 @@ method warning ($message, $str?, $explanation?) {
 	if ($str // '') ne '';
     $warning ~= ' - ' ~ $explanation
 	if ($explanation // '') ne '';
-    $warning does CSS::Grammar::AST::Info;
+    $warning does CSS::AST::Info;
     $warning.line-no = $.line-no - 1;
     push @.warnings, $warning;
 }
