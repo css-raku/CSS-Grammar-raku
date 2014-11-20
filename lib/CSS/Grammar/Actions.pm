@@ -278,7 +278,7 @@ method unicode-range:sym<masked>($/) {
 
 # css21/css3 core - media support
 method at-rule:sym<media>($/) { make $.at-rule($/, :type(CSSObject::MediaRule)) }
-method media-rules($/)        { make $.token( $.list($/), :type(CSSObject::RuleList)) }
+method rule-list($/)          { make $.token( $.list($/), :type(CSSObject::RuleList)) }
 method media-list($/)         { make $.list($/) }
 method media-query($/)        { make $.list($/) }
 method media-name($/)         { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }

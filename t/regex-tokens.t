@@ -99,17 +99,17 @@ for (< * + \> |= ~= >) {
     ok($_ ~~ /^<CSS::Grammar::Core::_op>$/, "scan op: $_");
 }
 
-my $media-rules = '{
+my $rule-list = '{
    body { font-size: 10pt }
 }';
 
-for ('{ }', $media-rules) { 
-    ok($_ ~~ /^<CSS::Grammar::CSS21::media-rules>$/, "css21 media-rules: $_");
-    ok($_ ~~ /^<CSS::Grammar::CSS3::media-rules>$/, "css3 media-rules: $_");
+for ('{ }', $rule-list) { 
+    ok($_ ~~ /^<CSS::Grammar::CSS21::rule-list>$/, "css21 rule-list: $_");
+    ok($_ ~~ /^<CSS::Grammar::CSS3::rule-list>$/, "css3 rule-list: $_");
 }
 
 my $at-rule_page = '@page :left { margin: 3cm };';
-my $at-rule_print = '@media print ' ~ $media-rules;
+my $at-rule_print = '@media print ' ~ $rule-list;
 
 for ($at-rule_page, $at-rule_print) { 
     ok($_ ~~ /^\@<CSS::Grammar::CSS21::at-rule>$/, "css21 at-rule: $_");

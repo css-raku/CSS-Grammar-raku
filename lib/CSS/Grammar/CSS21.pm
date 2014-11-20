@@ -13,17 +13,17 @@ rule stylesheet { <charset>? [ <import> ]*
 		  [ '@'<at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
 rule charset { '@'(:i'charset') <string> ';' }
-rule import  { '@'(:i'import')  [<url-string>|<url>] <media-list>? ';' }
+rule import  { '@'(:i'import')  [<url=.url-string>|<url>] <media-list>? ';' }
 # to detect out of order directives
 rule misplaced {<charset>|<import>}
 
 proto rule at-rule {*}
 
-rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
+rule at-rule:sym<media>   {(:i'media') <media-list> <rule-list> }
 rule media-list           { <media-query> +% ',' }
 rule media-query          { <media-name> }
 rule media-name           {<Ident>}
-rule media-rules          {'{' <ruleset>* <.end-block>}
+rule rule-list            {'{' <ruleset>* <.end-block>}
 
 rule at-rule:sym<page>    {(:i'page') <page=.page-pseudo>? <declarations> }
 
