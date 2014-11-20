@@ -281,10 +281,11 @@ method at-rule:sym<media>($/) { make $.at-rule($/, :type(CSSObject::MediaRule)) 
 method media-rules($/)        { make $.token( $.list($/), :type(CSSObject::RuleList)) }
 method media-list($/)         { make $.list($/) }
 method media-query($/)        { make $.list($/) }
+method media-name($/)         { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
 # css21/css3 core - page support
 method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
-method page-pseudo($/)        { make $<Ident>.ast }
+method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::PseudoElement)) }
 
 method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }

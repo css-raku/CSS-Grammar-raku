@@ -15,7 +15,7 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :GroupingRule<grouping-rule>
         :ImportRule<import>
         :MarginRule<margin-rule>
-        :MediaRule<media-rules>
+        :MediaRule<media-rule>
         :NamespaceRule<namespace-rule>
         :PageRule<page-rule>
         :Priority<prio>
@@ -78,6 +78,8 @@ class CSS::Grammar::AST does CSS::Grammar::AST::Info {
         :Class<class>
         :Combinator<combinator>
         :Id<id>
+        :MediaList<media-list>
+        :MediaQuery<media-query>
         :PseudoClass<pseudo-class>
         :PseudoElement<pseudo-elem>
         :PseudoFunction<pseudo-func>

@@ -21,10 +21,12 @@ proto rule at-rule {*}
 
 rule at-rule:sym<media>   {(:i'media') <media-list> <media-rules> }
 rule media-list           { <media-query> +% ',' }
-rule media-query          { <media=.Ident> }
+rule media-query          { <media-name> }
+rule media-name           {<Ident>}
 rule media-rules          {'{' <ruleset>* <.end-block>}
 
 rule at-rule:sym<page>    {(:i'page') <page=.page-pseudo>? <declarations> }
+
 rule page-pseudo          {':'<Ident>}
 
 # inherited combinators: '+' (adjacent)
