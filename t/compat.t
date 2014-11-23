@@ -24,11 +24,13 @@ for 't/compat.json'.IO.lines {
     my ($rule, $test) = @( from-json($_) );
     my $input = $test<input>;
 
-    for css1  => CSS::Grammar::CSS1,
-        css21 => CSS::Grammar::CSS21,
-        css3  => CSS::Grammar::CSS3 {
+    for css1  => {parser => CSS::Grammar::CSS1},
+        css21 => {parser => CSS::Grammar::CSS21},
+        css3  => {parser => CSS::Grammar::CSS3} {
 
-	my ($level, $class) = .kv;
+	my ($level, $opts) = .kv;
+        my $class = $opts<parser>;
+        my $writer = $opts<writer>;
 	my %level-tests = %( $test{$level} // () );
 	my %expected = %$test, %level-tests;
 
@@ -43,6 +45,7 @@ for 't/compat.json'.IO.lines {
 					:$actions,
 					:$rule,
 					:suite($level),
+                                        :$writer,
 					:%expected);
     }
 

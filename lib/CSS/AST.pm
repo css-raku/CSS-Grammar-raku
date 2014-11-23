@@ -23,7 +23,7 @@ class CSS::AST does CSS::AST::Info {
         :RuleList<rule-list>
         :StyleDeclaration<style>
         :StyleRule<style-rule>
-        :StyleSheet<style-sheet>
+        :StyleSheet<stylesheet>
         »;
 
     # CSS value types based on http://dev.w3.org/csswg/cssom-values/
@@ -41,10 +41,9 @@ class CSS::AST does CSS::AST::Info {
         :StringComponent<string>
         :URLComponent<url>
 
-        # Extension components. These do not have corresponding definitions in csssom-values
-
+        :NameComponent<name>
         :NumberComponent<num>
-        :IntegerComponent<int>  # e.g. z-index
+        :IntegerComponent<int>
         :AngleComponent<angle>
         :FrequencyComponent<freq>
         :FunctionComponent<func>
@@ -91,7 +90,7 @@ class CSS::AST does CSS::AST::Info {
     # from http://dev.w3.org/csswg/cssom-view/
     our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
 
-our %known-type = BEGIN
+BEGIN our %known-type =
     %( CSSObject.enums.invert ),
     %( CSSValue.enums.invert ),
     %( CSSSelector.enums.invert ),
@@ -111,8 +110,11 @@ our %known-type = BEGIN
             $type = $inferred-type
         }
 
-        die "unknown type: $type"
-            if $type.defined && (%known-type{$type.subst(/':'.*/,'')}:!exists);
+        if $type.defined {
+            my $raw-type = $type.subst(/':'.*/,'');
+            die "unknown type: '$raw-type'"
+                unless %known-type{$raw-type}:exists;
+        }
 
         $ast
             does CSS::AST::Token

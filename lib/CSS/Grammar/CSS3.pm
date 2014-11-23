@@ -15,6 +15,9 @@ rule stylesheet { <charset>? [ <import> ]* [ '@'<at-rule=.at-decl> ]*
 # <at-decl> - at rules preceding main body - aka @namespace extensions
 proto rule at-decl {*}
 
+# allow '::' element selectors
+rule pseudo:sym<::element> {'::'<element=.Ident>}
+ 
 # to detect out of order directives
 rule misplaced     {<charset>|<import>|'@'<at-decl>}
 

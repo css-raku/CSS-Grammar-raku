@@ -143,8 +143,8 @@ method Ident($/) {
     make $ident.lc;
 }
 
-method name($/)   { make [~] $<nmchar>>>.ast; }
-method num($/)    { make $0 ?? $/.Rat !! $/.Int}
+method name($/)   { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
+method num($/)    { make $.token( $0 ?? $/.Rat !! $/.Int, :type(CSSValue::NumberComponent)) }
 
 method stringchar:sym<cont>($/)     { make '' }
 method stringchar:sym<escape>($/)   { make $<escape>.ast }
@@ -168,9 +168,9 @@ method badstring($/) {
     $.warning('unterminated string', ~$/);
 }
 
-method id($/)    { make $<name>.ast }
+method id($/)    { make $.token( $<name>.ast, :type(CSSSelector::Id)) }
 
-method class($/) { make $<name>.ast }
+method class($/) { make $.token( $<name>.ast, :type(CSSSelector::Class)) }
 
 method bare-url-char($/) {
     make $<char> ?? $<char>.ast !! ~$/
@@ -248,7 +248,8 @@ method misplaced($/) {
 method operator($/) { make $.token( ~$/, :type(CSSValue::OperatorComponent)) }
 
 # pseudos
-method pseudo:sym<element>($/)  { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+method pseudo:sym<:element>($/)  { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+method pseudo:sym<::element>($/) { make $.node($/) }
 method pseudo:sym<function>($/) { make $<pseudo-function>.ast }
 method pseudo:sym<class>($/)    { make $.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
 
@@ -290,8 +291,8 @@ method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::P
 method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }
 method selectors($/)          { make $.list($/) }
-method declarations($/)       { make $<declaration-list>.ast }
-method declaration-list($/)   { make $.token( [($<declaration>>>.ast).grep: {.defined}], :type(CSSValue::PropertyList) ) }
+method declarations($/)       { make $.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
+method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
 
 method declaration($/)        {
     return if $<dropped-decl>;
@@ -341,11 +342,11 @@ method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
 method term2:sym<ident>($/)    { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
-method selector($/)            { make $.list($/) }
+method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
 
 method universal($/)           { make $.token( {element-name => ~$/}, :type(CSSValue::QnameComponent)) }
 method qname($/)               { make $.token( $.node($/), :type(CSSValue::QnameComponent)) }
-method simple-selector($/)     { make $.list($/) }
+method simple-selector($/)     { make $.token( $.list($/), :type(CSSSelector::SelectorComponent)) }
 
 method attrib($/)              { make $.list($/) }
 

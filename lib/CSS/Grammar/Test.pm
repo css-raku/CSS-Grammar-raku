@@ -34,7 +34,8 @@ module CSS::Grammar::Test {
     }
 
     our sub parse-tests($class, $input, :$parse, :$actions,
-			:$rule = 'TOP', :$suite = '', :%expected) {
+			:$rule = 'TOP', :$suite = '', :$writer,
+                        :%expected) {
 
 	my $p = $parse;
 
@@ -80,22 +81,39 @@ module CSS::Grammar::Test {
                }
 	    }
 
-	    if defined (my $expected-ast = %expected<ast>) {
+            my $actual-ast = $p.defined && $p.ast;
+
+	    if (my $expected-ast = %expected<ast>).defined {
 
                todo( %todo<ast> )
-		    if %todo<ast>;     
+		    if %todo<ast>;
 
-                my $actual-ast = $p.defined && $p.ast;
+               my $ast-ok = ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast";
+               unless $ast-ok {
+                   diag "expected: " ~ to-json($expected-ast);
+                   diag "got: " ~ to-json($actual-ast)
+               };
 
-		ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast"
-		    or do {diag "expected: " ~ to-json($expected-ast);
-			   diag "got: " ~ to-json($actual-ast)};
+               if $ast-ok && $writer.can('write') {
+                   # recursive test of reserialized css.
+                   try {
+                       my $css-again = $writer.write( $actual-ast )
+                           and ok("ast reserialization");
+
+                       # check that ast reamins identical after reserialization
+                       my %expected = ast => $expected-ast;
+                       parse-tests($class, $css-again, :$rule, :$actions, :%expected, :suite("  -- $suite reserialized") );
+
+                       CATCH {
+                           note "error writing: {$actual-ast.perl}";
+                           die $_;
+                       }
+                   }
+               }
 	    }
-	    else {
-		if $p.defined && $p.ast.defined {
-		    note 'untested_ast: ' ~ to-json( $p.ast )
-			unless %expected<ast>:exists;
-		}
+	    elsif $actual-ast.defined {
+                note 'untested_ast: ' ~ to-json( $actual-ast )
+                    unless %expected<ast>:exists;
 	    }
 
 	    if defined (my $token = %expected<token>) {

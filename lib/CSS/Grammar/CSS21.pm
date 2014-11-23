@@ -19,13 +19,13 @@ rule misplaced {<charset>|<import>}
 
 proto rule at-rule {*}
 
-rule at-rule:sym<media>   {(:i'media') <media-list> <rule-list> }
+rule at-rule:sym<media>   {\@?(:i'media') <media-list> <rule-list> }
 rule media-list           { <media-query> +% ',' }
 rule media-query          { <media-name> }
 rule media-name           {<Ident>}
-rule rule-list            {'{' <ruleset>* <.end-block>}
+rule rule-list            { '{' <ruleset>* <.end-block> }
 
-rule at-rule:sym<page>    {(:i'page') <page=.page-pseudo>? <declarations> }
+rule at-rule:sym<page>    {\@?(:i'page') <page=.page-pseudo>? <declarations> }
 
 rule page-pseudo          {':'<Ident>}
 
@@ -82,7 +82,7 @@ token attribute-selector:sym<equals>   {'='}
 token attribute-selector:sym<includes> {'~='}
 token attribute-selector:sym<dash>     {'|='}
 
-rule pseudo:sym<element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
+rule pseudo:sym<:element>  {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
 rule pseudo:sym<function> {':'[<pseudo-function>||<pseudo-function=.any-pseudo-func>]}
 # assume anything else is a class
 rule pseudo:sym<class>    {':' <class=.Ident><!before '('>}

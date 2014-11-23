@@ -48,7 +48,7 @@ token simple-selector { <qname> <id>? <class>? <pseudo>?
 		      | <class> <pseudo>?
 		      | <pseudo> }
 
-rule pseudo:sym<element> {':'$<element>=[:i'first-'[line|letter]]}
+rule pseudo:sym<:element> {':'$<element>=[:i'first-'[line|letter]]}
 # assume anything else is a class
 rule pseudo:sym<class>   {':' <class=.Ident> }
 
