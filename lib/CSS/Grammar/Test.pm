@@ -98,7 +98,7 @@ module CSS::Grammar::Test {
                    # recursive test of reserialized css.
                    try {
                        my $css-again = $writer.write( $actual-ast )
-                           and ok("ast reserialization");
+                           and pass("ast reserialization");
 
                        # check that ast reamins identical after reserialization
                        my %expected = ast => $expected-ast;

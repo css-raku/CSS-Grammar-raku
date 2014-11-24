@@ -56,6 +56,7 @@ class CSS::AST does CSS::AST::Info {
         :ExpressionComponent<expr>
         :ArgumentListComponent<args>
         :AtKeywordComponent<@>
+        :UnicodeRangeComponent<unicode-range>
     »;
 
     # an enumerated list of all unit types for validation purposes.

@@ -118,9 +118,8 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule term1:sym<url>        {<url>}
 
     # Unicode ranges - used by selector modules + scan rules
-    proto rule unicode-range {*}
-    rule unicode-range:sym<from-to> {$<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]}
-    rule unicode-range:sym<masked>  {$<mask>=[<.xdigit>|'?']**1..6 <!before '-'>}
+    rule unicode-range         {:i 'U+' [ $<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]
+                                        ||$<mask>=[<.xdigit>|'?']**1..6 ]}
 
     # Error Recovery
     # --------------
@@ -206,7 +205,7 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
     proto rule _any {*}
     rule _any:sym<string> { <.string> }
     rule _any:sym<dim>    { <.num>['%'|<.Ident>]? }
-    rule _any:sym<urange> { 'U+'<.unicode-range> }
+    rule _any:sym<urange> { <.unicode-range> }
     rule _any:sym<ident>  { <.Ident> }
     rule _any:sym<pseudo> { <.pseudo> }
     rule _any:sym<id>     { <.id> }

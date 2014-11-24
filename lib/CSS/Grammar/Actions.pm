@@ -249,9 +249,9 @@ method operator($/) { make $.token( ~$/, :type(CSSValue::OperatorComponent)) }
 
 # pseudos
 method pseudo:sym<:element>($/)  { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
-method pseudo:sym<::element>($/) { make $.node($/) }
-method pseudo:sym<function>($/) { make $<pseudo-function>.ast }
-method pseudo:sym<class>($/)    { make $.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
+method pseudo:sym<::element>($/) { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+method pseudo:sym<function>($/)  { make $<pseudo-function>.ast }
+method pseudo:sym<class>($/)     { make $.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
 
 # combinators
 method combinator:sym<adjacent>($/) { make '+' }
@@ -262,19 +262,20 @@ method _code-point($hex-str) {
     return :16( ~$hex-str );
 }
 
-method unicode-range:sym<from-to>($/) {
-    # don't produce actual hex chars; could be out of range
-    make [ $._code-point( $<from> ), $._code-point( $<to> ) ];
-}
+method unicode-range($/) {
+    my ($lo, $hi);
 
-method unicode-range:sym<masked>($/) {
-    my $mask = ~$<mask>;
+    if $<mask> {
+        my $mask = ~$<mask>;
+        $lo = $mask.subst('?', '0'):g;
+        $hi = $mask.subst('?', 'F'):g;
+    }
+    else {
+        $lo = ~$<from>;
+        $hi = ~$<to>;
+    }
 
-    my $lo = $mask.subst('?', '0'):g;
-    my $hi = $mask.subst('?', 'F'):g;
-
-    # don't produce actual hex chars; could be out of range
-    make [ $._code-point($lo), $._code-point($hi) ];
+    make $.token( [ $._code-point( $lo ), $._code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
 }
 
 # css21/css3 core - media support
