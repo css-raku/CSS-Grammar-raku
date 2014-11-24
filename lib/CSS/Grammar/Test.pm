@@ -97,12 +97,14 @@ module CSS::Grammar::Test {
                if $ast-ok && $writer.can('write') {
                    # recursive test of reserialized css.
                    try {
+                       my $writer-opts = %expected<writer> // {};
+                       my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
+
                        my $css-again = $writer.write( $actual-ast );
                        ok $css-again.chars, "ast reserialization";
 
                        # check that ast reamins identical after reserialization
-                       my %expected = ast => $expected-ast;
-                       parse-tests($class, $css-again, :$rule, :$actions, :%expected, :suite("  -- $suite reserialized") );
+                       parse-tests($class, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
 
                        CATCH {
                            note "error writing: {$actual-ast.perl}";
