@@ -184,9 +184,9 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
 
     rule TOP           {^ <_stylesheet> $}
     rule _stylesheet   { <_statement>* }
-    rule _statement    { <_ruleset> | '@'<_at-rule> || <_any> || <_delim> }
+    rule _statement    { <_ruleset> | <_at-rule> || <_any> || <_delim> }
 
-    rule _at-rule      {(<.Ident>) <_any>* [ <_block> | <_badstring> | ';' ]}
+    rule _at-rule      {['@'<.Ident>] <_any>* [ <_block> | <_badstring> | ';' ]}
     rule _block        {'{' [ <_value> | <_badstring> | ';' ]* '}'?}
 
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }

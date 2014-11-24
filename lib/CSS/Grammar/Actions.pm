@@ -287,7 +287,7 @@ method media-name($/)         { make $.token( $<Ident>.ast, :type(CSSValue::Iden
 
 # css21/css3 core - page support
 method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
-method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::PseudoElement)) }
+method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::PseudoClass)) }
 
 method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }
