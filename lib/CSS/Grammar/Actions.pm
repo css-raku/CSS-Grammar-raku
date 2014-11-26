@@ -104,10 +104,6 @@ method dropped-decl($/) {
     }
 }
 
-method dropped-decl:sym<flushed>($/) {
-    $.warning('dropping term', ~$0);
-}
-
 method _to-unicode($hex-str) {
     my $char;
     try {
