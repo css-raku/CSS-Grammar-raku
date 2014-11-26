@@ -10,7 +10,7 @@ grammar CSS::Grammar::CSS3:ver<20030813.000>
 rule TOP {^ <stylesheet> $}
 
 # productions
-rule stylesheet { <charset>? [ <import> ]* [ <at-rule=.at-decl> ]*
+rule stylesheet { <.ws> <charset>? [ <import> ]* [ <at-rule=.at-decl> ]*
 		  [ <at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 # <at-decl> - at rules preceding main body - aka @namespace extensions
 proto rule at-decl {*}

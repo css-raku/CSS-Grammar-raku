@@ -10,7 +10,7 @@ rule TOP {^ <stylesheet> $}
 
 # productions
 
-rule stylesheet { <import>* [<ruleset> || <misplaced> || <unknown>]* }
+rule stylesheet { <.ws> <import>* [<ruleset> || <misplaced> || <unknown>]* }
 
 rule import { '@'(:i'import') [<url-string>|<url>] ';' }
 

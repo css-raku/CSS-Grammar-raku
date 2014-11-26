@@ -9,7 +9,7 @@ grammar CSS::Grammar::CSS21:ver<20110607.001>
 rule TOP {^ <stylesheet> $}
 
 # productions
-rule stylesheet { <charset>? [ <import> ]*
+rule stylesheet { <.ws> <charset>? [ <import> ]*
 		  [ <at-rule> | <ruleset> || <misplaced> || <unknown> ]* }
 
 rule charset { '@'(:i'charset') <string> ';' }
@@ -48,7 +48,7 @@ rule declarations {
 #
 rule declaration-list { <declaration> * }
 
-rule declaration { <Ident=.property> <expr> <prio>? <end-decl> || <dropped-decl> }
+rule declaration { <Ident=.property> <expr> <prio>? <end-decl> | '@'(<.Ident>) <declarations> || <dropped-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
 token term2:sym<function>  {<function=.any-function>}

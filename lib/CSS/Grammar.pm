@@ -183,7 +183,7 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
     # - may assume closing parenthesis in nested values and blocks
 
     rule TOP           {^ <_stylesheet> $}
-    rule _stylesheet   { <_statement>* }
+    rule _stylesheet   { [<.ws>?<_statement>]* }
     rule _statement    { <_ruleset> | <_at-rule> || <_any> || <_delim> }
 
     rule _at-rule      {['@'<.Ident>] <_any>* [ <_block> | <_badstring> | ';' ]}

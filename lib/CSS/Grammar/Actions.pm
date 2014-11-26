@@ -293,9 +293,13 @@ method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
 
 method declaration($/)        {
     return if $<dropped-decl>;
+
+    return make $.at-rule($/, :type(CSSObject::MarginRule))
+        if $<declarations>;
+
     return $.warning('dropping declaration', $<Ident>.ast)
-	if !$<expr>.caps
-	|| $<expr>.caps.grep({! .value.ast.defined});
+        if !$<expr>.caps
+        || $<expr>.caps.grep({! .value.ast.defined});
 
     make $.token( $.node($/), :type(CSSValue::Property));
 }
