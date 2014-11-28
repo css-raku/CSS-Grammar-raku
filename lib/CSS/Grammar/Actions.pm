@@ -25,7 +25,7 @@ method reset {
 
 method at-rule($/, :$type!) {
     my %terms = %( $.node($/) );
-    %terms<@> = $.token( $0.lc, :type(CSSValue::AtKeywordComponent));
+    %terms{ CSSValue::AtKeywordComponent } = $0.lc;
     return $.token( %terms, :$type);
 }
 
@@ -287,7 +287,7 @@ method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::P
 
 method property($/)           { make $<Ident>.ast }
 method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }
-method selectors($/)          { make $.list($/) }
+method selectors($/)          { make $.token( $.list($/), :type(CSSSelector::SelectorList)) }
 method declarations($/)       { make $.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
 method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
 

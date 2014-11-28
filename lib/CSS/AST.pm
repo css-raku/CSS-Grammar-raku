@@ -55,7 +55,7 @@ class CSS::AST does CSS::AST::Info {
         :OperatorComponent<op>
         :ExpressionComponent<expr>
         :ArgumentListComponent<args>
-        :AtKeywordComponent<@>
+        :AtKeywordComponent<at-keyw>
         :UnicodeRangeComponent<unicode-range>
     »;
 

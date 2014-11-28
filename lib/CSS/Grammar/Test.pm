@@ -54,9 +54,10 @@ module CSS::Grammar::Test {
             my %todo = %( %expected<todo> // {} );
 
 	    if $input.defined && $expected-parse.defined {
-		my $input-display = $input.chars > 300
-		    ?? $input.substr(0,50) ~ "     ......    "  ~ $input.substr(*-50)
-		    !! $input;
+                my @input-lines = $input.lines;
+		my $input-display = @input-lines >= 3
+                   ?? [~] @input-lines[0], '... ', @input-lines[*-1]
+                   !! $input;
 		my $got = $p.defined ?? (~$p).trim !! '';
 		# partial matches bit iffy at the moment
 		is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
@@ -99,8 +100,10 @@ module CSS::Grammar::Test {
                    try {
                        my $writer-opts = %expected<writer> // {};
                        my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
+                       my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
+                       my $args = $type ?? $type => $expected-ast !! $expected-ast;
 
-                       my $css-again = $writer.write( $actual-ast );
+                       my $css-again = $writer.write( $args );
                        ok $css-again.chars, "ast reserialization";
 
                        # check that ast reamins identical after reserialization
