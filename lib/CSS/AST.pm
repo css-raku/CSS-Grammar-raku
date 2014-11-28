@@ -74,9 +74,7 @@ class CSS::AST does CSS::AST::Info {
 
     our Str enum CSSSelector is export(:CSSSelector) «
         :AttributeSelector<attrib>
-        :AttributeOp<attribute-selector>
         :Class<class>
-        :Combinator<combinator>
         :Id<id>
         :MediaList<media-list>
         :MediaQuery<media-query>

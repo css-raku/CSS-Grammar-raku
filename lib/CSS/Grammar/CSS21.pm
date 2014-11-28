@@ -68,14 +68,14 @@ token frequency-units      {:i k?Hz}
 token frequency:sym<dim>   {:i<num><units=.frequency-units>}
 token dimension:sym<frequency>  {<frequency>}
 
-rule selector{ <simple-selector> +% <combinator>? }
+rule selector{ <simple-selector> +% <op=.combinator>? }
 
 token universal {'*'}
 token qname     {<element-name>}
 rule simple-selector { [<qname>|<universal>][<id>|<class>|<attrib>|<pseudo>]*
 		       |                    [<id>|<class>|<attrib>|<pseudo>]+ }
 
-rule attrib  {'[' <Ident> [ <attribute-selector> [<Ident>|<string>] ]? ']'}
+rule attrib  {'[' <Ident> [ <op=.attribute-selector> [<Ident>|<string>] ]? ']'}
 
 proto token attribute-selector         {*}
 token attribute-selector:sym<equals>   {'='}
