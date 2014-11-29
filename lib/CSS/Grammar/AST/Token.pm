@@ -1,6 +1,6 @@
 use v6;
 
-role CSS::AST::Token {
+role CSS::Grammar::AST::Token {
     has $.type is rw;
     has $.units is rw;
     has $.trait is rw;

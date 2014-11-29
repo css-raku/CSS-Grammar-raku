@@ -103,7 +103,7 @@ module CSS::Grammar::Test {
                        my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
                        my $args = $type ?? $type => $expected-ast !! $expected-ast;
 
-                       my $css-again = $writer.write( $args );
+                       my $css-again = $writer.dispatch( $args );
                        ok $css-again.chars, "ast reserialization";
 
                        # check that ast reamins identical after reserialization
