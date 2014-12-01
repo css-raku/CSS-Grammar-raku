@@ -32,8 +32,8 @@ rule declarations {
 # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
 #
 rule declaration-list { <declaration> * }
-
-rule declaration { <Ident=.property> <expr> <prio>? <end-decl> || <dropped-decl> }
+rule declaration      { <any-declaration> }
+rule any-declaration  { <Ident=.property> <expr> <prio>? <end-decl> || <dropped-decl> }
 # css1 syntax allows a unary operator in front of all terms. Throw it
 # out, if the term doesn't consume it.
 rule expr { [<term>||<.unary-op><term>] +% [ <term=.operator>? ] }

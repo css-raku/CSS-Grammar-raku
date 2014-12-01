@@ -47,8 +47,8 @@ rule declarations {
 # see: http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
 #
 rule declaration-list { <declaration> * }
-
-rule declaration { <Ident=.property> <expr> <prio>? <end-decl> | '@'(<.Ident>) <declarations> || <dropped-decl> }
+rule declaration      { <any-declaration> }
+rule any-declaration  { <Ident=.property> <expr> <prio>? <end-decl> | '@'(<.Ident>) <declarations> || <dropped-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
 token term2:sym<function>  {<function=.any-function>}

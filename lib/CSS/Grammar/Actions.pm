@@ -290,8 +290,8 @@ method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleS
 method selectors($/)          { make $.token( $.list($/), :type(CSSSelector::SelectorList)) }
 method declarations($/)       { make $.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
 method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
-
-method declaration($/)        {
+method declaration($/)        { make $<any-declaration>.ast }
+method any-declaration($/)    {
     return if $<dropped-decl>;
 
     return make $.at-rule($/, :type(CSSObject::MarginRule))
