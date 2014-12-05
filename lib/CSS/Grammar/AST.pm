@@ -297,7 +297,7 @@ BEGIN our %CSS3-Colors =
         return $ast;
     }
 
-    method node($/, :$capture?) {
+    method node($/) {
         my %terms;
 
         # unwrap Parcels
@@ -308,12 +308,12 @@ BEGIN our %CSS3-Colors =
         for @l {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
+                next if $key eq '0';
                 $key = $key.lc;
                 my ($type, $_class) = $key.split(':');
 
                 $value = $value.ast
-                    // $capture && $capture eq $key && ~$value;
-                next if $key eq '0' || !$value.defined;
+                    // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
@@ -340,7 +340,7 @@ BEGIN our %CSS3-Colors =
         return %terms;
     }
 
-    method list($/, :$capture? ) {
+    method list($/) {
         # make a node that contains repeatable elements
         my @terms;
 
@@ -352,13 +352,13 @@ BEGIN our %CSS3-Colors =
         for @l {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
-
+                next if $key eq '0';
                 $key = $key.lc;
+
                 my ($type, $_class) = $key.split(':');
 
                 $value = $value.ast
-                    // $capture && $capture eq $key && ~$value;
-                next if $key eq '0' || !$value.defined;
+                    // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
