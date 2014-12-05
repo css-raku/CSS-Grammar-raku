@@ -29,12 +29,12 @@ method at-rule($/, :$type!) {
     return $.token( %terms, :$type);
 }
 
-method func($name, $args is copy, :$type = CSSValue::FunctionComponent) {
+method func($name, $args is copy, :$type = CSSValue::FunctionComponent, :$trait, :$arg-type=CSSValue::ArgumentListComponent) {
     $args = [ $args ] unless $args.isa(List);
     my %ast = (ident => $name,
-               args => $.token( $args, :type(CSSValue::ArgumentListComponent) ),
+               $arg-type => $args,
         );
-    $.token( %ast, :$type );
+    $.token( %ast, :$type, :$trait );
 }
 
 method pseudo-func( $name, $expr) {
