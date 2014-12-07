@@ -101,9 +101,9 @@ module CSS::Grammar::Test {
                        my $writer-opts = %expected<writer> // {};
                        my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
                        my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
-                       my $args = $type ?? $type => $expected-ast !! $expected-ast;
+                       my %args = $type ?? $type => $expected-ast !! %$expected-ast;
 
-                       my $css-again = $writer.dispatch( $args );
+                       my $css-again = $writer.write( |%args );
                        ok $css-again.chars, "ast reserialization";
 
                        # check that ast reamins identical after reserialization
