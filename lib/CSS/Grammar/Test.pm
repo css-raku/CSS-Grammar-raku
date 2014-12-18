@@ -26,125 +26,112 @@ module CSS::Grammar::Test {
     multi sub json-eqv (Numeric:D $a, Numeric:D $b) { $a == $b }
     multi sub json-eqv (Stringy $a, Stringy $b) { $a eq $b }
     multi sub json-eqv (Bool $a, Bool $b) { $a == $b }
-    multi sub json-eqv (Any $a, Any $b) {
+    multi sub json-eqv (Any $a, Any $b) is default {
+        return json-eqv( %$a, $b) if $a.isa(Pair);
+        return json-eqv( $a, %$b) if $b.isa(Pair);
+        return True if !$a.defined && !$b.defined;
 	note "data type mismatch";
-	note "    - expected: {$b.perl}";
-	note "    - got: {$a.perl}";
+	note "    - expected: {to-json($b)}";
+	note "    - got: {to-json($a)}";
 	return False;
     }
 
-    our sub parse-tests($class, $input, :$parse, :$actions,
+    our sub parse-tests($class, $input, :$parse is copy, :$actions,
 			:$rule = 'TOP', :$suite = '', :$writer,
                         :%expected) {
 
-	my $p = $parse;
+        $parse //= do { 
+            $actions.reset if $actions.can('reset');
+            $class.subparse( $input, :$rule, :$actions)
+        };
 
-	try {
+        my @warnings = $actions.warnings
+            if $actions.can('warnings');
 
-	    $p //= do { 
-		$actions.reset if $actions.can('reset');
-		$class.subparse( $input, :rule($rule), :actions($actions))
-	    };
+        my $expected-parse = (%expected<parse> // $input).trim;
 
-	    my @warnings = $actions.warnings
-		if $actions.can('warnings');
+        my %todo = %( %expected<todo> // {} );
 
-	    my $expected-parse = (%expected<parse> // $input).trim;
+        if $input.defined && $expected-parse.defined {
+            my @input-lines = $input.lines;
+            my $input-display = @input-lines >= 3
+                ?? [~] @input-lines[0], '... ', @input-lines[*-1]
+                !! $input;
+            my $got = $parse.defined ?? (~$parse).trim !! '';
+            # partial matches bit iffy at the moment
+            is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
+        }
 
-            my %todo = %( %expected<todo> // {} );
+        todo( %todo<warnings> )
+            if %todo<warnings>;
 
-	    if $input.defined && $expected-parse.defined {
-                my @input-lines = $input.lines;
-		my $input-display = @input-lines >= 3
-                   ?? [~] @input-lines[0], '... ', @input-lines[*-1]
-                   !! $input;
-		my $got = $p.defined ?? (~$p).trim !! '';
-		# partial matches bit iffy at the moment
-		is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
-	    }
+        if  %expected<warnings>:exists && ! %expected<warnings>.defined {
+            diag "untested warnings: " ~ @warnings
+                if @warnings;
+        }
+        else {
+            if %expected<warnings>.isa('Regex') {
+                my @matched = ([~] @warnings).match(%expected<warnings>);
+                ok( @matched, "{$suite} $rule warnings")
+                    or diag @warnings;
+            }
+            else {
+                my @expected-warnings = @( %expected<warnings> // () );
+                is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
+            }
+        }
 
-            todo( %todo<warnings> )
-                if %todo<warnings>;
+        my $actual-ast = $parse.defined && $parse.ast;
 
-	    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
-		diag "untested warnings: " ~ @warnings
-		    if @warnings;
-	    }
-	    else {
-               if %expected<warnings>.isa('Regex') {
-                   my @matched = ([~] @warnings).match(%expected<warnings>);
-                   ok( @matched, "{$suite} $rule warnings")
-                       or diag @warnings;
-               }
-               else {
-                   my @expected-warnings = @( %expected<warnings> // () );
-                   is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
-               }
-	    }
+        if (my $expected-ast = %expected<ast>).defined {
 
-            my $actual-ast = $p.defined && $p.ast;
+            todo( %todo<ast> )
+                if %todo<ast>;
 
-	    if (my $expected-ast = %expected<ast>).defined {
+            my $ast-ok = ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast";
+            unless $ast-ok {
+                diag "expected: " ~ to-json($expected-ast);
+                diag "got: " ~ to-json($actual-ast)
+            };
 
-               todo( %todo<ast> )
-		    if %todo<ast>;
+            if $ast-ok && $writer.can('write') {
+                # recursive test of reserialized css.
+                try {
+                    my $writer-opts = %expected<writer> // {};
+                    my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
+                    my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
+                    my %args = $type ?? $type => $expected-ast !! %$expected-ast;
 
-               my $ast-ok = ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast";
-               unless $ast-ok {
-                   diag "expected: " ~ to-json($expected-ast);
-                   diag "got: " ~ to-json($actual-ast)
-               };
+                    my $css-again = $writer.write( |%args );
+                    ok $css-again.chars, "ast reserialization";
 
-               if $ast-ok && $writer.can('write') {
-                   # recursive test of reserialized css.
-                   try {
-                       my $writer-opts = %expected<writer> // {};
-                       my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
-                       my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
-                       my %args = $type ?? $type => $expected-ast !! %$expected-ast;
+                    # check that ast reamins identical after reserialization
+                    parse-tests($class, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
 
-                       my $css-again = $writer.write( |%args );
-                       ok $css-again.chars, "ast reserialization";
-
-                       # check that ast reamins identical after reserialization
-                       parse-tests($class, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
-
-                       CATCH {
-                           note "error writing: {$actual-ast.perl}";
-                           die $_;
-                       }
-                   }
-               }
-	    }
-	    elsif $actual-ast.defined {
-                note 'untested_ast: ' ~ to-json( $actual-ast )
-                    unless %expected<ast>:exists;
-	    }
-
-	    if defined (my $token = %expected<token>) {
-		if ok($p.defined && $p.ast.can('units'), "{$suite} $rule is a token") {
-		    if my $units = %$token<units> {
-			is($p.ast.units, $units, "{$suite} $rule units: " ~$units);
-		    }
-		    if my $type = %$token<type> {
-			is($p.ast.type, $type, "{$suite} $rule type: " ~$type);
-		    }
-		}
-	    }
-
-            CATCH {
-                default {
-                    note "parse failure: $_";
-                    flunk("{$suite} $rule parsed");
-                    diag "input $rule: {$input}"
-                        if $input.defined;
-                    diag "ast: {$p.ast.perl}"
-                        if $p.defined && $p.ast.defined;
+                    CATCH {
+                        note "error writing: {$actual-ast.perl}";
+                        die $_;
+                    }
                 }
-	    }
-	}	
+            }
+        }
+        elsif $actual-ast.defined {
+            note 'untested_ast: ' ~ to-json( $actual-ast )
+                unless %expected<ast>:exists;
+        }
 
-	return $p;
+        if defined (my $token = %expected<token>) {
+            if ok($parse.defined && $parse.ast.can('units'), "{$suite} $rule is a token") {
+                if my $units = %$token<units> {
+                    is($parse.ast.units, $units, "{$suite} $rule units: " ~$units);
+                }
+                if my $type = %$token<type> {
+                    is($parse.ast.type, $type, "{$suite} $rule type: " ~$type);
+                }
+            }
+        }
+
+	return $parse;
     }
 
 }
