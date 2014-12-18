@@ -1,7 +1,6 @@
 use v6;
 
 use CSS::Grammar::AST::Info;
-use CSS::Grammar::AST::Token;
 
 class CSS::Grammar::AST does CSS::Grammar::AST::Info {
 
@@ -266,17 +265,16 @@ BEGIN our %CSS3-Colors =
     yellowgreen     => [ 154,205,50 ],
     ;
 
-    method token(Mu $ast, :$type is copy, :$trait) {
+    method token(Mu $ast, :$type is copy) {
 
-        die 'usage: $.token($ast, :$type || :$trait)'
-            unless $type || $trait;
+        die 'usage: $.token($ast, :$type)'
+            unless $type;
 
         return unless $ast.defined;
 
-        my $units;
+        my $units = $type;
 
         if $type.defined && (my $inferred-type = CSSUnits.enums{$type}) {
-            $units = $type;
             $type = $inferred-type
         }
 
@@ -286,15 +284,13 @@ BEGIN our %CSS3-Colors =
                 unless %known-type{$raw-type}:exists;
         }
 
-        $ast
-            does CSS::Grammar::AST::Token
-            unless $ast.can('type');
+        my $token = $ast.isa(Pair)
+            ?? Pair.new( :key($units.Str), :value($ast.value) )
+            !! Pair.new( :key($units.Str), :value($ast) );
 
-        $ast.type = $type.Str   if $type.defined;
-        $ast.units = $units.Str if $units.defined;
-        $ast.trait = $trait.Str if $trait.defined;
+##        note { :units($units.Str), :$ast, :$token, :pair($ast.isa(Pair)) }.perl;
 
-        return $ast;
+        return $token;
     }
 
     method node($/) {
@@ -318,13 +314,10 @@ BEGIN our %CSS3-Colors =
                 if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
                 }
-                elsif $value.can('type') {
-                    $key = $value.units // $value.type;
+                elsif $value.isa(Pair) {
+                    ($key, $value) = $value.kv;
                 }
-                elsif %known-type{$type}:exists {
-                    $value = $.token( $value, :type($key) );
-                }
-                else {
+                elsif %known-type{$type}:!exists {
                     warn "{$value.perl} has unknown type: $key";
                 }
 
@@ -363,13 +356,10 @@ BEGIN our %CSS3-Colors =
                 if substr($key, 0, 5) eq 'expr-' {
                     $key = $key.subst(/^'expr-'/, 'expr:')
                 }
-                elsif $value.can('type') {
-                    $key = $value.units // $value.type;
+                elsif $value.isa(Pair) {
+                    ($key, $value) = $value.kv;
                 }
-                elsif %known-type{$type}:exists {
-                    $value = $.token( $value, :type($key));
-                }
-                else {
+                elsif %known-type{$type}:!exists {
                     warn "{$value.perl} has unknown type: $key";
                 }
 

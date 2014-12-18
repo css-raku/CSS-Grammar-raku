@@ -30,18 +30,14 @@ method at-rule($/, :$type!) {
 }
 
 method func($name, $args is copy, :$type = CSSValue::FunctionComponent, :$trait, :$arg-type=CSSValue::ArgumentListComponent) {
-    $args = [ $args ] unless $args.isa(List);
-    my %ast = (ident => $name,
-               $arg-type => $args,
-        );
+    $args = $arg-type => $args if $args.isa(List);
+    my %ast = :ident($name), $args.kv;
     $.token( %ast, :$type, :$trait );
 }
 
-method pseudo-func( $name, $expr) {
-    $expr = [ $expr ] unless $expr.isa(List);
-    my %ast = (ident => $name,
-               expr => $.token( $expr, :type(CSSValue::ArgumentListComponent) ),
-        );
+method pseudo-func( $name, $expr is copy) {
+    $expr = :expr($expr) if $expr.isa(List);
+    my %ast = :ident($name), $expr.kv;
     $.token( %ast, :type(CSSSelector::PseudoFunction) );
 }
 
@@ -184,7 +180,7 @@ method url($/)   {
 method uri($/)   { make $<url>.ast }
 
 method color-range($/) {
-    my $range = $<num>.ast;
+    my $range = $<num>.ast.value;
     $range *= 2.55
 	if ~$<percentage>;
 
@@ -205,7 +201,7 @@ method color:sym<rgb>($/)  {
 }
 
 method color:sym<hex>($/)   {
-    my $id = $<id>.ast;
+    my $id = $<id>.ast.value;
     my $chars = $id.chars;
 
     return $.warning("bad hex color", ~$/)
@@ -217,7 +213,7 @@ method color:sym<hex>($/)   {
 	!! $id.comb(/../);
 
     my $num-type = CSSValue::NumberComponent;
-    my @color = @rgb.map: { %( $num-type.Str => $.token( :16($_), :type($num-type)) ).item };
+    my @color = @rgb.map: { $num-type.Str => :16($_) };
 
     make $.token( @color, :type<rgb>);
 }
@@ -301,7 +297,7 @@ method any-declaration($/)    {
         if !$<expr>.caps
         || $<expr>.caps.grep({! .value.ast.defined});
 
-    make $.token( $.node($/), :type(CSSValue::Property));
+    make $.token($.node($/), :type(CSSValue::Property));
 }
 
 method expr($/)           { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
@@ -319,7 +315,7 @@ method length:sym<rel-font-unit>($/) {
 }
 
 proto method angle {*}
-method angle-units($/)         { make $.token( $/.lc, :type(CSSValue::AngleComponent) ) }
+method angle-units($/)         { make $/.lc }
 method angle:sym<dim>($/)      { make $.token($<num>.ast, :type($<units>.ast)) }
 method dimension:sym<angle>($/){ make $<angle>.ast }
 
@@ -337,7 +333,7 @@ method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::Percen
 
 method term1:sym<string>($/)   { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
 method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
-method term1:sym<color>($/)    { make $.token( $<color>.ast, :type(CSSValue::ColorComponent)) }
+method term1:sym<color>($/)    { make $<color>.ast }
 method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
 method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
