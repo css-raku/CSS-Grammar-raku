@@ -4,6 +4,7 @@ use v6;
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
 use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
+use CSS::Grammar::AST::Info;
 
 class CSS::Grammar::Actions
     is CSS::Grammar::AST;

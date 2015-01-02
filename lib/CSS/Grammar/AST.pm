@@ -1,8 +1,6 @@
 use v6;
 
-use CSS::Grammar::AST::Info;
-
-class CSS::Grammar::AST does CSS::Grammar::AST::Info {
+class CSS::Grammar::AST {
 
     # These tables map AST types to standard W3C component definitions.
 
@@ -287,8 +285,6 @@ BEGIN our %CSS3-Colors =
         my $token = $ast.isa(Pair)
             ?? Pair.new( :key($units.Str), :value($ast.value) )
             !! Pair.new( :key($units.Str), :value($ast) );
-
-##        note { :units($units.Str), :$ast, :$token, :pair($ast.isa(Pair)) }.perl;
 
         return $token;
     }
