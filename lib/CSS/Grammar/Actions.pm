@@ -138,6 +138,8 @@ method Ident($/) {
 
 method name($/)   { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
 method num($/)    { make $.token( $0 ?? $/.Rat !! $/.Int, :type(CSSValue::NumberComponent)) }
+method uint($/)   { make $/.Int }
+method op($/)     { make $/.lc  }
 
 method stringchar:sym<cont>($/)     { make '' }
 method stringchar:sym<escape>($/)   { make $<escape>.ast }

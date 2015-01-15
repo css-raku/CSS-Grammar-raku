@@ -37,6 +37,8 @@ grammar CSS::Grammar:ver<20110607.001> {
     token Ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
     token name     { <nmchar>+ }
     token num      { < + - >? (\d* \.)? \d+ }
+    token uint     {\d+}
+    token op($chr) {$chr}
 
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
