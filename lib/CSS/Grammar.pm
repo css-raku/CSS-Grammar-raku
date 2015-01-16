@@ -107,17 +107,13 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule combinator:sym<child>    { '>' }
 
     proto rule term  {*}
-    rule term:sym<base> { <term=.term1> || <term=.term2> }
-			    
-    proto rule term1 {*}
-    proto rule term2 {*}
-    rule term2:sym<num>        {<num>}
-    rule term2:sym<ident>      {<Ident><!before '('>}
-    rule term1:sym<dimension>  {<dimension>}
-    rule term1:sym<percentage> {<percentage>}
-    rule term1:sym<string>     {<string>}
-    rule term1:sym<color>      {<color>}
-    rule term1:sym<url>        {<url>}
+    rule term:sym<num>        {<num><!before ['%'|\w]>}
+    rule term:sym<ident>      {<Ident><!before '('>}
+    rule term:sym<dimension>  {<dimension>}
+    rule term:sym<percentage> {<percentage>}
+    rule term:sym<string>     {<string>}
+    rule term:sym<color>      {<color>}
+    rule term:sym<url>        {<url>}
 
     # Unicode ranges - used by selector modules + scan rules
     rule unicode-range         {:i 'U+' [ $<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]

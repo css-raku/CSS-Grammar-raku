@@ -304,10 +304,8 @@ method any-declaration($/)    {
 }
 
 method expr($/)           { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
-method term:sym<base>($/) { make $<term>.ast }
-
-method term1:sym<dimension>($/)  { make $<dimension>.ast }
-method term1:sym<percentage>($/) { make $<percentage>.ast }
+method term:sym<dimension>($/)  { make $<dimension>.ast }
+method term:sym<percentage>($/) { make $<percentage>.ast }
 
 proto method length {*}
 method length:sym<dim>($/) { make $.token($<num>.ast, :type($<units>.ast)); }
@@ -334,13 +332,13 @@ method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
 method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
 
-method term1:sym<string>($/)   { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
-method term1:sym<url>($/)      { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
-method term1:sym<color>($/)    { make $<color>.ast }
-method term2:sym<function>($/) { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
+method term:sym<string>($/)    { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
+method term:sym<url>($/)       { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
+method term:sym<color>($/)     { make $<color>.ast }
+method term:sym<function>($/)  { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
-method term2:sym<num>($/)      { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
-method term2:sym<ident>($/)    { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
+method term:sym<num>($/)       { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
+method term:sym<ident>($/)     { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
 method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
 

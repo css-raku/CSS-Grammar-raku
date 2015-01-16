@@ -51,7 +51,7 @@ rule declaration      { <any-declaration> }
 rule any-declaration  { <Ident=.property> <expr> <prio>? <end-decl> | '@'(<.Ident>) <declarations> || <dropped-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
-token term2:sym<function>  {<function=.any-function>}
+token term:sym<function>   {<function=.any-function>}
 
 proto token angle          {*}
 token angle-units          {:i[deg|rad|grad]}
