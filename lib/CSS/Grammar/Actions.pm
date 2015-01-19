@@ -96,9 +96,8 @@ method dropped-decl($/) {
     $.warning('dropping term', ~$<any>)
 	if $<any>;
 
-    if my $prop = $<property>>>.ast {
-	$.warning('dropping declaration', $prop);
-    }
+    $.warning('dropping declaration', $<property>.ast)
+        if $<property>;
 }
 
 method _to-unicode($hex-str) {
@@ -136,10 +135,10 @@ method Ident($/) {
     make $ident.lc;
 }
 
-method name($/)   { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
-method num($/)    { make $.token( $0 ?? $/.Rat !! $/.Int, :type(CSSValue::NumberComponent)) }
-method uint($/)   { make $/.Int }
-method op($/)     { make $/.lc  }
+method name($/)  { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
+method num($/)   { make $.token( $0 ?? $/.Rat !! $/.Int, :type(CSSValue::NumberComponent)) }
+method uint($/)  { make $/.Int }
+method op($/)    { make $/.lc  }
 
 method stringchar:sym<cont>($/)     { make '' }
 method stringchar:sym<escape>($/)   { make $<escape>.ast }
