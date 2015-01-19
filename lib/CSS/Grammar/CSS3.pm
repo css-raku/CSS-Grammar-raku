@@ -24,3 +24,7 @@ rule misplaced     {<charset>|<import>|<at-decl>}
 # 'lexer' css3 exceptions
 token nonascii     {<- [\x0..\x7F]>}
 
+# Selector Level 3 attribute operators
+token attribute-selector:sym<startswith> {'^='}
+token attribute-selector:sym<endswith>   {'$='}
+token attribute-selector:sym<contains>   {'*='}
