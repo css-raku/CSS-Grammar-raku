@@ -14,13 +14,15 @@ for ( 't/css3-syntax.json'.IO.lines ) {
         if .substr(0,2) eq '//';
 
     my ($rule, $expected) = @( from-json($_) );
-    my $input = $expected<input>;
+    my @inputs = @( $expected<input> );
 
-    CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
-				    :$rule,
-				    :$actions,
-				    :suite<css3>,
-				    :$expected );
+    for @inputs -> $input {
+        CSS::Grammar::Test::parse-tests(CSS::Grammar::CSS3, $input,
+                                        :$rule,
+                                        :$actions,
+                                        :suite<css3>,
+                                        :$expected );
+    }
 }
 
 done;

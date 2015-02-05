@@ -26,7 +26,7 @@ method reset {
 
 method at-rule($/, :$type!) {
     my %terms = %( $.node($/) );
-    %terms{ CSSValue::AtKeywordComponent } = $0.lc;
+    %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
     return $.token( %terms, :$type);
 }
 
@@ -289,6 +289,7 @@ method selectors($/)          { make $.token( $.list($/), :type(CSSSelector::Sel
 method declarations($/)       { make $.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
 method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
 method declaration($/)        { make $<any-declaration>.ast }
+method at-keyw($/)            { make $<Ident>.ast }
 method any-declaration($/)    {
     return if $<dropped-decl>;
 
@@ -373,6 +374,13 @@ method attribute-selector:sym<dash>($/)     { make ~$/ }
 method attribute-selector:sym<prefix>($/)    { make ~$/ }
 method attribute-selector:sym<suffix>($/)    { make ~$/ }
 method attribute-selector:sym<substring>($/) { make ~$/ }
+
+# An+B microsyntax
+method op-sign($/) { make ~$/ }
+method op-n($/)    { make 'n' }
+
+method AnB-expr:sym<keyw>($/) { make [ $.token( $<keyw>.ast, :type(CSSValue::KeywordComponent)) ] }
+method AnB-expr:sym<expr>($/) { make $.list($/) }
 
 method end-block($/) {
     $.warning("no closing '}'")

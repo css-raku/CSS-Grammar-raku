@@ -3,3 +3,20 @@
 [ "simple-selector", { "input" : "object[type^='image/']", "ast" : { "simple-selector" : [ { "qname" : { "element-name" : "object" } }, { "attrib" : [ { "ident" : "type" }, { "op" : "^=" }, { "string" : "image/" } ] } ] } } ]
 [ "simple-selector", { "input" : "object[a=b][c~=d][e|=f]", "ast" : { "simple-selector" : [ { "qname" : { "element-name" : "object" } }, { "attrib" : [ { "ident" : "a" }, { "op" : "=" }, { "ident" : "b" } ] }, { "attrib" : [ { "ident" : "c" }, { "op" : "~=" }, { "ident" : "d" } ] }, { "attrib" : [ { "ident" : "e" }, { "op" : "|=" }, { "ident" : "f" } ] } ] } } ]
 [ "simple-selector", { "input" : "object[a^=b][c$=d][e*=f]", "ast" : { "simple-selector" : [ { "qname" : { "element-name" : "object" } }, { "attrib" : [ { "ident" : "a" }, { "op" : "^=" }, { "ident" : "b" } ] }, { "attrib" : [ { "ident" : "c" }, { "op" : "$=" }, { "ident" : "d" } ] }, { "attrib" : [ { "ident" : "e" }, { "op" : "*=" }, { "ident" : "f" } ] } ] } } ]
+// An+B microsyntax
+[ "AnB-expr", { "input" : "odd", "ast" : [ { "keyw" : "odd" } ] } ]
+[ "AnB-expr", { "input" : "even", "ast" : [ { "keyw" : "even" } ] } ]
+[ "AnB-expr", { "input" : "3n + 1", "ast" : [ { "int:a" : 3 }, { "op" : "n" }, { "op" : "+" }, { "int:b" : 1 } ] } ]
+[ "AnB-expr", { "input" : "-2", "ast" : [ { "op" : "-" }, { "int:b" : 2 } ] } ]
+// http://www.w3.org/TR/2014/CR-css-syntax-3-20140220/#tokenization
+// 4.1 Token Railroad Diagrams
+[ "comment", { "input" : "/* anything but * followed by / */", "ast" : null } ]
+[ "nl", { "input" : [ "\n", "\r\n", "\r", "\f" ], "ast" : null } ]
+[ "ws", { "input" : [ " ", "\t", "\r", "\n" ], "ast" : null } ]
+[ "xdigit", { "input" : [ "0", "9", "a", "f" ], "ast" : null } ]
+[ "escape", { "input" : [ "\\Z", "\\0", "\\123456", "\\0abc " ], "ast" : null } ]
+[ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
+[ "Ident", { "input" : [ "Hi", "_hi", "-_AaZz09\\42\u1234" ], "ast" : null } ]
+// not imiplmented: <function-token>
+[ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
+[ "at-keyw", { "input" : "@page", "ast" : null } ]

@@ -25,7 +25,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     # "lexer"
     # taken from http://www.w3.org/TR/css3-syntax/ 11.2 Lexical Scanner
 
-    token unicode  { (<[ 0..9 a..f A..F ]>**1..6) <.wc>? }
+    token unicode  { (<xdigit>**1..6) <.wc>? }
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token regascii { <[ \x20..\x7F ]> }
     token nonascii { <- [ \x0..\x7F ]> }
