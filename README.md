@@ -77,5 +77,5 @@ This module been built from the W3C CSS Specifications. In particular:
 
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
 - CSS 2.1 Grammar - http://www.w3.org/TR/CSS21/grammar.html
-- CSS3 module: Syntax - http://www.w3.org/TR/2003/WD-css3-syntax-20030813/
+- CSS3 module: Syntax - http://www.w3.org/TR/2014/CR-css-syntax-3-20140220/
 - CSS Style Attributes - http://www.w3.org/TR/2010/CR-css-style-attr-20101012/#syntax
