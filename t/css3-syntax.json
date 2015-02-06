@@ -20,7 +20,8 @@
 // not implemented: <function-token>
 [ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
 [ "at-keyw", { "input" : "@page", "ast" : null } ]
-// <hash-token>
+// <id> :== <hash-token>
 [ "id", { "input" : [ "#id-12_3", "#\\0123 b" ], "ast" : null } ]
 [ "string", { "input" : [ "'abc\\abc \\\\nx\"y'", "\"xx'yy\\n\\nz\"" ], "ast" : null } ]
 [ "url", { "input" : [ "url( abc.png )", "url( 'def.gif' )" ], "ast" : null } ]
+[ "num", { "input" : [ "123", "123e00", ".123E3", "12300E-2", "1.23E+02", ".0123e4" ], "ast" : { "num" : 123 } } ]
