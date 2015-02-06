@@ -182,7 +182,7 @@ method url($/)   {
 method uri($/)   { make $<url>.ast }
 
 method any-dimension($/) {
-    return $.warning("unknown units: { $<units>.ast }")
+    return $.warning("unknown units: { $<units:unknown>.ast }")
         unless $.lax;
     make $.node( $/ )
 }
@@ -316,9 +316,10 @@ method term:sym<percentage>($/) { make $<percentage>.ast }
 proto method length {*}
 method length:sym<dim>($/) { make $.token($<num>.ast, :type($<units>.ast)); }
 method dimension:sym<length>($/) { make $<length>.ast }
-method length:sym<rel-font-unit>($/) {
+method length:sym<rel-font-length>($/) { make $<rel-font-length>.ast }
+method rel-font-length($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :type( $<rel-font-units>.lc ))
+    make $.token($num, :type( $<units>.lc ));
 }
 
 proto method angle {*}
@@ -344,7 +345,10 @@ method term:sym<color>($/)     { make $<color>.ast }
 method term:sym<function>($/)  { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
 method term:sym<num>($/)       { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
-method term:sym<ident>($/)     { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
+method term:sym<ident>($/)     { make $<Ident>
+                                     ?? $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) 
+                                     !! $<rel-font-length>.ast
+                               }
 
 method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
 

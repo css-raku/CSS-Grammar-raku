@@ -58,15 +58,14 @@ grammar CSS::Grammar:ver<20110607.001> {
     token element-name   { <Ident> }
 
     proto token length-units     {*}
-    token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px }
-    token length-units:sym<font> { <rel-font-units> }
-    token rel-font-units         {:i em|ex}
+    token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px|em|ex }
+    token rel-font-length        {:i $<sign>=< + - >? $<units>=[em|ex] }
 
     proto token length           {*}
     token length:sym<dim>        {:i <num><units=.length-units> }
     # As a special case, relative font lengths don't need a number.
     # E.g. -ex :== -1ex
-    token length:sym<rel-font-unit> { $<sign>=< + - >? <rel-font-units> }
+    token length:sym<rel-font-length> { <rel-font-length> }
 
     proto token dimension {*}
     token dimension:sym<length> { <length> }
@@ -108,7 +107,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     proto rule term  {*}
     rule term:sym<num>        {<num><!before ['%'|\w]>}
-    rule term:sym<ident>      {<!before <rel-font-units>><Ident><!before '('>}
+    rule term:sym<ident>      {[<rel-font-length>|<Ident>]<!before '('>}
     rule term:sym<dimension>  {<dimension>||<any-dimension>}
     rule term:sym<percentage> {<percentage>}
     rule term:sym<string>     {<string>}
