@@ -20,6 +20,7 @@ proto rule at-decl {*}
 rule attribute-selector:sym<prefix>    {'^='}
 rule attribute-selector:sym<suffix>    {'$='}
 rule attribute-selector:sym<substring> {'*='}
+rule attribute-selector:sym<column>    {'||'}
 
 # allow '::' element selectors
 rule pseudo:sym<::element> {'::'<element=.Ident>}

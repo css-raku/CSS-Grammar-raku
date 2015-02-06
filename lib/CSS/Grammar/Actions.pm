@@ -379,13 +379,14 @@ method any-pseudo-func($/) {
 }
 
 # css 2.1 attribute selectors
-method attribute-selector:sym<equals>($/)   { make ~$/ }
-method attribute-selector:sym<includes>($/) { make ~$/ }
-method attribute-selector:sym<dash>($/)     { make ~$/ }
+method attribute-selector:sym<equals>($/)    { make ~$/ }
+method attribute-selector:sym<includes>($/)  { make ~$/ }
+method attribute-selector:sym<dash>($/)      { make ~$/ }
 # css 3 attribute selectors
 method attribute-selector:sym<prefix>($/)    { make ~$/ }
 method attribute-selector:sym<suffix>($/)    { make ~$/ }
 method attribute-selector:sym<substring>($/) { make ~$/ }
+method attribute-selector:sym<column>($/)    { make ~$/ }
 
 # An+B microsyntax
 method op-sign($/) { make ~$/ }
