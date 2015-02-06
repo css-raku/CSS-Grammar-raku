@@ -166,12 +166,12 @@ method id($/)    { make $.token( $<name>.ast, :type(CSSSelector::Id)) }
 
 method class($/) { make $.token( $<name>.ast, :type(CSSSelector::Class)) }
 
-method bare-url-char($/) {
+method url-unquoted-char($/) {
     make $<char> ?? $<char>.ast !! ~$/
 }
 
-method bare-url($/) {
-    make [~] $<bare-url-char>>>.ast;
+method url-unquoted($/) {
+    make [~] $<url-unquoted-char>>>.ast;
 }
 
 method url($/)   {

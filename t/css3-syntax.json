@@ -17,6 +17,10 @@
 [ "escape", { "input" : [ "\\Z", "\\0", "\\123456", "\\0abc " ], "ast" : null } ]
 [ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
 [ "Ident", { "input" : [ "Hi", "_hi", "-_AaZz09\\42\u1234" ], "ast" : null } ]
-// not imiplmented: <function-token>
+// not implemented: <function-token>
 [ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
 [ "at-keyw", { "input" : "@page", "ast" : null } ]
+// <hash-token>
+[ "id", { "input" : [ "#id-12_3", "#\\0123 b" ], "ast" : null } ]
+[ "string", { "input" : [ "'abc\\abc \\\\nx\"y'", "\"xx'yy\\n\\nz\"" ], "ast" : null } ]
+[ "url", { "input" : [ "url( abc.png )", "url( 'def.gif' )" ], "ast" : null } ]
