@@ -13,7 +13,7 @@ has Int $.line-no is rw = 1;
 has Int $!nl-rachet = 0;
 # variable encoding - not yet supported
 has Str $.encoding is rw = 'UTF-8';
-has Bool $.verbose is rw = False;
+has Bool $.lax is rw = False;
 
 # accumulated warnings
 has @.warnings;
@@ -181,6 +181,12 @@ method url($/)   {
 # uri - synonym for url?
 method uri($/)   { make $<url>.ast }
 
+method any-dimension($/) {
+    return $.warning("unknown units: { $<units>.ast }")
+        unless $.lax;
+    make $.node( $/ )
+}
+
 method color-range($/) {
     my $range = $<num>.ast.value;
     $range *= 2.55
@@ -317,28 +323,28 @@ method length:sym<rel-font-unit>($/) {
 
 proto method angle {*}
 method angle-units($/)         { make $/.lc }
-method angle:sym<dim>($/)      { make $.token($<num>.ast, :type($<units>.ast)) }
+method angle:sym<dim>($/)      { make $.token( $<num>.ast, :type($<units>.ast)) }
 method dimension:sym<angle>($/){ make $<angle>.ast }
 
 proto method time {*}
 method time-units($/)          { make $/.lc }
-method time:sym<dim>($/)       { make $.token($<num>.ast, :type($<units>.ast)) }
+method time:sym<dim>($/)       { make $.token( $<num>.ast, :type($<units>.ast)) }
 method dimension:sym<time>($/) { make $<time>.ast }
 
 proto method frequency {*}
 method frequency-units($/)     { make $/.lc }
-method frequency:sym<dim>($/)  { make $.token($<num>.ast, :type($<units>.ast)) }
+method frequency:sym<dim>($/)  { make $.token( $<num>.ast, :type($<units>.ast)) }
 method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-method percentage($/)          { make $.token($<num>.ast, :type(CSSValue::PercentageComponent)) }
+method percentage($/)          { make $.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
 
 method term:sym<string>($/)    { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
-method term:sym<url>($/)       { make $.token($<url>.ast, :type(CSSValue::URLComponent)) }
+method term:sym<url>($/)       { make $.token( $<url>.ast, :type(CSSValue::URLComponent)) }
 method term:sym<color>($/)     { make $<color>.ast }
 method term:sym<function>($/)  { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
-method term:sym<num>($/)       { make $.token($<num>.ast, :type(CSSValue::NumberComponent)); }
-method term:sym<ident>($/)     { make $.token($<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
+method term:sym<num>($/)       { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
+method term:sym<ident>($/)     { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
 method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
 

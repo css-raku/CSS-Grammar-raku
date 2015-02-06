@@ -25,3 +25,6 @@
 [ "string", { "input" : [ "'abc\\abc \\\\nx\"y'", "\"xx'yy\\n\\nz\"" ], "ast" : null } ]
 [ "url", { "input" : [ "url( abc.png )", "url( 'def.gif' )" ], "ast" : null } ]
 [ "num", { "input" : [ "123", "123e00", ".123E3", "12300E-2", "1.23E+02", ".0123e4" ], "ast" : { "num" : 123 } } ]
+[ "dimension", { "input" : "12mm", "ast" : { "mm" : 12 } } ]
+// this only works in :lax mode
+[ "any-dimension", { "input" : "12Furlongs", "ast" : { "num" : 12, "units:unknown" : "furlongs" } } ]

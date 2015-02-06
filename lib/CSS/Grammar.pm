@@ -108,12 +108,14 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     proto rule term  {*}
     rule term:sym<num>        {<num><!before ['%'|\w]>}
-    rule term:sym<ident>      {<Ident><!before '('>}
-    rule term:sym<dimension>  {<dimension>}
+    rule term:sym<ident>      {<!before <rel-font-units>><Ident><!before '('>}
+    rule term:sym<dimension>  {<dimension>||<any-dimension>}
     rule term:sym<percentage> {<percentage>}
     rule term:sym<string>     {<string>}
     rule term:sym<color>      {<color>}
     rule term:sym<url>        {<url>}
+
+    rule any-dimension        {<num>$<units:unknown>=<.Ident>}
 
     # Unicode ranges - used by selector modules + scan rules
     rule unicode-range         {:i 'U+' [ $<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]

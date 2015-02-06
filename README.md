@@ -47,6 +47,10 @@ warnings for any unexpected input.
     # skipping term: gunk
     # H1: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
 
+## Actions Options
+
+- **`:lax`** Pass back, don't drop, quantities with unknown dimensions.
+
 Installation (Rakudo Star)
 --------------------------
 
@@ -65,14 +69,14 @@ To try parsing some content:
     % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
 
 See Also
-========
+--------
 - [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) extends CSS::Grammar. It understands extended selector syntax, named colors and is able to perform property-specific validation.
 - [CSS::Drafts](https://github.com/p6-css/perl6-CSS-Drafts) further extends CSS::Module, adding support for draft CSS Level 3 extension modules.
 - [CSS::Writer](https://github.com/p6-css/perl6-CSS-Writer) - AST reserializer
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
-==========
+----------
 This module been built from the W3C CSS Specifications. In particular:
 
 - CSS 1.0 Grammar - http://www.w3.org/TR/2008/REC-CSS1-20080411/#appendix-b
