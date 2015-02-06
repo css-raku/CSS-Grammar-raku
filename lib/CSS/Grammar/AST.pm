@@ -47,7 +47,7 @@ class CSS::Grammar::AST {
         :ResolutionComponent<resolution>
         :TimeComponent<time>
         :QnameComponent<qname>
-        :OtherUnitComponent<unit>
+        :OtherUnitComponent<units>
         :NamespacePrefixComponent<ns-prefix>
         :ElementNameComponent<element-name>
         :OperatorComponent<op>
