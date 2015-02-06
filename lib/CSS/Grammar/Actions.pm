@@ -321,7 +321,7 @@ method dimension:sym<length>($/) { make $<length>.ast }
 method length:sym<rel-font-length>($/) { make $<rel-font-length>.ast }
 method rel-font-length($/) {
     my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-    make $.token($num, :type( $<units>.lc ));
+    make $.token($num, :type( $<rel-font-units>.lc ));
 }
 
 proto method angle {*}

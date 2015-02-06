@@ -58,8 +58,9 @@ grammar CSS::Grammar:ver<20110607.001> {
     token element-name   { <Ident> }
 
     proto token length-units     {*}
-    token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px|em|ex }
-    token rel-font-length        {:i $<sign>=< + - >? $<units>=[em|ex] }
+    token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px|<rel-font-units> }
+    token rel-font-units         {:i [em|ex] }
+    token rel-font-length        {:i $<sign>=< + - >? <rel-font-units> }
 
     proto token length           {*}
     token length:sym<dim>        {:i <num><units=.length-units> }
