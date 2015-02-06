@@ -24,7 +24,7 @@
 [ "id", { "input" : [ "#id-12_3", "#\\0123 b" ], "ast" : null } ]
 [ "string", { "input" : [ "'abc\\abc \\\\nx\"y'", "\"xx'yy\\n\\nz\"" ], "ast" : null } ]
 [ "url", { "input" : [ "url( abc.png )", "url( 'def.gif' )" ], "ast" : null } ]
-[ "num", { "input" : [ "123", "123e00", ".123E3", "12300E-2", "1.23E+02", ".0123e4" ], "ast" : { "num" : 123 } } ]
+[ "num", { "input" : [ "12.3", "123e-1", ".123E2", "12300E-3", "1.23E+01" ], "ast" : { "num" : 12.3 } } ]
 [ "dimension", { "input" : "12mm", "ast" : { "mm" : 12 } } ]
 // this only works in :lax mode
 [ "any-dimension", { "input" : "12Furlongs", "ast" : { "num" : 12, "units:unknown" : "furlongs" } } ]

@@ -136,7 +136,9 @@ method Ident($/) {
 }
 
 method name($/)  { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
-method num($/)   { make $.token( $0 ?? $/.Rat !! $/.Int, :type(CSSValue::NumberComponent)) }
+method num($/)   { make $.token( $<dp> || $<exp> && $<exp>.Int < 0
+                                 ?? $/.Rat
+                                 !! $/.Int, :type(CSSValue::NumberComponent)) }
 method uint($/)  { make $/.Int }
 method op($/)    { make $/.lc  }
 
