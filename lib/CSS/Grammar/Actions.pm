@@ -354,6 +354,8 @@ method term:sym<ident>($/)     { make $<Ident>
                                      !! $<rel-font-length>.ast
                                }
 
+method term:sym<unicode-range>($/) { make $.node($/, :type(CSSValue::UnicodeRangeComponent)) }
+
 method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
 
 method universal($/)           { make $.token( {element-name => ~$/}, :type(CSSValue::QnameComponent)) }

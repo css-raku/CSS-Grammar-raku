@@ -28,6 +28,8 @@ rule pseudo:sym<::element> {'::'<element=.Ident>}
 # to detect out of order directives
 rule misplaced     {<charset>|<import>|<at-decl>}
 
+rule term:sym<unicode-range> {:i<unicode-range>}
+
 # "An+B" microsyntax, e.g. arguments to nth-child(2n+1)
 # "An+B" microsyntax. See also CSS::Module::CSS::Selectors, which defines :nth-child(...)
 # and other related pseudo classess

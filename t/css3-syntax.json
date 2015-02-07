@@ -30,4 +30,5 @@
 [ "any-dimension", { "input" : "12Furlongs", "ast" : { "num" : 12, "units:unknown" : "furlongs" } } ]
 [ "percentage", { "input" : [ "90%", "9e1%", "+090%" ], "ast" : { "percent" : 90 } } ]
 [ "unicode-range", { "input" : [ "U+200-2Ff", "U+2??" ], "ast" : { "unicode-range" : [ 512, 767 ] } } ]
+[ "term", { "input" : "U+2??a", "ast" : { "unicode-range" : [ 8202, 12282 ] } } ]
 [ "attribute-selector", { "input" : [ "~=", "|=", "^=", "$=", "*=", "||" ], "ast" : null } ]
