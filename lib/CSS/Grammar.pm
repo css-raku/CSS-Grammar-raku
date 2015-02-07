@@ -36,7 +36,7 @@ grammar CSS::Grammar:ver<20110607.001> {
     # don't redefine <ident>, it's a built-in
     token Ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
     token name     { <nmchar>+ }
-    token num      { < + - >? [\d* $<dp>=\.]? \d+ [:i'e' $<exp>=[< + - >?\d+]]? }
+    token num      { < + - >? [\d* \.]? \d+ [:i'e' < + - >?\d+]? }
     token uint     {\d+}
     token op($chr) {$chr}
 
