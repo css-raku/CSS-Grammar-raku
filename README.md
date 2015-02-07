@@ -20,12 +20,12 @@ Base Grammars
 - `CSS::Grammar::CSS21` - CSS 2.1 compatible grammar
 - `CSS::Grammar::CSS3`  - CSS 3.0 (core) compatible grammar
 
-The CSS 3.0 core grammar, `CSS::Grammar::CSS3`, is mostly feature-compatabile with CSS2.1. In particular, it understands:
+The CSS 3.0 core grammar, `CSS::Grammar::CSS3`, is based on CSS2.1; it understands:
 
 - `#hex` and `rgb(...)` colors; but not `rgba(..)`, `hsl(...)`, `hsla(...)` or named colors
 - basic `@media` at-rules; but not advanced media queries, resolutions or embedded `@page` rules.
 - basic `@page` page description rules
-- basic css2.1 compatibile selectors.
+- basic css3 level selectors
 
 Parser Actions
 --------------
@@ -70,8 +70,9 @@ To try parsing some content:
 
 See Also
 --------
-- [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) extends CSS::Grammar. It understands extended selector syntax, named colors and is able to perform property-specific validation.
-- [CSS::Drafts](https://github.com/p6-css/perl6-CSS-Drafts) further extends CSS::Module, adding support for draft CSS Level 3 extension modules.
+- [CSS::Module::CSS3::Selectors](https://github.com/p6-css/perl6-CSS-Module-CSS3-Selectors) extends CSS::Grammar::CSS3 to fully implement CSS Level 3 Selectors.
+- [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
+- [CSS::Drafts](https://github.com/p6-css/perl6-CSS-Drafts) further extends CSS::Module, adding support for further draft CSS Level 3 extension modules.
 - [CSS::Writer](https://github.com/p6-css/perl6-CSS-Writer) - AST reserializer
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
