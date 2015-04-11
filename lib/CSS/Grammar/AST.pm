@@ -57,19 +57,6 @@ class CSS::Grammar::AST {
         :UnicodeRangeComponent<unicode-range>
     »;
 
-    # an enumerated list of all unit types for validation purposes.
-    # Adapted from the out-of-date http://www.w3.org/TR/DOM-Level-2-Style/css.html
-
-    our Str enum CSSUnits is export(:CSSUnits) «
-        :ems<length> :exs<length> :px<length> :cm<length> :mm<length> :in<length> :pt<length> :pc<length>
-        :em<length> :ex<length> :rem<length> :ch<length> :vw<length> :vh<length> :vmin<length> :vmax<length>
-        :dpi<resolution> :dpcm<resolution> :dppx<resolution>
-        :deg<angle> :rad<angle> :grad<angle> :turn<angle>
-        :ms<time> :s<time>
-        :hz<freq> :khz<freq>
-        :rgb<color> :rgba<color> :hsl<color> :hsla<color>
-    »;
-
     our Str enum CSSSelector is export(:CSSSelector) «
         :AttributeSelector<attrib>
         :Class<class>
@@ -84,6 +71,19 @@ class CSS::Grammar::AST {
         :SelectorComponent<simple-selector>
     »;
 
+    # an enumerated list of all unit types for validation purposes.
+    # Adapted from the out-of-date http://www.w3.org/TR/DOM-Level-2-Style/css.html
+
+    our Str enum CSSUnits is export(:CSSUnits) «
+        :ems<length> :exs<length> :px<length> :cm<length> :mm<length> :in<length> :pt<length> :pc<length>
+        :em<length> :ex<length> :rem<length> :ch<length> :vw<length> :vh<length> :vmin<length> :vmax<length>
+        :dpi<resolution> :dpcm<resolution> :dppx<resolution>
+        :deg<angle> :rad<angle> :grad<angle> :turn<angle>
+        :ms<time> :s<time>
+        :hz<freq> :khz<freq>
+        :rgb<color> :rgba<color> :hsl<color> :hsla<color>
+    »;
+
     # from http://dev.w3.org/csswg/cssom-view/
     our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
 
@@ -93,24 +93,25 @@ BEGIN our %known-type =
     %( CSSSelector.enums.invert ),
     ;
 
+# from http://www.w3.org/TR/CSS21/syndata.html#color-units
 BEGIN our %CSS21-Colors =
+    aqua    => [   0, 255, 255 ],
     black   => [   0,   0,   0 ],
-    silver  => [ 192, 192, 192 ],
-    gray    => [ 128, 128, 128 ],
-    white   => [ 255, 255, 255 ],
-    maroon  => [ 128,   0,   0 ],
-    red     => [ 255,   0,   0 ],
-    orange  => [ 255, 165,   0 ],
-    purple  => [ 128,   0, 128 ],
+    blue    => [   0,   0, 255 ],
     fuchsia => [ 255,   0, 255 ],
+    gray    => [ 128, 128, 128 ],
     green   => [   0, 128,   0 ],
     lime    => [   0, 255,   0 ],
-    olive   => [ 128, 128,   0 ],
-    yellow  => [ 255, 255,   0 ],
+    maroon  => [ 128,   0,   0 ],
     navy    => [   0,   0, 128 ],
-    blue    => [   0,   0, 255 ],
+    olive   => [ 128, 128,   0 ],
+    orange  => [ 255, 165,   0 ],
+    purple  => [ 128,   0, 128 ],
+    red     => [ 255,   0,   0 ],
+    silver  => [ 192, 192, 192 ],
     teal    => [   0, 128, 128 ],
-    aqua    => [   0, 255, 255 ],
+    white   => [ 255, 255, 255 ],
+    yellow  => [ 255, 255,   0 ],
     ;
 
 # from http://www.w3.org/TR/2011/REC-css3-color-20110607
@@ -264,6 +265,7 @@ BEGIN our %CSS3-Colors =
     yellowgreen     => [ 154,205,50 ],
     ;
 
+    #| utility token builder method, e.g.: $.token(42, :type<cm>)  -->   :cm(42)
     method token(Mu $ast, :$type is copy) {
 
         die 'usage: $.token($ast, :$type)'
@@ -290,6 +292,7 @@ BEGIN our %CSS3-Colors =
         return $token;
     }
 
+    #| utility AST builder method for leaf nodes (no repeated tokens)
     method node($/) {
         my %terms;
 
@@ -330,8 +333,8 @@ BEGIN our %CSS3-Colors =
         return %terms;
     }
 
+    #| utility AST builder method for nodes with repeatable elements
     method list($/) {
-        # make a node that contains repeatable elements
         my @terms;
 
         # unwrap Parcels
