@@ -28,7 +28,7 @@ grammar CSS::Grammar::CSS3:ver<20140220.000>
     # to detect out of order directives
     rule misplaced     {<charset>|<import>|<at-decl>}
 
-    rule term:sym<unicode-range> {:i<unicode-range>}
+    rule term1:sym<unicode-range> {:i<unicode-range>}
 
     # "An+B" microsyntax, e.g. arguments to nth-child(2n+1)
     # "An+B" microsyntax. See also CSS::Module::CSS::Selectors, which defines :nth-child(...)

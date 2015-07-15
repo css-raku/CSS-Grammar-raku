@@ -106,14 +106,18 @@ grammar CSS::Grammar:ver<20110607.001> {
     rule combinator:sym<adjacent> { '+' }
     rule combinator:sym<child>    { '>' }
 
-    proto rule term  {*}
-    rule term:sym<num>        {<num><!before ['%'|\w]>}
-    rule term:sym<ident>      {[<rel-font-length>|<Ident>]<!before '('>}
-    rule term:sym<dimension>  {<dimension>||<any-dimension>}
-    rule term:sym<percentage> {<percentage>}
-    rule term:sym<string>     {<string>}
-    rule term:sym<color>      {<color>}
-    rule term:sym<url>        {<url>}
+    token term {<term=.term1>||<term=.term2>}
+
+    proto rule term1  {*}
+    rule term1:sym<num>        {<num><!before ['%'|\w]>}
+    rule term1:sym<ident>      {[<rel-font-length>|<Ident>]<!before '('>}
+    rule term1:sym<percentage> {<percentage>}
+    rule term1:sym<string>     {<string>}
+    rule term1:sym<color>      {<color>}
+    rule term1:sym<url>        {<url>}
+
+    proto rule term2  {*}
+    rule term2:sym<dimension>  {<dimension>||<any-dimension>}
 
     rule any-dimension        {<num>$<units:unknown>=<.Ident>}
 
