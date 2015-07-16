@@ -266,14 +266,14 @@ BEGIN our %CSS3-Colors =
     ;
 
     #| utility token builder method, e.g.: $.token(42, :type<cm>)  -->   :cm(42)
-    method token(Mu $ast, :$type is copy) {
+    method token(Mu $ast, Str :$type is copy) {
 
         die 'usage: $.token($ast, :$type)'
             unless $type;
 
         return unless $ast.defined;
 
-        my $units = $type;
+        my Str $units = $type;
 
         if $type.defined && (my $inferred-type = CSSUnits.enums{$type}) {
             $type = $inferred-type
@@ -285,15 +285,13 @@ BEGIN our %CSS3-Colors =
                 unless %known-type{$raw-type}:exists;
         }
 
-        my $token = $ast.isa(Pair)
-            ?? Pair.new( :key($units.Str), :value($ast.value) )
-            !! Pair.new( :key($units.Str), :value($ast) );
-
-        return $token;
+        $ast.isa(Pair)
+            ?? ($units => $ast.value)
+	    !! ($units => $ast);
     }
 
     #| utility AST builder method for leaf nodes (no repeated tokens)
-    method node($/) {
+    method node($/ --> Hash) {
         my %terms;
 
         # unwrap Parcels
@@ -330,11 +328,11 @@ BEGIN our %CSS3-Colors =
             }
         }
 
-        return %terms;
+        %terms;
     }
 
     #| utility AST builder method for nodes with repeatable elements
-    method list($/) {
+    method list($/ --> Array) {
         my @terms;
 
         # unwrap Parcels
@@ -367,7 +365,7 @@ BEGIN our %CSS3-Colors =
             }
         }
 
-        return @terms;
+        @terms;
     }
 
 }

@@ -24,25 +24,31 @@ class CSS::Grammar::Actions
         $!nl-rachet = 0;
     }
 
-    method at-rule($/, :$type!) {
+    method at-rule($/, :$type! --> Pair) {
         my %terms = %( $.node($/) );
         %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
         return $.token( %terms, :$type);
     }
 
-    method func($name, $args is copy, :$type = CSSValue::FunctionComponent, :$trait, :$arg-type=CSSValue::ArgumentListComponent) {
+    method func(Str $name,
+		$args is copy,
+		:$type = CSSValue::FunctionComponent,
+		:$trait,
+		:$arg-type=CSSValue::ArgumentListComponent
+	--> Pair) {
         $args = $arg-type => $args if $args.isa(List);
         my %ast = :ident($name), $args.kv;
         $.token( %ast, :$type, :$trait );
     }
 
-    method pseudo-func( $name, $expr is copy) {
+    method pseudo-func( Str $name, $expr is copy
+	--> Pair) {
         $expr = :expr($expr) if $expr.isa(List);
         my %ast = :ident($name), $expr.kv;
         $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
-    sub _display-string($_str) {
+    sub _display-string(Str $_str  --> Str) {
 
         my $str = $_str.chomp.trim;
         $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
@@ -75,7 +81,7 @@ class CSS::Grammar::Actions
         $.line-no++;
     }
 
-    method element-name($/)             { make $.token( $<Ident>.ast, :type(CSSValue::ElementNameComponent)) }
+    method element-name($/)           { make $.token( $<Ident>.ast, :type(CSSValue::ElementNameComponent)) }
 
     method length-units:sym<abs>($/)  { make $/.lc }
     method length-units:sym<font>($/) { make $/.lc }
@@ -100,7 +106,7 @@ class CSS::Grammar::Actions
             if $<property>;
     }
 
-    method _to-unicode($hex-str) {
+    method _to-unicode($hex-str --> Str) {
         my $char;
         try {
             $char = chr( :16($hex-str) );
@@ -114,9 +120,7 @@ class CSS::Grammar::Actions
         return $char;
     }
 
-    method unicode($/) {
-       make $._to-unicode( ~$0 );
-    }
+    method unicode($/)  { make $._to-unicode(~$0) }
 
     method regascii($/) { make ~$/ }
     method nonascii($/) { make ~$/ }
@@ -152,7 +156,7 @@ class CSS::Grammar::Actions
     method single-quote($/) { make "'" }
     method double-quote($/) { make '"' }
 
-    method _string($/) {
+    method _string($/ --> Pair) {
         my $string = [~] $<stringchar>>>.ast;
         make $.token($string, :type(CSSValue::StringComponent));
     }
@@ -262,7 +266,7 @@ class CSS::Grammar::Actions
     method combinator:sym<child>($/)    { make '>' }
     method combinator:sym<not>($/)      { make '-' } # css21
 
-    method _code-point($hex-str) {
+    method _code-point(Str $hex-str --> Int) {
         return :16( ~$hex-str );
     }
 
@@ -319,6 +323,7 @@ class CSS::Grammar::Actions
     method term1:sym<percentage>($/) { make $<percentage>.ast }
 
     method term2:sym<dimension>($/)  { make $<dimension>.ast }
+    method term2:sym<function>($/)   { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
     proto method length {*}
     method length:sym<dim>($/) { make $.token($<num>.ast, :type($<units>.ast)); }
@@ -349,7 +354,6 @@ class CSS::Grammar::Actions
     method term1:sym<string>($/)    { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
     method term1:sym<url>($/)       { make $.token( $<url>.ast, :type(CSSValue::URLComponent)) }
     method term1:sym<color>($/)     { make $<color>.ast }
-    method term1:sym<function>($/)  { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
     method term1:sym<num>($/)       { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
     method term1:sym<ident>($/)     { make $<Ident>
