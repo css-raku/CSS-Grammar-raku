@@ -61,4 +61,4 @@ for 't/compat.json'.IO.lines {
     }
 }
 
-done;
+done-testing;

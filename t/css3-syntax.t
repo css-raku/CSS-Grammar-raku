@@ -25,4 +25,4 @@ for ( 't/css3-syntax.json'.IO.lines ) {
     }
 }
 
-done;
+done-testing;

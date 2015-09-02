@@ -92,4 +92,4 @@ for @tests {
     }
 }
 
-done;
+done-testing;

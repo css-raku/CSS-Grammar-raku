@@ -115,4 +115,4 @@ for ($at-rule_page, $at-rule_print) {
     ok($_ ~~ /^<CSS::Grammar::CSS21::at-rule>$/, "css21 at-rule: $_");
 }
 
-done;
+done-testing;

@@ -31,4 +31,4 @@ for css1 => CSS::Grammar::CSS1,
     is($actual-warnings, $expected-warnings, $test ~ ' warnings')
 }
 
-done;
+done-testing;
