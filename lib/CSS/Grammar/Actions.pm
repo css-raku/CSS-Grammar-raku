@@ -43,8 +43,8 @@ class CSS::Grammar::Actions
 
     method pseudo-func( Str $name, $expr is copy
 	--> Pair) {
-        $expr = :expr($expr) if $expr.isa(List);
-        my %ast = :ident($name), $expr.kv;
+        $expr = :$expr if $expr.isa(List);
+        my %ast = :ident($name), %$expr;
         $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
@@ -135,11 +135,11 @@ class CSS::Grammar::Actions
 
     method Ident($/) {
         my $pfx = $<pfx> ?? ~$<pfx> !! '';
-        my $ident = [~] $pfx, $<nmstrt>.ast, $<nmchar>>>.ast;
+        my $ident = [~] $pfx, $<nmstrt>.ast, @<nmchar>.map( *.ast).Slip;
         make $ident.lc;
     }
 
-    method name($/)  { make $.token( ([~] $<nmchar>>>.ast), :type(CSSValue::NameComponent)) }
+    method name($/)  { make $.token( ([~] @<nmchar>.map( *.ast).Slip), :type(CSSValue::NameComponent)) }
     method num($/)   { my $num = $/.Rat;
                        make $.token( $num % 1
                                      ?? $num

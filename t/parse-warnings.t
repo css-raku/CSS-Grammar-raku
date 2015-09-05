@@ -10,7 +10,7 @@ use CSS::Grammar::Actions;
 
 my $css-sample = 't/parse-warnings.css'.IO.slurp;
 my @lines = $css-sample.lines;
-my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? (~$0 => $/.postmatch) !! ()});
+my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? (~$0 => $/.postmatch) !! Empty});
 
 my $actions = CSS::Grammar::Actions.new;
 
