@@ -10,7 +10,7 @@ class CSS::Grammar::Actions
     is CSS::Grammar::AST {
 
     has Int $.line-no is rw = 1;
-    has Int $!nl-rachet = 0;
+    has Int $!eol-rachet = 0;
     # variable encoding - not yet supported
     has Str $.encoding is rw = 'UTF-8';
     has Bool $.lax is rw = False;
@@ -21,7 +21,7 @@ class CSS::Grammar::Actions
     method reset {
         @.warnings = ();
         $.line-no = 1;
-        $!nl-rachet = 0;
+        $!eol-rachet = 0;
     }
 
     method at-rule($/, :$type! --> Pair) {
@@ -71,13 +71,13 @@ class CSS::Grammar::Actions
         push @.warnings, $warning;
     }
 
-    method nl($/) {
+    method eol($/) {
         my $pos = $/.from;
 
         return
-            if my $_backtracking = $pos <= $!nl-rachet;
+            if my $_backtracking = $pos <= $!eol-rachet;
 
-        $!nl-rachet = $pos;
+        $!eol-rachet = $pos;
         $.line-no++;
     }
 

@@ -12,14 +12,14 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     # Comments and whitespace
 
-    token nl { \r?\n | \f }
+    token eol { \r?\n | \f }
 
-    # comments: nb trigger <nl> for accurate line counting
-    token comment {('<!--') [<.nl>|.]*? ['-->' || <unclosed-comment>]
-                  |('/*')   [<.nl>|.]*? ['*/'  || <unclosed-comment>]}
+    # comments: nb trigger <eol> for accurate line counting
+    token comment {('<!--') [<.eol>|.]*? ['-->' || <unclosed-comment>]
+                  |('/*')   [<.eol>|.]*? ['*/'  || <unclosed-comment>]}
     token unclosed-comment {$}
 
-    token wc { <.nl> | "\t"  | " " }
+    token wc { <.eol> | "\t"  | " " }
     token ws { <!ww>[ <.wc> | <.comment> ]* }
 
     # "lexer"
@@ -42,7 +42,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
-    token stringchar:sym<cont>     { \\<.nl> }
+    token stringchar:sym<cont>     { \\<.eol> }
     token stringchar:sym<escape>   { <escape> }
     token stringchar:sym<nonascii> { <nonascii> }
     token stringchar:sym<ascii>    { <stringchar-regular>+ }
@@ -203,8 +203,8 @@ grammar CSS::Grammar::Core:ver<20110607.000> is CSS::Grammar {
     token _delim       {<[ \( \) \[ \] \{ \} \; \" \' \\ ]>}
     token _op          {[<._ascii-punct> & <- _delim>]+}
 
-    token _badstring   {\"[<.stringchar>|\']*[<.nl>|$]
-                       |\'[<.stringchar>|\"]*[<.nl>|$]}
+    token _badstring   {\"[<.stringchar>|\']*[<.eol>|$]
+                       |\'[<.stringchar>|\"]*[<.eol>|$]}
 
     proto rule _any {*}
     rule _any:sym<string> { <.string> }
