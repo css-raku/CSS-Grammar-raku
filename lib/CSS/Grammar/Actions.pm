@@ -37,7 +37,7 @@ class CSS::Grammar::Actions
 		:$arg-type=CSSValue::ArgumentListComponent
 	--> Pair) {
         $args = $arg-type => $args if $args.isa(List);
-        my %ast = :ident($name), $args.kv;
+        my %ast = :ident($name), %$args;
         $.token( %ast, :$type, :$trait );
     }
 
