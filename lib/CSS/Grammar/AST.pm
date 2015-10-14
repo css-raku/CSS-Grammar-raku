@@ -274,16 +274,12 @@ BEGIN our %CSS3-Colors =
         return unless $ast.defined;
 
         my Str $units = $type;
+	$type = CSSUnits.enums{$type}
+	    if CSSUnits.enums{$type}:exists;
 
-        if $type.defined && (my $inferred-type = CSSUnits.enums{$type}) {
-            $type = $inferred-type
-        }
-
-        if $type.defined {
-            my $raw-type = $type.subst(/':'.*/,'');
-            die "unknown type: '$raw-type'"
-                unless %known-type{$raw-type}:exists;
-        }
+	my ($raw-type, $_class) = $type.split(':');
+	die "unknown type: '$raw-type'"
+	    unless %known-type{$raw-type}:exists;
 
         $ast.isa(Pair)
             ?? ($units => $ast.value)
@@ -310,7 +306,7 @@ BEGIN our %CSS3-Colors =
                     // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
-                    $key = $key.subst(/^'expr-'/, 'expr:')
+                    $key = 'expr:' ~ substr($key, 5);
                 }
                 elsif $value.isa(Pair) {
                     ($key, $value) = $value.kv;
@@ -352,7 +348,7 @@ BEGIN our %CSS3-Colors =
                     // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
-                    $key = $key.subst(/^'expr-'/, 'expr:')
+                    $key = 'expr:' ~ substr($key, 5);
                 }
                 elsif $value.isa(Pair) {
                     ($key, $value) = $value.kv;
