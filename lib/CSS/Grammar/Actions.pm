@@ -41,30 +41,30 @@ class CSS::Grammar::Actions
         $.token( %ast, :$type, :$trait );
     }
 
-    method pseudo-func( Str $ident, $expr is copy
-	--> Pair) {
+    method pseudo-func( Str $ident, $expr --> Pair) {
         my %ast = :$ident, :$expr;
         $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
-    sub _display-string(Str $_str  --> Str) {
+    sub _display-string(Str $str is copy --> Str) {
 
-        my $str = $_str.chomp.trim;
-        $str = $str.subst(/[\s|\t|\n|\r|\f]+/, ' '):g;
+        $str = $str.chomp.trim;
+## issue#4
+##        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
 
-        [~] $str.comb.map: {
-                    /<[ \\ \t \s \!..\~ ]>/
-                        ?? $_  
-                        !! .ord.fmt("\\x[%x]")
-            };
+##        [~] $str.comb.map: {
+##                    /<[ \\ \t \s \!..\~ ]>/
+##                        ?? $_  
+##                        !! .ord.fmt("\\x[%x]")
+##            };
     }
 
-    method warning ($message, $str?, $explanation?) {
+    method warning($message, Str $str = '', Str $explanation = '') {
         my $warning = ~$message;
         $warning ~= ': ' ~ _display-string( $str )
-            if ($str // '') ne '';
+            if $str ne '';
         $warning ~= ' - ' ~ $explanation
-            if ($explanation // '') ne '';
+            if $explanation ne '';
         $warning does CSS::Grammar::AST::Info;
         $warning.line-no = $.line-no - 1;
         push @.warnings, $warning;
@@ -223,12 +223,13 @@ class CSS::Grammar::Actions
         my $chars = $id.chars;
 
         return $.warning("bad hex color", ~$/)
-            unless $id.match(/^<xdigit>+$/)
-            && ($chars == 3 || $chars == 6);
+            unless ($chars == 3 || $chars == 6);
+# issue#4
+## && $id.match(/^<xdigit>+$/)
 
         my @rgb = $chars == 3
-            ?? $id.comb(/./).map({$^hex-digit ~ $^hex-digit})
-            !! $id.comb(/../);
+            ?? $id.comb.map({$^hex-digit ~ $^hex-digit})
+            !! (0, 2, 4).map({ $id.substr($_, 2) });
 
         my $num-type = CSSValue::NumberComponent;
         my @color = @rgb.map: { $num-type.Str => :16($_) };
@@ -314,7 +315,7 @@ class CSS::Grammar::Actions
 
         return $.warning('dropping declaration', $<Ident>.ast)
             if !$<expr>.caps
-            || $<expr>.caps.grep({! .value.ast.defined});
+            || $<expr>.caps.first({! .value.ast.defined});
 
         make $.token($.node($/), :type(CSSValue::Property));
     }

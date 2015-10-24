@@ -62,14 +62,14 @@ module CSS::Grammar::Test {
             is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
         }
 
-        todo( %todo<warnings> )
-            if %todo<warnings>;
-
         if  %expected<warnings>:exists && ! %expected<warnings>.defined {
             diag "untested warnings: " ~ @warnings
                 if @warnings;
         }
         else {
+	    todo( %todo<warnings> )
+		if %todo<warnings>;
+
             if %expected<warnings>.isa('Regex') {
                 my @matched = ([~] @warnings).match(%expected<warnings>);
                 ok( @matched, "{$suite} $rule warnings")
