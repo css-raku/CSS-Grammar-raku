@@ -6,7 +6,7 @@
 # -- the core grammar should parse identically to css2.1 and css3
 
 use Test;
-use JSON::Tiny;
+use JSON::Fast;
 
 use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;

@@ -1,8 +1,8 @@
 {
     "name"        : "CSS::Grammar",
-    "version"     : "0.02",
+    "version"     : "0.02.1",
     "description" : "Perl 6 core CSS grammars",
-    "depends"     : [ "JSON::Tiny" ],
+    "depends"     : [ "JSON::Fast" ],
     "provides"    : {
           "CSS::Grammar" : "lib/CSS/Grammar.pm",
           "CSS::Grammar::Core" : "lib/CSS/Grammar.pm",

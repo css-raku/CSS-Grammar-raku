@@ -3,7 +3,7 @@
 module CSS::Grammar::Test {
 
     use Test;
-    use JSON::Tiny;
+    use JSON::Fast;
 
     # allow only json compatible data
     multi sub json-eqv (Hash:D $a, Hash:D $b) {
