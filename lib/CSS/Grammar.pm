@@ -12,7 +12,7 @@ grammar CSS::Grammar:ver<20110607.001> {
 
     # Comments and whitespace
 
-    token eol { \r?\n | \f }
+    token eol { \n }
 
     # comments: nb trigger <eol> for accurate line counting
     token comment {('<!--') [<.eol>|.]*? ['-->' || <unclosed-comment>]
