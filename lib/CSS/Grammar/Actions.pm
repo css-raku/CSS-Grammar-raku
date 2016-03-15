@@ -31,14 +31,16 @@ class CSS::Grammar::Actions
     }
 
     method func(Str $name,
-		$args is copy,
-		:$type = CSSValue::FunctionComponent,
-		:$trait,
-		:$arg-type=CSSValue::ArgumentListComponent
+		$args,
+		:$type     = CSSValue::FunctionComponent,
+		:$arg-type = CSSValue::ArgumentListComponent,
+		|c
 	--> Pair) {
-        $args = $arg-type => $args if $args.isa(List);
-        my %ast = :ident($name), %$args;
-        $.token( %ast, :$type, :$trait );
+        my Pair $arg-tk = ($args.isa(List)
+			   ?? ($arg-type => $args)
+			   !! $args);
+        my %ast = :ident($name), %$arg-tk;
+        $.token( %ast, :$type, |c );
     }
 
     method pseudo-func( Str $ident, $expr --> Pair) {
@@ -223,7 +225,7 @@ class CSS::Grammar::Actions
         my $chars = $id.chars;
 
         return $.warning("bad hex color", ~$/)
-            unless ($chars == 3 || $chars == 6);
+            unless ($chars == 3|6);
 # issue#4
 ## && $id.match(/^<xdigit>+$/)
 
