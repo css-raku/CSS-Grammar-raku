@@ -41,11 +41,11 @@ warnings for any unexpected input.
 
     my $actions =  CSS::Grammar::Actions.new;
     my $p = CSS::Grammar::CSS3.parse($css, :actions($actions));
-    note $_ for $actions.warnings;
-    say "H1: " ~ $p.ast[0]<ruleset><selectors>.perl;
+    .note for $actions.warnings;
+    say "H1: " ~ $p.ast<stylesheet>[0]<ruleset><selectors>;
     # output:
-    # skipping term: gunk
-    # H1: ["selector" => ["simple_selector" => ["element_name" => "H1"]]]
+    # dropping term: gunk
+    # H1: selector    simple-selector qname   element-name    h1
 
 ## Actions Options
 
@@ -74,7 +74,7 @@ See Also
 - [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
 - [CSS::Drafts](https://github.com/p6-css/perl6-CSS-Drafts) further extends CSS::Module, adding support for further draft CSS Level 3 extension modules.
 - [CSS::Writer](https://github.com/p6-css/perl6-CSS-Writer) - AST reserializer
-- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
+- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/categories/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
 ----------
