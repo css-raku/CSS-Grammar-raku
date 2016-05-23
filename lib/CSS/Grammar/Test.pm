@@ -50,7 +50,7 @@ module CSS::Grammar::Test {
 
         my $expected-parse = (%expected<parse> // $input).trim;
 
-        my %todo = %( %expected<todo> // {} );
+        my %todo = $_ with %expected<todo>;
 
         if $input.defined && $expected-parse.defined {
             my @input-lines = $input.lines;
@@ -67,8 +67,7 @@ module CSS::Grammar::Test {
                 if @warnings;
         }
         else {
-	    todo( %todo<warnings> )
-		if %todo<warnings>;
+	    todo $_ with %todo<warnings>;
 
             if %expected<warnings>.isa('Regex') {
                 my @matched = ([~] @warnings).match(%expected<warnings>);
@@ -76,17 +75,16 @@ module CSS::Grammar::Test {
                     or diag @warnings;
             }
             else {
-                my @expected-warnings = @( %expected<warnings> // () );
+                my @expected-warnings = @$_ with %expected<warnings>;
                 is @warnings, @expected-warnings, "{$suite} $rule {@expected-warnings??''!!'no '}warnings";
             }
         }
 
-        my $actual-ast = $parse.defined && $parse.ast;
+        my $actual-ast = .ast with $parse;
 
-        if (my $expected-ast = %expected<ast>).defined {
+        with %expected<ast> -> $expected-ast {
 
-            todo( %todo<ast> )
-                if %todo<ast>;
+            todo( $_ ) with %todo<ast>;
 
             my $ast-ok = ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast";
             unless $ast-ok {
@@ -97,8 +95,8 @@ module CSS::Grammar::Test {
             if $ast-ok && $writer.can('write') {
                 # recursive test of reserialized css.
                 try {
-                    my $writer-opts = %expected<writer> // {};
-                    my %writer-expected = ast => $writer-opts<ast> // $expected-ast;
+                    my %writer-opts = $_ with %expected<writer>;
+                    my %writer-expected = ast => %writer-opts<ast> // $expected-ast;
                     my $type = $actual-ast.can('type') && $actual-ast.units // $actual-ast.type;
                     my %args = $type ?? ($type => $expected-ast) !! %$expected-ast;
 
@@ -118,17 +116,6 @@ module CSS::Grammar::Test {
         elsif $actual-ast.defined {
             note 'untested_ast: ' ~ to-json( $actual-ast )
                 unless %expected<ast>:exists;
-        }
-
-        if defined (my $token = %expected<token>) {
-            if ok($parse.defined && $parse.ast.can('units'), "{$suite} $rule is a token") {
-                if my $units = %$token<units> {
-                    is($parse.ast.units, $units, "{$suite} $rule units: " ~$units);
-                }
-                if my $type = %$token<type> {
-                    is($parse.ast.type, $type, "{$suite} $rule type: " ~$type);
-                }
-            }
         }
 
 	return $parse;
