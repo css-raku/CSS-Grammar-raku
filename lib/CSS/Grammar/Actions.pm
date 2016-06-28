@@ -61,12 +61,12 @@ class CSS::Grammar::Actions
 ##            };
     }
 
-    method warning($message, Str $str = '', Str $explanation = '') {
+    method warning($message, Str $str?, Str $explanation?) {
         my $warning = ~$message;
-        $warning ~= ': ' ~ _display-string( $str )
-            if $str ne '';
-        $warning ~= ' - ' ~ $explanation
-            if $explanation ne '';
+        $warning ~= ': ' ~ _display-string( $_ )
+            with $str;
+        $warning ~= ' - ' ~ $_
+            with $explanation;
         $warning does CSS::Grammar::AST::Info;
         $warning.line-no = $.line-no - 1;
         push @.warnings, $warning;
@@ -90,38 +90,31 @@ class CSS::Grammar::Actions
     method any($/) {}
 
     method dropped-decl:sym<forward-compat>($/) {
-        $.warning('dropping term', ~$0)
-            if $0;
-        $.warning('dropping term', ~$1)
-            if $1;
-        $.warning('dropping declaration', $<property>.ast)
-            if $<property>;
+        $.warning('dropping term', ~$0) if $0;
+        $.warning('dropping term', ~$1) if $1;
+        $.warning('dropping declaration', .ast)
+            with $<property>;
     }
 
     method dropped-decl($/) {
-
         $.warning('dropping term', ~$<any>)
             if $<any>;
-
-        $.warning('dropping declaration', $<property>.ast)
-            if $<property>;
+        $.warning('dropping declaration', .ast)
+            with $<property>;
     }
 
-    method _to-unicode($hex-str --> Str) {
-        my $char;
-        try {
-            $char = chr( :16($hex-str) );
-            CATCH {
-                default {
-                    $.warning('invalid unicode code-point', 'U+' ~ $hex-str.uc );
-                    $char = chr(0xFFFD); # �
-                }
+    method !to-unicode($hex-str --> Str) {
+        my $char  = chr( :16($hex-str) );
+        CATCH {
+            default {
+                $.warning('invalid unicode code-point', 'U+' ~ $hex-str.uc );
+                $char = chr(0xFFFD); # �
             }
         }
-        return $char;
+        $char;
     }
 
-    method unicode($/)  { make $._to-unicode(~$0) }
+    method unicode($/)  { make self!to-unicode(~$0) }
 
     method regascii($/) { make ~$/ }
     method nonascii($/) { make ~$/ }
@@ -160,15 +153,15 @@ class CSS::Grammar::Actions
     method single-quote($/) { make "'" }
     method double-quote($/) { make '"' }
 
-    method _string($/ --> Pair) {
+    method !string-token($/ --> Pair) {
         my $string = [~] $<stringchar>>>.ast;
         make $.token($string, :type(CSSValue::StringComponent));
     }
 
     proto method string {*}
-    method string:sym<single-q>($/) { $._string($/) }
+    method string:sym<single-q>($/) { self!string-token($/) }
 
-    method string:sym<double-q>($/) { $._string($/) }
+    method string:sym<double-q>($/) { self!string-token($/) }
 
     method badstring($/) {
         $.warning('unterminated string', ~$/);
@@ -206,9 +199,7 @@ class CSS::Grammar::Actions
 
         # clip out-of-range colors, see
         # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
-        $range = 0 if $range < 0;
-        $range = 255 if $range > 255;
-
+        $range = min( max($range, 0), 255);
         make $.token( $range.round, :type(CSSValue::NumberComponent));
     }
 
@@ -271,12 +262,12 @@ class CSS::Grammar::Actions
     method combinator:sym<child>($/)    { make '>' }
     method combinator:sym<not>($/)      { make '-' } # css21
 
-    method _code-point(Str $hex-str --> Int) {
+    method !code-point(Str $hex-str --> Int) {
         return :16( ~$hex-str );
     }
 
     method unicode-range($/) {
-        my ($lo, $hi);
+        my Str ($lo, $hi);
 
         if $<mask> {
             my $mask = ~$<mask>;
@@ -288,7 +279,7 @@ class CSS::Grammar::Actions
             $hi = ~$<to>;
         }
 
-        make $.token( [ $._code-point( $lo ), $._code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
+        make $.token( [ self!code-point( $lo ), self!code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
     }
 
     # css21/css3 core - media support
@@ -324,7 +315,7 @@ class CSS::Grammar::Actions
 
     method term($/) { make $<term>.ast }
 
-    method expr($/)           { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
+    method expr($/) { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
     method term1:sym<percentage>($/) { make $<percentage>.ast }
 
     method term2:sym<dimension>($/)  { make $<dimension>.ast }
@@ -356,12 +347,12 @@ class CSS::Grammar::Actions
 
     method percentage($/)          { make $.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
 
-    method term1:sym<string>($/)    { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
-    method term1:sym<url>($/)       { make $.token( $<url>.ast, :type(CSSValue::URLComponent)) }
-    method term1:sym<color>($/)     { make $<color>.ast }
+    method term1:sym<string>($/)   { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
+    method term1:sym<url>($/)      { make $.token( $<url>.ast, :type(CSSValue::URLComponent)) }
+    method term1:sym<color>($/)    { make $<color>.ast }
 
-    method term1:sym<num>($/)       { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
-    method term1:sym<ident>($/)     { make $<Ident>
+    method term1:sym<num>($/)      { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
+    method term1:sym<ident>($/)    { make $<Ident>
                                          ?? $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) 
                                          !! $<rel-font-length>.ast
                                    }
@@ -377,21 +368,20 @@ class CSS::Grammar::Actions
     method attrib($/)              { make $.list($/) }
 
     method any-function($/) {
-        return $.warning('skipping function arguments', ~$<any-args>)
-            if $<any-args>;
+        return $.warning('skipping function arguments', ~$_)
+            with $<any-args>;
         make $.node($/);
     }
 
     method pseudo-function:sym<lang>($/) {
         return $.warning('usage: lang(ident)')
-            if $<any-args>;
+            with $<any-args>;
         make $.pseudo-func( 'lang' , $.list($/) );
     }
 
     method any-pseudo-func($/) {
-        my $ast = $<any-function>.ast;
-        return unless $ast.defined;
-        make $.token( $ast, :type(CSSSelector::PseudoFunction) );
+        make $.token( .ast, :type(CSSSelector::PseudoFunction) )
+            with $<any-function>;
     }
 
     # css 2.1 attribute selectors
