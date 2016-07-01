@@ -45,9 +45,6 @@ module CSS::Grammar::Test {
             $class.subparse( $input, :$rule, :$actions)
         };
 
-        my @warnings = $actions.warnings
-            if $actions.can('warnings');
-
         my $expected-parse = (%expected<parse> // $input).trim;
 
         my %todo = $_ with %expected<todo>;
@@ -61,6 +58,9 @@ module CSS::Grammar::Test {
             # partial matches bit iffy at the moment
             is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
         }
+
+        my @warnings = $actions.warnings
+            if $actions.can('warnings');
 
         if  %expected<warnings>:exists && ! %expected<warnings>.defined {
             diag "untested warnings: " ~ @warnings

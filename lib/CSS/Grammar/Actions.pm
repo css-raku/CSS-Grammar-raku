@@ -4,7 +4,37 @@ use v6;
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
 use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
-use CSS::Grammar::AST::Info;
+
+class X::CSS::Ignored { #is Exception { ## issue 4
+    sub display-string(Str $str is copy --> Str) {
+
+        $str = $str.chomp.trim;
+## issue#4
+##        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
+
+##        [~] $str.comb.map: {
+##                    /<[ \\ \t \s \!..\~ ]>/
+##                        ?? $_  
+##                        !! .ord.fmt("\\x[%x]")
+##            };
+    }
+
+    has Str $!message is required;
+    has Str $!str;
+    has Str $!explanation;
+    has UInt $.line-no;
+    submethod BUILD( :$!message!, :$str, :$explanation, :$!line-no ) {
+        $!str = display-string($_) with $str;
+        $!explanation = display-string($_) with $explanation;
+    }
+    method message {
+        my $warning = $!message;
+        $warning ~= ': ' ~ $_ with $!str;
+        $warning ~= ' - ' ~ $_ with $!explanation;
+        $warning;
+    }
+    method Str {$.message}
+}
 
 class CSS::Grammar::Actions
     is CSS::Grammar::AST {
@@ -16,10 +46,10 @@ class CSS::Grammar::Actions
     has Bool $.lax is rw = False;
 
     # accumulated warnings
-    has @.warnings;
+    has X::CSS::Ignored @.warnings;
 
     method reset {
-        @.warnings = ();
+        @.warnings = [];
         $.line-no = 1;
         $!eol-rachet = 0;
     }
@@ -48,28 +78,8 @@ class CSS::Grammar::Actions
         $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
-    sub _display-string(Str $str is copy --> Str) {
-
-        $str = $str.chomp.trim;
-## issue#4
-##        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
-
-##        [~] $str.comb.map: {
-##                    /<[ \\ \t \s \!..\~ ]>/
-##                        ?? $_  
-##                        !! .ord.fmt("\\x[%x]")
-##            };
-    }
-
-    method warning($message, Str $str?, Str $explanation?) {
-        my $warning = ~$message;
-        $warning ~= ': ' ~ _display-string( $_ )
-            with $str;
-        $warning ~= ' - ' ~ $_
-            with $explanation;
-        $warning does CSS::Grammar::AST::Info;
-        $warning.line-no = $.line-no - 1;
-        push @.warnings, $warning;
+    method warning($message, $str?, $explanation?) {
+        @.warnings.push: X::CSS::Ignored.new( :$message, :$str, :$explanation, :$.line-no);
     }
 
     method eol($/) {
