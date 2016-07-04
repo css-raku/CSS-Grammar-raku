@@ -70,8 +70,8 @@ module CSS::Grammar::Test {
 	    todo $_ with %todo<warnings>;
 
             if %expected<warnings>.isa('Regex') {
-                my @matched = ([~] @warnings).match(%expected<warnings>);
-                ok( @matched, "{$suite} $rule warnings")
+                my $matched = @warnings.join.match(%expected<warnings>);
+                ok( $matched, "{$suite} $rule warnings")
                     or diag @warnings;
             }
             else {
