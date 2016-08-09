@@ -54,10 +54,11 @@ class CSS::Grammar::Actions
         $!eol-rachet = 0;
     }
 
-    method at-rule($/, :$type! --> Pair) {
-        my %terms = %( $.node($/) );
+    method at-rule($/, :$type) {
+        warn "deprecated at-rule type: $_" with $type;
+        my %terms = $.node($/);
         %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
-        return $.token( %terms, :$type);
+        return $.token( %terms, :type(CSSObject::AtRule));
     }
 
     method func(Str $name,
@@ -251,8 +252,8 @@ class CSS::Grammar::Actions
     method TOP($/) { make $<stylesheet>.ast }
     method stylesheet($/) { make $.token( $.list($/), :type(CSSObject::StyleSheet)) }
 
-    method charset($/)   { make $.token($<string>.ast, :type(CSSObject::CharsetRule)) }
-    method import($/)    { make $.token($.node($/), :type(CSSObject::ImportRule)) }
+    method charset($/)   { make $.at-rule($/) }
+    method import($/)    { make $.at-rule($/) }
     method url-string($/){ make $.token($<string>.ast, :type(CSSValue::URLComponent)) }
 
     method misplaced($/) {
@@ -293,14 +294,14 @@ class CSS::Grammar::Actions
     }
 
     # css21/css3 core - media support
-    method at-rule:sym<media>($/) { make $.at-rule($/, :type(CSSObject::MediaRule)) }
+    method at-rule:sym<media>($/) { make $.at-rule($/) }
     method rule-list($/)          { make $.token( $.list($/), :type(CSSObject::RuleList)) }
     method media-list($/)         { make $.list($/) }
     method media-query($/)        { make $.list($/) }
     method media-name($/)         { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
     # css21/css3 core - page support
-    method at-rule:sym<page>($/)  { make $.at-rule($/, :type(CSSObject::PageRule)) }
+    method at-rule:sym<page>($/)  { make $.at-rule($/) }
     method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::PseudoClass)) }
 
     method property($/)           { make $<Ident>.ast }
@@ -313,7 +314,7 @@ class CSS::Grammar::Actions
     method any-declaration($/)    {
         return if $<dropped-decl>;
 
-        return make $.at-rule($/, :type(CSSObject::MarginRule))
+        return make $.at-rule($/)
             if $<declarations>;
 
         return $.warning('dropping declaration', $<Ident>.ast)

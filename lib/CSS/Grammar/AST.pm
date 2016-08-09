@@ -7,14 +7,7 @@ class CSS::Grammar::AST {
     # CSS object definitions based on http://dev.w3.org/csswg/cssom/
     # for example 6.4.1 CSSRuleList maps to CSSObject::RuleList
     our Str enum CSSObject is export(:CSSObject) «
-        :CharsetRule<charset-rule>
-        :FontFaceRule<fontface-rule>
-        :GroupingRule<grouping-rule>
-        :ImportRule<import>
-        :MarginRule<margin-rule>
-        :MediaRule<media-rule>
-        :NamespaceRule<namespace-rule>
-        :PageRule<page-rule>
+        :AtRule<at-rule>
         :Priority<prio>
         :RuleSet<ruleset>
         :RuleList<rule-list>
@@ -294,7 +287,7 @@ BEGIN our %CSS3-Colors =
         # unwrap Parcels
         my @l = $/.can('caps')
             ?? ($/)
-            !! $/.grep({ .defined });
+            !! $/.grep: *.defined;
 
         for @l {
             for .caps -> $cap {
@@ -335,7 +328,7 @@ BEGIN our %CSS3-Colors =
         # unwrap Parcels
         my @l = $/.can('caps')
             ?? ($/)
-            !! $/.grep({ .defined });
+            !! $/.grep: *.defined;
 
         for @l {
             for .caps -> $cap {
