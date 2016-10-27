@@ -22,14 +22,14 @@ for css1 => CSS::Grammar::CSS1,
 
     $actions.reset;     
     my $p1 = $class.parse( $css-sample, :$actions);
-    ok( $p1, $test ~ ' parse' );
+    ok $p1, $test ~ ' parse';
 
-    is($actions.line-no, @lines + 1, 'line count');
+    is $actions.line-no, @lines + 1, 'line count';
 
     my $expected-warnings = %level-warnings{$test};
     my $actual-warnings = ~$actions.warnings;
-    todo("issue #4");
-    is($actual-warnings, $expected-warnings, $test ~ ' warnings')
+    todo "issue #4";
+    is $actual-warnings, $expected-warnings, $test ~ ' warnings';
 }
 
 done-testing;

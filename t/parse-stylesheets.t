@@ -71,12 +71,7 @@ A:visited IMG { border: 2px solid red }
 A:active IMG { border: 2px solid lime }
 END_SAMPLE
 
-my @tests = (
-    tiny => $tiny,
-    small => $small,
-    body => $body,
-    sample => $body ~ $sample,
-    );
+my Pair @tests = :$tiny, :$small, :$body, :sample[$body ~ $sample];
 
 for @tests {
     my ($test, $input) = .kv;

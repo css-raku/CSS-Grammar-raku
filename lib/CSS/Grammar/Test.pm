@@ -56,7 +56,7 @@ module CSS::Grammar::Test {
                 !! $input;
             my $got = $parse.defined ?? (~$parse).trim !! '';
             # partial matches bit iffy at the moment
-            is($got, $expected-parse, "{$suite} $rule parse: " ~ $input-display)
+            is $got, $expected-parse, "{$suite} $rule parse: " ~ $input-display;
         }
 
         my @warnings = $actions.warnings.map: *.message
@@ -71,7 +71,7 @@ module CSS::Grammar::Test {
 
             if %expected<warnings>.isa('Regex') {
                 my $matched = @warnings.join.match(%expected<warnings>);
-                ok( $matched, "{$suite} $rule warnings")
+                ok $matched, "{$suite} $rule warnings"
                     or diag @warnings;
             }
             else {
@@ -84,7 +84,7 @@ module CSS::Grammar::Test {
 
         with %expected<ast> -> $expected-ast {
 
-            todo( $_ ) with %todo<ast>;
+            todo $_ with %todo<ast>;
 
             my $ast-ok = ok ($actual-ast.defined && json-eqv($actual-ast, $expected-ast)), "{$suite} $rule ast";
             unless $ast-ok {

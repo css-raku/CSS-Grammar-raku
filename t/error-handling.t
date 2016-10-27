@@ -13,7 +13,7 @@ use CSS::Grammar::Test;
 
 my $actions = CSS::Grammar::Actions.new;
 
-for ( 't/error-handling.json'.IO.lines ) {
+for 't/error-handling.json'.IO.lines {
     if .substr(0,2) eq '//' {
 ##        note '[' ~ .substr(2) ~ ']';
         next;

@@ -9,7 +9,7 @@ use CSS::Grammar::Test;
 
 my $actions = CSS::Grammar::Actions.new( :lax );
 
-for ( 't/css3-syntax.json'.IO.lines ) {
+for 't/css3-syntax.json'.IO.lines {
     next 
         if .substr(0,2) eq '//';
 

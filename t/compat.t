@@ -37,7 +37,7 @@ for 't/compat.json'.IO.lines {
 	$actions.reset;
 
 	if %expected<skip> {
-	    skip( $rule ~ ': ' ~ %expected<skip> );
+	    skip $rule ~ ': ' ~ %expected<skip>;
 	    next;
 	}
 
@@ -50,8 +50,8 @@ for 't/compat.json'.IO.lines {
     }
 
     if CSS::Grammar::Core.can( '_' ~ $rule ) {
-        my %core-tests = %( $test<core> // {} );
-	my %expected = %( %$test, ast => Any, warnings => Any, %core-tests );
+        my %core-tests = $test<core> // {};
+	my %expected = %$test, ast => Any, warnings => Any, %core-tests;
         %expected<warnings> //= Any;
         CSS::Grammar::Test::parse-tests(CSS::Grammar::Core, $input,
 					    :$actions,
