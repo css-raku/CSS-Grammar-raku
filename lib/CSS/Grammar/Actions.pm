@@ -49,8 +49,7 @@ class CSS::Grammar::Actions
         @.warnings = [];
     }
 
-    method at-rule($/, :$type) {
-        warn "deprecated at-rule type: $_" with $type;
+    method at-rule($/) {
         my %terms = $.node($/);
         %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
         return $.token( %terms, :type(CSSObject::AtRule));
@@ -62,10 +61,10 @@ class CSS::Grammar::Actions
 		:$arg-type = CSSValue::ArgumentListComponent,
 		|c
 	--> Pair) {
-        my Pair $arg-tk = ($args.isa(List)
-			   ?? ($arg-type => $args)
-			   !! $args);
-        my %ast = :ident($name), %$arg-tk;
+        my %ast = $args.isa(List)
+            ?? ($arg-type => $args)
+            !! $args;
+        %ast ,= :ident($name);
         $.token( %ast, :$type, |c );
     }
 
@@ -88,8 +87,8 @@ class CSS::Grammar::Actions
     method any($/) {}
 
     method dropped-decl:sym<forward-compat>($/) {
-        $.warning('dropping term', ~$0) if $0;
-        $.warning('dropping term', ~$1) if $1;
+        $.warning('dropping term', .Str) with $0;
+        $.warning('dropping term', .Str) with $1;
         $.warning('dropping declaration', .ast)
             with $<property>;
     }
@@ -219,11 +218,11 @@ class CSS::Grammar::Actions
 ## && $id.match(/^<xdigit>+$/)
 
         my @rgb = $chars == 3
-            ?? $id.comb.map({$^hex-digit ~ $^hex-digit})
-            !! (0, 2, 4).map({ $id.substr($_, 2) });
+            ?? $id.comb.map: {$^hex-digit ~ $^hex-digit}
+            !! $id.comb.map: {$^hex-digit ~ $^hex-digit2};
 
-        my $num-type = CSSValue::NumberComponent;
-        my @color = @rgb.map: { $num-type.Str => :16($_) };
+        my $num-type = CSSValue::NumberComponent.Str;
+        my @color = @rgb.map: { $num-type => :16($_) };
 
         make $.token( @color, :type<rgb>);
     }
