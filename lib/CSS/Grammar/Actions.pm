@@ -3,20 +3,17 @@ use v6;
 # rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
-
 class X::CSS::Ignored { #is Exception { ## issue 4
     sub display-string(Str $str is copy --> Str) {
 
         $str = $str.chomp.trim;
-## issue#4
-##        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
+        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
 
-##        [~] $str.comb.map: {
-##                    /<[ \\ \t \s \!..\~ ]>/
-##                        ?? $_  
-##                        !! .ord.fmt("\\x[%x]")
-##            };
+        [~] $str.comb.map: {
+                    /<[ \\ \t \s \!..\~ ]>/
+                        ?? $_  
+                        !! .ord.fmt("\\x[%x]")
+            };
     }
 
     has Str $.message is required;
@@ -35,6 +32,8 @@ class X::CSS::Ignored { #is Exception { ## issue 4
     }
     method Str {$.message}
 }
+
+use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
 
 class CSS::Grammar::Actions
     is CSS::Grammar::AST {
