@@ -3,7 +3,7 @@ use v6;
 # rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
-class X::CSS::Ignored { #is Exception { ## issue 4
+class X::CSS::Ignored is Exception {
     sub display-string(Str $str is copy --> Str) {
 
         $str = $str.chomp.trim;
@@ -41,6 +41,7 @@ class CSS::Grammar::Actions
     # variable encoding - not yet supported
     has Str $.encoding is rw = 'UTF-8';
     has Bool $.lax = False;
+    has Bool $.xml = False;
 
     # accumulated warnings
     has X::CSS::Ignored @.warnings;
@@ -78,7 +79,10 @@ class CSS::Grammar::Actions
 
     method eol($/) { }
 
-    method element-name($/)           { make $.token( $<Ident>.ast, :type(CSSValue::ElementNameComponent)) }
+    method element-name($/)           {
+        make $.token( $!xml ?? $_ !! .lc, :type(CSSValue::ElementNameComponent))
+            given $<Id>.ast;
+    }
 
     method length-units:sym<abs>($/)  { make $/.lc }
     method length-units:sym<font>($/) { make $/.lc }
@@ -123,10 +127,13 @@ class CSS::Grammar::Actions
 
     method nmreg($/)    { make ~$/ }
 
-    method Ident($/) {
+    method Id($/) {
         my $pfx = $<pfx> ?? ~$<pfx> !! '';
-        my $ident = [~] flat $pfx, $<nmstrt>.ast, @<nmchar>.map( *.ast);
-        make $ident.lc;
+        make [~] flat $pfx, $<nmstrt>.ast, @<nmchar>.map( *.ast);
+    }
+
+    method Ident($/) {
+        make $<Id>.ast.lc;
     }
 
     method name($/)  {
@@ -381,14 +388,14 @@ class CSS::Grammar::Actions
     }
 
     # css 2.1 attribute selectors
-    method attribute-selector:sym<equals>($/)    { make ~$/ }
-    method attribute-selector:sym<includes>($/)  { make ~$/ }
-    method attribute-selector:sym<dash>($/)      { make ~$/ }
+    method attribute-selector:sym<equals>($/)     { make ~$/ }
+    method attribute-selector:sym<includes>($/)   { make ~$/ }
+    method attribute-selector:sym<first-word>($/) { make ~$/ }
     # css 3 attribute selectors
-    method attribute-selector:sym<prefix>($/)    { make ~$/ }
-    method attribute-selector:sym<suffix>($/)    { make ~$/ }
-    method attribute-selector:sym<substring>($/) { make ~$/ }
-    method attribute-selector:sym<column>($/)    { make ~$/ }
+    method attribute-selector:sym<prefix>($/)     { make ~$/ }
+    method attribute-selector:sym<suffix>($/)     { make ~$/ }
+    method attribute-selector:sym<substring>($/)  { make ~$/ }
+    method attribute-selector:sym<column>($/)     { make ~$/ }
 
     # An+B microsyntax
     method op-sign($/) { make ~$/ }

@@ -17,7 +17,7 @@ use CSS::Grammar::Actions;
 my $actions = CSS::Grammar::Actions.new;
 
 for 't/compat.json'.IO.lines {
-    if .substr(0,2) eq '//' {
+    if .starts-with('//') {
 ##        note '[' ~ .substr(2) ~ ']';
         next;
     }

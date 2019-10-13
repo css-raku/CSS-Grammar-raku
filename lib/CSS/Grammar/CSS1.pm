@@ -56,7 +56,7 @@ grammar CSS::Grammar::CSS1 #:api<css1-20080411>
     # -- css1 identifiers - don't allow '_' or leading '-'
     token nmstrt   {(<[a..z A..Z]>)|<nonascii>|<escape>}
     token nmreg    {<[\- a..z A..Z 0..9]>+}
-    token Ident    {<nmstrt><nmchar>*}
+    token Id       {<nmstrt><nmchar>*}
     # -- css1 unicode escape sequences only extend to 4 chars and do not consume trailing white-space
     rule unicode   {(<[0..9 a..f A..F]>**1..4)}
     # -- css1 extended characters limited to latin1

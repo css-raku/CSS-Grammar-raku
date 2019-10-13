@@ -7,7 +7,7 @@ use CSS::Grammar::CSS3;
 use CSS::Grammar::Actions;
 use CSS::Grammar::Test;
 
-my $actions = CSS::Grammar::Actions.new( :lax );
+my $actions = CSS::Grammar::Actions.new( :lax, :xml );
 
 for 't/css3-syntax.json'.IO.lines {
     next 

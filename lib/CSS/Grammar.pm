@@ -31,7 +31,8 @@ grammar CSS::Grammar:ver<0.3.2> {
     token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
     token nmreg    { <[_ \- a..z A..Z 0..9]>+ }
     # don't redefine <ident>, it's a built-in
-    token Ident    { $<pfx>='-'? <nmstrt> <nmchar>* }
+    token Id       { $<pfx>='-'? <nmstrt> <nmchar>* }
+    token Ident    { <Id> }
     token name     { <nmchar>+ }
     token num      { < + - >? [\d* \.]? \d+ [:i'e' < + - >?\d+]? }
     token uint     {\d+}
@@ -52,7 +53,7 @@ grammar CSS::Grammar:ver<0.3.2> {
 
     token id             { '#'<name> }
     token class          { '.'<name> }
-    token element-name   { <Ident> }
+    token element-name   { <Id> }
 
     proto token length-units     {*}
     token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px|<rel-font-units> }

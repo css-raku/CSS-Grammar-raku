@@ -38,8 +38,8 @@ grammar CSS::Grammar::CSS3 #:api<css-syntax-3-20140220>
     token op-sign { <[ \+ \- ]> }
     token op-n {:i n}
     rule AnB-expr:sym<expr> {:i
-        [  <op=.op-sign>?$<int:a>=<.uint>?<op=.op-n> [<op=.op-sign> $<int:b>=<.uint>]?
-        || <op=.op-sign>?$<int:b>=<.uint>
+        [  <op=.op-sign>?$<int>=<.uint>?<op=.op-n> [<op=.op-sign> $<int>=<.uint>]?
+        || <op=.op-sign>?$<int>=<.uint>
         ]
     }
 

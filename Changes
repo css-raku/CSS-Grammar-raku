@@ -1,3 +1,7 @@
+Release 0.3.3 2019-10-14
+- [CSS::Grammar] Added case-sensitive <Id> token
+- [CSS::Grammar::Actions] Added :xml option. Has the affect of making
+  element names case sensitive
 Release 0.3.2
 - deprecated CSS::Grammar::AST %CSS21-Colors, %CSS3-Colors
   CSS::Module now uses Color::Names

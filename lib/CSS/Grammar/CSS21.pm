@@ -77,10 +77,10 @@ grammar CSS::Grammar::CSS21 #:api<css2-20110607>
 
     rule attrib  {'[' <Ident> [ <op=.attribute-selector> [<Ident>|<string>] ]? ']'}
 
-    proto token attribute-selector         {*}
-    token attribute-selector:sym<equals>   {'='}
-    token attribute-selector:sym<includes> {'~='}
-    token attribute-selector:sym<dash>     {'|='}
+    proto token attribute-selector           {*}
+    token attribute-selector:sym<equals>     {'='}
+    token attribute-selector:sym<includes>   {'~='}
+    token attribute-selector:sym<first-word> {'|='}
 
     rule pseudo:sym<:element> {':'$<element>=[:i'first-'[line|letter]|before|after]<!before '('>}
     rule pseudo:sym<function> {':'[<pseudo-function>||<pseudo-function=.any-pseudo-func>]}
