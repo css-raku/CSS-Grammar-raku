@@ -40,7 +40,6 @@ grammar CSS::Grammar:ver<0.3.2> {
 
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
-    token stringchar:sym<cont>     { \\ \n }
     token stringchar:sym<escape>   { <escape> }
     token stringchar:sym<nonascii> { <nonascii> }
     token stringchar:sym<ascii>    { <stringchar-regular>+ }

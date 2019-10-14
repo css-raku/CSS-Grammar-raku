@@ -148,7 +148,6 @@ class CSS::Grammar::Actions
     method uint($/)  { make $/.Int }
     method op($/)    { make $/.lc  }
 
-    method stringchar:sym<cont>($/)     { make '' }
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
     method stringchar:sym<ascii>($/)    { make ~$/ }

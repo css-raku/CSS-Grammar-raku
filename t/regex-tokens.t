@@ -82,7 +82,7 @@ for '8' {
 }
 
 for (q{"Hello"}, q{'world'}, q{''}, q{""}, q{"'"}, q{'"'}, q{"grocer's"}, 
-    q{"a /* non-comment */"}) {
+    q{"a /* non-comment */"}, qq{'hello\\\nworld'}) {
     ok $_ ~~ /^<CSS::Grammar::string>$/, "string: $_";
 }
 
