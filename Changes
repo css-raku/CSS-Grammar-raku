@@ -1,5 +1,7 @@
 Release 0.3.3 2019-10-14
-- [CSS::Grammar] Added case-sensitive <Id> token
+- [CSS::Grammar]
+  -- Added case-sensitive <Id> token
+  -- Allow a backslash at the end-of -line as a line-continuation
 - [CSS::Grammar::Actions] Added :xml option. Has the affect of making
   element names case sensitive
 Release 0.3.2

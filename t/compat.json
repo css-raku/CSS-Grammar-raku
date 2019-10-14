@@ -13,6 +13,7 @@
 [ "num", { "input" : "+1.9", "ast" : { "num" : 1.9 } } ]
 [ "num", { "input" : "-3.14", "ast" : { "num" : -3.14 } } ]
 [ "id", { "input" : "#z0y\\021", "ast" : { "id" : "z0y!" } } ]
+[ "id", { "input" : "#\\\nz0y\\021", "ast" : { "id" : "z0y!" } } ]
 // unicode trailing ws consumed in css2.1 and css3, but not css1
 [ "string", { "input" : "'hi\\021 there'", "ast" : { "string" : "hi!there" }, "css1" : { "ast" : { "string" : "hi! there" } } } ]
 [ "class", { "input" : ".zippy", "ast" : { "class" : "zippy" } } ]

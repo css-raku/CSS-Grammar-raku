@@ -119,7 +119,7 @@ class CSS::Grammar::Actions
     method regascii($/) { make ~$/ }
     method nonascii($/) { make ~$/ }
 
-    method escape($/)   { make $<char>.ast }
+    method escape($/)   { make do with $<char> { .ast } else { '' } }
 
     method nmstrt($/)   { make $<char> ?? $<char>.ast !! ~$0}
 
