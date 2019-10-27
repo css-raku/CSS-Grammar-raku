@@ -64,7 +64,7 @@ To try parsing some content:
 
 See Also
 --------
-- [CSS::Declarations](https://github.com/p6-css/CSS-Declarations-p6) CSS Propery-list manipulation library.
+- [CSS::Properties](https://github.com/p6-css/CSS-Properties-p6) CSS Propery-list manipulation library.
 - [CSS::Module::CSS3::Selectors](https://github.com/p6-css/perl6-CSS-Module-CSS3-Selectors) extends CSS::Grammar::CSS3 to fully implement CSS Level 3 Selectors.
 - [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
 - [CSS::Writer](https://github.com/p6-css/perl6-CSS-Writer) - AST reserializer
