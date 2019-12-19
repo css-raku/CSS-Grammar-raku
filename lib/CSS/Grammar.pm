@@ -3,7 +3,7 @@ use v6;
 grammar CSS::Grammar::Core{...}
 
 # based on http://www.w3.org/TR/2011/REC-CSS2-20110607
-grammar CSS::Grammar:ver<0.3.2> {
+grammar CSS::Grammar:ver<0.3.4> {
 
     # abstract base grammar for CSS instance grammars:
     #  CSS::Grammar::CSS1  - CSS level 1
