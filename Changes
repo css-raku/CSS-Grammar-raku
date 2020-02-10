@@ -1,3 +1,5 @@
+Release 0.3.4 2020-02-11
+- rename sources *.pm -> *.rakumod
 Release 0.3.3 2019-10-14
 - [CSS::Grammar]
   -- Added case-sensitive <Id> token
