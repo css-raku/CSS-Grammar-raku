@@ -13,7 +13,7 @@
 [ "comment", { "input" : "/* anything but * followed by / */", "ast" : null } ]
 [ "ws", { "input" : [ " ", "\t", "\r", "\n" ], "ast" : null } ]
 [ "xdigit", { "input" : [ "0", "9", "a", "f" ], "ast" : null } ]
-[ "escape", { "input" : [ "\\Z", "\\0", "\\123456", "\\0abc " ], "ast" : null } ]
+[ "escape", { "input" : [ "\\Z", "\\0", "\\12345", "\\0abc " ], "ast" : null } ]
 [ "ws", { "input" : " /*foo*/ \n", "ast" : null } ]
 [ "Ident", { "input" : [ "Hi", "_hi", "-_AaZz09\\42\u1234" ], "ast" : null } ]
 // not implemented: <function-token>
