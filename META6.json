@@ -1,9 +1,9 @@
 {
-  "auth": "github:p6-css",
+  "auth": "github:css-raku",
   "depends": [
     "JSON::Fast"
   ],
-  "description": "Perl 6 core CSS grammars",
+  "description": "Raku core CSS grammars",
   "license": "Artistic-2.0",
   "name": "CSS::Grammar",
   "perl": "6c",
@@ -17,6 +17,6 @@
     "CSS::Grammar::Core": "lib/CSS/Grammar.rakumod",
     "CSS::Grammar::Test": "lib/CSS/Grammar/Test.rakumod"
   },
-  "source-url": "git://github.com/p6-css/CSS-Grammar-p6.git",
+  "source-url": "git://github.com/css-raku/CSS-Grammar-raku.git",
   "version": "0.3.4"
 }

@@ -1,7 +1,7 @@
-perl6-CSS-Grammar
+CSS-Grammar-raku
 =================
 
-CSS::Grammar is under construction as an experimental set of Perl 6 grammars for the W3C family of CSS standards.
+CSS::Grammar is a set of Raku grammars for the W3C family of CSS standards.
 
 It aims to implement a reasonable portion of the base grammars with an
 emphasis on:
@@ -64,10 +64,10 @@ To try parsing some content:
 
 See Also
 --------
-- [CSS::Properties](https://github.com/p6-css/CSS-Properties-p6) CSS Propery-list manipulation library.
-- [CSS::Module::CSS3::Selectors](https://github.com/p6-css/perl6-CSS-Module-CSS3-Selectors) extends CSS::Grammar::CSS3 to fully implement CSS Level 3 Selectors.
-- [CSS::Module](https://github.com/p6-css/perl6-CSS-Module) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
-- [CSS::Writer](https://github.com/p6-css/perl6-CSS-Writer) - AST reserializer
+- [CSS::Properties](https://github.com/css-raku/CSS-Properties-raku) CSS Propery-list manipulation library.
+- [CSS::Module::CSS3::Selectors](https://github.com/css-raku/CSS-Module-CSS3-Selectors-raku) extends CSS::Grammar::CSS3 to fully implement CSS Level 3 Selectors.
+- [CSS::Module](https://github.com/css-raku/CSS-Module-raku) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
+- [CSS::Writer](https://github.com/css-raku/CSS-Writer-raku) - AST reserializer
 - [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/categories/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
 
 References
