@@ -33,10 +33,12 @@ class X::CSS::Ignored is Exception {
     method Str {$.message}
 }
 
-use CSS::Grammar::AST :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
+use CSS::Grammar::AST;
 
 class CSS::Grammar::Actions
     is CSS::Grammar::AST {
+
+    use CSS::Grammar::Defs :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
 
     # variable encoding - not yet supported
     has Str $.encoding is rw = 'UTF-8';
@@ -90,8 +92,7 @@ class CSS::Grammar::Actions
     method any($/) {}
 
     method dropped-decl:sym<forward-compat>($/) {
-        $.warning('dropping term', .Str) with $0;
-        $.warning('dropping term', .Str) with $1;
+        $.warning('dropping term', .Str) with $0 // $1;
         $.warning('dropping declaration', .ast)
             with $<property>;
     }
@@ -140,11 +141,11 @@ class CSS::Grammar::Actions
 	my Str $name = [~] flat @<nmchar>.map( *.ast);
 	make $.token( $name, :type(CSSValue::NameComponent));
     }
-    method num($/)   { my $num = $/.Rat;
-                       make $.token( $num % 1
-                                     ?? $num
-                                     !! $num.Int, :type(CSSValue::NumberComponent))
-                     }
+    method num($/)   {
+        my $num = $/.Rat;
+        $num .= Int if $num %% 1;
+        make $.token($num, :type(CSSValue::NumberComponent));
+    }
     method uint($/)  { make $/.Int }
     method op($/)    { make $/.lc  }
 

@@ -1,3 +1,5 @@
+Release 0.3.5 2021-01-03
+- Add CSS::Grammar::Defs
 Release 0.3.4 2020-02-11
 - rename sources *.pm -> *.rakumod
 - moved repo p6-css/CSS-Grammar-p6 -> css-raku/CSS-Grammar-raku
