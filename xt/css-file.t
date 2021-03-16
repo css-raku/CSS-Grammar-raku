@@ -19,7 +19,7 @@ else {
     diag "loading $test-css (set \$CSS_TEST_FILE to override)";
 }
 
-my $actions = CSS::Grammar::Actions.new;
+my CSS::Grammar::Actions $actions .= new;
 
 my $css-body = $test-css.IO.slurp;
 
@@ -35,7 +35,4 @@ ok($/, "parsed css content ($test-css)")
 
 ok $/.ast.defined, "AST produced";
 
-diag "...dumping...";
-note $/.ast.perl;
-
-done;
+done-testing;
