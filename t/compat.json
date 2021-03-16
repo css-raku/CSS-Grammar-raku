@@ -56,7 +56,7 @@
 [ "selector", { "input" : "*[lang=fr]", "ast" : { "selector" : [ { "simple-selector" : [ { "qname" : { "element-name" : "*" } }, { "attrib" : [ { "ident" : "lang" }, { "op" : "=" }, { "ident" : "fr" } ] } ] } ] }, "css1" : { "parse" : "", "ast" : null } } ]
 [ "expr", { "input" : "RGB(-10,133,257 ), #fa7", "ast" : { "expr" : [ { "rgb" : [ { "num" : 0 }, { "num" : 133 }, { "num" : 255 } ] }, { "op" : "," }, { "rgb" : [ { "num" : 255 }, { "num" : 170 }, { "num" : 119 } ] } ] } } ]
 [ "expr", { "input" : "'Helvetica Neue',helvetica-neue, helvetica", "ast" : { "expr" : [ { "string" : "Helvetica Neue" }, { "op" : "," }, { "ident" : "helvetica-neue" }, { "op" : "," }, { "ident" : "helvetica" } ] } } ]
-[ "expr", { "input" : "+13mm EM -ex em(42) em_", "ast" : { "expr" : [ { "mm" : 13 }, { "em" : 1 }, {"ex" : -1}, { "func" : { "ident" : "em", "expr" : [ { "num" : 42 } ] } }, { "ident" : "em_" } ] }, "css1" : { "parse" : "+13mm EM -ex em", "ast" : { "expr" : [ { "mm" : 13 }, { "em" : 1 }, {"ex" : -1}, { "em" : 1 } ] } } } ]
+[ "expr", { "input" : "+13mm EM -ex em(42) em_ 14ch 15rem", "ast" : { "expr" : [ { "mm" : 13 }, { "em" : 1 }, {"ex" : -1}, { "func" : { "ident" : "em", "expr" : [ { "num" : 42 } ] } }, { "ident" : "em_" }, { "ch": 14 }, { "rem": 15 } ] }, "css1" : { "parse" : "+13mm EM -ex em ", "ast" : { "expr" : [ { "mm" : 13 }, { "em" : 1 }, {"ex" : -1}, { "em" : 1 } ] } } } ]
 [ "expr", { "input" : "-1CM", "ast" : { "expr" : [ { "cm" : -1 } ] } } ]
 [ "expr", { "input" : "2px solid blue", "ast" : { "expr" : [ { "px" : 2 }, { "ident" : "solid" }, { "ident" : "blue" } ] } } ]
 // css21+ expressions

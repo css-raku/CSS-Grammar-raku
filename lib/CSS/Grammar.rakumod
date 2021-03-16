@@ -56,7 +56,7 @@ grammar CSS::Grammar:ver<0.3.5> {
 
     proto token length-units     {*}
     token length-units:sym<abs>  {:i pt|mm|cm|pc|in|px|<rel-font-units> }
-    token rel-font-units         {:i [em|ex] }
+    token rel-font-units         {:i em|ex|ch|rem }
     token rel-font-length        {:i $<sign>=< + - >? <rel-font-units> }
 
     proto token length           {*}
