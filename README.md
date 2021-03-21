@@ -54,21 +54,22 @@ warnings for any unexpected input.
 Installation
 ------------
 
-You can use Perl6 `zef` module installer to test and install `CSS::Grammar`:
+You can use the Raku `zef` module installer to test and install `CSS::Grammar`:
 
     % zef install CSS::Grammar
 
 To try parsing some content:
 
-    % perl6 -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
+    % raku -MCSS::Grammar::CSS3 -e"say CSS::Grammar::CSS3.parse('H1 {color:blue}')"
 
 See Also
 --------
 - [CSS::Properties](https://github.com/css-raku/CSS-Properties-raku) CSS Propery-list manipulation library.
+- [CSS](https://github.com/css-raku/CSS-raku) CSS Stylesheets and processing.
 - [CSS::Module::CSS3::Selectors](https://github.com/css-raku/CSS-Module-CSS3-Selectors-raku) extends CSS::Grammar::CSS3 to fully implement CSS Level 3 Selectors.
 - [CSS::Module](https://github.com/css-raku/CSS-Module-raku) further extends CSS::Grammar levels 1, 2.1 and 3. It understands named colors and is able to perform property-specific parsing and validation.
 - [CSS::Writer](https://github.com/css-raku/CSS-Writer-raku) - AST reserializer
-- [CSSGrammar.pm](https://github.com/perl6/perl6-examples/blob/master/categories/parsers/CSSGrammar.pm) from [perl6-examples](https://github.com/perl6/perl6-examples) gives an introductory Perl 6 grammar for CSS 2.1.
+- [CSSGrammar.pm](https://github.com/Raku/examples/blob/master/categories/parsers/CSSGrammar.pm) from [Raku/examples](https://github.com/Raku/examples) gives an introductory Raku grammar for CSS 2.1.
 
 References
 ----------
