@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Add X::CSS abstract exception class
+  - Tweak warning method to coerce message to Str
 
 0.3.6  2021-03-17T06:39:43+13:00
   - Add 'rem' and 'ch' units. Thanks JRaspass.

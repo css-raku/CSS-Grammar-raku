@@ -3,7 +3,9 @@ use v6;
 # rules for constructing ASTs for CSS::Grammar, CSS::Grammar::CSS1,
 # CSS::Grammar::CSS21 and CSS::Grammar::CSS3
 
-class X::CSS::Ignored is Exception {
+class X::CSS is Exception { }
+
+class X::CSS::Ignored is X::CSS {
     sub display-string(Str $str is copy --> Str) {
 
         $str = $str.chomp.trim;
@@ -75,7 +77,7 @@ class CSS::Grammar::Actions
         $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
-    method warning($message, $str?, $explanation?) {
+    method warning(Str:D() $message, Str $str?, Str $explanation?) {
         @.warnings.push: X::CSS::Ignored.new( :$message, :$str, :$explanation);
     }
 

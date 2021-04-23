@@ -107,7 +107,7 @@ BEGIN our %known-type =
                     ($key, $value) = $value.kv;
                 }
                 elsif %known-type{$type}:!exists {
-                    warn "{$value.perl} has unknown type: $type";
+                    warn "{$value.raku} has unknown type: $type";
                 }
 
                 push( @terms, {$key => $value} );
