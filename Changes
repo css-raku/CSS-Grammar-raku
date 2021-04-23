@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.3.7  2021-04-24T06:35:16+12:00
   - Add X::CSS abstract exception class
   - Tweak warning method to coerce message to Str
 
