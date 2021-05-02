@@ -50,6 +50,15 @@ for '¡', "\o250", 'ÿ' {
     ok $_ ~~ /^<CSS::Grammar::Core::Ident>$/, "non-ascii ident: $_";
 }
 
+# issue #11
+for "\r\n" {
+    ok $_ !~~ /^<CSS::Grammar::nonascii>$/, "non-ascii: $_ ("~ .ord ~')';
+    ok $_ !~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_";
+    ok $_ !~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_";
+    ok $_ !~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_";
+    ok $_ !~~ /^<CSS::Grammar::Core::nonascii>$/, "non-ascii scan: $_";
+}
+
 # css1 and css21 only recognise latin chars as non-ascii (\o240-\o377)
 for '' {
     ok $_ ~~ /^<CSS::Grammar::nonascii>$/, "non-ascii: $_ ("~ .ord ~')';

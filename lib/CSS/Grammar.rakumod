@@ -16,7 +16,7 @@ grammar CSS::Grammar:ver<0.3.7> {
                   |('/*')   .*? ['*/'  || <unclosed-comment>]}
     token unclosed-comment {$}
 
-    token wc { \n | "\t"  | " " }
+    token wc { \n | "\t" | " " }
     token ws { <!ww>[ <.wc> | <.comment> ]* }
 
     # "lexer"
@@ -25,11 +25,11 @@ grammar CSS::Grammar:ver<0.3.7> {
     token unicode  { (<xdigit>**1..6) <.wc>? }
     # w3c nonascii :== #x80-#xD7FF #xE000-#xFFFD #x10000-#x10FFFF
     token regascii { <[ \x20..\x7F ]> }
-    token nonascii { <- [ \x0..\x7F ]> }
+    token nonascii { <- [ \x0..\x7F \n ]> }
     token escape   { '\\'[ <char=.unicode> || \n || <char=.regascii> | <char=.nonascii> ] }
     token nmstrt   { (<[_ a..z A..Z]>) | <char=.nonascii> | <char=.escape> }
-    token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
     token nmreg    { <[_ \- a..z A..Z 0..9]>+ }
+    token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
     # don't redefine <ident>, it's a built-in
     token Id       { $<pfx>='-'? <nmstrt> <nmchar>* }
     token Ident    { <Id> }

@@ -1,4 +1,5 @@
 {{$NEXT}}
+  - Fix combining newlines (\r\n) being accepted as non-ascii #11
 
 0.3.7  2021-04-24T06:35:16+12:00
   - Add X::CSS abstract exception class
