@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.3.8  2021-05-03T08:57:52+12:00
   - Fix combining newlines (\r\n) being accepted as non-ascii #11
 
 0.3.7  2021-04-24T06:35:16+12:00
