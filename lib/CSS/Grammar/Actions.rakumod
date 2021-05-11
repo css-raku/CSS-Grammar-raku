@@ -415,14 +415,6 @@ class CSS::Grammar::Actions
         $.warning('unclosed comment at end of input');
     }
 
-    method unclosed-paren-square($/) {
-        $.warning("no closing ']'");
-    }
-
-    method unclosed-paren-round($/) {
-        $.warning("no closing ')'");
-    }
-
     method unknown($/) {
         $.warning('dropping', ~$/)
     }
