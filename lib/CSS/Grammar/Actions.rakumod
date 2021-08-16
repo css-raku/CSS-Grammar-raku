@@ -132,7 +132,7 @@ class CSS::Grammar::Actions
 
     method Id($/) {
         my $pfx = $<pfx> ?? ~$<pfx> !! '';
-        make [~] flat $pfx, $<nmstrt>.ast, @<nmchar>.map( *.ast);
+        make [~] $pfx, $<nmstrt>.ast, @<nmchar>».ast.Slip;
     }
 
     method Ident($/) {
@@ -140,7 +140,7 @@ class CSS::Grammar::Actions
     }
 
     method name($/)  {
-	my Str $name = [~] flat @<nmchar>.map( *.ast);
+	my Str $name = [~] @<nmchar>».ast.Slip;
 	make $.token( $name, :type(CSSValue::NameComponent));
     }
     method num($/)   {

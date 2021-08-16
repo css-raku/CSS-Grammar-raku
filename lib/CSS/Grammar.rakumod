@@ -10,7 +10,7 @@ grammar CSS::Grammar:ver<0.3.8> {
     #  CSS::Grammar::CSS21 - CSS level 2.1
     #  CSS::Grammar::CSS3  - CSS level 3
 
-    # Comments and whitespace
+    # Comments and white-space
 
     token comment {('<!--') .*? ['-->' || <unclosed-comment>]
                   |('/*')   .*? ['*/'  || <unclosed-comment>]}
@@ -116,7 +116,7 @@ grammar CSS::Grammar:ver<0.3.8> {
     proto rule term2  {*}
     rule term2:sym<dimension>  {<dimension>||<any-dimension>}
 
-    rule any-dimension        {<num>$<units:unknown>=<.Ident>}
+    rule any-dimension         {<num>$<units:unknown>=<.Ident>}
 
     # Unicode ranges - used by selector modules + scan rules
     rule unicode-range         {:i 'U+' [ $<from>=[<.xdigit>**1..6] '-' $<to>=[<.xdigit>**1..6]
@@ -166,7 +166,7 @@ grammar CSS::Grammar::Core #api<css2-20110607>
     # This is based on the core grammar syntax described in
     # http://www.w3.org/TR/2011/REC-CSS2-20110607/syndata.html#syntax
     # It is a scanning grammar that is only used to implement
-    # term flushing, for forward compatiblity and error recovery
+    # term flushing, for forward compatibility and error recovery
     #
 
     # Term Flushing:

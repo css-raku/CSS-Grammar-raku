@@ -56,7 +56,7 @@ module CSS::Grammar::Test {
             is $got, $expected-parse, "{$suite} $rule parse: " ~ $input-display;
         }
 
-        my @warnings = $actions.warnings.map: *.message
+        my @warnings = $actions.warnings».message
             if $actions.can('warnings');
 
         if  %expected<warnings>:exists && ! %expected<warnings>.defined {
