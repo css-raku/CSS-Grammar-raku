@@ -1,4 +1,6 @@
 {{$NEXT}}
+
+0.3.9  2021-08-20T06:58:17+12:00
   - CSS::Grammar::Actions no long inherits from CSS::Grammar::AST.
     Be more explict and invoke a build() method when constructing
     nodes. e.g. `make $.build.node($/)` becomes `make $.node($/)`
