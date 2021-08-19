@@ -1,4 +1,9 @@
 {{$NEXT}}
+  - CSS::Grammar::Actions no long inherits from CSS::Grammar::AST.
+    Be more explict and invoke a build() method when constructing
+    nodes. e.g. `make $.build.node($/)` becomes `make $.node($/)`
+    This seperation is more of a win in CSS::Module, which is mixing
+    in a lot of grammars and classes.
 
 0.3.8  2021-05-03T08:57:52+12:00
   - Fix combining newlines (\r\n) being accepted as non-ascii #11

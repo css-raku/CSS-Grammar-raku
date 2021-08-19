@@ -30,7 +30,7 @@ BEGIN our %known-type =
 	$type = CSSUnits.enums{$type}
 	    if CSSUnits.enums{$type}:exists;
 
-	my ($raw-type, $_class) = $type.split(':');
+	my $raw-type = $type.split(':').head;
 	die "unknown type: '$raw-type'"
 	    unless %known-type{$raw-type}:exists;
 
@@ -45,7 +45,7 @@ BEGIN our %known-type =
 
         # unwrap Parcels
         my @l = $/.can('caps')
-            ?? ($/)
+            ?? $/
             !! $/.grep: *.defined;
 
         for @l {
@@ -53,13 +53,13 @@ BEGIN our %known-type =
                 my ($key, $value) = $cap.kv;
                 next if $key eq '0';
                 $key = $key.lc;
-                my ($type, $_class) = $key.split(':');
+                my $type = $key.split(':').head;
 
-                $value = $value.ast
+                $value .= ast
                     // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
-                    $key = 'expr:' ~ substr($key, 5);
+                    $key.substr-rw(4,1) = ':';
                 }
                 elsif $value.isa(Pair) {
                     ($key, $value) = $value.kv;
@@ -86,7 +86,7 @@ BEGIN our %known-type =
 
         # unwrap Parcels
         my @l = $/.can('caps')
-            ?? ($/)
+            ?? $/
             !! $/.grep: *.defined;
 
         for @l {
@@ -95,13 +95,13 @@ BEGIN our %known-type =
                 next if $key eq '0';
                 $key = $key.lc;
 
-                my ($type, $_class) = $key.split(':');
+                my $type = $key.split(':').head;
 
-                $value = $value.ast
+                $value .= ast
                     // next;
 
                 if substr($key, 0, 5) eq 'expr-' {
-                    $key = 'expr:' ~ substr($key, 5);
+                    $key.substr-rw(4,1) = ':';
                 }
                 elsif $value.isa(Pair) {
                     ($key, $value) = $value.kv;
@@ -115,6 +115,30 @@ BEGIN our %known-type =
         }
 
         @terms;
+    }
+
+    method at-rule($/) {
+        my %terms = $.node($/);
+        %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
+        return $.token( %terms, :type(CSSObject::AtRule));
+    }
+
+    method func(Str:D $ident,
+		$args,
+		:$type     = CSSValue::FunctionComponent,
+		:$arg-type = CSSValue::ArgumentListComponent,
+		|c --> Pair) {
+        my %ast = $args.isa(List)
+            ?? ($arg-type => $args)
+            !! $args;
+        %ast ,= :$ident;
+        $.token( %ast, :$type, |c );
+    }
+
+    method pseudo-func( Str $ident, $/ --> Pair) {
+        my $expr = $.list($/);
+        my %ast = :$ident, :$expr;
+        $.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
 }

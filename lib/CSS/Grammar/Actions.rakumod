@@ -35,17 +35,19 @@ class X::CSS::Ignored is X::CSS {
     method Str {$.message}
 }
 
-use CSS::Grammar::AST;
 
-class CSS::Grammar::Actions
-    is CSS::Grammar::AST {
-
+class CSS::Grammar::Actions {
+    use CSS::Grammar::AST;
     use CSS::Grammar::Defs :CSSObject, :CSSValue, :CSSUnits, :CSSSelector;
 
     # variable encoding - not yet supported
     has Str $.encoding is rw = 'UTF-8';
     has Bool $.lax = False;
     has Bool $.xml = False;
+
+    method build handles<token node list at-rule> {
+        CSS::Grammar::AST;
+    }
 
     # accumulated warnings
     has X::CSS::Ignored @.warnings;
@@ -54,27 +56,9 @@ class CSS::Grammar::Actions
         @.warnings = [];
     }
 
-    method at-rule($/) {
-        my %terms = $.node($/);
-        %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
-        return $.token( %terms, :type(CSSObject::AtRule));
-    }
-
-    method func(Str $name,
-		$args,
-		:$type     = CSSValue::FunctionComponent,
-		:$arg-type = CSSValue::ArgumentListComponent,
-		|c --> Pair) {
-        my %ast = $args.isa(List)
-            ?? ($arg-type => $args)
-            !! $args;
-        %ast ,= :ident($name);
-        $.token( %ast, :$type, |c );
-    }
-
-    method pseudo-func( Str $ident, $expr --> Pair) {
+    method pseudo-func( Str $ident, $expr --> Pair) is DEPRECATED<ast.pseudo-func> {
         my %ast = :$ident, :$expr;
-        $.token( %ast, :type(CSSSelector::PseudoFunction) );
+        $.build.token( %ast, :type(CSSSelector::PseudoFunction) );
     }
 
     method warning(Str:D() $message, Str $str?, Str $explanation?) {
@@ -84,7 +68,7 @@ class CSS::Grammar::Actions
     method eol($/) { }
 
     method element-name($/)           {
-        make $.token( $!xml ?? $_ !! .lc, :type(CSSValue::ElementNameComponent))
+        make $.build.token( $!xml ?? $_ !! .lc, :type(CSSValue::ElementNameComponent))
             given $<Id>.ast;
     }
 
@@ -141,12 +125,12 @@ class CSS::Grammar::Actions
 
     method name($/)  {
 	my Str $name = [~] @<nmchar>».ast.Slip;
-	make $.token( $name, :type(CSSValue::NameComponent));
+	make $.build.token( $name, :type(CSSValue::NameComponent));
     }
     method num($/)   {
         my $num = $/.Rat;
         $num .= Int if $num %% 1;
-        make $.token($num, :type(CSSValue::NumberComponent));
+        make $.build.token($num, :type(CSSValue::NumberComponent));
     }
     method uint($/)  { make $/.Int }
     method op($/)    { make $/.lc  }
@@ -160,7 +144,7 @@ class CSS::Grammar::Actions
 
     method !string-token($/ --> Pair) {
         my $string = [~] $<stringchar>>>.ast;
-        make $.token($string, :type(CSSValue::StringComponent));
+        make $.build.token($string, :type(CSSValue::StringComponent));
     }
 
     proto method string {*}
@@ -172,9 +156,9 @@ class CSS::Grammar::Actions
         $.warning('unterminated string', ~$/);
     }
 
-    method id($/)    { make $.token( $<name>.ast, :type(CSSSelector::Id)) }
+    method id($/)    { make $.build.token( $<name>.ast, :type(CSSSelector::Id)) }
 
-    method class($/) { make $.token( $<name>.ast, :type(CSSSelector::Class)) }
+    method class($/) { make $.build.token( $<name>.ast, :type(CSSSelector::Class)) }
 
     method url-unquoted-char($/) {
         make $<char> ?? $<char>.ast !! ~$/
@@ -185,7 +169,7 @@ class CSS::Grammar::Actions
     }
 
     method url($/)   {
-        make $.token( $<url>.ast, :type(CSSValue::URLComponent));
+        make $.build.token( $<url>.ast, :type(CSSValue::URLComponent));
     }
 
     # uri - synonym for url?
@@ -194,7 +178,7 @@ class CSS::Grammar::Actions
     method any-dimension($/) {
         return $.warning("unknown units: { $<units:unknown>.ast }")
             unless $.lax;
-        make $.node( $/ )
+        make $.build.node( $/ )
     }
 
     method color-range($/) {
@@ -205,7 +189,7 @@ class CSS::Grammar::Actions
         # clip out-of-range colors, see
         # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
         $range = min( max($range, 0), 255);
-        make $.token( $range.round, :type(CSSValue::NumberComponent));
+        make $.build.token( $range.round, :type(CSSValue::NumberComponent));
     }
 
     proto method color {*}
@@ -213,7 +197,7 @@ class CSS::Grammar::Actions
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
             if $<any-args>;
 
-        make $.token( $.list($/), :type<rgb>);
+        make $.build.token( $.build.list($/), :type<rgb>);
     }
 
     method color:sym<hex>($/)   {
@@ -232,7 +216,7 @@ class CSS::Grammar::Actions
         my $num-type = CSSValue::NumberComponent.Str;
         my @color = @rgb.map: { $num-type => :16($_) };
 
-        make $.token( @color, :type<rgb>);
+        make $.build.token( @color, :type<rgb>);
     }
 
     method prio($/) {
@@ -244,23 +228,23 @@ class CSS::Grammar::Actions
 
     # from the TOP (CSS1 + CSS21 + CSS3)
     method TOP($/) { make $<stylesheet>.ast }
-    method stylesheet($/) { make $.token( $.list($/), :type(CSSObject::StyleSheet)) }
+    method stylesheet($/) { make $.build.token( $.build.list($/), :type(CSSObject::StyleSheet)) }
 
-    method charset($/)   { make $.at-rule($/) }
-    method import($/)    { make $.at-rule($/) }
-    method url-string($/){ make $.token($<string>.ast, :type(CSSValue::URLComponent)) }
+    method charset($/)   { make $.build.at-rule($/) }
+    method import($/)    { make $.build.at-rule($/) }
+    method url-string($/){ make $.build.token($<string>.ast, :type(CSSValue::URLComponent)) }
 
     method misplaced($/) {
         $.warning('ignoring out of sequence directive', ~$/)
     }
 
-    method operator($/) { make $.token( ~$/, :type(CSSValue::OperatorComponent)) }
+    method operator($/) { make $.build.token( ~$/, :type(CSSValue::OperatorComponent)) }
 
     # pseudos
-    method pseudo:sym<:element>($/)  { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
-    method pseudo:sym<::element>($/) { make $.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+    method pseudo:sym<:element>($/)  { make $.build.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
+    method pseudo:sym<::element>($/) { make $.build.token( $<element>.lc, :type(CSSSelector::PseudoElement)) }
     method pseudo:sym<function>($/)  { make $<pseudo-function>.ast }
-    method pseudo:sym<class>($/)     { make $.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
+    method pseudo:sym<class>($/)     { make $.build.token( $<class>.ast, :type(CSSSelector::PseudoClass)) }
 
     # combinators
     method combinator:sym<adjacent>($/) { make '+' }
@@ -284,108 +268,108 @@ class CSS::Grammar::Actions
             $hi = ~$<to>;
         }
 
-        make $.token( [ self!code-point( $lo ), self!code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
+        make $.build.token( [ self!code-point( $lo ), self!code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
     }
 
     # css21/css3 core - media support
-    method at-rule:sym<media>($/) { make $.at-rule($/) }
-    method rule-list($/)          { make $.token( $.list($/), :type(CSSObject::RuleList)) }
-    method media-list($/)         { make $.list($/) }
-    method media-query($/)        { make $.list($/) }
-    method media-name($/)         { make $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
+    method at-rule:sym<media>($/) { make $.build.at-rule($/) }
+    method rule-list($/)          { make $.build.token( $.build.list($/), :type(CSSObject::RuleList)) }
+    method media-list($/)         { make $.build.list($/) }
+    method media-query($/)        { make $.build.list($/) }
+    method media-name($/)         { make $.build.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
     # css21/css3 core - page support
-    method at-rule:sym<page>($/)  { make $.at-rule($/) }
-    method page-pseudo($/)        { make $.token( $<Ident>.ast, :type(CSSSelector::PseudoClass)) }
+    method at-rule:sym<page>($/)  { make $.build.at-rule($/) }
+    method page-pseudo($/)        { make $.build.token( $<Ident>.ast, :type(CSSSelector::PseudoClass)) }
 
     method property($/)           { make $<Ident>.ast }
-    method ruleset($/)            { make $.token( $.node($/), :type(CSSObject::RuleSet)) }
-    method selectors($/)          { make $.token( $.list($/), :type(CSSSelector::SelectorList)) }
-    method declarations($/)       { make $.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
-    method declaration-list($/)   { make [($<declaration>>>.ast).grep: {.defined}] }
+    method ruleset($/)            { make $.build.token( $.build.node($/), :type(CSSObject::RuleSet)) }
+    method selectors($/)          { make $.build.token( $.build.list($/), :type(CSSSelector::SelectorList)) }
+    method declarations($/)       { make $.build.token( $<declaration-list>.ast, :type(CSSValue::PropertyList) ) }
+    method declaration-list($/)   { make [$<declaration>>>.ast.grep: {.defined}] }
     method declaration($/)        { make $<any-declaration>.ast }
     method at-keyw($/)            { make $<Ident>.ast }
     method any-declaration($/)    {
         return if $<dropped-decl>;
 
-        return make $.at-rule($/)
+        return make $.build.at-rule($/)
             if $<declarations>;
 
         return $.warning('dropping declaration', $<Ident>.ast)
             if !$<expr>.caps
             || $<expr>.caps.first({! .value.ast.defined});
 
-        make $.token($.node($/), :type(CSSValue::Property));
+        make $.build.token($.build.node($/), :type(CSSValue::Property));
     }
 
     method term($/) { make $<term>.ast }
 
-    method expr($/) { make $.token( $.list($/), :type(CSSValue::ExpressionComponent)) }
+    method expr($/) { make $.build.token( $.build.list($/), :type(CSSValue::ExpressionComponent)) }
     method term1:sym<percentage>($/) { make $<percentage>.ast }
 
     method term2:sym<dimension>($/)  { make $<dimension>.ast }
-    method term2:sym<function>($/)   { make $.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
+    method term2:sym<function>($/)   { make $.build.token( $<function>.ast, :type(CSSValue::FunctionComponent)) }
 
     proto method length {*}
-    method length:sym<dim>($/) { make $.token($<num>.ast, :type($<units>.ast)); }
+    method length:sym<dim>($/) { make $.build.token($<num>.ast, :type($<units>.ast)); }
     method dimension:sym<length>($/) { make $<length>.ast }
     method length:sym<rel-font-length>($/) { make $<rel-font-length>.ast }
     method rel-font-length($/) {
         my $num = $<sign> && ~$<sign> eq '-' ?? -1 !! +1;
-        make $.token($num, :type( $<rel-font-units>.lc ));
+        make $.build.token($num, :type( $<rel-font-units>.lc ));
     }
 
     proto method angle {*}
     method angle-units($/)         { make $/.lc }
-    method angle:sym<dim>($/)      { make $.token( $<num>.ast, :type($<units>.ast)) }
+    method angle:sym<dim>($/)      { make $.build.token( $<num>.ast, :type($<units>.ast)) }
     method dimension:sym<angle>($/){ make $<angle>.ast }
 
     proto method time {*}
     method time-units($/)          { make $/.lc }
-    method time:sym<dim>($/)       { make $.token( $<num>.ast, :type($<units>.ast)) }
+    method time:sym<dim>($/)       { make $.build.token( $<num>.ast, :type($<units>.ast)) }
     method dimension:sym<time>($/) { make $<time>.ast }
 
     proto method frequency {*}
     method frequency-units($/)     { make $/.lc }
-    method frequency:sym<dim>($/)  { make $.token( $<num>.ast, :type($<units>.ast)) }
+    method frequency:sym<dim>($/)  { make $.build.token( $<num>.ast, :type($<units>.ast)) }
     method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
-    method percentage($/)          { make $.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
+    method percentage($/)          { make $.build.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
 
-    method term1:sym<string>($/)   { make $.token( $<string>.ast, :type(CSSValue::StringComponent)) }
-    method term1:sym<url>($/)      { make $.token( $<url>.ast, :type(CSSValue::URLComponent)) }
+    method term1:sym<string>($/)   { make $.build.token( $<string>.ast, :type(CSSValue::StringComponent)) }
+    method term1:sym<url>($/)      { make $.build.token( $<url>.ast, :type(CSSValue::URLComponent)) }
     method term1:sym<color>($/)    { make $<color>.ast }
 
-    method term1:sym<num>($/)      { make $.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
+    method term1:sym<num>($/)      { make $.build.token( $<num>.ast, :type(CSSValue::NumberComponent)); }
     method term1:sym<ident>($/)    { make $<Ident>
-                                         ?? $.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) 
+                                         ?? $.build.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) 
                                          !! $<rel-font-length>.ast
                                    }
 
-    method term1:sym<unicode-range>($/) { make $.node($/, :type(CSSValue::UnicodeRangeComponent)) }
+    method term1:sym<unicode-range>($/) { make $.build.node($/, :type(CSSValue::UnicodeRangeComponent)) }
 
-    method selector($/)            { make $.token( $.list($/), :type(CSSSelector::Selector)) }
+    method selector($/)            { make $.build.token( $.build.list($/), :type(CSSSelector::Selector)) }
 
-    method universal($/)           { make $.token( {element-name => ~$/}, :type(CSSValue::QnameComponent)) }
-    method qname($/)               { make $.token( $.node($/), :type(CSSValue::QnameComponent)) }
-    method simple-selector($/)     { make $.token( $.list($/), :type(CSSSelector::SelectorComponent)) }
+    method universal($/)           { make $.build.token( {element-name => ~$/}, :type(CSSValue::QnameComponent)) }
+    method qname($/)               { make $.build.token( $.build.node($/), :type(CSSValue::QnameComponent)) }
+    method simple-selector($/)     { make $.build.token( $.build.list($/), :type(CSSSelector::SelectorComponent)) }
 
-    method attrib($/)              { make $.list($/) }
+    method attrib($/)              { make $.build.list($/) }
 
     method any-function($/) {
         return $.warning('skipping function arguments', ~$_)
             with $<any-args>;
-        make $.node($/);
+        make $.build.node($/);
     }
 
     method pseudo-function:sym<lang>($/) {
         return $.warning('usage: lang(ident)')
             with $<any-args>;
-        make $.pseudo-func( 'lang' , $.list($/) );
+        make $.build.pseudo-func( 'lang' , $/);
     }
 
     method any-pseudo-func($/) {
-        make $.token( .ast, :type(CSSSelector::PseudoFunction) )
+        make $.build.token( .ast, :type(CSSSelector::PseudoFunction) )
             with $<any-function>;
     }
 
@@ -403,8 +387,8 @@ class CSS::Grammar::Actions
     method op-sign($/) { make ~$/ }
     method op-n($/)    { make 'n' }
 
-    method AnB-expr:sym<keyw>($/) { make [ $.token( $<keyw>.ast, :type(CSSValue::KeywordComponent)) ] }
-    method AnB-expr:sym<expr>($/) { make $.list($/) }
+    method AnB-expr:sym<keyw>($/) { make [ $.build.token( $<keyw>.ast, :type(CSSValue::KeywordComponent)) ] }
+    method AnB-expr:sym<expr>($/) { make $.build.list($/) }
 
     method end-block($/) {
         $.warning("no closing '}'")
