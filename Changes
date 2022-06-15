@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.3.10  2022-06-16T06:08:10+12:00
+  - Release to zef ecosystem
+
 0.3.9  2021-08-20T06:58:17+12:00
   - CSS::Grammar::Actions no long inherits from CSS::Grammar::AST.
     Be more explict and invoke a build() method when constructing
