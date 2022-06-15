@@ -124,7 +124,7 @@ class CSS::Grammar::Actions {
     }
 
     method name($/)  {
-	my Str $name = [~] @<nmchar>».ast.Slip;
+	my Str $name = [~] @<nmchar>».ast;
 	make $.build.token( $name, :type(CSSValue::NameComponent));
     }
     method num($/)   {

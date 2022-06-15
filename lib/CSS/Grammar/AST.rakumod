@@ -11,12 +11,11 @@ class CSS::Grammar::AST {
     constant css-units is export(:CSSUnits) = CSSUnits;
     constant css-trait is export(:CSSTrait) = CSSTrait;
 
-BEGIN our %known-type =
-    %( CSSObject.enums.invert ),
-    %( CSSValue.enums.invert ),
-    %( CSSSelector.enums.invert ),
+    BEGIN our %known-type =
+        %( CSSObject.enums.invert ),
+        %( CSSValue.enums.invert ),
+        %( CSSSelector.enums.invert ),
     ;
-
 
     #| utility token builder method, e.g.: $.token(42, :type<cm>)  -->   :cm(42)
     method token(Mu $ast, Str :$type is copy) {
@@ -58,7 +57,7 @@ BEGIN our %known-type =
                 $value .= ast
                     // next;
 
-                if substr($key, 0, 5) eq 'expr-' {
+                if $key.starts-with('expr-') {
                     $key.substr-rw(4,1) = ':';
                 }
                 elsif $value.isa(Pair) {
@@ -100,7 +99,7 @@ BEGIN our %known-type =
                 $value .= ast
                     // next;
 
-                if substr($key, 0, 5) eq 'expr-' {
+                if $key.starts-with('expr-') {
                     $key.substr-rw(4,1) = ':';
                 }
                 elsif $value.isa(Pair) {
