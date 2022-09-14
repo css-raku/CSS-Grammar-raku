@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.3.11  2022-09-15T07:43:21+12:00
+  - Allow alpha channel in rgb(...) - match browsers
+
 0.3.10  2022-06-16T06:08:10+12:00
   - Release to zef ecosystem
 
