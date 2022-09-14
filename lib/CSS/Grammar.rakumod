@@ -38,6 +38,7 @@ grammar CSS::Grammar:ver<0.3.10> {
     token uint     {\d+}
     token op($chr) {$chr}
 
+    # stringchar-regular: printable ASCII chars, except: \ ' "
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
     token stringchar:sym<escape>   { <escape> }
@@ -84,7 +85,7 @@ grammar CSS::Grammar:ver<0.3.10> {
     rule property        { <.ws>? <Ident> ':' }
     rule end-decl        { ';' | <?before '}'> | $ }
 
-    rule color-range     { <num>$<percentage>=[\%]? }
+    rule color-range     { <num>[$<percentage>=\%]? }
 
     proto rule color     {*}
     rule color:sym<rgb>  {:i 'rgb('

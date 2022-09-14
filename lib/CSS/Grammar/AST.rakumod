@@ -68,7 +68,7 @@ class CSS::Grammar::AST {
                 }
 
                 if %terms{$key}:exists {
-                    $.warning("repeated term " ~ $key, $value);
+                    warn "repeated term " ~ $key ~ ':' ~ $value;
                     return Any;
                 }
 

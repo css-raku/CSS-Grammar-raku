@@ -184,7 +184,7 @@ class CSS::Grammar::Actions {
     method color-range($/) {
         my $range = $<num>.ast.value;
         $range *= 2.55
-            if ~$<percentage>;
+            if $<percentage>;
 
         # clip out-of-range colors, see
         # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
