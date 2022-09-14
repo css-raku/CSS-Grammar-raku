@@ -192,6 +192,14 @@ class CSS::Grammar::Actions {
         make $.build.token( $range.round, :type(CSSValue::NumberComponent));
     }
 
+    method alpha-value($/) {
+        my $alpha = $<num>.ast.value;
+        $alpha /= 100
+            if $<percentage>;
+        $alpha = min( max($alpha, 0), 1);
+        make $.build.token( $alpha.round(.01), :type(CSSValue::NumberComponent));
+    }
+
     proto method color {*}
     method color:sym<rgb>($/)  {
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')

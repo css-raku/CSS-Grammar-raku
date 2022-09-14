@@ -86,10 +86,11 @@ grammar CSS::Grammar:ver<0.3.10> {
     rule end-decl        { ';' | <?before '}'> | $ }
 
     rule color-range     { <num>[$<percentage>=\%]? }
+    rule alpha-value     { <num>[$<percentage>=\%]? }
 
     proto rule color     {*}
     rule color:sym<rgb>  {:i 'rgb('
-			      [ <color-range> **3% ',' || <any-args> ]
+			      [ <color-range> **3% ',' [ ',' <alpha-value> ]? || <any-args> ]
                                 ')'
                          }
     rule color:sym<hex>  { <id> }
