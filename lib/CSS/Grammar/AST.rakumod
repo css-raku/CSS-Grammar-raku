@@ -26,8 +26,7 @@ class CSS::Grammar::AST {
         return unless $ast.defined;
 
         my Str $units = $type;
-	$type = CSSUnits.enums{$type}
-	    if CSSUnits.enums{$type}:exists;
+        $type = $_ with CSSUnits.enums{$type};
 
 	my $raw-type = $type.split(':').head;
 	die "unknown type: '$raw-type'"
@@ -51,7 +50,7 @@ class CSS::Grammar::AST {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 next if $key eq '0';
-                $key = $key.lc;
+                $key .= lc;
                 my $type = $key.split(':').head;
 
                 $value .= ast
@@ -92,7 +91,7 @@ class CSS::Grammar::AST {
             for .caps -> $cap {
                 my ($key, $value) = $cap.kv;
                 next if $key eq '0';
-                $key = $key.lc;
+                $key .= lc;
 
                 my $type = $key.split(':').head;
 
