@@ -1,5 +1,10 @@
 {{$NEXT}}
 
+0.3.12  2025-01-21T09:54:37+13:00
+  - Backport CSS3 resolution units from CSS::Module
+  - Backport build functions from CSS::Specification::AST
+    to CSS::Grammar::AST
+
 0.3.11  2022-09-15T07:43:21+12:00
   - Allow alpha channel in rgb(...) - match browsers
 

@@ -24,10 +24,10 @@
   },
   "resources": [
   ],
-  "source-url": "git://github.com/css-raku/CSS-Grammar-raku.git",
+  "source-url": "https://github.com/css-raku/CSS-Grammar-raku.git",
   "tags": [
   ],
   "test-depends": [
   ],
-  "version": "0.3.11"
+  "version": "0.3.12"
 }
