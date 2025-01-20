@@ -342,6 +342,9 @@ class CSS::Grammar::Actions {
     method frequency:sym<dim>($/)  { make $.build.token( $<num>.ast, :type($<units>.ast)) }
     method dimension:sym<frequency>($/) { make $<frequency>.ast }
 
+    method resolution:sym<dim>($/)        { make $.build.token($<num>.ast, :type($0.lc) ) }
+    method dimension:sym<resolution>($/)  { make $<resolution>.ast }
+
     method percentage($/)          { make $.build.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
 
     method term1:sym<string>($/)   { make $.build.token( $<string>.ast, :type(CSSValue::StringComponent)) }

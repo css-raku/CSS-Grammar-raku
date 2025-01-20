@@ -68,6 +68,11 @@ grammar CSS::Grammar::CSS21
     token frequency:sym<dim>   {:i<num><units=.frequency-units>}
     token dimension:sym<frequency>  {<frequency>}
 
+    token resolution-units {:i[dpi|dpcm]}
+    proto token resolution {*}
+    token resolution:sym<dim> {<num>(<.resolution-units>)}
+    token dimension:sym<resolution> {<resolution>}
+
     rule selector{ <simple-selector> +% <op=.combinator>? }
 
     token universal {'*'}
