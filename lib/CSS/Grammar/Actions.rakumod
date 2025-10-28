@@ -211,12 +211,8 @@ class CSS::Grammar::Actions {
     method color:sym<hex>($/)   {
         my $id = $<id>.ast.value;
         my $chars = $id.chars;
-
         return $.warning("bad hex color", ~$/)
-            unless ($chars == 3|6);
-# issue#4
-## && $id.match(/^<xdigit>+$/)
-
+            unless $chars == 3|6 && $id ~~ /^<xdigit>+$/;
         my @rgb = $chars == 3
             ?? $id.comb.map: {$^hex-digit ~ $^hex-digit}
             !! $id.comb.map: {$^hex-digit ~ $^hex-digit2};
@@ -357,7 +353,7 @@ class CSS::Grammar::Actions {
                                          !! $<rel-font-length>.ast
                                    }
 
-    method term1:sym<unicode-range>($/) { make $.build.node($/, :type(CSSValue::UnicodeRangeComponent)) }
+    method term1:sym<unicode-range>($/) { make $.build.token($<unicode-range>.ast, :type(CSSValue::UnicodeRangeComponent)) }
 
     method selector($/)            { make $.build.token( $.build.list($/), :type(CSSSelector::Selector)) }
 

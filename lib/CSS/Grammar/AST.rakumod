@@ -40,7 +40,7 @@ method node($/ --> Hash) {
     my %terms;
 
     # unwrap Parcels
-    my @l = $/.can('caps')
+    my @l = $/.isa(Capture)
         ?? $/
         !! $/.grep: *.defined;
 
