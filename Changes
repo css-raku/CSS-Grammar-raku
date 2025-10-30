@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.3.13  2025-10-31T05:55:52+13:00
+  - Fix unicode-range AST.
+
 0.3.12  2025-01-21T09:54:37+13:00
   - Backport CSS3 resolution units from CSS::Module
   - Backport build functions from CSS::Specification::AST
