@@ -42,7 +42,7 @@ method node($/ --> Hash) {
     # unwrap Parcels
     my @l = $/.isa(Capture)
         ?? $/
-        !! $/.grep: *.defined;
+        !! $/.grep(Capture:D);
 
     for @l {
         for .caps -> $cap {
@@ -56,6 +56,9 @@ method node($/ --> Hash) {
 
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
+            }
+            elsif $key.starts-with('val-') {
+                $key = 'expr:' ~ $key.substr(4);
             }
             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
@@ -81,9 +84,9 @@ method list($/ --> Array) {
     my @terms;
 
     # unwrap Parcels
-    my @l = $/.can('caps')
+    my @l = $/.isa(Capture)
         ?? $/
-        !! $/.grep: *.defined;
+        !! $/.grep(Capture:D);
 
     for @l {
         for .caps -> $cap {
@@ -99,7 +102,10 @@ method list($/ --> Array) {
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
             }
-            elsif $value.isa(Pair) {
+            elsif $key.starts-with('val-') {
+                $key = 'expr:' ~ $key.substr(4);
+            }
+             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
             }
             elsif %known-type{$type}:!exists {
