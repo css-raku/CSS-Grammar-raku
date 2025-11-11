@@ -47,12 +47,11 @@ method node($/ --> Hash) {
     for @l {
         for .caps -> $cap {
             my ($key, $value) = $cap.kv;
-            next if $key eq '0';
+            $value .= ast;
+            next if $key eq '0' || !$value.defined;
             $key .= lc;
-            my $type = $key.split(':').head;
 
-            $value .= ast
-                // next;
+            my $type = $key.split(':').head;
 
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
@@ -64,7 +63,7 @@ method node($/ --> Hash) {
                 ($key, $value) = $value.kv;
             }
             elsif %known-type{$type}:!exists {
-                warn "{$value.perl} has unknown type: $type";
+                warn "{$value.raku} has unknown type: $type";
             }
 
             if %terms{$key}:exists {
@@ -89,15 +88,13 @@ method list($/ --> Array) {
         !! $/.grep(Capture:D);
 
     for @l {
-        for .caps -> $cap {
+        @terms.append: .caps.map: -> $cap {
             my ($key, $value) = $cap.kv;
-            next if $key eq '0';
+            $value .= ast;
+            next if $key eq '0' || !$value.defined;
             $key .= lc;
 
             my $type = $key.split(':').head;
-
-            $value .= ast
-                // next;
 
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
@@ -105,14 +102,14 @@ method list($/ --> Array) {
             elsif $key.starts-with('val-') {
                 $key = 'expr:' ~ $key.substr(4);
             }
-             elsif $value.isa(Pair) {
+            elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
             }
             elsif %known-type{$type}:!exists {
                 warn "{$value.raku} has unknown type: $type";
             }
 
-            push( @terms, {$key => $value} );
+            {$key => $value};
         }
     }
 
@@ -160,12 +157,12 @@ method decl($/, :$obj!) {
             $obj.warning($usage);
             return;
         }
-        elsif ! $val<expr> {
-            $obj.warning('dropping declaration', %ast<ident>);
-            return;
+        elsif $val<expr> -> $expr {
+            %ast ,= :$expr;
         }
         else {
-            %ast<expr> = $val<expr>;
+            $obj.warning('dropping declaration', %ast<ident>);
+            return;
         }
     }
 
