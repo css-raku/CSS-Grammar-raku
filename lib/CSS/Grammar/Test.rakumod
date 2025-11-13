@@ -100,6 +100,7 @@ our sub parse-tests($class, $input, :$parse is copy, :$actions,
 
                 CATCH {
                     note "error writing: {$actual-ast.raku}";
+                    note "regenerated css: $css-again";
                     die $_;
                 }
             }

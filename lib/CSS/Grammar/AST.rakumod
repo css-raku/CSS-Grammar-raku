@@ -56,8 +56,8 @@ method node($/ --> Hash) {
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
             }
-            elsif $key.starts-with('val-') {
-                $key = 'expr:' ~ $key.substr(4);
+            elsif $key.starts-with('prop-val-') {
+                $key = 'expr:' ~ $key.substr(9);
             }
             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
@@ -99,8 +99,8 @@ method list($/ --> Array) {
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
             }
-            elsif $key.starts-with('val-') {
-                $key = 'expr:' ~ $key.substr(4);
+            elsif $key.starts-with('prop-val-') {
+                $key = 'expr:' ~ $key.substr(9);
             }
             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
