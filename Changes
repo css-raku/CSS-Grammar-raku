@@ -1,5 +1,9 @@
 {{$NEXT}}
 
+0.3.14  2025-11-14T06:06:11+13:00
+  - Forward compatibility changes to CSS::Grammar::AST for
+    CSS::Module v0.7.0
+
 0.3.13  2025-10-31T05:55:52+13:00
   - Fix unicode-range AST.
 
@@ -18,7 +22,7 @@
   - CSS::Grammar::Actions no long inherits from CSS::Grammar::AST.
     Be more explict and invoke a build() method when constructing
     nodes. e.g. `make $.build.node($/)` becomes `make $.node($/)`
-    This seperation is more of a win in CSS::Module, which is mixing
+    This seperatio3n is more of a win in CSS::Module, which is mixing
     in a lot of grammars and classes.
 
 0.3.8  2021-05-03T08:57:52+12:00
