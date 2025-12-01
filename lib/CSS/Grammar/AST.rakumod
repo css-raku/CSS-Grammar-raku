@@ -36,9 +36,9 @@ method token(Mu $ast, Str :$type is copy) {
 }
 
 #| utility AST builder method for nodes with repeatable elements
-method !list($/ --> Array) {
+method !terms($/ --> Array) {
     my @terms;
-
+    my %glob;
     # unwrap Parcels
     my @l = $/.isa(Capture)
         ?? $/
@@ -48,22 +48,32 @@ method !list($/ --> Array) {
         for .caps -> $cap {
             my ($key, $value) = $cap.kv;
             $value .= ast;
+            $value //= $.list($cap.value) if $key.starts-with('css-val-');
             next if $key eq '0' || !$value.defined;
             $key .= lc;
-
-            my $type = $key.split(':').head;
 
             if $key.starts-with('expr-') {
                 $key.substr-rw(4,1) = ':';
             }
-            elsif $key.starts-with('prop-val-') {
-                $key = 'expr:' ~ $key.substr(9);
+            elsif $key.starts-with('css-val-') {
+                $key = 'expr:' ~ $key.substr(8);
+                with %glob{$key} {
+                    .push: @terms.pop
+                        if @terms.tail.key eq 'op';
+                    .append: (@$value);
+                    next;
+                }
+                else {
+                    $_ = $value;
+                }
             }
             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
             }
-            elsif %known-type{$type}:!exists {
-                warn "{$value.raku} has unknown type: $type";
+            else {
+                my $type = $key.split(':').head;
+                warn "{$value.raku} has unknown type: $type"
+                    unless %known-type{$type}:exists;
             }
 
             if $key eq 'node' {
@@ -80,11 +90,11 @@ method !list($/ --> Array) {
 
 #| utility AST builder method for leaf nodes (no repeated tokens)
 method node($/ --> Hash) {
-    self!list($/).Hash;
+    self!terms($/).Hash;
 }
 
 method list($/) {
-    [ self!list($/).map: *.Hash ];
+    [ self!terms($/).map: *.Hash ];
 }
 
 method at-rule($/) {
@@ -106,7 +116,7 @@ method func(Str:D $ident,
 }
 
 method pseudo-func( Str $ident, $/ --> Pair) {
-    my @expr := self!list($/);
+    my @expr := self!terms($/);
     my %ast = :$ident, :@expr;
     $.token( %ast, :type(CSSSelector::PseudoFunction) );
 }
@@ -114,26 +124,31 @@ method pseudo-func( Str $ident, $/ --> Pair) {
 method decl($/, :$obj!) {
 
     my %ast;
-
-    %ast<ident> = .trim.lc
-        with $0;
-
+    my $prop-name;
+    with $0 {
+        $prop-name = .trim.lc;
+        %ast<ident> = $prop-name;
+    }
     with $<val> {
-        my Hash $val = .ast;
-
-        with $val<usage> -> $synopsis {
+        my %val = .ast;
+        with %val<usage> -> $synopsis {
             my $usage = 'usage ' ~ $synopsis;
             $usage ~= ' | ' ~ $_
                 for @.proforma;
             $obj.warning($usage);
             return;
         }
-        elsif $val<expr> -> $expr {
-            %ast ,= :$expr;
-        }
         else {
-            $obj.warning('dropping declaration', %ast<ident>);
-            return;
+            my $expr = %val{'expr:' ~ $_} with $prop-name;
+            $expr //= %val<expr>;
+
+            if $expr {
+                %ast<expr> = $expr;
+            }
+            else {
+                $obj.warning('dropping declaration', $prop-name // $/.Str);
+                return;
+            }
         }
     }
 
@@ -141,7 +156,7 @@ method decl($/, :$obj!) {
 }
 
 method rule($/) {
-    given  self!list($/) {
+    given  self!terms($/) {
         .elems == 1 ?? .head !! :node($_);
     }
 }

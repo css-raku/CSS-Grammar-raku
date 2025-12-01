@@ -23,8 +23,8 @@ class X::CSS::Ignored is X::CSS {
     has Str $!explanation;
 
     submethod TWEAK(:$str, :$explanation ) {
-        $!str = display-string($_) with $str;
-        $!explanation = display-string($_) with $explanation;
+        $!str = .&display-string with $str;
+        $!explanation = .&display-string with $explanation;
     }
     method message {
         my $warning = $!message;
@@ -133,7 +133,7 @@ class CSS::Grammar::Actions {
         make $.build.token($num, :type(CSSValue::NumberComponent));
     }
     method uint($/)  { make $/.Int }
-    method op($/)    { make $/.lc  }
+    method op($/)    { make make $.build.token($<c>.lc, :type(CSSValue::OperatorComponent));  }
 
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
     method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }

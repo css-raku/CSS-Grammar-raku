@@ -36,7 +36,7 @@ grammar CSS::Grammar:ver<0.3.14> {
     token name     { <nmchar>+ }
     token num      { < + - >? [\d* \.]? \d+ [:i'e' < + - >?\d+]? }
     token uint     {\d+}
-    token op($chr) {$chr}
+    rule op($chr)  { $<c>=$chr }
 
     # stringchar-regular: printable ASCII chars, except: \ ' "
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }

@@ -95,7 +95,7 @@ our sub parse-tests($class, $input, :$parse is copy, :$actions,
                 my $css-again = $writer.write( |%args );
                 ok $css-again.chars, "ast reserialization";
 
-                # check that ast reamins identical after reserialization
+                # check that ast remains identical after reserialization
                 parse-tests($class, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
 
                 CATCH {
