@@ -331,6 +331,7 @@ class CSS::Grammar::Actions {
     proto method time {*}
     method time-units($/)          { make $/.lc }
     method time:sym<dim>($/)       { make $.build.token( $<num>.ast, :type($<units>.ast)) }
+    method dimension($/)           { make $<dimension>.ast }
     method dimension:sym<time>($/) { make $<time>.ast }
 
     proto method frequency {*}
