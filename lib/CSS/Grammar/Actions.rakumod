@@ -293,15 +293,15 @@ class CSS::Grammar::Actions {
     method declaration-list($/)   { make [$<declaration>>>.ast.grep: {.defined}] }
     method declaration($/)        { make $<any-declaration>.ast }
     method at-keyw($/)            { make $<Ident>.ast }
-    method any-declaration($/)    {
-        return if $<dropped-decl>;
-
-        return make $.build.at-rule($/)
-            if $<declarations>;
-
+    multi method any-declaration($/ where $<dropped-decl>) {
+    }
+    multi method any-declaration($/ where $<declarations>) {
+        make $.build.at-rule($/)
+    }
+    multi method any-declaration($/ where $<expr>) {
         return $.warning('dropping declaration', $<Ident>.ast)
             if !$<expr>.caps
-            || $<expr>.caps.first({! .value.ast.defined});
+            || $<expr>.caps.first: {! .value.ast.defined};
 
         make $.build.token($.build.node($/), :type(CSSValue::Property));
     }
