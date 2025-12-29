@@ -30,12 +30,9 @@ method token(Mu $ast, Str :$type is copy) {
     die "unknown type: '$raw-type'"
         unless %known-type{$raw-type}:exists;
 
-    $ast.isa(Pair)
-        ?? ($units => $ast.value)
-        !! ($units => $ast);
+    $units => $ast.isa(Pair) ?? $ast.value !! $ast;
 }
 
-#| utility AST builder method for nodes with repeatable elements
 method !terms($/ --> Array) {
     my @terms;
     my %glob;
@@ -45,27 +42,28 @@ method !terms($/ --> Array) {
         !! $/.grep(Capture:D);
 
     for @l {
-        for .caps -> $cap {
-            my ($key, $value) = $cap.kv;
-            $value .= ast;
-            $value //= $.list($cap.value) if $key.starts-with('css-val-');
-            next if $key eq '0' || !$value.defined;
-            $key .= lc;
+        for .caps -> Pair:D $_ {
+            my $key = .key.lc;
+            my $prop = $key.substr(8)
+                if $key.starts-with('css-val-');
 
-            if $key.starts-with('expr-') {
-                $key.substr-rw(4,1) = ':';
-            }
-            elsif $key.starts-with('css-val-') {
-                $key = 'expr:' ~ $key.substr(8);
-                with %glob{$key} {
+            my $value = $prop ?? $.list(.value) !! .value.ast;
+            next if $key eq '0' || !$value.defined;
+
+            if $prop {
+                with %glob{$prop} {
                     .push: @terms.pop
                         if @terms.tail.key eq 'op';
                     .append: (@$value);
                     next;
                 }
                 else {
+                    $key = 'expr:' ~ $prop;
                     $_ = $value;
                 }
+            }
+            elsif $key.starts-with('expr-') {
+                $key = 'expr:' ~ $key.substr(4);
             }
             elsif $value.isa(Pair) {
                 ($key, $value) = $value.kv;
@@ -77,6 +75,7 @@ method !terms($/ --> Array) {
             }
 
             if $key eq 'node' {
+                # inline
                 @terms.append: @$value;
             }
             else {
@@ -93,6 +92,7 @@ method node($/ --> Hash) {
     self!terms($/).Hash;
 }
 
+#| utility AST builder method for nodes with repeatable elements
 method list($/) {
     [ self!terms($/).map: *.Hash ];
 }
