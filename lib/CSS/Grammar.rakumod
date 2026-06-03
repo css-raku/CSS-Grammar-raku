@@ -133,6 +133,7 @@ grammar CSS::Grammar:ver<0.4.1> {
     rule any-args  {<any-arg>*}
     # - <badstring>               - for unclosed strings
     rule badstring {<CSS::Grammar::Core::_badstring>}
+    rule expr {...}
 
     # failed declaration parse - analyse and drop
     rule dropped-decl  {
