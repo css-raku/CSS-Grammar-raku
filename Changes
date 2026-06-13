@@ -1,5 +1,11 @@
 {{$NEXT}}
 
+0.4.3  2026-06-14T07:49:02+12:00
+  - Add <stringchar-printable> rule for the benefit of CSS::Writer
+    serialization.
+  - Add <non-ascii> rule to <nmreg>. This makes CSS::Writer more
+    promiscuous in the pass-through of Unicode characters.
+
 0.4.2  2026-06-04T07:45:27+12:00
   - RakuAST: Fix <expr> reference in CSS::Grammar abstract base class
   - Refactor <any-declarations> rule and !term() actions method
