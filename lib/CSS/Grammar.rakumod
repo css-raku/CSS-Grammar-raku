@@ -28,8 +28,8 @@ grammar CSS::Grammar:ver<0.4.2> {
     token nonascii { <- [ \x0..\x7F \n ]> }
     token escape   { '\\'[ <char=.unicode> || \n || <char=.regascii> | <char=.nonascii> ] }
     token nmstrt   { (<[_ a..z A..Z]>) | <char=.nonascii> | <char=.escape> }
-    token nmreg    { <[_ \- a..z A..Z 0..9]>+ }
-    token nmchar   { <char=.nmreg> | <char=.nonascii> | <char=.escape> }
+    token nmreg    { [<[_ \- a..z A..Z 0..9]>|<char=.nonascii>]+ }
+    token nmchar   { <char=.nmreg> | <char=.escape> }
     # don't redefine <ident>, it's a built-in
     token Id       { $<pfx>='-'? <nmstrt> <nmchar>* }
     token Ident    { <Id> }
@@ -41,6 +41,7 @@ grammar CSS::Grammar:ver<0.4.2> {
     # stringchar-regular: printable ASCII chars, except: \ ' "
     token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
+    token stringchar-printable     { <stringchar-regular>|<nonascii> }
     token stringchar:sym<escape>   { <escape> }
     token stringchar:sym<nonascii> { <nonascii> }
     token stringchar:sym<ascii>    { <stringchar-regular>+ }
