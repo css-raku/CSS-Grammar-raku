@@ -136,8 +136,7 @@ class CSS::Grammar::Actions {
     method op($/)    { make make $.build.token($<c>.lc, :type(CSSValue::OperatorComponent));  }
 
     method stringchar:sym<escape>($/)   { make $<escape>.ast }
-    method stringchar:sym<nonascii>($/) { make $<nonascii>.ast }
-    method stringchar:sym<ascii>($/)    { make ~$/ }
+    method stringchar:sym<literal>($/)    { make ~$/ }
 
     method single-quote($/) { make "'" }
     method double-quote($/) { make '"' }
