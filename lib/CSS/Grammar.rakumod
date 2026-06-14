@@ -38,13 +38,13 @@ grammar CSS::Grammar:ver<0.4.3> {
     token uint     {\d+}
     rule op($chr)  { $<c>=$chr }
 
-    # stringchar-regular: printable ASCII chars, except: \ ' "
-    token stringchar-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
+    # ascii-regular: printable ASCII chars, except: \ ' "
+    token ascii-regular {<[ \x20 \! \# \$ \% \& \(..\[ \]..\~ ]>+ }
     proto token stringchar {*}
-    token stringchar-printable     { <stringchar-regular>|<nonascii> }
+    token stringchar-printable     { <.ascii-regular>|<.nonascii> }
     token stringchar:sym<escape>   { <escape> }
     token stringchar:sym<nonascii> { <nonascii> }
-    token stringchar:sym<ascii>    { <stringchar-regular>+ }
+    token stringchar:sym<ascii>    { <ascii-regular>+ }
 
     token single-quote   {\'}
     token double-quote   {\"}
