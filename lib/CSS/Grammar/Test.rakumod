@@ -34,7 +34,7 @@ multi sub json-eqv (Any $a, Any $b) is default {
 }
 
 our sub parse-tests($class, $input, :$parse is copy, :$actions,
-                    :$rule = 'TOP', :$suite = '', :$writer,
+                    :$rule = 'TOP', :$suite = $class.^shortname.lc, :$writer,
                     :%expected) is export(:parse-tests) {
 
     $parse //= do {

@@ -19,6 +19,7 @@
     "CSS::Grammar::CSS1": "lib/CSS/Grammar/CSS1.rakumod",
     "CSS::Grammar::CSS21": "lib/CSS/Grammar/CSS21.rakumod",
     "CSS::Grammar::CSS3": "lib/CSS/Grammar/CSS3.rakumod",
+    "CSS::Grammar::CSS4": "lib/CSS/Grammar/CSS4.rakumod",
     "CSS::Grammar::Defs": "lib/CSS/Grammar/Defs.rakumod",
     "CSS::Grammar::Test": "lib/CSS/Grammar/Test.rakumod"
   },

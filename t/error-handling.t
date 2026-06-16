@@ -8,6 +8,7 @@ use JSON::Fast;
 
 use CSS::Grammar;
 use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS4;
 use CSS::Grammar::Actions;
 use CSS::Grammar::Test :parse-tests;
 
@@ -21,11 +22,12 @@ for 't/error-handling.json'.IO.lines {
     my ($rule, $expected) = @( from-json($_) );
     my $input = $expected<input>;
 
-    parse-tests(CSS::Grammar::CSS3, $input,
-                :$actions,
-                :$rule,
-                :suite<css3 errors>,
-                :$expected );
+    for CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $class {
+        parse-tests($class, $input,
+                    :$actions,
+                    :$rule,
+                    :$expected );
+    }
 
 }
 

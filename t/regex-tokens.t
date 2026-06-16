@@ -6,6 +6,7 @@ use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS4;
 
 # whitespace
 for ' ', '  ', "\t", "\r\n", ' /* hi */ ', '/*there*/', '<!-- zzz -->' {
@@ -31,6 +32,7 @@ for "012AF", "012AFc" {
     nok $_ ~~ /^<CSS::Grammar::CSS1::unicode>$/, "not css1 unicode: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS21::unicode>$/, "css21 unicode: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS3::unicode>$/, "css3 unicode: $_";
+    ok $_ ~~ /^<CSS::Grammar::CSS4::unicode>$/, "css4 unicode: $_";
 }
 
 # angle, frequency - introduced with css2
@@ -38,6 +40,7 @@ for '70deg', '50Hz' {
     ok $_ ~~ /^<CSS::Grammar::CSS1::num><CSS::Grammar::CSS1::Ident>$/, "css1 num+ident: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS21::term>$/, "css21 term: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS3::term>$/, "css3 term: $_";
+    ok $_ ~~ /^<CSS::Grammar::CSS4::term>$/, "css4 term: $_";
 }
 
 # non-ascii
@@ -46,6 +49,7 @@ for '¡', "\o250", 'ÿ' {
     ok $_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_";
+    ok $_ ~~ /^<CSS::Grammar::CSS4::nonascii>$/, "non-ascii css4: $_";
     ok $_ ~~ /^<CSS::Grammar::Core::nonascii>$/, "non-ascii scan: $_";
     ok $_ ~~ /^<CSS::Grammar::Core::Ident>$/, "non-ascii ident: $_";
 }
@@ -56,6 +60,7 @@ for "\r\n" {
     ok $_ !~~ /^<CSS::Grammar::CSS1::nonascii>$/, "non-ascii css1: $_";
     ok $_ !~~ /^<CSS::Grammar::CSS21::nonascii>$/, "non-ascii css21: $_";
     ok $_ !~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_";
+    ok $_ !~~ /^<CSS::Grammar::CSS4::nonascii>$/, "non-ascii css4: $_";
     ok $_ !~~ /^<CSS::Grammar::Core::nonascii>$/, "non-ascii scan: $_";
 }
 
@@ -65,6 +70,7 @@ for '' {
     nok $_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "not non-ascii css1: $_";
     nok $_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "not non-ascii css21: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "non-ascii css3: $_";
+    ok $_ ~~ /^<CSS::Grammar::CSS4::nonascii>$/, "non-ascii css4: $_";
 }
 
 for chr(0), ' ', '~' {
@@ -72,6 +78,7 @@ for chr(0), ' ', '~' {
     nok $_ ~~ /^<CSS::Grammar::CSS1::nonascii>$/, "not non-ascii css1: $_";
     nok $_ ~~ /^<CSS::Grammar::CSS21::nonascii>$/, "not non-ascii css21: $_";
     nok $_ ~~ /^<CSS::Grammar::CSS3::nonascii>$/, "not non-ascii css3: $_";
+    nok $_ ~~ /^<CSS::Grammar::CSS4::nonascii>$/, "not non-ascii css4: $_";
 } 
 
 for 'http://www.bg.com/pinkish.gif', '"http://www.bg.com/pinkish.gif"', "'http://www.bg.com/pinkish.gif'", '"http://www.bg.com/pink(ish).gif"', "'http://www.bg.com/pink(ish).gif'", 'http://www.bg.com/pink%20ish.gif', 'http://www.bg.com/pink\(ish\).gif' {
@@ -115,6 +122,7 @@ my $rule-list = '{
 for ('{ }', $rule-list) { 
     ok $_ ~~ /^<CSS::Grammar::CSS21::rule-list>$/, "css21 rule-list: $_";
     ok $_ ~~ /^<CSS::Grammar::CSS3::rule-list>$/, "css3 rule-list: $_";
+    ok $_ ~~ /^<CSS::Grammar::CSS4::rule-list>$/, "css3 rule-list: $_";
 }
 
 my $at-rule_page = '@page :left { margin: 3cm };';

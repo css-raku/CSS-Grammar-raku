@@ -12,25 +12,22 @@ use CSS::Grammar::Test :parse-tests;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS4;
 use CSS::Grammar::Actions;
 
 my $actions = CSS::Grammar::Actions.new;
 
 for 't/compat.json'.IO.lines {
     if .starts-with('//') {
-##        note '[' ~ .substr(2) ~ ']';
+        ## note '[' ~ .substr(2) ~ ']';
         next;
     }
     my ($rule, $test) = @( from-json($_) );
     my $input = $test<input>;
 
-    for css1  => {parser => CSS::Grammar::CSS1},
-        css21 => {parser => CSS::Grammar::CSS21},
-        css3  => {parser => CSS::Grammar::CSS3} {
+    for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
 
-	my ($level, $opts) = .kv;
-        my $class = $opts<parser>;
-        my $writer = $opts<writer>;
+        my $level = $grammar.^shortname.lc;
 	my %level-tests = %( $test{$level} // () );
 	my %expected = %$test, %level-tests;
 
@@ -41,11 +38,9 @@ for 't/compat.json'.IO.lines {
 	    next;
 	}
 
-	parse-tests($class, $input,
+	parse-tests($grammar, $input,
                     :$actions,
                     :$rule,
-                    :suite($level),
-                    :$writer,
                     :%expected);
     }
 
@@ -56,7 +51,6 @@ for 't/compat.json'.IO.lines {
         parse-tests(CSS::Grammar::Core, $input,
                     :$actions,
                     :rule('_' ~ $rule),
-                    :suite<core>,
                     :%expected);
     }
 }

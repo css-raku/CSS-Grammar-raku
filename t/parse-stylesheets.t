@@ -5,6 +5,7 @@ use CSS::Grammar::Test :parse-tests;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS4;
 
 # sample taken from http://www.w3.org/TR/REC-CSS1/#appendix-b
 
@@ -76,14 +77,9 @@ my Pair @tests = :$tiny, :$small, :$body, :sample[$body ~ $sample];
 for @tests {
     my ($test, $input) = .kv;
 
-    for css1  => CSS::Grammar::CSS1,
-        css21 => CSS::Grammar::CSS21,
-        css3  => CSS::Grammar::CSS3 {
-	    my ($level, $class) = .kv;
+    for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
 
-	    parse-tests( $class, $input,
-			 :suite($level),
-			 :rule<stylesheet> );
+	    parse-tests( $grammar, $input, :rule<stylesheet> );
     }
 }
 

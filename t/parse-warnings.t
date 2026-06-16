@@ -6,27 +6,24 @@ use CSS::Grammar::Test;
 use CSS::Grammar::CSS1;
 use CSS::Grammar::CSS21;
 use CSS::Grammar::CSS3;
+use CSS::Grammar::CSS4;
 use CSS::Grammar::Actions;
 
 my $css-sample = 't/parse-warnings.css'.IO.slurp;
 my @lines = $css-sample.lines;
-my %level-warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? (~$0 => $/.postmatch) !! Empty});
-
+my %warnings = @lines.map({/^(\w+)\-warnings\:\s/ ?? (~$0 => $/.postmatch) !! Empty});
 my $actions = CSS::Grammar::Actions.new;
 
-for css1 => CSS::Grammar::CSS1,
-    css21 => CSS::Grammar::CSS21,
-    css3 => CSS::Grammar::CSS3 {
+for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
 
-    my ($test, $class) = .kv;
+    $actions.reset;
+    my $level = $grammar.^shortname.lc;
+    my $p1 = $grammar.parse( $css-sample, :$actions);
+    ok $p1, $level ~ ' parse';
 
-    $actions.reset;     
-    my $p1 = $class.parse( $css-sample, :$actions);
-    ok $p1, $test ~ ' parse';
-
-    my $expected-warnings = %level-warnings{$test};
+    my $expected-warnings = %warnings{$level} // %warnings<other>;
     my $actual-warnings = ~$actions.warnings;
-    is $actual-warnings, $expected-warnings, $test ~ ' warnings';
+    is $actual-warnings, $expected-warnings, $level ~ ' warnings';
 }
 
 done-testing;
