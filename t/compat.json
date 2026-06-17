@@ -19,6 +19,8 @@
 [ "class", { "input" : ".zippy", "ast" : { "class" : "zippy" } } ]
 [ "class", { "input" : ".\\55ft", "ast" : { "class" : "\u055ft" } } ]
 [ "color", { "input" : "Rgb(10, 20, 30)", "ast" : { "rgb" : [ { "num" : 10 }, { "num" : 20 }, { "num" : 30 } ] } } ]
+// CSS4 color syntax
+[ "color", { "input" : "Rgb(10 20 30)", "warnings": [ "usage: rgb(c,c,c) where c is 0..255 or 0%-100%" ], "css4" : {  "warnings" : [ ], "ast" : { "rgb" : [ { "num" : 10 }, { "num" : 20 }, { "num" : 30 } ] } } } ]
 [ "term", { "input" : "foo(bar)", "ast" : { "func" : { "ident" : "foo", "expr" : [ { "ident" : "bar" } ] } }, "css1" : { "ast" : null, "parse" : "" } } ]
 [ "expr", { "input" : "fr-ca", "ast" : { "expr" : [ { "ident" : "fr-ca" } ] } } ]
 [ "pseudo", { "input" : ":visited", "ast" : { "pseudo-class" : "visited" } } ]
