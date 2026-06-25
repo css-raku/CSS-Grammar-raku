@@ -33,13 +33,21 @@ multi sub json-eqv (Any $a, Any $b) is default {
     return False;
 }
 
-our sub parse-tests($class, $input, :$parse is copy, :$actions,
-                    :$rule = 'TOP', :$suite = $class.^shortname.lc, :$writer,
+our proto parse-tests(|) {*}
+
+multi parse-tests($input, :$module!, |c) {
+    my $grammar = $module.grammar;
+    my $actions = $module.actions;
+    nextwith($grammar, $input, :$actions, |c);
+}
+
+multi parse-tests($grammar, $input, :$parse is copy, :$actions,
+                    :$rule = 'TOP', :$suite = $grammar.^shortname.lc, :$writer,
                     :%expected) is export(:parse-tests) {
 
     $parse //= do {
         $actions.reset if $actions.can('reset');
-        $class.subparse( $input, :$rule, :$actions)
+        $grammar.subparse( $input, :$rule, :$actions)
     };
 
     my $expected-parse = (%expected<parse> // $input).trim;
@@ -96,7 +104,7 @@ our sub parse-tests($class, $input, :$parse is copy, :$actions,
                 ok $css-again.chars, "ast reserialization";
 
                 # check that ast remains identical after reserialization
-                parse-tests($class, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
+                parse-tests($grammar, $css-again, :$rule, :$actions, :expected(%writer-expected), :suite("  -- $suite reserialized") );
 
                 CATCH {
                     note "error writing: {$actual-ast.raku}";
