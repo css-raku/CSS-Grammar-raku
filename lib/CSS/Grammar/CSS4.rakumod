@@ -3,6 +3,16 @@ unit grammar CSS::Grammar::CSS4;
 use CSS::Grammar::CSS3;
 also is CSS::Grammar::CSS3;
 
-rule color:sym<rgb>  {:i 'rgb('
-			 [ <color-range> **3% ','? [ <[,/]>? <alpha-value> ]? || <any-args> ]
-                     ')'}
+rule color:sym<rgb>  {:i
+     'rgb('
+	[ <color-range> **3% ','? [ <[,/]>? <alpha-value> ]? || <any-args> ]
+      ')'
+}
+
+token decibel-units{:i db}
+token decibel  {:i<num><units=.decibel-units>}
+token dimension:sym<decibel> {<decibel>}
+
+token semitone-units{:i st}
+token semitones  {:i<num><units=.semitone-units>}
+token dimension:sym<semitones> {<semitones>}

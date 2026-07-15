@@ -73,6 +73,7 @@ our Str enum CSSUnits is export(:CSSUnits) «
     :ms<time> :s<time>
     :hz<freq> :khz<freq>
     :rgb<color> :rgba<color> :hsl<color> :hsla<color>
+    :st<semitones>, :db<decibel>
 »;
 
 # from http://dev.w3.org/csswg/cssom-view/

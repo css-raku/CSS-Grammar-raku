@@ -199,7 +199,6 @@ class CSS::Grammar::Actions {
         make $.build.token( $alpha.round(.01), :type(CSSValue::NumberComponent));
     }
 
-    proto method color {*}
     method color:sym<rgb>($/)  {
         return $.warning('usage: rgb(c,c,c) where c is 0..255 or 0%-100%')
             if $<any-args>;
@@ -342,6 +341,14 @@ class CSS::Grammar::Actions {
     method dimension:sym<resolution>($/)  { make $<resolution>.ast }
 
     method percentage($/)          { make $.build.token( $<num>.ast, :type(CSSValue::PercentageComponent)) }
+
+    method decibel-units($/)       { make $/.lc }
+    method decibel($/)             { make $.build.token( $<num>.ast, :type($<units>.ast)) }
+    method dimension:sym<decibel>($/)  { make $<decibel>.ast }
+
+    method semitone-units($/)      { make $/.lc }
+    method semitones($/)           { make $.build.token( $<num>.ast, :type($<units>.ast)) }
+    method dimension:sym<semitones>($/)  { make $<decibel>.ast }
 
     method term1:sym<string>($/)   { make $.build.token( $<string>.ast, :type(CSSValue::StringComponent)) }
     method term1:sym<url>($/)      { make $.build.token( $<url>.ast, :type(CSSValue::URLComponent)) }
