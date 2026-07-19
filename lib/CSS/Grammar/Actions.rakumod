@@ -77,12 +77,6 @@ class CSS::Grammar::Actions {
 
     method any($/) {}
 
-    method dropped-decl:sym<forward-compat>($/) {
-        $.warning('dropping term', .Str) with $0 // $1;
-        $.warning('dropping declaration', .ast)
-            with $<property>;
-    }
-
     method dropped-decl($/) {
         $.warning('dropping term', ~$<any>)
             if $<any>;
@@ -348,7 +342,11 @@ class CSS::Grammar::Actions {
 
     method semitone-units($/)      { make $/.lc }
     method semitones($/)           { make $.build.token( $<num>.ast, :type($<units>.ast)) }
-    method dimension:sym<semitones>($/)  { make $<decibel>.ast }
+    method dimension:sym<semitones>($/)  { make $<semitones>.ast }
+
+    method flex-units($/)          { make $/.lc }
+    method flex($/)                { make $.build.token( $<num>.ast, :type($<units>.ast)) }
+    method dimension:sym<flex>($/) { make $<flex>.ast }
 
     method term1:sym<string>($/)   { make $.build.token( $<string>.ast, :type(CSSValue::StringComponent)) }
     method term1:sym<url>($/)      { make $.build.token( $<url>.ast, :type(CSSValue::URLComponent)) }

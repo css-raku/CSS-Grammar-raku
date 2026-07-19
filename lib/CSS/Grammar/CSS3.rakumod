@@ -35,8 +35,8 @@ rule AnB-expr:sym<keyw> {:i [ odd | even ] & <keyw=.Ident> }
 token op-sign { <[ \+ \- ]> }
 token op-n {:i n}
 rule AnB-expr:sym<expr> {:i
-    [  <op=.op-sign>?$<int>=<.uint>?<op=.op-n> [<op=.op-sign> $<int>=<.uint>]?
-    || <op=.op-sign>?$<int>=<.uint>
+    [  <op=.op-sign>?<int=.uint>?<op=.op-n> [<op=.op-sign> <int=.uint>]?
+    || <op=.op-sign>?<int=.uint>
     ]
 }
 

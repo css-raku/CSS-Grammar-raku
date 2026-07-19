@@ -46,6 +46,9 @@ our Str enum CSSValue is export(:CSSValue) «
     :ArgumentListComponent<args>
     :AtKeywordComponent<at-keyw>
     :UnicodeRangeComponent<unicode-range>
+    :SemiTonesComponent<semitones>
+    :DecibelComponentt<decibel>
+    :FlexComponent<flex>
 »;
 
 our Str enum CSSSelector is export(:CSSSelector) «
@@ -73,9 +76,8 @@ our Str enum CSSUnits is export(:CSSUnits) «
     :ms<time> :s<time>
     :hz<freq> :khz<freq>
     :rgb<color> :rgba<color> :hsl<color> :hsla<color>
-    :st<semitones>, :db<decibel>
+    :st<semitones> :db<decibel> :fr<flex>
 »;
 
 # from http://dev.w3.org/csswg/cssom-view/
 our Str enum CSSTrait is export(:CSSTrait) «:Box<box>»;
-

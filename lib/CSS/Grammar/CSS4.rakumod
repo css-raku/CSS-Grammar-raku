@@ -16,3 +16,7 @@ token dimension:sym<decibel> {<decibel>}
 token semitone-units{:i st}
 token semitones  {:i<num><units=.semitone-units>}
 token dimension:sym<semitones> {<semitones>}
+
+token flex-units{:i fr}
+token flex  {:i<num><units=.flex-units>}
+token dimension:sym<flex> {<flex>}

@@ -53,7 +53,7 @@ rule at-keyw          { '@'<Ident> }
 rule any-declaration  { <Ident=.property> <expr> <prio>? <end-decl> | <at-keyw> <declarations> || <dropped-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
-token term2:sym<function>  {<function=.any-function>}
+rule term2:sym<function>  {<function=.any-function>}
 proto token angle          {*}
 token angle-units          {:i[deg|rad|grad]}
 token angle:sym<dim>       {:i<num><units=.angle-units>}

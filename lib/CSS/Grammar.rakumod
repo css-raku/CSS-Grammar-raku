@@ -113,7 +113,8 @@ grammar CSS::Grammar:ver<0.4.3> {
     rule term1:sym<url>        {<url>}
 
     proto rule term2  {*}
-    rule term2:sym<dimension>  {<dimension>||<any-dimension>}
+    rule term2:sym<dimension>  {<dimension>}
+    rule term2:sym<any-dimension>  {<any-dimension>}
 
     rule any-dimension         {<num>$<units:unknown>=<.Ident>}
 

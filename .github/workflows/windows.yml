@@ -13,8 +13,6 @@ jobs:
     strategy:
       matrix:
         os:
-          - ubuntu-latest
-          - macOS-latest
           - windows-latest
         raku-version:
           - 'latest'
@@ -27,7 +25,7 @@ jobs:
           raku-version: ${{ matrix.raku-version }}
       - name: Install Dependencies
         run: |
-          zef install --/test App::Prove6
           zef install --deps-only .
       - name: Run Tests
-        run: prove6 -I. t
+        run: zef --verbose test .
+
