@@ -55,7 +55,7 @@ method !terms($/ --> Array) {
                     .append: (@$value);
                 }
                 else {
-                    $_ = $value; # glob
+                    $_ = $value; # start globbing
                     @terms.push:  'expr:'~$prop => $value;
                 }
             }
@@ -73,13 +73,8 @@ method !terms($/ --> Array) {
                             unless %known-type{$type}:exists;
                     }
                 }
-                if $key eq 'node' {
-                    # inline
-                    @terms.append: @$value;
-                }
-                else {
-                    @terms.push: $key => $value;
-                }
+
+                @terms.push: $key => $value;
             }
         }
     }
