@@ -16,22 +16,14 @@ BEGIN our %known-type =
 ;
 
 #| utility token builder method, e.g.: $.token(42, :type<cm>)  -->   :cm(42)
-method token(Mu $ast, Str :$type is copy) {
-
-    die 'usage: $.token($ast, :$type)'
-        unless $type;
-
-    return unless $ast.defined;
-
-    my Str $units = $type;
-    $type = $_ with CSSUnits.enums{$type};
-
-    my $raw-type = $type.split(':').head;
+multi method token(Mu:D $ast, Str:D :$type!) {
+    my $raw-type = CSSUnits.enums{$type} // $type.split(':').head;
     die "unknown type: '$raw-type'"
         unless %known-type{$raw-type}:exists;
 
-    $units => $ast.isa(Pair) ?? $ast.value !! $ast;
+    $type => $ast.isa(Pair) ?? $ast.value !! $ast;
 }
+multi method token(Mu:U) { }
 
 method !terms($/ --> Array) {
     my @terms;
