@@ -168,10 +168,11 @@ class CSS::Grammar::Actions {
     # uri - synonym for url?
     method uri($/)   { make $<url>.ast }
 
-    method any-dimension($/) {
-        return $.warning("unknown units: { $<units:unknown>.ast }")
-            unless $.lax;
+    multi method any-dimension($/ where $.lax) {
         make $.build.node( $/ )
+    }
+    multi method any-dimension($/) {
+        $.warning("unknown units: { $<units:unknown>.ast }")
     }
 
     method color-range($/) {
