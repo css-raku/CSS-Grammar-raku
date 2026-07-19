@@ -44,42 +44,42 @@ method !terms($/ --> Array) {
     for @l {
         for .caps -> Pair:D $_ {
             my $key = .key.lc;
-            my $prop = $key.substr(8)
-                if $key.starts-with('css-val-');
+            next if $key eq '0';
 
-            my $value = $prop ?? $.list(.value) !! .value.ast;
-            next if $key eq '0' || !$value.defined;
-
-            if $prop {
+            if $key.starts-with('css-val-') {
+                my $prop = $key.substr(8);
+                my $value = $.list(.value);
                 with %glob{$prop} {
                     .push: @terms.pop
                         if @terms.tail.key eq 'op';
                     .append: (@$value);
-                    next;
                 }
                 else {
-                    $key = 'expr:' ~ $prop;
-                    $_ = $value;
+                    $_ = $value; # glob
+                    @terms.push:  'expr:'~$prop => $value;
                 }
             }
-            elsif $key.starts-with('expr-') {
-                $key = 'expr:' ~ $key.substr(4);
-            }
-            elsif $value.isa(Pair) {
-                ($key, $value) = $value.kv;
-            }
             else {
-                my $type = $key.split(':').head;
-                warn "{$value.raku} has unknown type: $type"
-                    unless %known-type{$type}:exists;
-            }
-
-            if $key eq 'node' {
-                # inline
-                @terms.append: @$value;
-            }
-            else {
-                @terms.push: $key => $value;
+                my $value = .value.ast // next;
+                if $key.starts-with('expr-') {
+                    $key = 'expr:' ~ $key.substr(4);
+                }
+                elsif $value.isa(Pair) {
+                    ($key, $value) = $value.kv;
+                }
+                else {
+                    given $key.split(':').head -> $type {
+                        warn "{$value.raku} has unknown type: $type"
+                            unless %known-type{$type}:exists;
+                    }
+                }
+                if $key eq 'node' {
+                    # inline
+                    @terms.append: @$value;
+                }
+                else {
+                    @terms.push: $key => $value;
+                }
             }
         }
     }
