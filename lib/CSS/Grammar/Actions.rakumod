@@ -252,20 +252,19 @@ class CSS::Grammar::Actions {
         return :16( ~$hex-str );
     }
 
-    method unicode-range($/) {
-        my Str ($lo, $hi);
-
-        with $<mask> {
-            my $mask = .Str;
-            $lo = $mask.subst('?', '0'):g;
-            $hi = $mask.subst('?', 'F'):g;
+    method !unicode-range($lo, $hi) {
+        my UInt @range[2] = self!code-point($lo), self!code-point($hi);
+        $.build.token(@range, :type(CSSValue::UnicodeRangeComponent));
+    }
+    multi method unicode-range($/ where $<mask>) {
+        given $<mask>.Str {
+            my $from = .subst('?', '0'):g;
+            my $to   = .subst('?', 'F'):g;
+            make self!unicode-range: $from, $to;
         }
-        else {
-            $lo = ~$<from>;
-            $hi = ~$<to>;
-        }
-
-        make $.build.token( [ self!code-point( $lo ), self!code-point( $hi ) ], :type(CSSValue::UnicodeRangeComponent));
+    }
+    multi method unicode-range($/) {
+        make self!unicode-range: ~$<from>, ~$<to>;
     }
 
     # css21/css3 core - media support
