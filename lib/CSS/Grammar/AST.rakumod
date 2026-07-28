@@ -17,9 +17,10 @@ BEGIN our %known-type =
 
 #| utility token builder method, e.g.: $.token(42, :type<cm>)  -->   :cm(42)
 multi method token(Mu:D $ast, Str:D :$type!) {
-    my $raw-type = CSSUnits.enums{$type} // $type.split(':').head;
-    die "unknown type: '$raw-type'"
-        unless %known-type{$raw-type}:exists;
+    given CSSUnits.enums{$type} // $type.split(':').head -> $base-type {
+        die "unknown type: '$base-type'"
+            unless %known-type{$base-type}:exists;
+    }
 
     $type => $ast.isa(Pair) ?? $ast.value !! $ast;
 }
@@ -144,7 +145,7 @@ method decl($/, :$obj!) {
 
 method rule($/) {
     given  self!terms($/) {
-        .elems == 1 ?? .head !! :node($_);
+        .elems > 1 ?? :node($_) !! .head;
     }
 }
 
