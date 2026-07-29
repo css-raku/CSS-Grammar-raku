@@ -145,7 +145,7 @@ method decl($/, :$obj!) {
 
 method rule($/) {
     given  self!terms($/) {
-        .elems > 1 ?? :node($_) !! .head;
+        .elems > 1 ?? :expr($_) !! .head;
     }
 }
 
