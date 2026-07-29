@@ -33,15 +33,15 @@ multi sub json-eqv (Any $a, Any $b) is default {
     return False;
 }
 
-our proto parse-tests(|) {*}
+our proto parse-tests(|c) {*}
 
-multi parse-tests($input, :$module!, |c) {
+multi parse-tests($input, :$module!, Bool :$lax, |c) {
     my $grammar = $module.grammar;
-    my $actions = $module.actions;
-    nextwith($grammar, $input, :$actions, |c);
+    my Any:D $actions = $module.actions.new: :$lax;
+    parse-tests($grammar, $input, :$actions, |c);
 }
 
-multi parse-tests($grammar, $input, :$parse is copy, :$actions,
+multi parse-tests($grammar, Str:D $input, :$parse is copy, :$actions,
                     :$rule = 'TOP', :$suite = $grammar.^shortname.lc, :$writer,
                     :%expected) is export(:parse-tests) {
 
