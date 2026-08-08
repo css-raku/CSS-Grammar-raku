@@ -72,14 +72,13 @@ A:visited IMG { border: 2px solid red }
 A:active IMG { border: 2px solid lime }
 END_SAMPLE
 
-my Pair @tests = :$tiny, :$small, :$body, :sample[$body ~ $sample];
+my Pair @tests = :$tiny, :$small, :$body, :sample($body ~ $sample);
 
 for @tests {
     my ($test, $input) = .kv;
 
     for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
-
-	    parse-tests( $grammar, $input, :rule<stylesheet> );
+	parse-tests( $grammar, $input, :rule<stylesheet> );
     }
 }
 
