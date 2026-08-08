@@ -7,26 +7,18 @@ use JSON::Fast;
 
 proto sub json-eqv($,$) is export(:json-eqv) {*}
 # allow only json compatible data
-multi sub json-eqv (%a, %b) {
-    if %a.elems != %b.elems { return False }
-    for %a.kv -> $k, $v {
-        return False
-            unless %b{$k}:exists && json-eqv($v, %b{$k});
-    }
-    True;
+multi sub json-eqv(%a, %b) {
+    %a.elems == %b.elems
+    && !%a.first({!.value.&json-eqv(%b{.key})})
 }
-multi sub json-eqv (@a, @b) {
-    if @a != @b { return False }
-    for @a.kv -> $k, $v {
-        return False
-            unless (json-eqv($v, @b[$k]));
-    }
-    True;
+multi sub json-eqv(@a, @b) {
+    @a == @b
+    && !@a.pairs.first({!.value.&json-eqv(@b[.key])})
 }
 multi sub json-eqv (Numeric:D $a, Numeric:D $b) { $a == $b }
-multi sub json-eqv (Stringy $a, Stringy $b) { $a eq $b }
+multi sub json-eqv (Stringy:D $a, Stringy:D $b) { $a eq $b }
+multi sub json-eqv(Any:U $a, Any:U $b) { True }
 multi sub json-eqv (Any $a, Any $b) is default {
-    return True if !$a.defined && !$b.defined;
     note "data type mismatch";
     note "    - expected: {to-json($b)}";
     note "    - got: {to-json($a)}";
