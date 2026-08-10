@@ -22,7 +22,7 @@ multi sub json-eqv (Any $a, Any $b) is default {
     note "data type mismatch";
     note "    - expected: {to-json($b)}";
     note "    - got: {to-json($a)}";
-    return False;
+    False;
 }
 
 our proto parse-tests(|c) {*}

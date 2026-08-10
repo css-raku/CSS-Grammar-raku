@@ -268,14 +268,16 @@ class CSS::Grammar::Actions {
     }
 
     # css21/css3 core - media support
-    method at-rule:sym<media>($/) { make $.build.at-rule($/) }
+    method at-rule:sym<media>($/) { make $<at-rule>.ast }
+    method at-rule-media($/)      { make $.build.at-rule($/) }
     method rule-list($/)          { make $.build.token( $.build.list($/), :type(CSSObject::RuleList)) }
     method media-list($/)         { make $.build.list($/) }
     method media-query($/)        { make $.build.list($/) }
     method media-name($/)         { make $.build.token( $<Ident>.ast, :type(CSSValue::IdentifierComponent)) }
 
     # css21/css3 core - page support
-    method at-rule:sym<page>($/)  { make $.build.at-rule($/) }
+    method at-rule:sym<page>($/)  { make $<at-rule>.ast }
+    method at-rule-page($/)       { make $.build.at-rule($/) }
     method page-pseudo($/)        { make $.build.token( $<Ident>.ast, :type(CSSSelector::PseudoClass)) }
 
     method property($/)           { make $<Ident>.ast }
