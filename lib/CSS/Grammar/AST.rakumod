@@ -39,8 +39,8 @@ method !terms($/ --> Array) {
             my $key = .key.lc;
             next if $key eq '0';
 
-            if $key.starts-with('css-val-') {
-                my $prop = $key.substr(8);
+            if $key.starts-with('prop-val-') {
+                my $prop = $key.substr(9);
                 my $value = $.list(.value);
                 with %glob{$prop} {
                     .push: @terms.pop
