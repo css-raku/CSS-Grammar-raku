@@ -41,7 +41,6 @@ multi parse-tests($grammar, Str:D $input, :$parse is copy, :$actions,
         $actions.reset if $actions.can('reset');
         $grammar.subparse( $input, :$rule, :$actions)
     };
-
     my $expected-parse = (%expected<parse> // $input).trim;
 
     my %todo = $_ with %expected<todo>;
@@ -100,7 +99,7 @@ multi parse-tests($grammar, Str:D $input, :$parse is copy, :$actions,
 
                 CATCH {
                     note "error writing: {$actual-ast.raku}";
-                    note "regenerated css: $css-again";
+                    note "regenerated css: $_" with $css-again;
                     die $_;
                 }
             }

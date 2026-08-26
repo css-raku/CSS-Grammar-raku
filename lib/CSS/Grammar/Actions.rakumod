@@ -19,7 +19,7 @@ class X::CSS::Ignored is X::CSS {
     }
 
     has Str $.message is required;
-    has Str $!str;
+    has Str $.str is built;
     has Str $!explanation;
 
     submethod TWEAK(:$str, :$explanation ) {
@@ -42,7 +42,7 @@ class CSS::Grammar::Actions {
 
     # variable encoding - not yet supported
     has Str $.encoding is rw = 'UTF-8';
-    has Bool $.lax = False;
+    has Bool $.lax is rw = False;
     has Bool $.xml = False;
 
     method build handles<token node list at-rule> {
@@ -51,9 +51,10 @@ class CSS::Grammar::Actions {
 
     # accumulated warnings
     has X::CSS::Ignored @.warnings;
+    has Bool $.warn;
 
     method reset {
-        @.warnings = [];
+        @.warnings = ();
     }
 
     method pseudo-func( Str $ident, $expr --> Pair) is DEPRECATED<ast.pseudo-func> {
@@ -62,7 +63,11 @@ class CSS::Grammar::Actions {
     }
 
     method warning(Str:D() $message, Str $str?, Str $explanation?) {
-        @.warnings.push: X::CSS::Ignored.new( :$message, :$str, :$explanation);
+        my X::CSS::Ignored $warning .= new( :$message, :$str, :$explanation);
+        unless @!warnings.tail eqv $warning {
+            warn $warning if $!warn;
+            @.warnings.push: $warning;
+        }
     }
 
     method eol($/) { }
@@ -162,7 +167,8 @@ class CSS::Grammar::Actions {
     }
 
     method url($/)   {
-        make $.build.token( $<url>.ast, :type(CSSValue::URLComponent));
+        make $.build.token( $<url>.ast, :type(CSSValue::URLComponent))
+            unless $<any-args>;
     }
 
     # uri - synonym for url?
@@ -370,10 +376,15 @@ class CSS::Grammar::Actions {
 
     method attrib($/)              { make $.build.list($/) }
 
+    method any-args($/) {
+        if $/.trim -> $scanned {
+            $.warning('skipping: ' ~ $scanned);
+        }
+    }
+
     method any-function($/) {
-        return $.warning('skipping function arguments', ~$_)
-            with $<any-args>;
-        make $.build.node($/);
+        make $.build.node($/)
+            unless $<any-args>;
     }
 
     method pseudo-function:sym<lang>($/) {
@@ -416,4 +427,5 @@ class CSS::Grammar::Actions {
     method unknown($/) {
         $.warning('dropping', ~$/)
     }
+
 }

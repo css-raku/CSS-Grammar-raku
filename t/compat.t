@@ -1,5 +1,3 @@
-#!/usr/bin/env perl6
-
 # general compatibility tests
 # -- css1 is a subset of css2.1 and sometimes parses differently
 # -- css3 without extensions should be largely css2.1 compatibile
@@ -25,33 +23,35 @@ for 't/compat.json'.IO.lines {
     my ($rule, $test) = @( from-json($_) );
     my $input = $test<input>;
 
-    for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
+    subtest "$rule: $input", {
+        for CSS::Grammar::CSS1, CSS::Grammar::CSS21, CSS::Grammar::CSS3, CSS::Grammar::CSS4 -> $grammar {
 
-        my $level = $grammar.^shortname.lc;
-	my %level-tests = %( $test{$level} // () );
-	my %expected = %$test, %level-tests;
+            my $level = $grammar.^shortname.lc;
+	    my %level-tests = %( $test{$level} // () );
+	    my %expected = %$test, %level-tests;
 
-	$actions.reset;
+	    $actions.reset;
 
-	if %expected<skip> {
-	    skip $rule ~ ': ' ~ %expected<skip>;
-	    next;
-	}
+	    if %expected<skip> {
+	        skip $rule ~ ': ' ~ %expected<skip>;
+	        next;
+	    }
 
-	parse-tests($grammar, $input,
-                    :$actions,
-                    :$rule,
-                    :%expected);
-    }
+	    parse-tests($grammar, $input,
+                        :$actions,
+                        :$rule,
+                        :%expected);
+        }
 
-    if CSS::Grammar::Core.can( '_' ~ $rule ) {
-        my %core-tests = $test<core> // {};
-	my %expected = %$test, ast => Any, warnings => Any, %core-tests;
-        %expected<warnings> //= Any;
-        parse-tests(CSS::Grammar::Core, $input,
-                    :$actions,
-                    :rule('_' ~ $rule),
-                    :%expected);
+        if CSS::Grammar::Core.can( '_' ~ $rule ) {
+            my %core-tests = $test<core> // {};
+	    my %expected = %$test, ast => Any, warnings => Any, %core-tests;
+            %expected<warnings> //= Any;
+            parse-tests(CSS::Grammar::Core, $input,
+                        :$actions,
+                        :rule('_' ~ $rule),
+                        :%expected);
+        }
     }
 }
 

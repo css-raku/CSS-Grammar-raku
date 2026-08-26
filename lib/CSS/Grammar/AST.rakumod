@@ -42,6 +42,7 @@ method !terms($/ --> Array) {
             if $key.starts-with('prop-val-') {
                 my $prop = $key.substr(9);
                 my $value = $.list(.value);
+
                 with %glob{$prop} {
                     .push: @terms.pop
                         if @terms.tail.key eq 'op';
@@ -71,7 +72,6 @@ method !terms($/ --> Array) {
             }
         }
     }
-
     @terms;
 }
 
@@ -87,7 +87,7 @@ method list($/) {
 
 method at-rule($/) {
     my %terms = $.node($/);
-    %terms{ CSSValue::AtKeywordComponent } //= $0.lc;
+    %terms{ CSSValue::AtKeywordComponent } //= .lc with $0;
     return $.token( %terms, :type(CSSObject::AtRule));
 }
 
@@ -109,8 +109,7 @@ method pseudo-func( Str $ident, $/ --> Pair) {
     $.token( %ast, :type(CSSSelector::PseudoFunction) );
 }
 
-method decl($/, :$obj!) {
-
+multi method decl($/, :$obj!) {
     my %ast;
     my $prop-name;
     with $0 {
@@ -139,14 +138,14 @@ method decl($/, :$obj!) {
             }
         }
     }
-
     return %ast;
 }
 
 method rule($/) {
-    given  self!terms($/) {
+    my $rv := do given self!terms($/) {
         .elems > 1 ?? :expr($_) !! .head;
     }
+    $rv
 }
 
 method proforma { [] }
