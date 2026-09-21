@@ -35,9 +35,8 @@ method !terms($/ --> Array) {
         !! $/.grep(Capture:D);
 
     for @l {
-        for .caps -> Pair:D $_ {
+        for .caps.grep(*.key ne '0') -> Pair:D $_ {
             my $key = .key.lc;
-            next if $key eq '0';
 
             if $key.starts-with('prop-val-') {
                 my $prop = $key.substr(9);
@@ -55,20 +54,25 @@ method !terms($/ --> Array) {
             }
             else {
                 my $value = .value.ast // next;
-                if $key.starts-with('expr-') {
-                    $key = 'expr:' ~ $key.substr(4);
-                }
-                elsif $value.isa(Pair) {
-                    ($key, $value) = $value.kv;
+                if $key eq 'inline' {
+                    @terms.append: %$value;
                 }
                 else {
-                    given $key.split(':').head -> $type {
-                        warn "{$value.raku} has unknown type: $type"
-                            unless %known-type{$type}:exists;
+                    if $key.starts-with('expr-') {
+                        $key = 'expr:' ~ $key.substr(4);
                     }
-                }
+                    elsif $value.isa(Pair) {
+                        ($key, $value) = $value.kv;
+                    }
+                    else {
+                        given $key.split(':').head -> $type {
+                            warn "{$value.raku} has unknown type: $type"
+                            unless %known-type{$type}:exists;
+                        }
+                    }
 
-                @terms.push: $key => $value;
+                    @terms.push: $key => $value;
+                }
             }
         }
     }

@@ -298,13 +298,14 @@ class CSS::Grammar::Actions {
     multi method any-declaration($/ where $<declarations>) {
         make $.build.at-rule($/)
     }
-    multi method any-declaration($/ where $<expr>) {
+    multi method any-declaration($/ where $<inline>) {
         return $.warning('dropping declaration', $<Ident>.ast)
-            if !$<expr>.caps
-            || $<expr>.caps.first: {! .value.ast.defined};
+            if !$<inline><expr>.caps
+            || $<inline><expr>.caps.first: {! .value.ast.defined};
 
         make $.build.token($.build.node($/), :type(CSSValue::Property));
     }
+    method any-value($/) { make $.build.node($/) }
 
     method term($/) { make $<term>.ast }
 

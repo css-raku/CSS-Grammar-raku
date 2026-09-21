@@ -192,7 +192,7 @@ grammar CSS::Grammar::Core #api<css2-20110607>
     rule _ruleset      { <!after \@> <_selectors>? <_declarations> }
     rule _selectors    { [<_any> | <_badstring>]+ }
     rule _declarations { '{' <_declaration> *%% ';'? '}'? }
-    rule _declaration  { [ <.property> | <_value> | <.badstring> ]+ }
+    rule _declaration  { [ <.property> | <_value> | <_at-rule> | <.badstring> ]+ }
     rule _value        { [ <_any> | <_block> ]+ }
 
     token _ascii-punct {<[\! .. \~] -alnum>}

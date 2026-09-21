@@ -52,7 +52,8 @@ rule declarations {
 rule declaration-list { <declaration> * }
 rule declaration      { <any-declaration> }
 rule at-keyw          { '@'<Ident> }
-rule any-declaration  { <Ident=.property> <expr> <prio>? <end-decl> | <at-keyw> <declarations> || <dropped-decl> }
+rule any-declaration  { <Ident=.property> <inline=.any-value> | <at-keyw> <declarations> || <dropped-decl> }
+rule any-value { <expr> <prio>? <end-decl> }
 
 rule expr { <term> +% [ <term=.operator>? ] }
 rule term2:sym<function>  {<function=.any-function>}
