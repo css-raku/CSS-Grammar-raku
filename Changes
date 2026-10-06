@@ -1,5 +1,8 @@
 {{$NEXT}}
 
+0.5.0  2026-10-07T08:07:38+13:00
+  - Add CSS4 support for CSS::Snapshot2026 (under construction).
+
 0.4.3  2026-06-14T07:49:02+12:00
   - Add <stringchar-printable> rule for the benefit of CSS::Writer
     serialization.
