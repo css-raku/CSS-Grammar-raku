@@ -181,22 +181,23 @@ class CSS::Grammar::Actions {
         $.warning("unknown units: { $<units:unknown>.ast }")
     }
 
-    method color-range($/) {
-        my $range = $<num>.ast.value;
-        $range *= 2.55
-            if $<percentage>;
+    multi method color-range($/ where $<percentage>) {
+        my $range = $<num>.ast.value.&min(100).&max(0);
+        make $.build.token( $range.round, :type(CSSValue::PercentageComponent));
+    }
 
-        # clip out-of-range colors, see
-        # http://www.w3.org/TR/CSS21/syndata.html#value-def-color
-        $range = min( max($range, 0), 255);
+    multi method color-range($/) {
+        my $range = $<num>.ast.value.&min(255).&max(0);
         make $.build.token( $range.round, :type(CSSValue::NumberComponent));
     }
 
-    method alpha-value($/) {
-        my $alpha = $<num>.ast.value;
-        $alpha /= 100
-            if $<percentage>;
-        $alpha = min( max($alpha, 0), 1);
+    multi method alpha-value($/ where $<percentage>) {
+        my $alpha = $<num>.ast.value.&min(100).&max(0);
+        make $.build.token( $alpha.round, :type(CSSValue::PercentageComponent));
+    }
+
+    multi method alpha-value($/) {
+        my $alpha = $<num>.ast.value.&min(1).&max(0);
         make $.build.token( $alpha.round(.01), :type(CSSValue::NumberComponent));
     }
 

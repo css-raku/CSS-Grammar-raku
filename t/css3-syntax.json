@@ -31,3 +31,7 @@
 [ "unicode-range", { "input" : [ "U+200-2Ff", "U+2??" ], "ast" : { "unicode-range" : [ 512, 767 ] } } ]
 [ "term", { "input" : "U+2??a", "ast" : { "unicode-range" : [ 8202, 12282 ] } } ]
 [ "attribute-selector", { "input" : [ "~=", "|=", "^=", "$=", "*=", "||" ], "ast" : null } ]
+[ "alpha-value", { "input" : ".75", "ast" : { "num" : 0.75 } } ]
+[ "alpha-value", { "input" : "75%", "ast" : { "percent" : 75 } } ]
+[ "color-range", { "input" : "125%", "ast" : { "percent" : 100 } } ]
+[ "color-range", { "input" : "125", "ast" : { "num" : 125 } } ]

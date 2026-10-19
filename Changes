@@ -1,4 +1,6 @@
 {{$NEXT}}
+  - Pass through percentage <alpha-value> and <color-range>
+    without conversion.
 
 0.5.0  2026-10-07T08:07:38+13:00
   - Add CSS4 support for CSS::Snapshot2026 (under construction).
