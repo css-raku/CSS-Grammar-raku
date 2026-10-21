@@ -134,6 +134,8 @@ multi method decl($/, :$obj!) {
             $expr //= %val<expr>;
 
             if $expr {
+                $expr = $expr.head<expr>
+                    if $expr.elems == 1 && $expr.head.keys ~~ <expr>;
                 %ast<expr> = $expr;
             }
             else {
