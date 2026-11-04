@@ -20,12 +20,12 @@ multi sub json-eqv (Stringy:D $a, Stringy:D $b) { $a eq $b }
 multi sub json-eqv(Any:U $a, Any:U $b) { True }
 multi sub json-eqv (Any $a, Any $b) is default {
     note "data type mismatch";
-    note "    - expected: {to-json($b)}";
-    note "    - got: {to-json($a)}";
+    note "    - expected: {$b.&to-json}";
+    note "    - got: {$a.&to-json}";
     False;
 }
 
-our proto parse-tests(|c) {*}
+our proto parse-tests(|) is export(:parse-tests) {*}
 
 multi parse-tests($input, :$module!, Bool :$lax, |c) {
     my $grammar = $module.grammar;
@@ -58,7 +58,7 @@ multi parse-tests($grammar, Str:D $input, :$parse is copy, :$actions,
     my @warnings = $actions.warnings».message
         if $actions.can('warnings');
 
-    if  %expected<warnings>:exists && ! %expected<warnings>.defined {
+    if %expected<warnings>:exists && ! %expected<warnings>.defined {
         diag "untested warnings: " ~ @warnings
             if @warnings;
     }
@@ -81,7 +81,7 @@ multi parse-tests($grammar, Str:D $input, :$parse is copy, :$actions,
     with %expected<ast> -> $expected-ast {
 
         todo $_ with %todo<ast>;
-        my $ast-ok = cmp-ok $actual-ast, &json-eqv, $expected-ast,  "{$suite} $rule ast";;
+        my $ast-ok = cmp-ok $actual-ast, &json-eqv, $expected-ast,  "{$suite} $rule ast";
 
         if $ast-ok && $writer.can('write') {
             # recursive test of reserialized css.

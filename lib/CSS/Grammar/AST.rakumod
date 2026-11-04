@@ -37,7 +37,6 @@ method !terms($/ --> Array) {
     for @l {
         for .caps.grep(*.key ne '0') -> Pair:D $_ {
             my $key = .key.lc;
-
             if $key.starts-with('prop-val-') {
                 my $prop = $key.substr(9);
                 my $value = $.list(.value);
@@ -134,8 +133,6 @@ multi method decl($/, :$obj!) {
             $expr //= %val<expr>;
 
             if $expr {
-                $expr = $expr.head<expr>
-                    if $expr.elems == 1 && $expr.head.keys ~~ <expr>;
                 %ast<expr> = $expr;
             }
             else {
