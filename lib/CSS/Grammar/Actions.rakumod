@@ -9,13 +9,8 @@ class X::CSS::Ignored is X::CSS {
     sub display-string(Str $str is copy --> Str) {
 
         $str = $str.chomp.trim;
-        $str ~~ s:g/[\s|\t|\n|\r|\f]+/ /;
-
-        [~] $str.comb.map: {
-                    /<[ \\ \t \s \!..\~ ]>/
-                        ?? $_  
-                        !! .ord.fmt("\\x[%x]")
-            };
+        $str .= subst(/[\s|\t|\n|\r|\f]+/, ' ', :g);
+        $str.subst(/(<!print>.)/, {.ord.fmt("\\x[%x]")}, :g);
     }
 
     has Str $.message is required;
@@ -52,6 +47,7 @@ class CSS::Grammar::Actions {
     # accumulated warnings
     has X::CSS::Ignored @.warnings;
     has Bool $.warn;
+    has Bool $.die is rw = False;
 
     method reset {
         @.warnings = ();
@@ -63,10 +59,11 @@ class CSS::Grammar::Actions {
     }
 
     method warning(Str:D() $message, Str $str?, Str $explanation?) {
-        my X::CSS::Ignored $warning .= new( :$message, :$str, :$explanation);
-        unless @!warnings.tail eqv $warning {
-            warn $warning if $!warn;
-            @.warnings.push: $warning;
+        my X::CSS::Ignored $quibble .= new( :$message, :$str, :$explanation);
+        die $quibble if $!die;
+        unless @!warnings.tail eqv $quibble {
+            warn $quibble if $!warn;
+            @.warnings.push: $quibble;
         }
     }
 
