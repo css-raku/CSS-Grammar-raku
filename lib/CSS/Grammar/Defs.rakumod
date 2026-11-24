@@ -69,7 +69,7 @@ our Str enum CSSSelector is export(:CSSSelector) «
 # Adapted from the out-of-date http://www.w3.org/TR/DOM-Level-2-Style/css.html
 
 our Str enum CSSUnits is export(:CSSUnits) «
-    :ems<length> :exs<length> :px<length> :cm<length> :mm<length> :in<length> :pt<length> :pc<length>, :q<length>
+    :ems<length> :exs<length> :px<length> :cm<length> :mm<length> :in<length> :pt<length> :pc<length> :q<length>
     :em<length> :ex<length> :rem<length> :ch<length> :vw<length> :vh<length> :vmin<length> :vmax<length>
     :dpi<resolution> :dpcm<resolution> :dppx<resolution>
     :deg<angle> :rad<angle> :grad<angle> :turn<angle>
